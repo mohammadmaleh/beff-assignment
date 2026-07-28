@@ -4,6 +4,10 @@ Production intelligence for battery cell manufacturing. Built as a technical tak
 for Beff GmbH (Stuttgart). See `assignment-description.md` for the brief and
 `docs/adr/` for why things are the way they are.
 
+> **Starting a session? Read [`docs/ROADMAP.md`](docs/ROADMAP.md) first.** It holds the
+> current state, the settled decisions (do not relitigate them), the next task, and a
+> verification command for every checkpoint.
+
 ## Architecture
 
 Monorepo, two deployable apps:
@@ -130,8 +134,7 @@ Rules that are easy to get wrong and are enforced by review:
 
 ### Frontend (`apps/web`, `packages/ui`)
 
-- **No root barrel in `packages/ui`** — subpath exports only (see the barrel rule above).
-  Per-component `index.ts` files are required, not forbidden.
+
 - **Native HTML before ARIA.** ARIA is a last resort, not a first move.
 - Every component ships all states: default, hover, focus-visible, active, disabled,
   loading, error. Every data surface: loading, empty, error, partial.
