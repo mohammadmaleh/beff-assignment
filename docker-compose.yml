@@ -1,0 +1,100 @@
+# Local development stack. One command, no manual steps:
+#   docker compose up
+#
+# Production uses managed services (Neon, Upstash, Fly, Vercel) — this file is
+# for local parity, not deployment.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-beff}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-beff_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-beff}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      # Depends on postgres being ready to accept connections, not just the
+      # container being up — otherwise the API races it on startup.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-beff} -d ${POSTGRES_DB:-beff}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    command: redis-server --save 60 1 --loglevel warning
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+      target: dev
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-beff}:${POSTGRES_PASSWORD:-beff_dev_password}@postgres:5432/${POSTGRES_DB:-beff}
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: ${JWT_SECRET:-dev_only_do_not_use_in_production}
+      IP_HASH_SALT: ${IP_HASH_SALT:-dev_only_salt}
+      CORS_ORIGINS: http://localhost:3000
+      ENVIRONMENT: development
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ./apps/api/src:/app/src
+      - ./apps/api/tests:/app/tests
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+      target: dev
+    command: uv run arq beff.workers.settings.WorkerSettings
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-beff}:${POSTGRES_PASSWORD:-beff_dev_password}@postgres:5432/${POSTGRES_DB:-beff}
+      REDIS_URL: redis://redis:6379/0
+      IP_HASH_SALT: ${IP_HASH_SALT:-dev_only_salt}
+      ENVIRONMENT: development
+    volumes:
+      - ./apps/api/src:/app/src
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: dev
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NODE_ENV: development
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    volumes:
+      - ./apps/web:/app/apps/web
+      - ./packages:/app/packages
+      - /app/node_modules
+    depends_on:
+      - api
+
+volumes:
+  postgres-data:
+  redis-data:
