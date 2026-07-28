@@ -14,10 +14,10 @@ dependencies = [
     "asyncpg>=0.31.0",
     "argon2-cffi>=25.1.0",
     "pyjwt>=2.10.0",
-    "arq>=0.28.0",
-    # Upper bound is arq's, not ours: arq 0.28 requires redis[hiredis]>=4.2,<6.
-    # Pinning redis>=8 makes the graph unsatisfiable. Revisit when arq widens it.
-    "redis[hiredis]>=5.0.0,<6",
+    # No Redis, no Celery/arq. Background jobs run on a Postgres-backed queue
+    # using SELECT ... FOR UPDATE SKIP LOCKED. At pre-launch volume that keeps
+    # persistence, retries, idempotency and a dead-letter path without adding a
+    # second datastore to run, deploy and monitor. See ADR-0006.
     "python-multipart>=0.0.20",
     "orjson>=3.11.0",
     "structlog>=25.0.0",
@@ -32,7 +32,6 @@ dev = [
     "testcontainers[postgres]>=4.15.0",
     "ruff>=0.16.0",
     "mypy>=1.18.0",
-    "types-redis>=4.6.0",
 ]
 
 [build-system]
@@ -76,7 +75,10 @@ ignore = [
 # deprecated in Python 3.12. Always use `datetime.now(UTC)`.
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S105", "S106"]  # hardcoded test credentials are fine
+# Hardcoded credentials are fine in tests. Covers both the co-located unit
+# tests under src/ and the integration tests under tests/.
+"**/test_*.py" = ["S105", "S106"]
+"tests/**" = ["S105", "S106"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 # Relative imports break when modules move. Absolute imports only.
@@ -95,14 +97,18 @@ plugins = ["pydantic.mypy"]
 files = ["src", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["testcontainers.*", "arq.*"]
+module = ["testcontainers.*"]
 ignore_missing_imports = true
 
 # ─────────────────────────────────────────────────────────────
 # pytest
 # ─────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+# Unit tests are co-located with the code they cover (src/**/test_*.py), so a
+# unit folder holds implementation + barrel + test and is movable as a whole.
+# `tests/` holds fixtures and integration tests, which span units and belong to
+# no single one.
+testpaths = ["src", "tests"]
 asyncio_mode = "auto"
 addopts = [
     "--strict-markers",
@@ -116,7 +122,9 @@ markers = [
 [tool.coverage.run]
 source = ["src/beff"]
 branch = true
-omit = ["*/migrations/*"]
+# Co-located tests live under src/, so they must be excluded from the measured
+# source or they would inflate coverage by counting themselves.
+omit = ["*/migrations/*", "*/test_*.py"]
 
 [tool.coverage.report]
 fail_under = 85

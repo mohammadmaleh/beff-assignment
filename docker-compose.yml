@@ -23,19 +23,6 @@ services:
       timeout: 5s
       retries: 10
 
-  redis:
-    image: redis:8-alpine
-    command: redis-server --save 60 1 --loglevel warning
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
-    volumes:
-      - redis-data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
   api:
     build:
       context: ./apps/api
@@ -43,7 +30,6 @@ services:
       target: dev
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-beff}:${POSTGRES_PASSWORD:-beff_dev_password}@postgres:5432/${POSTGRES_DB:-beff}
-      REDIS_URL: redis://redis:6379/0
       JWT_SECRET: ${JWT_SECRET:-dev_only_do_not_use_in_production}
       IP_HASH_SALT: ${IP_HASH_SALT:-dev_only_salt}
       CORS_ORIGINS: http://localhost:3000
@@ -56,26 +42,21 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
 
   worker:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
       target: dev
-    command: uv run arq beff.workers.settings.WorkerSettings
+    command: uv run python -m beff.workers
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-beff}:${POSTGRES_PASSWORD:-beff_dev_password}@postgres:5432/${POSTGRES_DB:-beff}
-      REDIS_URL: redis://redis:6379/0
       IP_HASH_SALT: ${IP_HASH_SALT:-dev_only_salt}
       ENVIRONMENT: development
     volumes:
       - ./apps/api/src:/app/src
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
 
   web:
@@ -97,4 +78,3 @@ services:
 
 volumes:
   postgres-data:
-  redis-data:

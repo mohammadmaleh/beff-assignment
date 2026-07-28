@@ -1,4 +1,10 @@
-"""Shared pytest fixtures."""
+"""Fixtures shared by every test tree.
+
+Lives at the package root because pytest only applies a `conftest.py` to its own
+directory and below. Co-located unit tests under `src/` and integration tests
+under `tests/` both need these, so a conftest inside either tree would be
+invisible to the other.
+"""
 
 from __future__ import annotations
 

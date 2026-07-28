@@ -35,14 +35,6 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
-      redis:
-        image: redis:8-alpine
-        ports: ["6379:6379"]
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
 
     steps:
       - uses: actions/checkout@v4
@@ -71,7 +63,6 @@ jobs:
         run: uv run pytest --cov --cov-report=term-missing
         env:
           DATABASE_URL: postgresql+asyncpg://beff:beff@localhost:5432/beff_test
-          REDIS_URL: redis://localhost:6379/0
           JWT_SECRET: ci_only_secret
           IP_HASH_SALT: ci_only_salt
 
