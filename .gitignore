@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Build output
+.next/
+out/
+dist/
+build/
+storybook-static/
+*.tsbuildinfo
+
+# Turborepo
+.turbo/
+
+# Testing
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+playwright-report/
+test-results/
+blob-report/
+*-snapshots/__diff_output__/
+
+# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Local data
+*.sqlite3
+exports/
+postgres-data/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Claude — keep shared project settings, ignore personal overrides
+.claude/settings.local.json

@@ -1,0 +1,22 @@
+{
+  "enabledPlugins": {
+    "accessibility-compliance@claude-code-workflows": true,
+    "ui-design@claude-code-workflows": true,
+    "frontend-mobile-development@claude-code-workflows": true,
+    "python-development@claude-code-workflows": true,
+    "api-scaffolding@claude-code-workflows": true,
+    "backend-api-security@claude-code-workflows": true,
+    "hr-legal-compliance@claude-code-workflows": true,
+    "tdd-workflows@claude-code-workflows": true,
+    "developer-essentials@claude-code-workflows": true,
+    "documentation-generation@claude-code-workflows": true,
+    "javascript-typescript@claude-code-workflows": true,
+    "database-design@claude-code-workflows": true,
+    "cicd-automation@claude-code-workflows": true,
+    "c4-architecture@claude-code-workflows": true,
+    "comprehensive-review@claude-code-workflows": true,
+    "code-documentation@claude-code-workflows": true,
+    "before-you-build@claude-code-workflows": true,
+    "data-validation-suite@claude-code-workflows": true
+  }
+}
