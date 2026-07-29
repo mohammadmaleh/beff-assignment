@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 9
 
@@ -108,7 +108,7 @@ jobs:
           uv sync --frozen --all-groups
           uv run --with pip-audit pip-audit || true
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 9
       - uses: actions/setup-node@v4
