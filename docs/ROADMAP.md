@@ -22,13 +22,34 @@ Linear board: [Beff — Pre-Launch SaaS MVP](https://linear.app/mos-space/projec
 
 ## Current state
 
-**Done and verified:** repo, Claude tooling, monorepo skeleton, FastAPI app with
-health/readiness endpoints, uv lockfile, ruff + mypy strict + pytest at 100% on what
-exists, CI workflow, compose file, dependabot, CLAUDE.md, CONTEXT.md, pre-mortem.
+**Done and verified by running it:**
 
-**Known broken — fix before anything else (see M1 checkpoints):** the Dockerfiles that
-`docker-compose.yml` references do not exist, `apps/web` is empty, there is no
-`pnpm-lock.yaml` so CI's `--frozen-lockfile` fails, and no README exists.
+- Monorepo (pnpm + Turborepo), FastAPI app, Next.js app, shared config package
+- `pnpm lint`, `typecheck`, `test`, `build`, `format:check` — all green
+- Backend `ruff`, `mypy --strict`, `pytest --cov` — green, 100% on what exists
+- `/` builds as `○ (Static)`, so the SSG claim behind choosing Next is demonstrable
+- a11y lint rules **confirmed to fail** on a deliberate probe (missing alt,
+  click-without-keyboard, `autoFocus`) — a linter that cannot fail proves nothing
+- `pnpm-lock.yaml` committed, so CI's `--frozen-lockfile` works
+- README, ADRs 0001/0002/0003/0006/0010, CLAUDE.md, CONTEXT.md, pre-mortem
+
+**⚠️ Not verified — needs action:** `docker compose build` and `docker compose up` have
+**never been run**. The Docker daemon was not running in the authoring environment and
+starting it required interactive sudo. The Dockerfiles and compose file are written and
+`docker compose config` validates, but the images have not been built.
+
+**First thing to do in the next session:**
+
+```bash
+sudo service docker start      # or start Docker Desktop
+docker compose build
+docker compose up -d
+curl -f localhost:8000/healthz && curl -f localhost:3000
+```
+
+Expect to fix something — a multi-stage build written without being run rarely works
+first time. Likely suspects: the pnpm store cache mount, and whether Next's standalone
+output lands at `apps/web/server.js` given the monorepo `outputFileTracingRoot`.
 
 ---
 
@@ -61,19 +82,17 @@ Each box is provable. Do not tick one without running its command and seeing it 
 - [x] `ENG-18` Monorepo skeleton — `turbo.json` uses `tasks`
 - [x] `ENG-19` FastAPI skeleton — ruff, mypy strict, pytest green
 - [x] `ENG-22` CLAUDE.md, CONTEXT.md, pre-mortem
-- [ ] **`ENG-20` Dockerfiles + compose actually runs** ← _next task_
-  - `apps/api/Dockerfile` (multi-stage, `dev` + `prod` targets)
-  - `apps/web/Dockerfile` (Next standalone output)
-  - **Verify:** `docker compose up -d && curl -f localhost:8000/healthz && curl -f localhost:3000`
-- [ ] `ENG-18b` Next.js app in `apps/web` + `pnpm-lock.yaml` committed
-  - **Verify:** `pnpm install --frozen-lockfile && pnpm build && pnpm typecheck`
+- [x] `ENG-18b` Next.js app + `pnpm-lock.yaml` committed
+  - Verified: `pnpm install --frozen-lockfile && pnpm build && pnpm typecheck && pnpm test`
+- [x] README skeleton + ADRs 0001, 0002, 0003, 0006, 0010
+- [ ] **`ENG-20` Dockerfiles are written but have NEVER BEEN BUILT** ← _next task_
+  - **Verify:** `docker compose build && docker compose up -d && curl -f localhost:8000/healthz && curl -f localhost:3000`
 - [ ] `ENG-21` CI green on a real push
   - **Verify:** `gh run list --limit 1` shows success
-- [ ] README skeleton exists (filled in at M6, but must not be missing)
-- [ ] `docs/adr/0001-monorepo.md` … so CLAUDE.md's ADR references stop dangling
 
 **Gate:** a fresh clone runs `docker compose up` and serves both apps. Until that is
-true, nothing else should start.
+true, nothing else should start — the README's quickstart is currently a promise the
+repo has not been shown to keep.
 
 ### M2 · Design System
 
