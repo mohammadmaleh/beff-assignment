@@ -28,7 +28,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Source is bind-mounted by compose, so it is deliberately not copied here.
 FROM deps AS dev
 
-ENV ENVIRONMENT=development
+# The deps stage runs --no-install-project, so the `beff` package is never
+# installed into the venv. With source arriving at runtime via bind mount,
+# PYTHONPATH is what makes it importable — an editable install cannot work
+# against a directory that does not exist at build time.
+ENV ENVIRONMENT=development \
+    PYTHONPATH=/app/src
 
 EXPOSE 8000
 CMD ["uv", "run", "--no-sync", "uvicorn", "beff.main:app", \
