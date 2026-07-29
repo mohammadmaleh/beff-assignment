@@ -1,7 +1,7 @@
 # Roadmap & Handoff
 
 **Read this first if you are picking up the project.** It is the single source of truth
-for *where we are*, *what is next*, and *how to prove a step is actually done*.
+for _where we are_, _what is next_, and _how to prove a step is actually done_.
 
 Linear board: [Beff — Pre-Launch SaaS MVP](https://linear.app/mos-space/project/beff-pre-launch-saas-mvp-e1ecb9993700) (`ENG-18` → `ENG-43`)
 
@@ -37,18 +37,18 @@ exists, CI workflow, compose file, dependabot, CLAUDE.md, CONTEXT.md, pre-mortem
 Settled. Each has or will have an ADR. Changing one means writing a superseding ADR,
 not a quiet edit.
 
-| # | Decision | Short reason |
-|---|---|---|
-| 1 | Next.js **and** FastAPI, not Next-only | The brief mandates NestJS or FastAPI; Route Handlers are neither |
-| 2 | FastAPI only, no NestJS | Depth over breadth; TS is already proven by web + design system + Playwright |
-| 3 | FastAPI owns auth end-to-end | Consequence: authenticated routes are **client-rendered**. Refresh rotation makes SSR redemption unsafe |
-| 4 | **No Redis.** Postgres `FOR UPDATE SKIP LOCKED` | No load justifies a second datastore; keeps retries, idempotency, DLQ |
-| 5 | **Compose, not Kubernetes** | A reviewer must run it in one command. App is orchestrator-*ready* (split probes, env config, stateless) |
-| 6 | TypeScript **5.9.3**, not 7.x | TS 7 is stable but Next 16 + Storybook 10 + eslint-typescript is untested surface |
-| 7 | Three GDPR features, not two | Erasure doubles as the brief's mandated offboarding |
-| 8 | Brand accent never collides with status colours | Green means *in spec* in a yield chart; a green brand makes every chart ambiguous |
-| 9 | Figma **last** | Free-tier MCP quota is finite — spend it once, on a confirmed design |
-| 10 | Unit folders + barrels + co-located tests | See `CLAUDE.md` → File organisation |
+| #   | Decision                                        | Short reason                                                                                             |
+| --- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 1   | Next.js **and** FastAPI, not Next-only          | The brief mandates NestJS or FastAPI; Route Handlers are neither                                         |
+| 2   | FastAPI only, no NestJS                         | Depth over breadth; TS is already proven by web + design system + Playwright                             |
+| 3   | FastAPI owns auth end-to-end                    | Consequence: authenticated routes are **client-rendered**. Refresh rotation makes SSR redemption unsafe  |
+| 4   | **No Redis.** Postgres `FOR UPDATE SKIP LOCKED` | No load justifies a second datastore; keeps retries, idempotency, DLQ                                    |
+| 5   | **Compose, not Kubernetes**                     | A reviewer must run it in one command. App is orchestrator-_ready_ (split probes, env config, stateless) |
+| 6   | TypeScript **5.9.3**, not 7.x                   | TS 7 is stable but Next 16 + Storybook 10 + eslint-typescript is untested surface                        |
+| 7   | Three GDPR features, not two                    | Erasure doubles as the brief's mandated offboarding                                                      |
+| 8   | Brand accent never collides with status colours | Green means _in spec_ in a yield chart; a green brand makes every chart ambiguous                        |
+| 9   | Figma **last**                                  | Free-tier MCP quota is finite — spend it once, on a confirmed design                                     |
+| 10  | Unit folders + barrels + co-located tests       | See `CLAUDE.md` → File organisation                                                                      |
 
 ---
 
@@ -61,7 +61,7 @@ Each box is provable. Do not tick one without running its command and seeing it 
 - [x] `ENG-18` Monorepo skeleton — `turbo.json` uses `tasks`
 - [x] `ENG-19` FastAPI skeleton — ruff, mypy strict, pytest green
 - [x] `ENG-22` CLAUDE.md, CONTEXT.md, pre-mortem
-- [ ] **`ENG-20` Dockerfiles + compose actually runs** ← *next task*
+- [ ] **`ENG-20` Dockerfiles + compose actually runs** ← _next task_
   - `apps/api/Dockerfile` (multi-stage, `dev` + `prod` targets)
   - `apps/web/Dockerfile` (Next standalone output)
   - **Verify:** `docker compose up -d && curl -f localhost:8000/healthz && curl -f localhost:3000`
@@ -140,15 +140,15 @@ true, nothing else should start.
 
 Things deliberately deferred. Not forgotten — decide explicitly before the final review.
 
-| Item | Status |
-|---|---|
-| Email sending (verification) | Undecided. Options: log to console in dev, or Mailpit in compose. Must not block registration |
-| Rate limiting | Needed on auth + export (`ENG-41`). Without Redis this is a Postgres counter or in-process |
-| Observability | `structlog` is a dependency but no request-ID/correlation strategy is written |
-| Seed + demo account | A reviewer must be able to log in **without registering**. Credentials go in the README |
-| `LICENSE` | Missing |
-| Next `error.tsx` / `not-found.tsx` | Not planned; a polished app has them |
-| Dependency audits non-blocking | `\|\| true` in CI. Tighten at `ENG-41` once the baseline is clean |
+| Item                               | Status                                                                                        |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| Email sending (verification)       | Undecided. Options: log to console in dev, or Mailpit in compose. Must not block registration |
+| Rate limiting                      | Needed on auth + export (`ENG-41`). Without Redis this is a Postgres counter or in-process    |
+| Observability                      | `structlog` is a dependency but no request-ID/correlation strategy is written                 |
+| Seed + demo account                | A reviewer must be able to log in **without registering**. Credentials go in the README       |
+| `LICENSE`                          | Missing                                                                                       |
+| Next `error.tsx` / `not-found.tsx` | Not planned; a polished app has them                                                          |
+| Dependency audits non-blocking     | `\|\| true` in CI. Tighten at `ENG-41` once the baseline is clean                             |
 
 ---
 

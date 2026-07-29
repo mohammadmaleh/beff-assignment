@@ -13,7 +13,7 @@ MVP.
 
 **Medium-high.** The engineering is well understood; the demand signal is not. A
 pre-launch landing page plus waitlist is cheap to build and easy to get wrong, because
-it validates *interest in a description* rather than *willingness to change behaviour*.
+it validates _interest in a description_ rather than _willingness to change behaviour_.
 For an industrial B2B buyer with a 6–12 month procurement cycle, a waitlist signup is
 very weak evidence.
 
@@ -42,7 +42,7 @@ Cheapest signals, in order:
 1. **Five conversations with process engineers** about what they currently do when yield
    drops. If the answer is "export from the MES into Excel and email it around", the
    pain is real and the wedge is the export, not the dashboard.
-2. **One question added to the waitlist form:** *"Where does your line data live today?"*
+2. **One question added to the waitlist form:** _"Where does your line data live today?"_
    Free-text. The distribution of answers tells you whether integration is a connector
    problem or a bespoke-services problem — which decides whether this is a software
    business or a consultancy.

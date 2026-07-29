@@ -8,3 +8,5 @@ test-results
 .turbo
 pnpm-lock.yaml
 apps/api
+job-description.md
+assignment-description.md

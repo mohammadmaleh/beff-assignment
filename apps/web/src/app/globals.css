@@ -1,0 +1,46 @@
+/*
+ * Minimal base. Replaced by the Style Dictionary token pipeline in ENG-23 —
+ * do not grow this file; add tokens there instead.
+ */
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  /* Metrics and table figures must not jitter between renders. */
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Visible only when focused. Hiding it with display:none or visibility:hidden
+ * would remove it from the tab order entirely, defeating the purpose.
+ */
+.skip-link {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: -3rem;
+  padding: 0.5rem 1rem;
+  background: Canvas;
+  color: CanvasText;
+  transition: inset-block-start 0.15s ease;
+}
+
+.skip-link:focus-visible {
+  inset-block-start: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

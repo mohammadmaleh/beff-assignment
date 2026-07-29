@@ -43,21 +43,10 @@ services:
       postgres:
         condition: service_healthy
 
-  worker:
-    build:
-      context: ./apps/api
-      dockerfile: Dockerfile
-      target: dev
-    command: uv run python -m beff.workers
-    environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-beff}:${POSTGRES_PASSWORD:-beff_dev_password}@postgres:5432/${POSTGRES_DB:-beff}
-      IP_HASH_SALT: ${IP_HASH_SALT:-dev_only_salt}
-      ENVIRONMENT: development
-    volumes:
-      - ./apps/api/src:/app/src
-    depends_on:
-      postgres:
-        condition: service_healthy
+  # The `worker` service arrives with ENG-31, when there are jobs for it to run.
+  # It is deliberately absent rather than stubbed — a service that crash-loops
+  # on a missing module makes `docker compose up` look broken to a reviewer.
+  # It will poll Postgres with FOR UPDATE SKIP LOCKED; no Redis (ADR-0006).
 
   web:
     build:

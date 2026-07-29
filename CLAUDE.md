@@ -83,9 +83,9 @@ can change without touching call sites.
 
 **The barrel rule is not "no barrels".** It is:
 
-| | |
-|---|---|
-| ✅ Per-unit barrel behind a subpath export | `@beff/ui/button` → `components/Button/index.ts` |
+|                                            |                                                         |
+| ------------------------------------------ | ------------------------------------------------------- |
+| ✅ Per-unit barrel behind a subpath export | `@beff/ui/button` → `components/Button/index.ts`        |
 | ❌ One root barrel re-exporting everything | `@beff/ui` → `src/index.ts` exporting all 40 components |
 
 The root barrel is what defeats tree-shaking — importing one button drags in the whole
@@ -134,7 +134,6 @@ Rules that are easy to get wrong and are enforced by review:
 
 ### Frontend (`apps/web`, `packages/ui`)
 
-
 - **Native HTML before ARIA.** ARIA is a last resort, not a first move.
 - Every component ships all states: default, hover, focus-visible, active, disabled,
   loading, error. Every data surface: loading, empty, error, partial.
@@ -149,14 +148,14 @@ Rules that are easy to get wrong and are enforced by review:
 
 Do not reintroduce these — each cost time once:
 
-| Trap | Correct form |
-|---|---|
-| `turbo.json` with `"pipeline"` | `"tasks"` — `pipeline` is Turborepo 1.x and silently no-ops on v2 |
-| `AsyncClient(app=app)` | `AsyncClient(transport=ASGITransport(app=app))` — removed in httpx 0.28 |
-| Adding Redis for the job queue | Postgres `FOR UPDATE SKIP LOCKED`. Redis was dropped deliberately — see ADR-0006. (It also collided: arq 0.28 pins `redis<6`.) |
-| A conftest inside `tests/` | Shared fixtures go in `apps/api/conftest.py`; a conftest is invisible to sibling trees, so co-located tests under `src/` would not see it |
-| `datetime.utcnow()` | `datetime.now(UTC)` |
-| TypeScript 7 | Pinned to 5.9.3. TS 7 is stable but Next 16 + Storybook 10 + eslint-typescript is too much untested surface for a deliverable |
+| Trap                           | Correct form                                                                                                                                                                       |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `turbo.json` with `"pipeline"` | `"tasks"` — `pipeline` is Turborepo 1.x and silently no-ops on v2                                                                                                                  |
+| `AsyncClient(app=app)`         | `AsyncClient(transport=ASGITransport(app=app))` — removed in httpx 0.28                                                                                                            |
+| Adding Redis for the job queue | Postgres `FOR UPDATE SKIP LOCKED`. Redis was dropped deliberately — see ADR-0006. (It also collided: arq 0.28 pins `redis<6`.)                                                     |
+| A conftest inside `tests/`     | Shared fixtures go in `apps/api/conftest.py`; a conftest is invisible to sibling trees, so co-located tests under `src/` would not see it                                          |
+| `datetime.utcnow()`            | `datetime.now(UTC)`                                                                                                                                                                |
+| TypeScript 7                   | Pinned to **5.9.3**. Not caution — `typescript-eslint@8.65` declares `typescript >=4.8.4 <6.1.0`, so TS 7 breaks linting outright. Revisit when typescript-eslint widens the range |
 
 ## Accessibility
 
