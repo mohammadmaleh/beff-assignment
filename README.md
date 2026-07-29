@@ -207,13 +207,16 @@ cover; `tests/` holds only fixtures and integration tests that span units.
 ## Repository layout
 
 ```
-apps/web           Next.js frontend
-apps/api           FastAPI backend
-packages/ui        design system (subpath exports, no root barrel)
+apps/web              Next.js frontend
+apps/api              FastAPI backend
+packages/ui           design system (subpath exports, no root barrel)
 packages/api-client   generated from OpenAPI
-packages/config    shared eslint / tsconfig
-CONTEXT.md         battery domain glossary
+packages/config       shared eslint / tsconfig
 ```
+
+Domain vocabulary — process steps, metric definitions and their plausible ranges — is
+maintained alongside the schema so terminology stays consistent across database, API and
+UI.
 
 ---
 

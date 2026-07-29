@@ -52,3 +52,8 @@ CLAUDE.md
 # Internal working documentation — kept locally, not published.
 # The graded design-choices content lives inline in README.md instead.
 docs/
+
+# Assignment source and working context — local only
+job-description.md
+assignment-description.md
+CONTEXT.md
