@@ -7,9 +7,8 @@ what it costs in scrap, and what it means for CO₂ per kWh.
 > build**, not an official Beff product — the domain is modelled on the problem space
 > the company works in.
 
-🚧 **In progress.** Foundations are complete and verified; feature milestones are
-tracked in [`docs/ROADMAP.md`](docs/ROADMAP.md) with a verification command per
-checkpoint.
+🚧 **In progress.** Foundations are complete and verified; feature work is tracked on
+a Linear board, with a verification command defined per checkpoint.
 
 ---
 
@@ -63,27 +62,87 @@ cd apps/api && uv sync && uv run uvicorn beff.main:app --reload   # backend
 | Tooling  | pnpm + Turborepo, uv, ruff, mypy strict, ESLint, GitHub Actions          |
 
 **Why two apps rather than Next.js alone:** the brief requires NestJS or FastAPI, and
-Next Route Handlers are neither. The full reasoning, including what was rejected, is in
-[ADR-0002](docs/adr/0002-nextjs-and-fastapi.md).
+Next Route Handlers are neither. Full reasoning in [Design choices](#design-choices).
 
 ---
 
 ## Design choices
 
-Each links to the record that explains what was rejected and what it costs.
+### Next.js **and** FastAPI, not Next.js alone
 
-| Decision                                                             | Short reason                                                                                                                                 |
-| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Next.js **and** FastAPI](docs/adr/0002-nextjs-and-fastapi.md)       | Brief mandates one of NestJS/FastAPI; Next earns its place by statically generating the acquisition surface                                  |
-| [FastAPI owns auth](docs/adr/0003-auth-model.md)                     | One system owns sessions. Consequence: refresh rotation makes SSR of authenticated routes unsafe, so those are client-rendered               |
-| [Postgres job queue, no Redis](docs/adr/0006-postgres-job-queue.md)  | A pre-launch product has no load to justify a second datastore. Enqueue happens in the same transaction as the state change that triggers it |
-| [Hybrid UUIDv7 / BIGINT keys](docs/adr/0010-primary-key-strategy.md) | Opacity where IDs are exposed; compactness and locality where they never leave the database                                                  |
-| [Monorepo](docs/adr/0001-monorepo.md)                                | The generated API client and the schema it derives from must version atomically                                                              |
-| Compose, not Kubernetes                                              | A reviewer must run it in one command. The app is orchestrator-_ready_ — separate liveness/readiness probes, env-only config, stateless API  |
+Next-only is genuinely the simpler option — one deployable, one language, no CORS, no
+cross-service type drift. It is disqualified by one sentence in the brief: _"Use either
+the NestJS or FastAPI framework."_ Route Handlers are neither.
 
-**Colour is a data decision, not a taste one.** The brand accent is deliberately kept
-away from `success`/`warning`/`danger`. In a yield dashboard green means _in spec_ and
-red means _out of spec_; a green brand would make every chart ambiguous.
+Given a second service was required, FastAPI over NestJS because the job description
+assigns Python specifically to "FastAPI for data services", and this is a data product.
+
+Next.js then has to earn its place on the frontend rather than be assumed. It does, for
+one measurable reason: the marketing surface is **statically generated**, so the
+acquisition page ships as HTML with no JS-blocked content for crawlers. The build output
+reports `/` as `○ (Static)` — verifiable, not asserted.
+
+**Cost:** CORS with credentials, two toolchains in CI, and a contract that must be kept
+in sync. That last one is handled by generating the TypeScript client from the backend's
+OpenAPI schema, with a CI job that fails on drift.
+
+### FastAPI owns authentication — and the consequence
+
+Short-lived JWT in memory, httpOnly `SameSite` refresh cookie, **rotation with reuse
+detection** (tokens carry a `family_id`; redeeming a spent token revokes the family, on
+the assumption it was stolen).
+
+The consequence is worth stating rather than hiding: **rotation and server-rendering
+authenticated routes are incompatible.** If a Server Component redeemed the refresh
+cookie during SSR while the browser also redeemed it, reuse detection would fire —
+correctly — and log the user out. That is the normal case on page load, not a rare race.
+
+So the marketing surface is static and the app surface is client-rendered with React
+Query. That is the right trade anyway: dashboard data is per-user and refetched often,
+which benefits far more from a query cache than from one server render.
+
+### Postgres as the job queue — no Redis
+
+Data export and the erasure sweep both need persistence, retries and idempotency. The
+conventional reach is Redis, and the JD lists it.
+
+A pre-launch product has no load to justify a second datastore. `SELECT … FOR UPDATE SKIP
+LOCKED` gives an explicit state machine, idempotency, exponential backoff, a visibility
+timeout and a dead-letter state — with one fewer service to run, deploy, secure and
+monitor. It also lets a job be enqueued **inside the same transaction** as the state
+change that triggers it, so a job can never reference a rolled-back row.
+
+**Cost:** polling latency instead of push, and a throughput ceiling in the low thousands
+per second. Both irrelevant here. Redis becomes correct above roughly 1k jobs/sec.
+
+### Hybrid primary keys
+
+"UUIDs everywhere" and "BIGINT everywhere" are both right, about different tables. The
+question that actually has an answer is **"is this identifier ever visible to a client?"**
+
+- **UUIDv7** for `users`, `export_jobs`, `dsar_requests` — exposed in URLs, so
+  enumeration must be impossible. v7 rather than v4 because it is time-ordered and keeps
+  index locality.
+- **BIGINT IDENTITY** for `audit_events`, `metric_snapshots`, `consent_records` — never
+  exposed, high write volume, and 8 bytes beats 16 in every index.
+
+### Compose, not Kubernetes
+
+A reviewer must be able to run this with one command. Two services and a database do not
+justify ingress, manifests and a cluster, and reaching for them would read as
+disproportionate tooling.
+
+The app is nonetheless orchestrator-**ready** where it matters: liveness and readiness
+are separate probes (`/healthz` deliberately touches no dependencies — restarting a
+container because the database blipped makes an outage worse), config is env-only, and
+the API is stateless.
+
+### Colour is a data decision, not a taste one
+
+The brand accent is deliberately kept away from `success` / `warning` / `danger`. In a
+yield dashboard green means _in spec_ and red means _out of spec_; a green brand would
+make every chart ambiguous. Chart palettes are colourblind-safe and never encode meaning
+in hue alone.
 
 ---
 
@@ -153,15 +212,11 @@ apps/api           FastAPI backend
 packages/ui        design system (subpath exports, no root barrel)
 packages/api-client   generated from OpenAPI
 packages/config    shared eslint / tsconfig
-docs/adr           architecture decision records (MADR)
-docs/product       pre-mortem
 CONTEXT.md         battery domain glossary
-CLAUDE.md          conventions + traps already hit
 ```
 
 ---
 
 ## What I would do next
 
-_Completed at submission — see [`docs/ROADMAP.md`](docs/ROADMAP.md) for the current
-debt register and the deliberate scope cuts._
+_Completed at submission._
