@@ -7,5 +7,6 @@
     "outDir": "dist",
     "rootDir": "dist"
   },
-  "include": ["dist/tokens.ts"]
+  "include": ["dist/tokens.ts"],
+  "exclude": []
 }

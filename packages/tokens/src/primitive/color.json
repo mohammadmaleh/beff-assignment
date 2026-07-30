@@ -1,0 +1,38 @@
+{
+  "color": {
+    "graphite": {
+      "50": { "$value": "oklch(0.980 0.004 78)", "$type": "color" },
+      "100": { "$value": "oklch(0.950 0.005 78)", "$type": "color" },
+      "200": { "$value": "oklch(0.900 0.006 78)", "$type": "color" },
+      "300": { "$value": "oklch(0.830 0.007 78)", "$type": "color" },
+      "400": { "$value": "oklch(0.710 0.007 78)", "$type": "color" },
+      "500": { "$value": "oklch(0.600 0.007 78)", "$type": "color" },
+      "600": { "$value": "oklch(0.510 0.007 78)", "$type": "color" },
+      "700": { "$value": "oklch(0.430 0.007 78)", "$type": "color" },
+      "800": { "$value": "oklch(0.340 0.007 78)", "$type": "color" },
+      "900": { "$value": "oklch(0.260 0.007 78)", "$type": "color" },
+      "950": { "$value": "oklch(0.219 0.007 78)", "$type": "color" }
+    },
+    "steel": {
+      "50": { "$value": "oklch(0.980 0.008 248)", "$type": "color" },
+      "100": { "$value": "oklch(0.950 0.016 248)", "$type": "color" },
+      "200": { "$value": "oklch(0.900 0.030 248)", "$type": "color" },
+      "300": { "$value": "oklch(0.830 0.045 248)", "$type": "color" },
+      "400": { "$value": "oklch(0.710 0.062 248)", "$type": "color" },
+      "500": { "$value": "oklch(0.620 0.075 248)", "$type": "color" },
+      "600": { "$value": "oklch(0.528 0.075 248)", "$type": "color" },
+      "700": { "$value": "oklch(0.430 0.070 248)", "$type": "color" },
+      "800": { "$value": "oklch(0.340 0.058 248)", "$type": "color" },
+      "900": { "$value": "oklch(0.260 0.045 248)", "$type": "color" },
+      "950": { "$value": "oklch(0.200 0.035 248)", "$type": "color" }
+    },
+    "signal": {
+      "success-light": { "$value": "oklch(0.518 0.095 157)", "$type": "color" },
+      "success-dark": { "$value": "oklch(0.611 0.095 157)", "$type": "color" },
+      "warning-light": { "$value": "oklch(0.531 0.095 82)", "$type": "color" },
+      "warning-dark": { "$value": "oklch(0.624 0.095 82)", "$type": "color" },
+      "danger-light": { "$value": "oklch(0.542 0.115 32)", "$type": "color" },
+      "danger-dark": { "$value": "oklch(0.635 0.115 32)", "$type": "color" }
+    }
+  }
+}
