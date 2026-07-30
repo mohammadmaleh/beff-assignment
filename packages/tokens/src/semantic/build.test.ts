@@ -46,6 +46,11 @@ describe('build output', () => {
     // collapsed onto the brand colour once already.
     ['dark', 'color-border-focus', '#83a5c7'],
     ['light', 'color-border-focus', '#476f95'],
+    // Same mid stop in both themes. With no cards in the design, borders do
+    // the structural work cards would, so they are load-bearing UI under WCAG
+    // 1.4.11 and must clear 3:1 — which the decorative-weight stops did not.
+    ['light', 'color-border-default', '#82807c'],
+    ['dark', 'color-border-default', '#82807c'],
   ] as const)('pins %s %s to %s', (theme, name, hex) => {
     expect(tokens[theme][name]).toBe(hex);
   });

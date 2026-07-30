@@ -11,7 +11,7 @@
       "on-brand": { "$value": "{color.graphite.50}", "$type": "color" }
     },
     "border": {
-      "default": { "$value": "{color.graphite.300}", "$type": "color" },
+      "default": { "$value": "{color.graphite.500}", "$type": "color" },
       "focus": { "$value": "{color.steel.600}", "$type": "color" }
     },
     "brand": {
