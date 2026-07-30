@@ -12,7 +12,6 @@
     "./hex": "./dist/tokens.hex.json"
   },
   "scripts": {
-    "build": "node build.js && tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
