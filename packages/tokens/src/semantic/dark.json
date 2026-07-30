@@ -15,7 +15,7 @@
       "focus": { "$value": "{color.steel.400}", "$type": "color" }
     },
     "brand": {
-      "default": { "$value": "{color.steel.400}", "$type": "color" },
+      "default": { "$value": "{color.steel.500}", "$type": "color" },
       "hover": { "$value": "{color.steel.300}", "$type": "color" }
     },
     "status": {

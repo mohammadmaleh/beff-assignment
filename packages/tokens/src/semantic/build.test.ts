@@ -24,11 +24,30 @@ describe('build output', () => {
     expect(oklch).toBeGreaterThan(hex);
   });
 
-  it('resolves semantic references to concrete hex values', () => {
-    // A reference that failed to resolve would leave the literal "{color...}"
-    // in the output, which is the failure mode worth catching.
-    expect(tokens.light['color-surface-base']).toMatch(/^#[0-9a-f]{6}$/i);
-    expect(tokens.dark['color-surface-base']).toMatch(/^#[0-9a-f]{6}$/i);
+  // These are solver outputs, not aesthetic choices: a later WCAG gate is
+  // tuned against these exact anchors. A reference resolving to *some* hex
+  // colour isn't enough — it must resolve to *this* hex colour, or a wrong
+  // ramp stop with higher-but-still-passing contrast would pass silently.
+  it.each([
+    ['light', 'color-surface-base', '#faf8f5'],
+    ['light', 'color-text-default', '#1c1a17'],
+    ['light', 'color-brand-default', '#476f95'],
+    ['light', 'color-status-success-fg', '#317952'],
+    ['light', 'color-status-warning-fg', '#876620'],
+    ['light', 'color-status-danger-fg', '#a75343'],
+    ['dark', 'color-surface-base', '#1c1a17'],
+    ['dark', 'color-text-default', '#faf8f5'],
+    ['dark', 'color-brand-default', '#618ab2'],
+    ['dark', 'color-status-success-fg', '#4e956c'],
+    ['dark', 'color-status-warning-fg', '#a4813f'],
+    ['dark', 'color-status-danger-fg', '#c66f5d'],
+    // The dark focus ring sits one ramp stop lighter than the dark brand, so
+    // the two read as distinct signals. Nothing pinned this and it silently
+    // collapsed onto the brand colour once already.
+    ['dark', 'color-border-focus', '#83a5c7'],
+    ['light', 'color-border-focus', '#476f95'],
+  ] as const)('pins %s %s to %s', (theme, name, hex) => {
+    expect(tokens[theme][name]).toBe(hex);
   });
 
   it('emits a hex-only JSON carrying both themes', async () => {
