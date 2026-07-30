@@ -1,32 +1,119 @@
 {
   "color": {
     "surface": {
-      "base": { "$value": "{color.graphite.50}", "$type": "color" },
-      "raised": { "$value": "{color.graphite.100}", "$type": "color" },
-      "sunken": { "$value": "{color.graphite.200}", "$type": "color" }
+      "base": {
+        "$value": "{color.graphite.50}",
+        "$type": "color"
+      },
+      "raised": {
+        "$value": "{color.graphite.100}",
+        "$type": "color"
+      },
+      "sunken": {
+        "$value": "{color.graphite.200}",
+        "$type": "color"
+      }
     },
     "text": {
-      "default": { "$value": "{color.graphite.950}", "$type": "color" },
-      "muted": { "$value": "{color.graphite.700}", "$type": "color" },
-      "on-brand": { "$value": "{color.graphite.50}", "$type": "color" }
+      "default": {
+        "$value": "{color.graphite.950}",
+        "$type": "color"
+      },
+      "muted": {
+        "$value": "{color.graphite.700}",
+        "$type": "color"
+      },
+      "on-brand": {
+        "$value": "{color.graphite.50}",
+        "$type": "color"
+      }
     },
     "border": {
-      "default": { "$value": "{color.graphite.500}", "$type": "color" },
-      "focus": { "$value": "{color.steel.600}", "$type": "color" }
+      "default": {
+        "$value": "{color.graphite.500}",
+        "$type": "color"
+      },
+      "focus": {
+        "$value": "{color.steel.600}",
+        "$type": "color"
+      }
     },
     "brand": {
-      "default": { "$value": "{color.steel.600}", "$type": "color" },
-      "hover": { "$value": "{color.steel.700}", "$type": "color" }
+      "default": {
+        "$value": "{color.steel.600}",
+        "$type": "color"
+      },
+      "hover": {
+        "$value": "{color.steel.700}",
+        "$type": "color"
+      }
     },
     "status": {
       "success": {
-        "fg": { "$value": "{color.signal.success-light}", "$type": "color" }
+        "fg": {
+          "$value": "{color.signal.success-light}",
+          "$type": "color"
+        }
       },
       "warning": {
-        "fg": { "$value": "{color.signal.warning-light}", "$type": "color" }
+        "fg": {
+          "$value": "{color.signal.warning-light}",
+          "$type": "color"
+        }
       },
       "danger": {
-        "fg": { "$value": "{color.signal.danger-light}", "$type": "color" }
+        "fg": {
+          "$value": "{color.signal.danger-light}",
+          "$type": "color"
+        }
+      }
+    },
+    "chart": {
+      "series-1": {
+        "$value": "{color.okabe.blue-light}",
+        "$type": "color"
+      },
+      "series-2": {
+        "$value": "{color.okabe.orange-light}",
+        "$type": "color"
+      },
+      "series-3": {
+        "$value": "{color.okabe.green-light}",
+        "$type": "color"
+      },
+      "series-4": {
+        "$value": "{color.okabe.sky-light}",
+        "$type": "color"
+      },
+      "series-5": {
+        "$value": "{color.okabe.vermillion-light}",
+        "$type": "color"
+      },
+      "series-6": {
+        "$value": "{color.okabe.purple-light}",
+        "$type": "color"
+      }
+    },
+    "band": {
+      "track": {
+        "$value": "{color.graphite.200}",
+        "$type": "color"
+      },
+      "range": {
+        "$value": "{color.graphite.600}",
+        "$type": "color"
+      },
+      "tick": {
+        "$value": "{color.graphite.950}",
+        "$type": "color"
+      },
+      "tick-halo": {
+        "$value": "{color.graphite.50}",
+        "$type": "color"
+      },
+      "limit": {
+        "$value": "{color.graphite.400}",
+        "$type": "color"
       }
     }
   }

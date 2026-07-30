@@ -95,4 +95,31 @@ export const pairs: readonly Pair[] = [
     bg: 'color-surface-raised',
     threshold: 3,
   },
+  // Chart lines are SVG paths, not text, so axe cannot see them. This matrix
+  // is the only thing between a reader and an invisible series.
+  ...([1, 2, 3, 4, 5, 6] as const).map((n): Pair => ({
+    name: `chart series ${String(n)} on base surface`,
+    fg: `color-chart-series-${String(n)}` as TokenName,
+    bg: 'color-surface-base',
+    threshold: 3,
+  })),
+  // The spec band is the design's signature element and carries its meaning by
+  // position, not hue. That only works if its parts visibly separate.
+  { name: 'band range on track', fg: 'color-band-range', bg: 'color-band-track', threshold: 3 },
+  // The tick is not asserted against track and range directly. Three greys
+  // mutually clearing 3:1 is geometrically impossible once the track must also
+  // sit near its surface — a light track forces a dark range, which then hides
+  // a dark tick. The tick instead carries a halo, so it stays legible over
+  // whatever it lands on. Same reason a slider handle has a ring.
+  {
+    name: 'band tick on its halo',
+    fg: 'color-band-tick',
+    bg: 'color-band-tick-halo',
+    threshold: 3,
+  },
+  // Where the tick actually lands: on the range when the reading is in spec,
+  // on bare track when it is not. The halo covers the first, the tick's own
+  // contrast covers the second.
+  { name: 'band halo on range', fg: 'color-band-tick-halo', bg: 'color-band-range', threshold: 3 },
+  { name: 'band tick on track', fg: 'color-band-tick', bg: 'color-band-track', threshold: 3 },
 ];
