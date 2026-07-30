@@ -1,0 +1,32 @@
+{
+  "name": "@beff/tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./css": "./dist/tokens.css",
+    "./tokens": {
+      "types": "./dist/tokens.d.ts",
+      "import": "./dist/tokens.js"
+    },
+    "./hex": "./dist/tokens.hex.json"
+  },
+  "scripts": {
+    "build": "node build.js && tsc -p tsconfig.build.json",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist node_modules .turbo"
+  },
+  "devDependencies": {
+    "@beff/config": "workspace:*",
+    "@types/culori": "4.0.1",
+    "@types/node": "^26.1.2",
+    "culori": "^4.0.2",
+    "eslint": "^9.39.5",
+    "style-dictionary": "^5.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}
