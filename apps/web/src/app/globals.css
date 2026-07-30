@@ -1,18 +1,23 @@
 /*
- * Minimal base. Replaced by the Style Dictionary token pipeline in ENG-23 —
- * do not grow this file; add tokens there instead.
+ * Import order matters. Tailwind first, then the faces, then the tokens — the
+ * token sheet carries an `@theme inline` block mapping custom properties into
+ * Tailwind's namespace, so it must land after Tailwind is in scope.
+ *
+ * `color-scheme: light dark` is deliberately gone: the token sheet now owns
+ * theming, and leaving the UA hint in place would let it override an explicit
+ * [data-theme] choice.
  */
-
-:root {
-  color-scheme: light dark;
-}
+@import 'tailwindcss';
+@import './fonts.css';
+@import '@beff/tokens/css';
 
 body {
   margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+  background-color: var(--color-surface-base);
+  color: var(--color-text-default);
+  font-family: var(--type-family-body);
+  font-size: var(--type-ui-size-md);
+  line-height: var(--type-ui-leading);
   /* Metrics and table figures must not jitter between renders. */
   font-variant-numeric: tabular-nums;
 }
@@ -25,14 +30,25 @@ body {
   position: absolute;
   inset-inline-start: 0;
   inset-block-start: -3rem;
-  padding: 0.5rem 1rem;
-  background: Canvas;
-  color: CanvasText;
-  transition: inset-block-start 0.15s ease;
+  padding-block: var(--space-2);
+  padding-inline: var(--space-4);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-default);
+  transition: inset-block-start var(--motion-duration-fast) var(--motion-easing-standard);
 }
 
 .skip-link:focus-visible {
   inset-block-start: 0;
+}
+
+/*
+ * One visible focus treatment everywhere, using the token the contrast gate
+ * proves clears 3:1 against both surfaces. Never remove an outline without
+ * replacing it.
+ */
+:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,32 @@
+/*
+ * Self-hosted, and that is a compliance requirement rather than a preference.
+ * Loading these from the Google Fonts CDN transmits each visitor's IP to
+ * Google, which the Munich Regional Court found to be a GDPR violation
+ * (LG München I, 3 O 17493/20). A product whose pitch includes GDPR competence
+ * cannot leak IPs fetching its own typeface.
+ *
+ * Fontsource ships the woff2 files inside the package, so these resolve to
+ * local assets at build time and no request leaves the machine.
+ *
+ * Latin and Latin-Extended only. German needs the latter for its umlauts and
+ * ß; nothing here needs Cyrillic.
+ */
+
+/*
+ * Display face. `wdth.css` is the only Archivo entry point carrying the width
+ * axis (font-stretch: 62%–125%) — "Archivo Expanded" is not a separate family,
+ * it is this axis at 125%. One variable file covers every weight and width.
+ */
+@import '@fontsource-variable/archivo/wdth.css';
+
+/* Body. 400 for running text, 500/600 for emphasis and headings. */
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-600.css';
+
+/* Data. Every metric, spec limit, batch ID and process-step key. */
+@import '@fontsource/ibm-plex-mono/latin-400.css';
+@import '@fontsource/ibm-plex-mono/latin-ext-400.css';
