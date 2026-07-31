@@ -36,9 +36,10 @@ describe('hueOf', () => {
 
 describe('hueSeparation', () => {
   it('measures the short way around the colour wheel', () => {
-    // 350 and 10 are 20 apart, not 340.
-    expect(hueSeparation('#A75343', '#876620')).toBeGreaterThan(0);
-    expect(hueSeparation('#A75343', '#876620')).toBeLessThanOrEqual(180);
+    // The earlier version of this test used two hues 50 degrees apart and
+    // asserted `<= 180`, which is true by construction — it passed even for a
+    // plain abs() with no wrap-around at all. These two straddle 0 degrees.
+    expect(hueSeparation('oklch(0.5 0.1 350)', 'oklch(0.5 0.1 10)')).toBeCloseTo(20, 0);
   });
 
   it('proves danger and warning are separated by at least 30 degrees', () => {

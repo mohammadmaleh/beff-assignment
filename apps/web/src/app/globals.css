@@ -3,9 +3,10 @@
  * token sheet carries an `@theme inline` block mapping custom properties into
  * Tailwind's namespace, so it must land after Tailwind is in scope.
  *
- * `color-scheme: light dark` is deliberately gone: the token sheet now owns
- * theming, and leaving the UA hint in place would let it override an explicit
- * [data-theme] choice.
+ * `color-scheme: light dark` is deliberately not declared here. The generated
+ * token sheet emits `color-scheme` per theme block, so it always agrees with
+ * the colours it ships alongside. A static `light dark` here would keep saying
+ * "either" under an explicit [data-theme] choice.
  */
 @import 'tailwindcss';
 @import './fonts.css';

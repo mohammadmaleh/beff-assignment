@@ -46,11 +46,12 @@ describe('build output', () => {
     // collapsed onto the brand colour once already.
     ['dark', 'color-border-focus', '#83a5c7'],
     ['light', 'color-border-focus', '#476f95'],
-    // Same mid stop in both themes. With no cards in the design, borders do
-    // the structural work cards would, so they are load-bearing UI under WCAG
-    // 1.4.11 and must clear 3:1 — which the decorative-weight stops did not.
-    ['light', 'color-border-default', '#82807c'],
-    ['dark', 'color-border-default', '#82807c'],
+    // With no cards in the design, borders do the structural work cards would,
+    // so they are load-bearing UI under WCAG 1.4.11. Themed rather than shared:
+    // no single hex can clear 3:1 against base, raised AND sunken in both
+    // themes — light-sunken needs luminance <= 0.21, dark-sunken >= 0.23.
+    ['light', 'color-border-default', '#686662'],
+    ['dark', 'color-border-default', '#a4a19d'],
   ] as const)('pins %s %s to %s', (theme, name, hex) => {
     expect(tokens[theme][name]).toBe(hex);
   });
@@ -74,8 +75,22 @@ describe('themes', () => {
     expect(tokens.light['color-text-default']).toBe(tokens.dark['color-surface-base']);
   });
 
-  it('keeps a shared token identical across themes', () => {
-    expect(tokens.light['space-4']).toBe(tokens.dark['space-4']);
+  it('declares theme-invariant tokens once and themed ones per block', async () => {
+    const css = await read('tokens.css');
+    const count = (needle: string): number => css.split(needle).length - 1;
+    // space-4 never varies: once in :root, plus its @theme inline alias.
+    expect(count('--space-4:')).toBe(2);
+    // surface-base varies, so it lands in :root, the media block and the
+    // explicit dark block — each as a hex/oklch pair — plus the alias.
+    expect(count('--color-surface-base:')).toBe(7);
+  });
+
+  it('emits color-scheme so the UA renders scrollbars and form controls to match', async () => {
+    const css = await read('tokens.css');
+    // Without this a dark theme keeps light scrollbars, light form controls and
+    // flashes white before paint. It belongs with the theme that sets it.
+    expect(css).toContain('color-scheme: light');
+    expect(css).toContain('color-scheme: dark');
   });
 });
 

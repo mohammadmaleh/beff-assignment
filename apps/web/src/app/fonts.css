@@ -8,8 +8,13 @@
  * Fontsource ships the woff2 files inside the package, so these resolve to
  * local assets at build time and no request leaves the machine.
  *
- * Latin and Latin-Extended only. German needs the latter for its umlauts and
- * ß; nothing here needs Cyrillic.
+ * The IBM Plex imports are subset-pinned to Latin and Latin-Extended — German
+ * needs the latter for its umlauts and ß, and nothing here needs Cyrillic.
+ *
+ * Archivo is the exception and it is worth being accurate about: there is no
+ * per-subset variable file, so `wdth.css` carries all three of its subsets
+ * (latin, latin-ext, vietnamese) and the build does emit a Vietnamese woff2.
+ * `unicode-range` gates the download, so an EN or DE reader never fetches it.
  */
 
 /*

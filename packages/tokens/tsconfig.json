@@ -1,8 +1,10 @@
 {
   "extends": "@beff/config/tsconfig.base.json",
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    "allowJs": true,
+    "checkJs": true
   },
-  "include": ["src/**/*.ts", "vitest.config.ts"],
+  "include": ["src/**/*.ts", "vitest.config.ts", "build.js"],
   "exclude": ["node_modules", "dist"]
 }

@@ -30,7 +30,7 @@
     },
     "border": {
       "default": {
-        "$value": "{color.graphite.500}",
+        "$value": "{color.graphite.600}",
         "$type": "color"
       },
       "focus": {
@@ -107,12 +107,8 @@
         "$value": "{color.graphite.950}",
         "$type": "color"
       },
-      "tick-halo": {
-        "$value": "{color.graphite.50}",
-        "$type": "color"
-      },
       "limit": {
-        "$value": "{color.graphite.400}",
+        "$value": "{color.graphite.800}",
         "$type": "color"
       }
     }

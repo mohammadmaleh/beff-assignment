@@ -15,10 +15,14 @@ const read = (name: string): Promise<string> =>
 describe('globals.css', () => {
   it('imports Tailwind before the token layer', async () => {
     const css = await read('globals.css');
+    const tailwind = css.indexOf("@import 'tailwindcss'");
+    const tokens = css.indexOf("@import '@beff/tokens/css'");
+    // Both must exist first: a bare indexOf comparison passes wrongly when the
+    // left-hand import is absent, because -1 is less than any real index.
+    expect(tailwind).toBeGreaterThan(-1);
+    expect(tokens).toBeGreaterThan(-1);
     // The token sheet's @theme inline block needs Tailwind already in scope.
-    expect(css.indexOf("@import 'tailwindcss'")).toBeLessThan(
-      css.indexOf("@import '@beff/tokens/css'"),
-    );
+    expect(tailwind).toBeLessThan(tokens);
   });
 
   it('sources typography from tokens rather than a hardcoded stack', async () => {
@@ -41,10 +45,17 @@ describe('globals.css', () => {
     expect(css).toContain('var(--color-border-focus)');
   });
 
-  it('no longer declares color-scheme, which the token sheet now owns', async () => {
-    const css = await read('globals.css');
-    // Left in place it would let the UA override an explicit [data-theme].
-    expect(css).not.toMatch(/^\s*color-scheme:/m);
+  it('leaves color-scheme to the token sheet, which actually emits it', async () => {
+    const app = await read('globals.css');
+    expect(app).not.toMatch(/^\s*color-scheme:/m);
+    // The removal is only correct because the generated sheet carries it per
+    // theme. Asserting the absence alone once let it vanish from the repo
+    // entirely, leaving dark mode with light scrollbars and a white flash.
+    const generated = await readFile(
+      join(process.cwd(), '..', '..', 'packages', 'tokens', 'dist', 'tokens.css'),
+      'utf8',
+    );
+    expect(generated).toContain('color-scheme: dark');
   });
 });
 
@@ -68,8 +79,18 @@ describe('fonts.css', () => {
     expect(css).toContain('latin-ext-400.css');
   });
 
-  it('does not ship Cyrillic subsets nothing needs', async () => {
+  it('pins every IBM Plex import to a Latin subset', async () => {
     const css = await read('fonts.css');
-    expect(css).not.toContain('cyrillic');
+    const plex = [...css.matchAll(/@fontsource\/ibm-plex-[a-z]+\/([\w-]+)\.css/g)].map(
+      (m) => m[1] ?? '',
+    );
+    expect(plex.length).toBeGreaterThan(0);
+    // A bare weight entry point (`400.css`) pulls Cyrillic and Greek @font-face
+    // rules in too. Asserting the filename is what actually prevents that —
+    // the previous version grepped fonts.css for the word "cyrillic", which
+    // would never appear whether the subsets shipped or not.
+    for (const entry of plex) {
+      expect(entry).toMatch(/^latin(-ext)?-\d{3}$/);
+    }
   });
 });

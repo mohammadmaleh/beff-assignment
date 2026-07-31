@@ -30,7 +30,7 @@
     },
     "border": {
       "default": {
-        "$value": "{color.graphite.500}",
+        "$value": "{color.graphite.400}",
         "$type": "color"
       },
       "focus": {
@@ -100,19 +100,15 @@
         "$type": "color"
       },
       "range": {
-        "$value": "{color.graphite.400}",
+        "$value": "{color.graphite.450}",
         "$type": "color"
       },
       "tick": {
         "$value": "{color.graphite.50}",
         "$type": "color"
       },
-      "tick-halo": {
-        "$value": "{color.graphite.950}",
-        "$type": "color"
-      },
       "limit": {
-        "$value": "{color.graphite.600}",
+        "$value": "{color.graphite.200}",
         "$type": "color"
       }
     }

@@ -77,12 +77,15 @@ export const pairs: readonly Pair[] = [
   },
   // Non-text UI. Borders and the focus ring are what people forget, and a
   // focus ring nobody can see fails the keyboard-only gate in M4.
-  {
-    name: 'default border on base surface',
+  // Asserted against every surface a border can sit on, not just the base.
+  // Testing one surface let border-default ship at 2.91:1 on sunken while the
+  // suite stayed green.
+  ...(['base', 'raised', 'sunken'] as const).map((s): Pair => ({
+    name: `default border on ${s} surface`,
     fg: 'color-border-default',
-    bg: 'color-surface-base',
+    bg: `color-surface-${s}` as TokenName,
     threshold: 3,
-  },
+  })),
   {
     name: 'focus ring on base surface',
     fg: 'color-border-focus',
@@ -105,21 +108,15 @@ export const pairs: readonly Pair[] = [
   })),
   // The spec band is the design's signature element and carries its meaning by
   // position, not hue. That only works if its parts visibly separate.
+  //
+  // An earlier revision claimed three greys could not mutually clear 3:1 and
+  // added a halo to route around it. That was wrong: light already cleared, and
+  // dark needed only one new ramp stop (graphite.450). The halo is gone, and
+  // the tick is asserted against both surfaces it can land on directly.
   { name: 'band range on track', fg: 'color-band-range', bg: 'color-band-track', threshold: 3 },
-  // The tick is not asserted against track and range directly. Three greys
-  // mutually clearing 3:1 is geometrically impossible once the track must also
-  // sit near its surface — a light track forces a dark range, which then hides
-  // a dark tick. The tick instead carries a halo, so it stays legible over
-  // whatever it lands on. Same reason a slider handle has a ring.
-  {
-    name: 'band tick on its halo',
-    fg: 'color-band-tick',
-    bg: 'color-band-tick-halo',
-    threshold: 3,
-  },
-  // Where the tick actually lands: on the range when the reading is in spec,
-  // on bare track when it is not. The halo covers the first, the tick's own
-  // contrast covers the second.
-  { name: 'band halo on range', fg: 'color-band-tick-halo', bg: 'color-band-range', threshold: 3 },
+  { name: 'band tick on range', fg: 'color-band-tick', bg: 'color-band-range', threshold: 3 },
   { name: 'band tick on track', fg: 'color-band-tick', bg: 'color-band-track', threshold: 3 },
+  // The limit marks say where out-of-spec begins — the most semantically
+  // load-bearing graphic in the band, and previously the only one untested.
+  { name: 'band limit on track', fg: 'color-band-limit', bg: 'color-band-track', threshold: 3 },
 ];
