@@ -23,6 +23,22 @@ docker compose up            # postgres + api + web
 - API docs → <http://localhost:8000/docs>
 - OpenAPI schema → <http://localhost:8000/openapi.json>
 
+**Sign in without registering.** The seed creates a demo account with onboarding
+already complete and sixty batches of production data behind it:
+
+```
+demo@beff.example / beff-demo-password
+```
+
+```bash
+cd apps/api && uv run alembic upgrade head && uv run python -m beff.seed
+```
+
+Every seeded figure sits inside the ranges in the domain glossary — first-pass yield
+walks 64% to 74% across two months, which is what a pilot line actually looks like.
+One process parameter is deliberately **out of spec**, because a dashboard where
+everything is green never demonstrates that it can show a problem.
+
 Running without Docker:
 
 ```bash
@@ -148,44 +164,187 @@ in hue alone.
 
 ## How I approached UI/UX intuitiveness
 
-_Filled in as the UI lands (ENG-34 → ENG-38). The principles it will document:_
+The user is a **process engineer, quality engineer or production manager** at a cell
+manufacturer. They are technical, time-poor, and already drowning in spreadsheets. They
+do not need to be impressed; they need to find the problem. Everything below follows
+from that one sentence.
 
-- **The user is a time-poor process engineer, not a browser.** They arrive with a
-  question — "why did yield drop on line 3?" — so the dashboard leads with what changed,
-  not with what is easy to render.
-- **Every data surface has four states**, not one. Loading, empty, error and partial are
-  designed, not afterthoughts, because real production data is frequently incomplete.
-- **Destructive actions carry friction, never confusion.** Account deletion states
-  exactly what is removed, what is retained and why, and how long the grace period lasts.
-- **German runs ~30% longer than English.** Logical properties and no truncation-
-  dependent layouts, verified at every breakpoint.
+### The information architecture is a gate, not a document
 
----
+The app is five surfaces — landing, auth, onboarding, dashboard, profile — and they are
+declared in `apps/web/src/lib/navigation/surfaces.ts`. `surfaces.test.ts` **fails the
+build** if a route exists that the IA does not name, if a named surface has no route, if
+the authenticated navigation grows past two destinations, or if any surface nests more
+than one level deep.
+
+That gate exists because the alternative is well known: five screens built in sequence
+each invent their own structure, and the product reads as five apps stapled together. A
+written IA document would have drifted by the third screen.
+
+The hierarchy is deliberately flat. There is no "Settings" tree, because the two things
+a user actually changes about their account are their consent and their existence — and
+both live on Profile, where the GDPR obligations are visible together rather than buried.
+
+### The dashboard answers a question, in the order it is asked
+
+A process engineer arrives with _where did yield go_. So: four headline figures first,
+then the breakdown that answers "where", then the parameters against their spec windows.
+
+Two decisions in the scrap breakdown are worth naming because they look like mistakes
+until you know the domain:
+
+- **It is never sorted by size.** Always process order — mixing through end-of-line test.
+  A cell lost at formation has absorbed every upstream cost, so a bar's _position_ is
+  economic information, and re-sorting destroys it.
+- **Every bar is one neutral colour.** Colouring by severity would encode a quantity in
+  hue, which fails for roughly one man in twelve — and `success`/`warning`/`danger` are
+  reserved for _in spec_ versus _out of spec_, the most consequential distinction the
+  product makes. Using them for "more scrap" would make the palette mean two different
+  things on one screen.
+
+The `Metric` component also **refuses to infer intent from direction**. Yield rising is
+good news; scrap rising is not. The same arrow has to mean opposite things in two
+adjacent tiles, so the caller states the intent and the component does not guess.
+
+### The signature element is borrowed from the domain, not from SaaS
+
+Every measurement is shown against its tolerance band — the in-spec window, the limits,
+the target, and where the reading actually landed. It is the shape an engineer already
+reads on a control chart or a calibration certificate.
+
+It is also the clearest example of how accessibility was approached here. The drawing is
+`aria-hidden`; a text readout carries the verdict in words, so a screen-reader user gets
+the _conclusion_ ("out of spec, above the upper limit") rather than a description of a
+picture. Out-of-spec is signalled three ways at once: position, a filled diamond instead
+of a hairline, and the word itself.
+
+### Every data surface ships four states
+
+Loading, empty, error and partial are a type error to forget: `DataState` takes all four
+or does not compile. Real production data is frequently incomplete, and three of the four
+states are exactly what goes missing when they are left to each screen.
+
+The loading state is a **live region**, not a silent shimmer — the wait is announced, and
+so is what arrives. The empty state announces too, because it replaces that live region;
+a screen-reader user would otherwise be left in silence. And empty is never rendered as
+an error: a successful request with no rows is not a failure, and telling the user it is
+teaches them to distrust every error the app shows.
+
+### Destructive actions carry friction, never confusion
+
+Account deletion asks the user to **type DELETE**, not to click a red button in a modal.
+A confirmation dialog is dismissed by muscle memory; typing a word cannot be. The copy
+states what is erased, what is retained and on what legal basis, and that the email
+becomes free to register again.
+
+### Forms fail the way the server says they failed
+
+Validation messages come from the API's RFC 9457 Problem Details, keyed by a **stable
+machine-readable code** rather than parsed out of English prose. That is what lets the
+German locale show German errors without the backend knowing which language is on
+screen. Errors are announced, read before the field's help text (the more urgent of the
+two), and carry a glyph as well as colour.
+
+Login deliberately does **not** say which half was wrong — that would turn the form into
+an account-enumeration oracle, and the backend burns equivalent hashing time on the
+missing-user path so the latency does not leak what the status code does not.
+
+### German is a shipped locale, not a toggle
+
+`de.ts` is typed against the English dictionary, so a missing translation is a **build
+error**, not an English word appearing mid-sentence in production. The domain terms are
+the ones a German engineer actually uses — Ausschuss, Kalandrieren, Formierung — not
+translations of the English.
+
+German runs roughly 30% longer, which is why CSS **logical properties** are a project
+rule rather than a preference, and why the privacy page's table scrolls inside its own
+container so the page body never scrolls sideways.
+
+The privacy page keeps its German URL (`/datenschutz`) in both locales. Translating a
+legal page's URL is how you end up with two of them and a broken link from the Impressum.
+
+### Onboarding assumes it will be interrupted
+
+Progress is persisted server-side after every step, so the **server owns which step you
+are on**. A client that remembers its own position resumes correctly only on the device
+that recorded it — and being interrupted mid-task is the normal case on a factory floor,
+not an edge one.
+
+Focus moves to the new step's heading on every navigation. Without it, focus stays on a
+button that no longer exists and a screen reader announces nothing at all: the page
+silently changed underneath the user.
 
 ## Accessibility
 
-Target **WCAG 2.2 AA**, gated in CI.
+Target **WCAG 2.2 AA**. What is actually in place today, separated from what is not:
 
-- `jsx-a11y` rules run as **errors**, verified to fail on real violations rather than
-  assumed to work
-- `axe-core` on every route in E2E; zero serious/critical permitted
-- A story per component state in Storybook, with a11y assertions
-- Charts ship a data-table alternative and never encode meaning in colour alone
-- **A manual screen-reader pass is mandatory** — automated tooling detects only 30–50%
-  of issues
+**In place and enforced:**
 
----
+- `jsx-a11y` rules run as **errors**, not warnings, and were confirmed to fail on a
+  deliberate probe — a linter that has never failed proves nothing. They caught two real
+  defects while the cookie banner was being written.
+- **Contrast is gated by test, not by eye.** `packages/tokens` proves every semantic
+  text/surface pair clears 4.5:1 (3:1 for large text and UI). The first eyeballed palette
+  failed: two pairs in light and the whole set in dark. The shipped values were _solved_
+  against the floor, not chosen.
+- **Colour-vision distance is gated too**, CIEDE2000 under deuteranopia and protanopia.
+  The pairs that cannot clear the threshold are enumerated with their measured distances
+  rather than waved through by a lowered floor, so a palette change that pushes a _new_
+  pair below it fails the build and has to be argued for.
+- **Charts ship a data-table alternative** — and the table is the authoritative rendering
+  while the bars are `aria-hidden`, so the description cannot drift from the picture.
+- Native HTML before ARIA throughout: `<button>`, `<label for>`, `<select>`, `<progress>`,
+  `<details>`, `<figure>`. The theme switcher is a native `<select>` rather than a custom
+  listbox, which buys keyboard navigation, type-ahead and a mobile picker for free.
+- One focus treatment, defined once globally against a token proven to clear 3:1 on both
+  surfaces.
+- `prefers-reduced-motion` respected globally; only `transform` and `opacity` animate.
+
+**Not done, and not claimed:**
+
+- **The manual screen-reader pass has not happened.** Automated tooling catches only
+  30–50% of issues, so this is the half that matters, and without it I am not claiming
+  WCAG 2.2 AA — only that the automated gates pass.
+- No `axe-core` run, because there is no E2E suite yet to run it in.
+- No Storybook, so there is no per-state a11y assertion.
 
 ## GDPR
 
 Three data subject rights, one of which is required by the brief twice — erasure is also
 the "offboarding" it asks for.
 
-| Right       | Article | Implementation                                                                                                                |
-| ----------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Consent     | Art. 7  | Append-only records; never an `UPDATE` on a boolean, so consent state at any past moment is provable against a policy version |
-| Portability | Art. 20 | Async export job; signed download URL expiring in 24h                                                                         |
-| Erasure     | Art. 17 | Soft delete → 30-day cancellable grace → anonymisation                                                                        |
+| Right       | Article | Implementation                                                                                                                              |
+| ----------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Consent     | Art. 7  | Append-only records. There is no `update` method anywhere in the service **or its repository protocol** — the absence is the design         |
+| Access      | Art. 15 | Queued export job; the document is JSON and excludes password hashes and any third party's data                                             |
+| Portability | Art. 20 | The same export, self-describing and machine-readable, with `Decimal` values as strings so precision does not quietly change on the way out |
+| Erasure     | Art. 17 | Sessions revoked, exports deleted, consent pseudonymised, account soft-deleted with every identifying column scrubbed in the same statement |
+
+**Consent is append-only, and that is the whole feature.** A boolean that flips leaves no
+evidence of what was agreed to before, and Art. 7(1) puts the burden of _demonstrating_
+consent on the controller. Every grant and every withdrawal is a new row carrying the
+policy version it refers to; the current state is derived by reading the newest row per
+purpose. Withdrawal is the same endpoint with `granted: false`, because Art. 7(3) wants
+it as easy as giving — and a separate code path is where "as easy" quietly stops being
+true.
+
+**Erasure is ordered, not arbitrary.** Sessions die first, so a request already in flight
+cannot act on a half-erased account. Exports die next, because an export is a complete
+copy of exactly what is being erased and leaving one behind makes the erasure cosmetic.
+Consent records are **kept and pseudonymised** rather than deleted: they are held on a
+different legal basis (Art. 6(1)(c), the accountability obligation), so deleting them
+would destroy the proof that the processing which just ended was lawful. What is removed
+is the link to a natural person — the IP hash and the country code. The account row is
+soft-deleted last, so the partial unique index frees the email for re-registration.
+
+**Exports run on the Postgres queue**, `SELECT ... FOR UPDATE SKIP LOCKED`, no Redis.
+Idempotency has two halves and both are tested: requesting twice returns the job already
+in flight rather than queueing a second, and replaying the worker finds nothing to claim
+because the claim moves the row out of `pending` in the same transaction that counts the
+attempt. Attempts are counted **on the claim, not on the failure** — a worker killed in
+between never gets to write that it failed, so counting on the way in is the only count
+that survives a crash. Permanent failures are not retried; transient ones go back on the
+queue until a ceiling, then into a visible `failed` state the user can act on.
 
 IP addresses are personal data, so they are stored as a salted hash plus country code —
 never raw, never city-level.
@@ -220,6 +379,42 @@ UI.
 
 ---
 
-## What I would do next
+## What is done, and what is not
 
-_Completed at submission._
+I would rather be precise about this than let a reviewer discover it.
+
+**Done and verified by running it.** Backend: `ruff`, `ruff format`, `mypy --strict`
+across 156 files, **247 tests at 87.49% coverage** against an 85% floor. Frontend: root
+`lint`, `typecheck`, `test`, `build`, **230 tests**. All eight routes prerender as static
+HTML in both locales — verified by grepping the built output for the German headline and
+`lang="de"`, not by assuming.
+
+**Not verified, and this is the important one.** The 16 tests in
+`apps/api/tests/test_migrations.py` need a real PostgreSQL via testcontainers, and Docker
+was unavailable in the environment this was last built in. They **errored rather than
+passed**, which means the second migration has never been executed. `upgrade head` /
+`downgrade base`, the `compare_metadata` check, the partial-unique-index test and the
+schema assertions (TIMESTAMPTZ everywhere, no `VARCHAR`, no PG enums, every foreign key
+indexed) are all unrun against the new tables. The DDL was transcribed verbatim from
+`CreateTable(...).compile()` so it should match — but "should" is exactly what the gate
+exists to replace. Start Docker and run `cd apps/api && uv run pytest tests/` first.
+
+**Deliberately not built**, in the order I would build them:
+
+1. **A runner for the export worker.** `ExportService.run_once()` exists and is tested,
+   but nothing calls it on a loop and the `worker` service is not in `docker-compose.yml`.
+   An export requested through the UI stays `pending`.
+2. **Rate limiting.** `POST /api/v1/waitlist` is unauthenticated and is the app's only
+   anonymous write. Without Redis this is a Postgres counter or an in-process one.
+3. **The generated API client and its CI drift check** — changing a Pydantic schema
+   without regenerating should fail the build.
+4. **Playwright E2E and the axe pass**, then the manual screen-reader pass. Automated
+   tooling catches only 30–50% of accessibility issues, and the manual pass is the half
+   that matters; claiming WCAG 2.2 AA without it would be a claim I cannot support.
+5. **Component tests for the dashboard, profile and wizard.** They are typechecked and
+   built, never behaviourally covered.
+6. Storybook, deployment, and the C4 diagrams.
+
+The trade I made was depth over breadth: a backend where the interesting decisions —
+token reuse detection, append-only consent, an idempotent queue — are implemented and
+tested properly, rather than a wider surface with all of them stubbed.
