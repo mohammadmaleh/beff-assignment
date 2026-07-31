@@ -50,7 +50,7 @@ export const deApp: typeof enApp = {
         nameLabel: 'Name des Werks',
         countryLabel: 'Land',
       },
-      line: {
+      lines: {
         title: 'Welche Linie?',
         body: 'Bei einer Pilotlinie ist eine niedrigere Ausbeute normal — die Übersicht bewertet sie entsprechend.',
         nameLabel: 'Name der Linie',
@@ -61,6 +61,18 @@ export const deApp: typeof enApp = {
         formatPouch: 'Pouch',
         formatPrismatic: 'Prismatisch',
         formatCylindrical: 'Rundzelle',
+      },
+      units: {
+        title: 'Welche Einheiten?',
+        body: 'Gilt für jede Kennzahl in der Übersicht. Später änderbar.',
+        label: 'Einheitensystem',
+        metric: 'Metrisch (mm, kg, °C)',
+        imperial: 'Imperial (in, lb, °F)',
+      },
+      review: {
+        title: 'Bitte prüfen',
+        body: 'Nichts davon ist endgültig — Sie können alles später im Profil ändern.',
+        label: 'Ihre Einrichtung',
       },
     },
   },

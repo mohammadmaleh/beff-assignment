@@ -54,7 +54,7 @@ export const enApp = {
         nameLabel: 'Plant name',
         countryLabel: 'Country',
       },
-      line: {
+      lines: {
         title: 'Which line?',
         body: 'A pilot line is expected to run lower yield than a production line, and the dashboard will judge it accordingly.',
         nameLabel: 'Line name',
@@ -65,6 +65,18 @@ export const enApp = {
         formatPouch: 'Pouch',
         formatPrismatic: 'Prismatic',
         formatCylindrical: 'Cylindrical',
+      },
+      units: {
+        title: 'Which units?',
+        body: 'Applies to every figure on the dashboard. You can change it later.',
+        label: 'Unit system',
+        metric: 'Metric (mm, kg, °C)',
+        imperial: 'Imperial (in, lb, °F)',
+      },
+      review: {
+        title: 'Check this over',
+        body: 'Nothing here is permanent — you can change any of it from your profile afterwards.',
+        label: 'Your setup',
       },
     },
   },
