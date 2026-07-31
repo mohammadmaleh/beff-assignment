@@ -17,6 +17,8 @@ FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json ./apps/web/
 COPY packages/config/package.json ./packages/config/
+COPY packages/tokens/package.json ./packages/tokens/
+COPY packages/ui/package.json ./packages/ui/
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm config set store-dir /pnpm/store \
