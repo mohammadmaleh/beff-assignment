@@ -39,7 +39,8 @@ describe('hueSeparation', () => {
     // The earlier version of this test used two hues 50 degrees apart and
     // asserted `<= 180`, which is true by construction — it passed even for a
     // plain abs() with no wrap-around at all. These two straddle 0 degrees.
-    expect(hueSeparation('oklch(0.5 0.1 350)', 'oklch(0.5 0.1 10)')).toBeCloseTo(20, 0);
+    // #b4608a sits at hue 350, #bc5f70 at hue 10 — the naive abs() gives 340.
+    expect(hueSeparation('#b4608a', '#bc5f70')).toBeCloseTo(20, 0);
   });
 
   it('proves danger and warning are separated by at least 30 degrees', () => {

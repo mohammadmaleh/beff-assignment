@@ -2,25 +2,23 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { formatHex } from 'culori';
 import StyleDictionary from 'style-dictionary';
 
 /** Everything resolves from this file, never from cwd — see `src` below. */
 const HERE = dirname(fileURLToPath(import.meta.url));
 
 /**
- * One declaration, or two for colours.
+ * One declaration per token.
+ *
+ * Colours are authored as hex and emitted as hex — one notation, understood by
+ * every browser, so there is no fallback pair to keep in sync.
  *
  * @param {string} name
  * @param {string} value
  * @returns {string}
  */
 function declare(name, value) {
-  if (!value.startsWith('oklch(')) return `  --${name}: ${value};`;
-  const hex = formatHex(value);
-  if (hex === undefined) throw new Error(`Could not convert to hex: ${name} = ${value}`);
-  // Hex first: a browser that cannot parse oklch keeps this line.
-  return `  --${name}: ${hex};\n  --${name}: ${value};`;
+  return `  --${name}: ${value};`;
 }
 
 /**
@@ -115,16 +113,7 @@ ${[...shared, ...themed].map((k) => `  --${k}: var(--${k});`).join('\n')}
 }
 `;
 
-/**
- * @param {Record<string, string>} map
- * @returns {Record<string, string>}
- */
-const hexed = (map) =>
-  Object.fromEntries(
-    Object.entries(map).map(([k, v]) => [k, v.startsWith('oklch(') ? (formatHex(v) ?? v) : v]),
-  );
-
-const data = { light: hexed(light), dark: hexed(dark) };
+const data = { light, dark };
 const dist = resolve(HERE, 'dist');
 
 await mkdir(dist, { recursive: true });

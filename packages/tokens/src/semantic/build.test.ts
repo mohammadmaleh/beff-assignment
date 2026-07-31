@@ -14,14 +14,12 @@ describe('build output', () => {
     expect(css).toContain('--radius-chamfer');
   });
 
-  it('declares every colour twice, hex before oklch', async () => {
+  it('declares every colour once, as hex', async () => {
     const css = await read('tokens.css');
-    // A browser that cannot parse oklch must keep the hex declaration, so hex
-    // has to come first in source order. Plain cascade, no @supports.
-    const hex = css.indexOf('--color-graphite-950: #');
-    const oklch = css.indexOf('--color-graphite-950: oklch(');
-    expect(hex).toBeGreaterThan(-1);
-    expect(oklch).toBeGreaterThan(hex);
+    // Hex is the only notation the stylesheet ships: it parses everywhere, so
+    // there is no fallback pair to keep in sync and no notation to feature-test.
+    expect(css).toContain('--color-graphite-950: #');
+    expect(css).not.toMatch(/oklch|color\(|lab\(|lch\(/);
   });
 
   // These are solver outputs, not aesthetic choices: a later WCAG gate is
@@ -81,8 +79,8 @@ describe('themes', () => {
     // space-4 never varies: once in :root, plus its @theme inline alias.
     expect(count('--space-4:')).toBe(2);
     // surface-base varies, so it lands in :root, the media block and the
-    // explicit dark block — each as a hex/oklch pair — plus the alias.
-    expect(count('--color-surface-base:')).toBe(7);
+    // explicit dark block — one declaration each — plus the alias.
+    expect(count('--color-surface-base:')).toBe(4);
   });
 
   it('emits color-scheme so the UA renders scrollbars and form controls to match', async () => {

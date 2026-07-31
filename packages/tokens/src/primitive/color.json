@@ -2,173 +2,173 @@
   "color": {
     "graphite": {
       "50": {
-        "$value": "oklch(0.980 0.004 78)",
+        "$value": "#faf8f5",
         "$type": "color"
       },
       "100": {
-        "$value": "oklch(0.950 0.005 78)",
+        "$value": "#f0eeeb",
         "$type": "color"
       },
       "200": {
-        "$value": "oklch(0.900 0.006 78)",
+        "$value": "#e0ddda",
         "$type": "color"
       },
       "300": {
-        "$value": "oklch(0.830 0.007 78)",
+        "$value": "#cac7c2",
         "$type": "color"
       },
       "400": {
-        "$value": "oklch(0.710 0.007 78)",
+        "$value": "#a4a19d",
         "$type": "color"
       },
       "450": {
-        "$value": "oklch(0.620 0.007 78)",
+        "$value": "#888682",
         "$type": "color"
       },
       "500": {
-        "$value": "oklch(0.600 0.007 78)",
+        "$value": "#82807c",
         "$type": "color"
       },
       "600": {
-        "$value": "oklch(0.510 0.007 78)",
+        "$value": "#686662",
         "$type": "color"
       },
       "700": {
-        "$value": "oklch(0.430 0.007 78)",
+        "$value": "#524f4c",
         "$type": "color"
       },
       "800": {
-        "$value": "oklch(0.340 0.007 78)",
+        "$value": "#3a3834",
         "$type": "color"
       },
       "900": {
-        "$value": "oklch(0.260 0.007 78)",
+        "$value": "#262420",
         "$type": "color"
       },
       "950": {
-        "$value": "oklch(0.219 0.007 78)",
+        "$value": "#1c1a17",
         "$type": "color"
       }
     },
     "steel": {
       "50": {
-        "$value": "oklch(0.980 0.008 248)",
+        "$value": "#f4f9fe",
         "$type": "color"
       },
       "100": {
-        "$value": "oklch(0.950 0.016 248)",
+        "$value": "#e6f0f9",
         "$type": "color"
       },
       "200": {
-        "$value": "oklch(0.900 0.030 248)",
+        "$value": "#cfe0f1",
         "$type": "color"
       },
       "300": {
-        "$value": "oklch(0.830 0.045 248)",
+        "$value": "#b1cbe4",
         "$type": "color"
       },
       "400": {
-        "$value": "oklch(0.710 0.062 248)",
+        "$value": "#83a5c7",
         "$type": "color"
       },
       "500": {
-        "$value": "oklch(0.620 0.075 248)",
+        "$value": "#618ab2",
         "$type": "color"
       },
       "600": {
-        "$value": "oklch(0.528 0.075 248)",
+        "$value": "#476f95",
         "$type": "color"
       },
       "700": {
-        "$value": "oklch(0.430 0.070 248)",
+        "$value": "#2f5374",
         "$type": "color"
       },
       "800": {
-        "$value": "oklch(0.340 0.058 248)",
+        "$value": "#1e3a54",
         "$type": "color"
       },
       "900": {
-        "$value": "oklch(0.260 0.045 248)",
+        "$value": "#112639",
         "$type": "color"
       },
       "950": {
-        "$value": "oklch(0.200 0.035 248)",
+        "$value": "#081725",
         "$type": "color"
       }
     },
     "signal": {
       "success-light": {
-        "$value": "oklch(0.518 0.095 157)",
+        "$value": "#317952",
         "$type": "color"
       },
       "success-dark": {
-        "$value": "oklch(0.611 0.095 157)",
+        "$value": "#4e956c",
         "$type": "color"
       },
       "warning-light": {
-        "$value": "oklch(0.531 0.095 82)",
+        "$value": "#876620",
         "$type": "color"
       },
       "warning-dark": {
-        "$value": "oklch(0.624 0.095 82)",
+        "$value": "#a4813f",
         "$type": "color"
       },
       "danger-light": {
-        "$value": "oklch(0.542 0.115 32)",
+        "$value": "#a75343",
         "$type": "color"
       },
       "danger-dark": {
-        "$value": "oklch(0.635 0.115 32)",
+        "$value": "#c66f5d",
         "$type": "color"
       }
     },
     "okabe": {
       "blue-light": {
-        "$value": "oklch(0.530 0.131 244)",
+        "$value": "#0071b1",
         "$type": "color"
       },
       "blue-dark": {
-        "$value": "oklch(0.530 0.131 244)",
+        "$value": "#0071b1",
         "$type": "color"
       },
       "orange-light": {
-        "$value": "oklch(0.655 0.158 77)",
+        "$value": "#c58000",
         "$type": "color"
       },
       "orange-dark": {
-        "$value": "oklch(0.755 0.158 77)",
+        "$value": "#e7a000",
         "$type": "color"
       },
       "green-light": {
-        "$value": "oklch(0.620 0.130 165)",
+        "$value": "#029e72",
         "$type": "color"
       },
       "green-dark": {
-        "$value": "oklch(0.620 0.130 165)",
+        "$value": "#029e72",
         "$type": "color"
       },
       "sky-light": {
-        "$value": "oklch(0.645 0.117 236)",
+        "$value": "#3798cb",
         "$type": "color"
       },
       "sky-dark": {
-        "$value": "oklch(0.735 0.117 236)",
+        "$value": "#56b4e9",
         "$type": "color"
       },
       "vermillion-light": {
-        "$value": "oklch(0.620 0.170 48)",
+        "$value": "#d45e00",
         "$type": "color"
       },
       "vermillion-dark": {
-        "$value": "oklch(0.620 0.170 48)",
+        "$value": "#d45e00",
         "$type": "color"
       },
       "purple-light": {
-        "$value": "oklch(0.665 0.118 346)",
+        "$value": "#c775a3",
         "$type": "color"
       },
       "purple-dark": {
-        "$value": "oklch(0.680 0.118 346)",
+        "$value": "#cc79a8",
         "$type": "color"
       }
     }
