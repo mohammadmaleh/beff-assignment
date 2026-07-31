@@ -31,16 +31,36 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from beff.db.base import Base, sql_value_list, utcnow
 
-__all__ = ["CONSENT_PURPOSES", "ConsentRecord"]
+__all__ = [
+    "CONSENT_PURPOSES",
+    "CURRENT_POLICY_VERSION",
+    "MANAGEABLE_CONSENT_PURPOSES",
+    "ConsentRecord",
+]
 
 # One purpose per record: consent must be *specific* (Art. 4(11)), so a single
 # "I agree" covering analytics and marketing at once is not valid consent.
 CONSENT_PURPOSES: Final = (
     "terms_of_service",
     "privacy_policy",
-    "product_analytics",
-    "marketing_email",
+    "analytics",
+    "marketing",
 )
+
+# The subset the data subject can turn on and off for themselves. Accepting the
+# terms and the privacy policy are recorded at registration and are not
+# withdrawable in isolation — withdrawing those is erasure, and it has its own
+# endpoint. These two are what `GET /privacy/consent` reports on.
+MANAGEABLE_CONSENT_PURPOSES: Final = ("analytics", "marketing")
+
+# The version of the policy text a consent recorded today refers to.
+#
+# A constant rather than a setting: it is not environment-specific, it changes
+# only when the published policy changes, and that change belongs in a commit
+# next to the new text — not in an environment variable somebody can set to a
+# version that was never published. `MANAGEABLE_CONSENT_PURPOSES` and the German
+# and English policy pages in `apps/web` move together with it.
+CURRENT_POLICY_VERSION: Final = "2026-01-01"
 
 POLICY_VERSION_MAX_LENGTH: Final = 32
 # SHA-256, hex-encoded.

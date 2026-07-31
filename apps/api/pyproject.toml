@@ -79,6 +79,11 @@ ignore = [
 # tests under src/ and the integration tests under tests/.
 "**/test_*.py" = ["S105", "S106"]
 "tests/**" = ["S105", "S106"]
+# Migrations carry raw DDL, transcribed verbatim from
+# `CreateTable(...).compile()` so it cannot drift from the models. A CHECK
+# constraint is one expression and does not wrap without becoming harder to
+# diff against the model it mirrors — which is the only reason to read it.
+"migrations/versions/*.py" = ["E501"]
 
 [tool.ruff.lint.flake8-tidy-imports]
 # Relative imports break when modules move. Absolute imports only.

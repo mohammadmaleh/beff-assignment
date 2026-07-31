@@ -15,16 +15,24 @@ from sqlalchemy import MetaData
 
 from beff.db.base import Base
 from beff.modules.auth.models import RefreshToken, User
+from beff.modules.metrics.models import Batch, ProcessMeasurement, ScrapEvent
 from beff.modules.onboarding.models import Line, OnboardingProgress, Plant
-from beff.modules.privacy.models import ConsentRecord
+from beff.modules.privacy.models import ConsentRecord, DsarRequest, ExportJob
+from beff.modules.waitlist.models import WaitlistEntry
 
 __all__ = [
+    "Batch",
     "ConsentRecord",
+    "DsarRequest",
+    "ExportJob",
     "Line",
     "OnboardingProgress",
     "Plant",
+    "ProcessMeasurement",
     "RefreshToken",
+    "ScrapEvent",
     "User",
+    "WaitlistEntry",
     "target_metadata",
 ]
 

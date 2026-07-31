@@ -13,7 +13,11 @@ from beff import __version__
 from beff.core.config import get_settings
 from beff.core.problems import install_problem_handlers
 from beff.modules.auth import auth_router
+from beff.modules.metrics import metrics_router
+from beff.modules.onboarding import onboarding_router
 from beff.modules.ops import ops_router
+from beff.modules.privacy import privacy_router
+from beff.modules.waitlist import waitlist_router
 
 __all__ = ["create_app"]
 
@@ -54,6 +58,10 @@ def create_app() -> FastAPI:
 
     app.include_router(ops_router)
     app.include_router(auth_router)
+    app.include_router(onboarding_router)
+    app.include_router(metrics_router)
+    app.include_router(privacy_router)
+    app.include_router(waitlist_router)
 
     return app
 
