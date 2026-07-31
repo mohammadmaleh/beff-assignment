@@ -1,7 +1,7 @@
 import type { InputHTMLAttributes } from 'react';
 
-import { cx } from '../../lib/cx/index.js';
-import { Field, type FieldProps } from '../Field/index.js';
+import { cx } from '../../lib/cx/index';
+import { Field, type FieldProps } from '../Field/index';
 
 export interface TextFieldProps
   extends

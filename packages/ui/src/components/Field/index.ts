@@ -1,2 +1,2 @@
-export { Field } from './Field.js';
-export type { FieldControlProps, FieldProps } from './Field.js';
+export { Field } from './Field';
+export type { FieldControlProps, FieldProps } from './Field';

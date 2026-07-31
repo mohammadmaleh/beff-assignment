@@ -1,2 +1,2 @@
-export { DataState } from './DataState.js';
-export type { DataStateProps } from './DataState.js';
+export { DataState } from './DataState';
+export type { DataStateProps } from './DataState';

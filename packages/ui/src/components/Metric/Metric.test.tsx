@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { Metric } from './Metric.js';
+import { Metric } from './Metric';
 
 describe('Metric', () => {
   it('renders the figure with its label and unit', () => {

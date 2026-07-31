@@ -1,2 +1,2 @@
-export { Metric } from './Metric.js';
-export type { MetricProps, MetricTrend } from './Metric.js';
+export { Metric } from './Metric';
+export type { MetricProps, MetricTrend } from './Metric';

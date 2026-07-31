@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { Field } from './Field.js';
+import { Field } from './Field';
 
 /** A bare control, so these assertions cover Field's wiring and nothing else. */
 const renderField = (props: Partial<Parameters<typeof Field>[0]> = {}) =>

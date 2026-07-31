@@ -1,1 +1,1 @@
-export { cx } from './cx.js';
+export { cx } from './cx';

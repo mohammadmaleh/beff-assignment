@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { DataState } from './DataState.js';
+import { DataState } from './DataState';
 
 const CHILD = <p>Yield by line</p>;
 

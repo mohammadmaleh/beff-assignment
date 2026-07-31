@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
-import { TextField } from './TextField.js';
+import { TextField } from './TextField';
 
 describe('TextField', () => {
   it('associates its label with the input, so clicking the label focuses it', async () => {

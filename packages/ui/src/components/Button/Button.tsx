@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../lib/cx/index.js';
-import { VisuallyHidden } from '../VisuallyHidden/index.js';
+import { cx } from '../../lib/cx/index';
+import { VisuallyHidden } from '../VisuallyHidden/index';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md';

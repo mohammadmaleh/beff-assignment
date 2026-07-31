@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { cx } from '../../lib/cx/index.js';
+import { cx } from '../../lib/cx/index';
 
 export type AlertTone = 'info' | 'success' | 'warning' | 'danger';
 

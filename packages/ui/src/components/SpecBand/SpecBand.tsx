@@ -1,4 +1,4 @@
-import { cx } from '../../lib/cx/index.js';
+import { cx } from '../../lib/cx/index';
 
 export interface SpecBandProps {
   /** What is being measured, e.g. `Electrode porosity`. */

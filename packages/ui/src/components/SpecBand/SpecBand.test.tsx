@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { SpecBand } from './SpecBand.js';
+import { SpecBand } from './SpecBand';
 
 /** Porosity after calendering runs 30–35% — see CONTEXT.md. */
 const POROSITY = {

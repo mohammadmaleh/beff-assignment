@@ -1,1 +1,1 @@
-export { VisuallyHidden } from './VisuallyHidden.js';
+export { VisuallyHidden } from './VisuallyHidden';

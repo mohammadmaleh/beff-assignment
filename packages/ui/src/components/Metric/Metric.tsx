@@ -1,4 +1,4 @@
-import { cx } from '../../lib/cx/index.js';
+import { cx } from '../../lib/cx/index';
 
 export type MetricTrend = 'up' | 'down' | 'flat';
 

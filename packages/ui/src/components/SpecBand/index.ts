@@ -1,2 +1,2 @@
-export { SpecBand } from './SpecBand.js';
-export type { SpecBandProps } from './SpecBand.js';
+export { SpecBand } from './SpecBand';
+export type { SpecBandProps } from './SpecBand';

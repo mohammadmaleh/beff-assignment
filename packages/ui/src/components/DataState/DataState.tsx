@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Alert } from '../Alert/index.js';
+import { Alert } from '../Alert/index';
 
 export interface DataStateProps {
   status: 'loading' | 'error' | 'ready';

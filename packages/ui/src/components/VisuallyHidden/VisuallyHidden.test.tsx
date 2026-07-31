@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { VisuallyHidden } from './VisuallyHidden.js';
+import { VisuallyHidden } from './VisuallyHidden';
 
 describe('VisuallyHidden', () => {
   it('stays in the accessibility tree', () => {
