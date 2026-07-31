@@ -5,10 +5,10 @@ token held in browser memory, plus an httpOnly refresh cookie that is rotated on
 every use and whose whole family is revoked if a spent token is replayed.
 
 Public API of the module. `main.py` wires what this barrel exports and knows
-nothing about what is inside. The HTTP surface arrives with ENG-28; for now the
-module exposes persistence only.
+nothing about what is inside.
 """
 
 from beff.modules.auth.models import RefreshToken, User
+from beff.modules.auth.router import router as auth_router
 
-__all__ = ["RefreshToken", "User"]
+__all__ = ["RefreshToken", "User", "auth_router"]

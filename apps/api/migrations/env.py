@@ -15,7 +15,7 @@ from sqlalchemy import Connection, pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from beff.core.config import get_settings
-from beff.db import target_metadata as metadata
+from beff.db.registry import target_metadata as metadata
 
 config = context.config
 

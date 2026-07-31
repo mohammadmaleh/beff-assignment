@@ -21,8 +21,8 @@ from sqlalchemy import Connection, text
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
-from beff.db import target_metadata
 from beff.db.base import utcnow
+from beff.db.registry import target_metadata
 from beff.modules.auth.models import RefreshToken, User
 from beff.modules.privacy.models import ConsentRecord
 
