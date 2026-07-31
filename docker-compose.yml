@@ -61,7 +61,13 @@ services:
     volumes:
       - ./apps/web:/app/apps/web
       - ./packages:/app/packages
+      # Preserve node_modules installed by pnpm in the image — the bind-mounts
+      # above would otherwise overwrite them with the (possibly empty) host dirs.
       - /app/node_modules
+      - /app/apps/web/node_modules
+      - /app/packages/config/node_modules
+      - /app/packages/tokens/node_modules
+      - /app/packages/ui/node_modules
     depends_on:
       - api
 
