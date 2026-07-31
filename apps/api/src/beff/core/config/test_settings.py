@@ -1,0 +1,77 @@
+"""Unit tests for settings loading and validation."""
+
+from __future__ import annotations
+
+import pytest
+from pydantic import ValidationError
+
+from beff.core.config import Settings, get_settings
+
+
+def test_defaults_boot_without_any_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    for name in ("ENVIRONMENT", "DATABASE_URL", "JWT_SECRET", "IP_HASH_SALT", "CORS_ORIGINS"):
+        monkeypatch.delenv(name, raising=False)
+
+    settings = Settings(_env_file=None)
+
+    assert settings.environment == "development"
+    assert settings.database_url.startswith("postgresql+asyncpg://")
+
+
+def test_environment_variables_use_the_names_compose_passes(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://u:p@db:5432/beff")
+    monkeypatch.setenv("JWT_SECRET", "s3cret")
+    monkeypatch.setenv("IP_HASH_SALT", "pepper")
+    monkeypatch.setenv("ENVIRONMENT", "test")
+
+    settings = Settings(_env_file=None)
+
+    assert settings.database_url == "postgresql+asyncpg://u:p@db:5432/beff"
+    assert settings.jwt_secret == "s3cret"
+    assert settings.ip_hash_salt == "pepper"
+    assert settings.environment == "test"
+
+
+def test_cors_origins_parses_a_comma_separated_list(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CORS_ORIGINS", "http://localhost:3000, https://beff.example ")
+
+    settings = Settings(_env_file=None)
+
+    assert settings.cors_origin_list == ["http://localhost:3000", "https://beff.example"]
+
+
+def test_production_refuses_to_start_on_a_placeholder_secret(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ENVIRONMENT", "production")
+    monkeypatch.setenv("JWT_SECRET", "dev_only_do_not_use_in_production")
+    monkeypatch.setenv("IP_HASH_SALT", "real_salt")
+
+    with pytest.raises(ValidationError, match="JWT_SECRET"):
+        Settings(_env_file=None)
+
+
+def test_production_accepts_real_secrets(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ENVIRONMENT", "production")
+    monkeypatch.setenv("JWT_SECRET", "a-real-secret")
+    monkeypatch.setenv("IP_HASH_SALT", "a-real-salt")
+
+    settings = Settings(_env_file=None)
+
+    assert settings.cookies_require_https is True
+
+
+def test_cookies_are_not_secure_outside_production() -> None:
+    settings = Settings(_env_file=None, environment="development")
+
+    assert settings.cookies_require_https is False
+
+
+def test_get_settings_is_cached() -> None:
+    get_settings.cache_clear()
+
+    assert get_settings() is get_settings()
+
+    get_settings.cache_clear()

@@ -1,0 +1,45 @@
+{
+  "name": "@beff/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "//": "One subpath export per component, and deliberately NO root barrel. A root barrel re-exporting forty components means importing one button drags the whole library into the bundle; per-unit barrels cost nothing. Source is exported directly and transpiled by the consumer (`transpilePackages` in next.config), so there is no build step to keep in sync and no dist to go stale.",
+  "exports": {
+    "./alert": "./src/components/Alert/index.ts",
+    "./button": "./src/components/Button/index.ts",
+    "./data-state": "./src/components/DataState/index.ts",
+    "./field": "./src/components/Field/index.ts",
+    "./metric": "./src/components/Metric/index.ts",
+    "./spec-band": "./src/components/SpecBand/index.ts",
+    "./text-field": "./src/components/TextField/index.ts",
+    "./visually-hidden": "./src/components/VisuallyHidden/index.ts",
+    "./cx": "./src/lib/cx/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf node_modules .turbo"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@beff/config": "workspace:*",
+    "@beff/tokens": "workspace:*",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "eslint": "^9.39.5",
+    "jsdom": "^30.0.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}

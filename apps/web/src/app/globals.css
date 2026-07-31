@@ -12,6 +12,13 @@
 @import './fonts.css';
 @import '@beff/tokens/css';
 
+/*
+ * Tailwind v4 discovers sources by walking up from this file, which stops at
+ * the app. `@beff/ui` lives outside it and ships source, so its class names are
+ * invisible without this — the components render unstyled and nothing errors.
+ */
+@source '../../../../packages/ui/src';
+
 body {
   margin: 0;
   background-color: var(--color-surface-base);
