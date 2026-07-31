@@ -69,6 +69,10 @@
       }
     },
     "chart": {
+      "surface": {
+        "$value": "{color.graphite.950}",
+        "$type": "color"
+      },
       "series-1": {
         "$value": "{color.okabe.blue-dark}",
         "$type": "color"

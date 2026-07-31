@@ -98,27 +98,27 @@
     },
     "signal": {
       "success-light": {
-        "$value": "#317952",
+        "$value": "#407d64",
         "$type": "color"
       },
       "success-dark": {
-        "$value": "#4e956c",
+        "$value": "#89c7ab",
         "$type": "color"
       },
       "warning-light": {
-        "$value": "#876620",
+        "$value": "#9d5d03",
         "$type": "color"
       },
       "warning-dark": {
-        "$value": "#a4813f",
+        "$value": "#dab33a",
         "$type": "color"
       },
       "danger-light": {
-        "$value": "#a75343",
+        "$value": "#892218",
         "$type": "color"
       },
       "danger-dark": {
-        "$value": "#c66f5d",
+        "$value": "#c26b4c",
         "$type": "color"
       }
     },

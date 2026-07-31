@@ -30,15 +30,24 @@ describe('build output', () => {
     ['light', 'color-surface-base', '#faf8f5'],
     ['light', 'color-text-default', '#1c1a17'],
     ['light', 'color-brand-default', '#476f95'],
-    ['light', 'color-status-success-fg', '#317952'],
-    ['light', 'color-status-warning-fg', '#876620'],
-    ['light', 'color-status-danger-fg', '#a75343'],
+    // The status trio is solved twice over: for 4.5:1 against its ground *and*
+    // for CIEDE2000 separation under deuteranopia and protanopia. The first
+    // palette cleared contrast and left success and danger 6.74 apart under
+    // simulation — see `contrast/cvd.test.ts`.
+    ['light', 'color-status-success-fg', '#407d64'],
+    ['light', 'color-status-warning-fg', '#9d5d03'],
+    ['light', 'color-status-danger-fg', '#892218'],
     ['dark', 'color-surface-base', '#1c1a17'],
     ['dark', 'color-text-default', '#faf8f5'],
     ['dark', 'color-brand-default', '#618ab2'],
-    ['dark', 'color-status-success-fg', '#4e956c'],
-    ['dark', 'color-status-warning-fg', '#a4813f'],
-    ['dark', 'color-status-danger-fg', '#c66f5d'],
+    ['dark', 'color-status-success-fg', '#89c7ab'],
+    ['dark', 'color-status-warning-fg', '#dab33a'],
+    ['dark', 'color-status-danger-fg', '#c26b4c'],
+    // Charts are asserted against this surface and only this one. It aliases
+    // the base surface today; the point of the indirection is that moving a
+    // chart onto a different ground is a token change that the gate sees.
+    ['light', 'color-chart-surface', '#faf8f5'],
+    ['dark', 'color-chart-surface', '#1c1a17'],
     // The dark focus ring sits one ramp stop lighter than the dark brand, so
     // the two read as distinct signals. Nothing pinned this and it silently
     // collapsed onto the brand colour once already.

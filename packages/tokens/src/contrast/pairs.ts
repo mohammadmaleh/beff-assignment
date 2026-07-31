@@ -100,10 +100,24 @@ export const pairs: readonly Pair[] = [
   },
   // Chart lines are SVG paths, not text, so axe cannot see them. This matrix
   // is the only thing between a reader and an invisible series.
+  //
+  // The ground is `color-chart-surface`, not `color-surface-base`. Series were
+  // solved against one surface, and they only clear 3:1 against that one:
+  // series 2, 4 and 6 measure 2.81/2.78/2.79 on light `raised` and 2.40/2.38/
+  // 2.39 on light `sunken`; series 1 and 5 measure 2.95 and 3.98 on dark
+  // `raised`. Re-solving all six to clear every surface would compress the
+  // lightness range further, and that range is already what forces the two
+  // documented CVD exceptions in `cvd.test.ts`.
+  //
+  // So the placement is constrained instead of the palette. M2-pre settled "no
+  // cards anywhere", which means a chart has no raised card to sit on — this
+  // token makes that structural fact enforceable rather than assumed. A chart
+  // component consumes `color-chart-surface`; putting a chart somewhere else
+  // now requires changing a token, and the token is asserted here.
   ...([1, 2, 3, 4, 5, 6] as const).map((n): Pair => ({
-    name: `chart series ${String(n)} on base surface`,
+    name: `chart series ${String(n)} on chart surface`,
     fg: `color-chart-series-${String(n)}` as TokenName,
-    bg: 'color-surface-base',
+    bg: 'color-chart-surface',
     threshold: 3,
   })),
   // The spec band is the design's signature element and carries its meaning by
