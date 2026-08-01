@@ -14,9 +14,8 @@ from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from beff.core.config import Settings, get_settings
-from beff.core.ratelimit import RateLimit, RateLimiter
+from beff.core.ratelimit import RateLimit, RateLimiter, get_limiter_session
 from beff.core.security import hash_ip
-from beff.db import get_session
 
 __all__ = ["LOGIN_LIMIT", "REGISTER_LIMIT", "login_rate_limit", "register_rate_limit"]
 
@@ -58,7 +57,7 @@ async def _check(
 
 async def login_rate_limit(
     request: Request,
-    session: Annotated[AsyncSession, Depends(get_session)],
+    session: Annotated[AsyncSession, Depends(get_limiter_session)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> None:
     """Counted per origin, not per email.
@@ -73,7 +72,7 @@ async def login_rate_limit(
 
 async def register_rate_limit(
     request: Request,
-    session: Annotated[AsyncSession, Depends(get_session)],
+    session: Annotated[AsyncSession, Depends(get_limiter_session)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> None:
     await _check(request, session, settings, bucket="auth.register", limit=REGISTER_LIMIT)

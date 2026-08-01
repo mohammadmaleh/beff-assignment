@@ -8,7 +8,7 @@ from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from beff.core.config import Settings, get_settings
-from beff.core.ratelimit import RateLimit, RateLimiter
+from beff.core.ratelimit import RateLimit, RateLimiter, get_limiter_session
 from beff.core.security import hash_ip
 from beff.db import get_session
 from beff.modules.waitlist.repository import PostgresWaitlistRepository
@@ -23,6 +23,9 @@ WAITLIST_LIMIT = RateLimit(limit=5, window_seconds=3600)
 
 
 def get_waitlist_service(
+    # The *request* session, not the limiter's. Creating a waitlist entry is
+    # business data and belongs in the request's unit of work — if the handler
+    # raises afterwards, the row should go with it.
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> WaitlistService:
     return WaitlistService(PostgresWaitlistRepository(session))
@@ -33,7 +36,7 @@ Service = Annotated[WaitlistService, Depends(get_waitlist_service)]
 
 async def waitlist_rate_limit(
     request: Request,
-    session: Annotated[AsyncSession, Depends(get_session)],
+    session: Annotated[AsyncSession, Depends(get_limiter_session)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> None:
     """Count this request against the caller's hourly budget.

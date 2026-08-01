@@ -116,6 +116,7 @@ async def test_the_waitlist_route_actually_enforces_the_limit(
     """
     from httpx import ASGITransport, AsyncClient
 
+    from beff.core.ratelimit import get_limiter_session
     from beff.db import get_session
     from beff.main import create_app
     from beff.modules.waitlist.dependencies import WAITLIST_LIMIT
@@ -127,8 +128,17 @@ async def test_the_waitlist_route_actually_enforces_the_limit(
             yield session
             await session.commit()
 
+    async def limiter_session_override():  # type: ignore[no-untyped-def]
+        # A *separate* session that always commits — the whole point of the fix
+        # being tested. Reusing `session_override` here would reintroduce the
+        # shared transaction and the test would pass for the wrong reason.
+        async with factory() as session:
+            yield session
+            await session.commit()
+
     app = create_app()
     app.dependency_overrides[get_session] = session_override
+    app.dependency_overrides[get_limiter_session] = limiter_session_override
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -173,6 +183,7 @@ async def test_login_is_rate_limited_per_origin(db_engine: AsyncEngine) -> None:
     """
     from httpx import ASGITransport, AsyncClient
 
+    from beff.core.ratelimit import get_limiter_session
     from beff.db import get_session
     from beff.main import create_app
     from beff.modules.auth.dependencies import LOGIN_LIMIT
@@ -184,8 +195,17 @@ async def test_login_is_rate_limited_per_origin(db_engine: AsyncEngine) -> None:
             yield session
             await session.commit()
 
+    async def limiter_session_override():  # type: ignore[no-untyped-def]
+        # A *separate* session that always commits — the whole point of the fix
+        # being tested. Reusing `session_override` here would reintroduce the
+        # shared transaction and the test would pass for the wrong reason.
+        async with factory() as session:
+            yield session
+            await session.commit()
+
     app = create_app()
     app.dependency_overrides[get_session] = session_override
+    app.dependency_overrides[get_limiter_session] = limiter_session_override
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -212,6 +232,7 @@ async def test_a_second_origin_has_its_own_login_budget(db_engine: AsyncEngine) 
     elsewhere."""
     from httpx import ASGITransport, AsyncClient
 
+    from beff.core.ratelimit import get_limiter_session
     from beff.db import get_session
     from beff.main import create_app
     from beff.modules.auth.dependencies import LOGIN_LIMIT
@@ -223,8 +244,17 @@ async def test_a_second_origin_has_its_own_login_budget(db_engine: AsyncEngine) 
             yield session
             await session.commit()
 
+    async def limiter_session_override():  # type: ignore[no-untyped-def]
+        # A *separate* session that always commits — the whole point of the fix
+        # being tested. Reusing `session_override` here would reintroduce the
+        # shared transaction and the test would pass for the wrong reason.
+        async with factory() as session:
+            yield session
+            await session.commit()
+
     app = create_app()
     app.dependency_overrides[get_session] = session_override
+    app.dependency_overrides[get_limiter_session] = limiter_session_override
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -242,3 +272,68 @@ async def test_a_second_origin_has_its_own_login_budget(db_engine: AsyncEngine) 
         )
 
     assert other.status_code == 401
+
+
+async def test_a_failing_request_still_counts_against_the_limit(
+    db_engine: AsyncEngine,
+) -> None:
+    """**The bug this whole design exists to avoid.**
+
+    The limiter originally shared the request's session. `get_session` rolls that
+    transaction back when the handler raises — correct for business data, and
+    exactly wrong here, because the attempts a limiter most needs to count are
+    the ones that raise.
+
+    The effect was that every failed login rolled back its own increment, so an
+    attacker sending nothing but wrong passwords was never limited. The limiter
+    counted only the requests that did not need limiting.
+
+    This asserts the counter survives a 401.
+    """
+    from httpx import ASGITransport, AsyncClient
+
+    from beff.core.ratelimit import get_limiter_session
+    from beff.db import get_session
+    from beff.main import create_app
+
+    factory = create_session_factory(db_engine)
+
+    async def session_override():  # type: ignore[no-untyped-def]
+        async with factory() as session:
+            try:
+                yield session
+            except Exception:
+                await session.rollback()
+                raise
+            else:
+                await session.commit()
+
+    async def limiter_session_override():  # type: ignore[no-untyped-def]
+        async with factory() as session:
+            yield session
+            await session.commit()
+
+    app = create_app()
+    app.dependency_overrides[get_session] = session_override
+    app.dependency_overrides[get_limiter_session] = limiter_session_override
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.post(
+            "/api/v1/auth/login",
+            json={"email": "nobody@beff.example", "password": "definitely wrong"},
+            headers={"x-forwarded-for": "203.0.113.77"},
+        )
+
+    # The request failed...
+    assert response.status_code == 401
+
+    # ...and the attempt was still recorded. Before the fix this table was empty,
+    # because the 401 took the increment down with it.
+    async with factory() as session:
+        rows = await session.execute(
+            text("SELECT count FROM rate_limit_counters WHERE bucket = 'auth.login'")
+        )
+        counts = [row[0] for row in rows.fetchall()]
+
+    assert counts == [1]

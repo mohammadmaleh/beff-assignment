@@ -84,6 +84,20 @@ class RateLimiter:
         )
         count = int(result.scalar_one())
 
+        # Committed here, immediately, and **before** the limit is enforced.
+        #
+        # Two reasons, both learned the hard way. Deferring to the session
+        # dependency's teardown does not work: when the handler raises — a 401
+        # on a wrong password, which is precisely what needs counting — the
+        # exception is thrown into the dependency generator and its commit never
+        # runs. And committing after the `raise` below would lose the very
+        # request that crossed the threshold.
+        #
+        # This is safe only because the session belongs to the limiter alone
+        # (`get_limiter_session`); committing a shared request session here
+        # would flush a half-finished handler's work.
+        await self._session.commit()
+
         if count > limit.limit:
             # Seconds until this window closes, so the client is told when to
             # come back rather than left to guess.
