@@ -1,0 +1,22 @@
+{
+  "name": "@beff/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "//": "End-to-end and accessibility checks. Scoped to the surfaces that render without the API — landing, both legal pages, 404 — so the suite runs in CI without a database. Flows behind authentication need the stack up and are ENG-39's remaining half.",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test --grep @a11y",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf node_modules .turbo playwright-report test-results"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@beff/config": "workspace:*",
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^26.1.2",
+    "eslint": "^9.39.5",
+    "typescript": "^5.9.3"
+  }
+}

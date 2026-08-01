@@ -124,6 +124,39 @@ jobs:
       - run: pnpm test
       - run: pnpm build
 
+  # The automated half of the accessibility gate, plus the keyboard flows axe
+  # cannot check. Scoped to the surfaces that render without the API, so this
+  # job needs no database — the authenticated flows are ENG-39's remaining half.
+  e2e:
+    name: E2E — accessibility and keyboard, Chromium
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Only Chromium. WebKit and mobile are on the documented cut list, and
+      # downloading three engines to run one is ten minutes of CI for nothing.
+      - run: pnpm --filter @beff/e2e exec playwright install --with-deps chromium
+
+      - run: pnpm build
+
+      - run: pnpm --filter @beff/e2e test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: packages/e2e/playwright-report/
+          retention-days: 7
+
   # Audits report but do not block (`|| true`). Transitive advisories with no
   # available fix would otherwise wedge the pipeline on someone else's release
   # schedule. Findings are reviewed in ENG-41 and this becomes blocking once the

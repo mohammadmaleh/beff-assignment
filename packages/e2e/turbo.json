@@ -1,0 +1,8 @@
+{
+  "extends": ["//"],
+  "//": "The e2e suite needs the web app built, not just its dependencies.",
+  "tasks": {
+    "test:e2e": { "dependsOn": ["@beff/web#build"] },
+    "test:a11y": { "dependsOn": ["@beff/web#build"] }
+  }
+}

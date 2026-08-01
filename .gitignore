@@ -59,3 +59,7 @@ assignment-description.md
 CONTEXT.md
 
 packages/tokens/dist/
+
+# Playwright output
+packages/e2e/playwright-report/
+packages/e2e/test-results/

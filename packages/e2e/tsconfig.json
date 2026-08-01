@@ -1,0 +1,12 @@
+{
+  "extends": "@beff/config/tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    // `page.evaluate` callbacks run in the browser, so this project genuinely
+    // compiles code for two runtimes at once. Without `dom` here, every
+    // `document` inside an evaluate block is an error about the wrong thing.
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["tests/**/*.ts", "playwright.config.ts"],
+  "exclude": ["node_modules"]
+}

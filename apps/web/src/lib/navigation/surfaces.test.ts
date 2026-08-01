@@ -24,7 +24,12 @@ const routeFolders = (): string[] =>
   readdirSync(LOCALE_ROUTE_DIR, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
-    .filter((name) => !name.startsWith('_') && !name.startsWith('(') && !name.startsWith('@'));
+    .filter((name) => !name.startsWith('_') && !name.startsWith('(') && !name.startsWith('@'))
+    // A catch-all is not a surface — it exists precisely to handle paths that
+    // are *not* surfaces, by rendering the 404. Including it here would mean
+    // the IA had to name "everything else", which is not a thing a user
+    // navigates to.
+    .filter((name) => !name.startsWith('[...'));
 
 describe('information architecture', () => {
   it('has no route that the IA does not name', () => {
