@@ -397,6 +397,15 @@ unique index freeing a purged email, and the schema rules (TIMESTAMPTZ everywher
 prerender as static HTML in both locales — verified by grepping the built output for the
 German headline and `lang="de"`, not by assuming.
 
+**Security and operability.** Every anonymous and credential endpoint is rate
+limited — waitlist, login and registration — by a Postgres fixed-window counter
+keyed on a salted hash of the caller's IP, never the address. Login is limited
+_per origin, not per email_: per-email sounds safer and is worse than useless,
+because an attacker spraying one password across ten thousand addresses never
+trips it while anyone who knows a victim's address could lock them out on demand.
+Every log line carries a request id, taken from the caller's `X-Request-ID` when
+they send one so a trace that began at the load balancer stays one trace.
+
 **The whole stack, end to end.** `docker compose down -v` then `up` migrates, seeds and
 starts five services from an empty volume. Against the running API: login as the demo
 account returns a session; the dashboard reports 71.68% first-pass yield on a pilot line
@@ -424,17 +433,21 @@ off as part of the Docker-blocked set, which was a lazier claim than it looked.
 
 ### Not built, in the order I would build them
 
-1. **The generated API client and its CI drift check.** The frontend's request and
-   response types are hand-written today, so a Pydantic schema can change without
-   anything failing.
-2. **Rate limiting on auth.** The waitlist has it — a Postgres fixed-window counter keyed
-   on a hashed IP — because it is the only anonymous write. Login is the next target.
-3. **The manual screen-reader pass**, then Playwright and axe. Automated tooling catches
-   only 30–50% of accessibility issues, so **this project does not claim WCAG 2.2 AA** —
-   only that its automated gates pass. See the accessibility section.
-4. **Consent for signed-out visitors.** The cookie banner writes `localStorage` only;
-   nothing reaches `consent_records` until there is an account to attach it to.
-5. Storybook, deployment, and the C4 diagrams.
+1. **The manual screen-reader pass**, then Playwright and axe. Automated tooling
+   catches only 30–50% of accessibility issues, so **this project does not claim
+   WCAG 2.2 AA** — only that its automated gates pass. See the accessibility
+   section.
+2. **Consent for signed-out visitors.** The cookie banner writes `localStorage`
+   only; nothing reaches `consent_records` until there is an account to attach it
+   to. Defensible, but the privacy page should say so.
+3. **Email sending.** Registration deliberately does not depend on it, so there
+   is no verification mail and no password reset.
+4. Storybook, deployment, and the C4 diagrams.
+
+Since the first draft of this list, four of its items have been built and are
+described above: the generated API client and its drift check, rate limiting on
+every anonymous and credential endpoint, the export worker, and request-id
+correlation.
 
 The trade I made was depth over breadth: a backend where the interesting decisions —
 token reuse detection, append-only consent, an idempotent queue on Postgres — are
