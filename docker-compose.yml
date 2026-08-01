@@ -43,10 +43,34 @@ services:
       postgres:
         condition: service_healthy
 
-  # The `worker` service arrives with ENG-31, when there are jobs for it to run.
-  # It is deliberately absent rather than stubbed — a service that crash-loops
-  # on a missing module makes `docker compose up` look broken to a reviewer.
-  # It will poll Postgres with FOR UPDATE SKIP LOCKED; no Redis (ADR-0006).
+  # Drains the export queue. Polls Postgres with `FOR UPDATE SKIP LOCKED` — no
+  # Redis, no Celery (ADR-0006). Without this service an export requested from
+  # the profile screen stays `pending` forever, which is the failure mode a
+  # reviewer notices last and trusts least.
+  #
+  # Same image as `api`, different command: the worker shares the models, the
+  # repositories and the service, and building a second image for one entry
+  # point would guarantee they drift.
+  worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+      target: dev
+    command: ["uv", "run", "--no-sync", "python", "-m", "beff.worker"]
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-beff}:${POSTGRES_PASSWORD:-beff_dev_password}@postgres:5432/${POSTGRES_DB:-beff}
+      JWT_SECRET: ${JWT_SECRET:-dev_only_do_not_use_in_production}
+      IP_HASH_SALT: ${IP_HASH_SALT:-dev_only_salt}
+      ENVIRONMENT: development
+    volumes:
+      - ./apps/api/src:/app/src
+    # `SKIP LOCKED` means a second replica steps over whatever the first has
+    # claimed rather than blocking behind it, so scaling this is `--scale
+    # worker=3` and nothing else.
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
   web:
     build:

@@ -56,14 +56,25 @@ async def test_upgrade_head_then_downgrade_base_runs_clean(
         tables = await connection.execute(
             text("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename")
         )
+        # Pinned as an exact list rather than a subset check, so a table that
+        # appears without anyone meaning it to — a leftover from a hand-edited
+        # migration, a temp table never dropped — fails here. Adding a table is
+        # supposed to be a two-line change to this list; that is the cost of
+        # noticing an unplanned one.
         assert [row[0] for row in tables] == [
             "alembic_version",
+            "batches",
             "consent_records",
+            "dsar_requests",
+            "export_jobs",
             "lines",
             "onboarding_progress",
             "plants",
+            "process_measurements",
             "refresh_tokens",
+            "scrap_events",
             "users",
+            "waitlist_entries",
         ]
 
 

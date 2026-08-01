@@ -18,10 +18,14 @@ from __future__ import annotations
 
 from alembic import op
 
-revision = "0002_metrics_privacy_waitlist"
-down_revision = "0001_initial_schema"
-branch_labels = None
-depends_on = None
+# The identifiers are the short form, matching `0001`. They are NOT the module
+# name: pointing `down_revision` at "0001_initial_schema" builds a revision map
+# with a dangling edge, and every alembic command then dies on a `KeyError`
+# naming a revision that was never registered.
+revision: str = "0002"
+down_revision: str | None = "0001"
+branch_labels: None = None
+depends_on: None = None
 
 
 def upgrade() -> None:
