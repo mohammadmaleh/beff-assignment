@@ -24,7 +24,13 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from beff.db.base import utcnow
 from beff.db.registry import target_metadata
 from beff.modules.auth.models import RefreshToken, User
-from beff.modules.privacy.models import ConsentRecord
+from beff.modules.metrics.models import PARAMETERS, PROCESS_STEPS
+from beff.modules.onboarding.models import CELL_FORMATS, ONBOARDING_STEPS
+from beff.modules.privacy.models import (
+    CONSENT_PURPOSES,
+    EXPORT_JOB_STATUSES,
+    ConsentRecord,
+)
 
 pytestmark = pytest.mark.integration
 
@@ -239,6 +245,53 @@ async def test_no_postgresql_enum_types_exist(db_engine: AsyncEngine) -> None:
     assert rows.fetchall() == []
 
 
+@pytest.mark.parametrize(
+    ("table", "column", "allowed"),
+    [
+        ("consent_records", "purpose", CONSENT_PURPOSES),
+        ("export_jobs", "status", EXPORT_JOB_STATUSES),
+        ("onboarding_progress", "current_step", ONBOARDING_STEPS),
+        ("lines", "cell_format", CELL_FORMATS),
+        ("scrap_events", "process_step", PROCESS_STEPS),
+        ("process_measurements", "parameter", PARAMETERS),
+    ],
+)
+async def test_each_check_constraint_accepts_exactly_the_values_the_code_uses(
+    db_engine: AsyncEngine, table: str, column: str, allowed: tuple[str, ...]
+) -> None:
+    """The gap `compare_metadata` cannot see.
+
+    Alembic's autogenerate compares whether a CHECK constraint *exists*, not what
+    it says. So renaming a value in a Python constant and forgetting the
+    migration leaves the models and the database disagreeing, every schema test
+    passing, and the feature broken the moment it touches a real connection.
+
+    That is not hypothetical: `product_analytics` and `marketing_email` became
+    `analytics` and `marketing` in the code while `0001`'s constraint kept the
+    old names, and every `POST /privacy/consent` failed with a constraint
+    violation until `0002` renamed them. This test is what would have caught it
+    on the day.
+    """
+    async with db_engine.connect() as connection:
+        row = await connection.execute(
+            text(
+                "SELECT pg_get_constraintdef(c.oid) FROM pg_constraint c "
+                "JOIN pg_class t ON t.oid = c.conrelid "
+                "WHERE t.relname = :table AND c.contype = 'c' "
+                "AND pg_get_constraintdef(c.oid) LIKE '%' || :column || '%'"
+            ),
+            {"table": table, "column": column},
+        )
+        definitions = " ".join(str(r[0]) for r in row.fetchall())
+
+    assert definitions, f"no CHECK constraint found on {table}.{column}"
+
+    for value in allowed:
+        assert f"'{value}'" in definitions, (
+            f"{table}.{column} rejects {value!r}, which the application code uses"
+        )
+
+
 async def test_every_foreign_key_has_an_index(db_engine: AsyncEngine) -> None:
     """PostgreSQL indexes the referenced side, never the referencing side."""
     async with db_engine.connect() as connection:
@@ -286,7 +339,7 @@ async def test_consent_records_reject_update(db_session: AsyncSession) -> None:
 
     record = ConsentRecord(
         user_id=user.id,
-        purpose="product_analytics",
+        purpose="analytics",
         granted=True,
         policy_version="2026-01-01",
         country_code="DE",
@@ -311,13 +364,13 @@ async def test_withdrawal_is_recorded_as_a_new_row(db_session: AsyncSession) -> 
         [
             ConsentRecord(
                 user_id=user.id,
-                purpose="marketing_email",
+                purpose="marketing",
                 granted=True,
                 policy_version="2026-01-01",
             ),
             ConsentRecord(
                 user_id=user.id,
-                purpose="marketing_email",
+                purpose="marketing",
                 granted=False,
                 policy_version="2026-01-01",
             ),

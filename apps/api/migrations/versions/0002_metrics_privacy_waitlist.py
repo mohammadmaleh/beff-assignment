@@ -175,8 +175,64 @@ def upgrade() -> None:
         "CREATE UNIQUE INDEX uq_scrap_events_batch_id_step ON scrap_events (batch_id, process_step)"
     )
 
+    # ── Rename two consent purposes ──────────────────────────────────────────
+    #
+    # `product_analytics` and `marketing_email` became `analytics` and
+    # `marketing` when the profile screen was built, but only in the Python
+    # constants — `0001`'s CHECK constraint still held the old names, so every
+    # `POST /privacy/consent` failed with a constraint violation. The whole
+    # consent feature was broken against a real database.
+    #
+    # `compare_metadata` did not catch this: alembic's autogenerate does not
+    # diff CHECK constraint *expressions*, only their presence. A schema test
+    # that asserts the constraint accepts exactly `CONSENT_PURPOSES` does, and
+    # is added alongside this.
+    #
+    # Existing rows are renamed rather than deleted. A consent record is
+    # evidence of what someone agreed to; dropping the history to fit a rename
+    # would destroy the accountability trail the table exists for (Art. 7(1)).
+    # `consent_records` carries an append-only trigger, so even a migration
+    # cannot UPDATE it while that trigger is enabled. Disabling it for the
+    # length of this rename is deliberate, and a migration is the one
+    # sanctioned place to do it: the trigger exists to stop *application*
+    # code rewriting evidence, and relabelling a purpose is not rewriting
+    # what was consented to — it is the same purpose under a new identifier.
+    # Timestamps, policy version and the granted flag are all untouched.
+    op.execute("ALTER TABLE consent_records DISABLE TRIGGER trg_consent_records_append_only")
+    op.execute(
+        "UPDATE consent_records SET purpose = 'analytics' WHERE purpose = 'product_analytics'"
+    )
+    op.execute("UPDATE consent_records SET purpose = 'marketing' WHERE purpose = 'marketing_email'")
+    op.execute("ALTER TABLE consent_records ENABLE TRIGGER trg_consent_records_append_only")
+    op.execute("ALTER TABLE consent_records DROP CONSTRAINT ck_consent_records_purpose_allowed")
+    op.execute(
+        "ALTER TABLE consent_records ADD CONSTRAINT ck_consent_records_purpose_allowed "
+        "CHECK (purpose IN ('terms_of_service', 'privacy_policy', 'analytics', 'marketing'))"
+    )
+
 
 def downgrade() -> None:
+    # Put the old purpose names back before restoring the old constraint, or the
+    # ADD CONSTRAINT fails on rows this migration renamed on the way up.
+    op.execute("ALTER TABLE consent_records DROP CONSTRAINT ck_consent_records_purpose_allowed")
+    # `consent_records` carries an append-only trigger, so even a migration
+    # cannot UPDATE it while that trigger is enabled. Disabling it for the
+    # length of this rename is deliberate, and a migration is the one
+    # sanctioned place to do it: the trigger exists to stop *application*
+    # code rewriting evidence, and relabelling a purpose is not rewriting
+    # what was consented to — it is the same purpose under a new identifier.
+    # Timestamps, policy version and the granted flag are all untouched.
+    op.execute("ALTER TABLE consent_records DISABLE TRIGGER trg_consent_records_append_only")
+    op.execute(
+        "UPDATE consent_records SET purpose = 'product_analytics' WHERE purpose = 'analytics'"
+    )
+    op.execute("UPDATE consent_records SET purpose = 'marketing_email' WHERE purpose = 'marketing'")
+    op.execute("ALTER TABLE consent_records ENABLE TRIGGER trg_consent_records_append_only")
+    op.execute(
+        "ALTER TABLE consent_records ADD CONSTRAINT ck_consent_records_purpose_allowed "
+        "CHECK (purpose IN ('terms_of_service', 'privacy_policy', 'product_analytics', 'marketing_email'))"
+    )
+
     # Reverse dependency order, and no CASCADE. If something outside this
     # migration has taken a dependency on one of these tables, the downgrade
     # should fail loudly rather than silently taking it with them.

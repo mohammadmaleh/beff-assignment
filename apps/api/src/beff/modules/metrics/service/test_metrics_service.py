@@ -233,6 +233,24 @@ async def test_an_empty_window_reports_zero_rather_than_none() -> None:
     assert overview.co2_intensity_kg_per_kwh == 0.0
 
 
+async def test_averages_are_rounded_rather_than_carrying_sql_precision() -> None:
+    """`AVG` over `NUMERIC` returns full precision — 88.3248275862069 reached the
+    live API before this existed. The frontend would have formatted it down to
+    one decimal and looked fine, but the same number goes into the data-table
+    alternative and the GDPR export, where it implies a precision the instrument
+    never had."""
+    metrics, _ = service(
+        totals_by_window={
+            CURRENT: totals(1000, 800, retention="88.3248275862069", co2="63.861724137931034")
+        }
+    )
+
+    overview = await metrics.overview(USER, window_days=WINDOW)
+
+    assert overview.capacity_retention_pct == 88.32
+    assert overview.co2_intensity_kg_per_kwh == 63.86
+
+
 async def test_the_averages_are_carried_through() -> None:
     metrics, _ = service(
         totals_by_window={CURRENT: totals(1000, 800, retention="88.20", co2="61.50")}

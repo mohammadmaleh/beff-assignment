@@ -65,6 +65,19 @@ def _pct(part: int, whole: int) -> float:
     return 0.0 if whole == 0 else round((part / whole) * 100, 2)
 
 
+def _avg(value: Decimal | None) -> float:
+    """A SQL `AVG` rounded to two places, defaulting to zero.
+
+    `AVG` over `NUMERIC` returns full precision, so an unrounded conversion puts
+    `88.3248275862069` in the payload. The frontend would format that down to
+    one decimal and look fine, which is exactly why it is worth fixing here
+    instead: the same value goes into the data-table alternative and into the
+    GDPR export, where it is read as-is and implies a precision the instrument
+    never had.
+    """
+    return 0.0 if value is None else round(float(value), 2)
+
+
 class MetricsService:
     """Aggregation. Knows nothing about HTTP or SQL."""
 
@@ -138,8 +151,8 @@ class MetricsService:
             first_pass_yield_delta_pp=round(fpy - previous_fpy, 2),
             scrap_rate_pct=scrap_rate,
             scrap_rate_delta_pp=round(scrap_rate - previous_scrap_rate, 2),
-            capacity_retention_pct=float(current.capacity_retention_pct or Decimal(0)),
-            co2_intensity_kg_per_kwh=float(current.co2_intensity_kg_per_kwh or Decimal(0)),
+            capacity_retention_pct=_avg(current.capacity_retention_pct),
+            co2_intensity_kg_per_kwh=_avg(current.co2_intensity_kg_per_kwh),
             scrap_by_step=breakdown,
             spec_bands=[
                 SpecBandReading(
