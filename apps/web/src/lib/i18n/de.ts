@@ -118,6 +118,18 @@ export const de: BaseDictionary = {
     dismiss: 'Schließen',
   },
 
+  errors: {
+    notFoundTitle: 'Diese Seite gibt es nicht',
+    notFoundBody:
+      'Der Link ist möglicherweise veraltet oder die Adresse enthält einen Tippfehler. Auf unserer Seite ist nichts schiefgegangen.',
+    backHome: 'Zurück zum Anfang',
+    unexpectedTitle: 'Etwas ist schiefgegangen',
+    unexpectedBody:
+      'Das liegt an uns, nicht an Ihnen. Ein erneuter Versuch hilft oft — der Fehler war möglicherweise nur vorübergehend.',
+    tryAgain: 'Erneut versuchen',
+    reference: 'Referenz für den Support:',
+  },
+
   fieldErrors: {
     required: 'Dieses Feld ist ein Pflichtfeld.',
     invalid_email: 'Das sieht nicht nach einer E-Mail-Adresse aus.',

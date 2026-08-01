@@ -121,6 +121,22 @@ export const en = {
   },
 
   /**
+   * Whole-page failures: a wrong URL, and an unhandled exception inside a route.
+   * Distinct from `fieldErrors`, which is about one input being wrong.
+   */
+  errors: {
+    notFoundTitle: 'That page is not here',
+    notFoundBody:
+      'The link may be out of date, or the address may have a typo in it. Nothing has gone wrong on our side.',
+    backHome: 'Back to the start',
+    unexpectedTitle: 'Something went wrong',
+    unexpectedBody:
+      'This is on us, not on you. Trying again often works — the failure may have been momentary.',
+    tryAgain: 'Try again',
+    reference: 'Reference for support:',
+  },
+
+  /**
    * Keyed by the stable `code` the API returns in its RFC 9457 `errors` array,
    * never by parsing its English `detail`. `unknown` is the fallback for a code
    * this build has not seen — a new backend validation rule shows a usable
