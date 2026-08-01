@@ -298,7 +298,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
             <Button
               // The server re-checks this; the client copy only saves a round
               // trip, because a client check can always be bypassed.
-              disabled={(data?.missing.length ?? 0) > 0}
+              disabled={(data?.missing?.length ?? 0) > 0}
               loading={complete.isPending}
               loadingLabel={t.onboarding.finishing}
               onClick={() => {

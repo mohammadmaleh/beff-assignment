@@ -1,3 +1,5 @@
+import type { OnboardingProgress as GeneratedProgress } from '@beff/api-client/types';
+
 /**
  * The wizard's steps, in order.
  *
@@ -36,14 +38,17 @@ export interface OnboardingAnswers {
   unit_system?: string;
 }
 
-export interface OnboardingProgress {
-  current_step: string;
+/**
+ * The wizard state, as the API defines it.
+ *
+ * `answers` is JSONB on the server, so the generated type is a bag of unknowns.
+ * Narrowing it to `OnboardingAnswers` here is the one hand-written part of this
+ * contract, and it is intentional: the wizard is the only thing that knows what
+ * keys it puts in there.
+ */
+export type OnboardingProgress = Omit<GeneratedProgress, 'answers'> & {
   answers: OnboardingAnswers;
-  completed_at: string | null;
-  steps: string[];
-  /** Required answers still outstanding, named by the server. */
-  missing: string[];
-}
+};
 
 /**
  * Which answers a step will not continue without.

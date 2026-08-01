@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
   // build step to keep in sync, and Next compiles it with the same settings as
   // the app, so a component cannot be built against a different target than the
   // page that renders it.
-  transpilePackages: ['@beff/ui'],
+  transpilePackages: ['@beff/ui', '@beff/api-client'],
 
   // Security headers. CSP is deliberately absent until the app's real script
   // and style sources are known (ENG-41) — a wrong CSP silently breaks pages.

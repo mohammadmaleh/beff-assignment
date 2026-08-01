@@ -100,6 +100,12 @@ export const deApp: typeof enApp = {
     showTable: 'Daten als Tabelle anzeigen',
     hideTable: 'Tabelle ausblenden',
     bandsTitle: 'Prozessparameter gegen Spezifikation',
+    parameters: {
+      porosity_pct: 'Elektrodenporosität nach dem Kalandrieren',
+      areal_loading_mg_cm2: 'Flächenbeladung',
+      energy_density_wh_kg: 'Energiedichte',
+      coating_thickness_um: 'Schichtdicke',
+    },
     steps: {
       mixing: 'Mischen',
       coating: 'Beschichten',

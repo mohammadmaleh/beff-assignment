@@ -1,0 +1,24 @@
+{
+  "name": "@beff/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "//": "Types generated from the API OpenAPI document by a small local printer (scripts/schema-to-ts.mjs). openapi-typescript would be the usual dependency; it could not be installed here, so the printer handles exactly what FastAPI emits and throws on anything else \u2014 see the note at the top of that file.",
+  "exports": {
+    "./schema": "./src/schema.d.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "check:drift": "node scripts/generate.mjs --check",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf node_modules .turbo"
+  },
+  "devDependencies": {
+    "@beff/config": "workspace:*",
+    "@types/node": "^26.1.2",
+    "eslint": "^9.39.5",
+    "typescript": "^5.9.3"
+  }
+}

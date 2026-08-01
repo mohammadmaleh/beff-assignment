@@ -39,6 +39,9 @@
     },
     "clean": {
       "cache": false
+    },
+    "check:drift": {
+      "cache": false
     }
   }
 }

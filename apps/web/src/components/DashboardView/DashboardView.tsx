@@ -120,7 +120,13 @@ export function DashboardView({ locale }: { locale: Locale }) {
                   {data.spec_bands.map((band) => (
                     <SpecBand
                       key={band.parameter}
-                      label={band.label}
+                      // The API returns a stable key (`porosity_pct`), never a
+                      // display string — the same rule as process steps, and the
+                      // only way the German locale can name it in German.
+                      label={
+                        (t.dashboard.parameters as Record<string, string>)[band.parameter] ??
+                        band.parameter
+                      }
                       value={band.value}
                       lowerLimit={band.lower_limit}
                       upperLimit={band.upper_limit}

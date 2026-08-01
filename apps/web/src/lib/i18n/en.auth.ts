@@ -104,6 +104,12 @@ export const enApp = {
     showTable: 'Show the data as a table',
     hideTable: 'Hide the table',
     bandsTitle: 'Process parameters against specification',
+    parameters: {
+      porosity_pct: 'Electrode porosity after calendering',
+      areal_loading_mg_cm2: 'Areal loading',
+      energy_density_wh_kg: 'Energy density',
+      coating_thickness_um: 'Coating thickness',
+    },
     steps: {
       mixing: 'Mixing',
       coating: 'Coating',

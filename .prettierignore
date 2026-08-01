@@ -16,3 +16,9 @@ apps/web/next-env.d.ts
 
 # Scratch workspace for subagent-driven execution. Git-ignored working files.
 .superpowers
+
+# Generated from the API's OpenAPI document by `@beff/api-client`. Formatting
+# these would immediately fail the drift check, because the committed bytes have
+# to equal what the generator emits — the generator, not prettier, owns them.
+packages/api-client/openapi.json
+packages/api-client/src/schema.d.ts

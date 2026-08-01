@@ -8,22 +8,16 @@ import { Alert } from '@beff/ui/alert';
 import { Button } from '@beff/ui/button';
 import { TextField } from '@beff/ui/text-field';
 
+import type { ConsentState, ExportJob } from '@beff/api-client/types';
+
 import { apiUrl } from '@/lib/api';
 import { authFetch, useAuth } from '@/lib/auth';
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { surfacePath } from '@/lib/navigation';
 
-interface ConsentState {
-  analytics: boolean;
-  marketing: boolean;
-}
-
-interface ExportJob {
-  id: string;
-  status: 'pending' | 'running' | 'ready' | 'failed';
-  requested_at: string;
-  download_path: string | null;
-}
+// Both shapes come from the API's own OpenAPI document — see ENG-33. Declaring
+// them here again is how a frontend keeps compiling against a contract the
+// backend has already changed.
 
 /**
  * Consent, export and erasure on one surface.
