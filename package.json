@@ -26,5 +26,13 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "turbo": "^2.10.7",
     "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "//": "Transitive advisories from `pnpm audit`, forced to their patched versions so the CI audit can be blocking instead of `|| true` — a non-blocking audit is a notification nobody reads. Each is a dependency of `next` or `eslint` that they pin below the fix. Every range is CAPPED TO ONE MAJOR on purpose: the first attempt wrote `>=1.1.17`, pnpm resolved brace-expansion to 5.0.8, and eslint died repo-wide with `TypeError: expand is not a function` because minimatch@3 wants the 1.x export shape. An override is a version pin, not a request for the newest thing that satisfies an inequality. Remove an entry once its parent ships a release that no longer needs it — `pnpm why <pkg>` shows whether it is still doing anything.",
+    "overrides": {
+      "postcss": "^8.5.18",
+      "sharp": "^0.35.0",
+      "brace-expansion@1": "^1.1.17"
+    }
   }
 }

@@ -157,10 +157,19 @@ jobs:
           path: packages/e2e/playwright-report/
           retention-days: 7
 
-  # Audits report but do not block (`|| true`). Transitive advisories with no
-  # available fix would otherwise wedge the pipeline on someone else's release
-  # schedule. Findings are reviewed in ENG-41 and this becomes blocking once the
-  # baseline is clean.
+  # These now **block**. They used to end in `|| true`, which meant the job was
+  # green whatever it found — a notification nobody reads, dressed as a gate.
+  #
+  # The baseline was made clean first, because turning on a gate that is already
+  # failing just teaches people to ignore it. `pnpm audit` reported five
+  # transitive advisories (postcss ×3, sharp, brace-expansion) reachable only
+  # through `next` and `eslint`; they are pinned to patched versions by
+  # `pnpm.overrides` in the root package.json. `pip-audit` was already clean.
+  #
+  # The original worry — a transitive advisory with no fix wedging the pipeline
+  # on someone else's release schedule — is real, and the answer is an override
+  # entry with a comment, not a permanently disarmed gate. Read the note in
+  # package.json before adding one: cap the range to a single major.
   security:
     name: Security — dependency audit
     runs-on: ubuntu-latest
@@ -174,7 +183,7 @@ jobs:
         working-directory: apps/api
         run: |
           uv sync --frozen --all-groups
-          uv run --with pip-audit pip-audit || true
+          uv run --with pip-audit pip-audit
 
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
@@ -182,5 +191,21 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
+      # `--frozen-lockfile` before auditing: the audit resolves against the
+      # lockfile, and this also proves the lockfile matches the `overrides`
+      # block rather than having drifted from it.
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Blocking at `high`. The tree is clean at every level today, but `high`
+      # is the threshold worth failing a build over — a moderate advisory in a
+      # build-time dependency should not stop a deploy at 2am.
       - name: Node dependency audit
-        run: pnpm audit --audit-level high || true
+        run: pnpm audit --audit-level high
+
+      # Non-blocking, and deliberately so: this is the early warning that a
+      # moderate advisory has appeared, visible in the log without failing
+      # anything.
+      - name: Node dependency audit — full report
+        if: always()
+        run: pnpm audit || true
