@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from beff import __version__
 from beff.core.config import get_settings
+from beff.core.observability import RequestIdMiddleware, configure_logging
 from beff.core.problems import install_problem_handlers
 from beff.modules.auth import auth_router
 from beff.modules.metrics import metrics_router
@@ -30,6 +31,10 @@ def create_app() -> FastAPI:
     """
     settings = get_settings()
 
+    # Before anything else, so a failure during wiring is logged in the same
+    # shape as a failure during a request.
+    configure_logging(json_logs=settings.environment == "production")
+
     app = FastAPI(
         title="Beff API",
         version=__version__,
@@ -42,6 +47,12 @@ def create_app() -> FastAPI:
     # adding a route above this line and wondering why one endpoint answers in a
     # different shape from every other.
     install_problem_handlers(app, settings)
+
+    # Outermost, so the id is bound before CORS or any handler runs and every
+    # line produced by the request — including a rejected preflight — carries
+    # it. Starlette applies middleware in reverse registration order, so this
+    # being first is what puts it outside.
+    app.add_middleware(RequestIdMiddleware)
 
     app.add_middleware(
         CORSMiddleware,
