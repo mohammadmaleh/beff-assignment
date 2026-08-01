@@ -7,7 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response, status
 
 from beff.core.config import Settings, get_settings
-from beff.modules.auth.dependencies import Service
+from beff.modules.auth.dependencies import Service, register_rate_limit
 from beff.modules.auth.router.cookies import set_refresh_cookie
 from beff.modules.auth.schemas import RegisterRequest, SessionResponse
 
@@ -21,7 +21,11 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     response_model=SessionResponse,
     summary="Register a new account",
-    responses={409: {"description": "That email address is already registered."}},
+    dependencies=[Depends(register_rate_limit)],
+    responses={
+        409: {"description": "That email address is already registered."},
+        429: {"description": "Five registrations per hour per origin."},
+    },
 )
 async def register(
     payload: RegisterRequest,

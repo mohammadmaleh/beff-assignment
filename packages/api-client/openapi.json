@@ -565,6 +565,9 @@
               }
             },
             "description": "Validation Error"
+          },
+          "429": {
+            "description": "Ten attempts per fifteen minutes per origin. `extra.retry_after_seconds` says when to come back."
           }
         },
         "summary": "Log in",
@@ -731,6 +734,9 @@
               }
             },
             "description": "Validation Error"
+          },
+          "429": {
+            "description": "Five registrations per hour per origin."
           }
         },
         "summary": "Register a new account",

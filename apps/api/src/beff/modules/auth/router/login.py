@@ -7,7 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response, status
 
 from beff.core.config import Settings, get_settings
-from beff.modules.auth.dependencies import Service
+from beff.modules.auth.dependencies import Service, login_rate_limit
 from beff.modules.auth.router.cookies import set_refresh_cookie
 from beff.modules.auth.schemas import LoginRequest, SessionResponse
 
@@ -21,7 +21,16 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     response_model=SessionResponse,
     summary="Log in",
-    responses={401: {"description": "Incorrect email or password."}},
+    dependencies=[Depends(login_rate_limit)],
+    responses={
+        401: {"description": "Incorrect email or password."},
+        429: {
+            "description": (
+                "Ten attempts per fifteen minutes per origin. "
+                "`extra.retry_after_seconds` says when to come back."
+            )
+        },
+    },
 )
 async def login(
     payload: LoginRequest,

@@ -19,7 +19,11 @@ from httpx import ASGITransport, AsyncClient
 
 from beff.core.config import Settings
 from beff.main import create_app
-from beff.modules.auth.dependencies import get_auth_service
+from beff.modules.auth.dependencies import (
+    get_auth_service,
+    login_rate_limit,
+    register_rate_limit,
+)
 from beff.modules.auth.repository import (
     InMemoryRefreshTokenRepository,
     InMemoryUserRepository,
@@ -78,6 +82,12 @@ async def api(
 
     app = create_app()
     app.dependency_overrides[get_auth_service] = override
+    # Login and register carry rate limiters that need a real session. They are
+    # covered against a live database in `test_rate_limit.py`, including that the
+    # routes enforce them; leaving them live here would mean these tests silently
+    # start 429ing the day someone adds an eleventh login case.
+    app.dependency_overrides[login_rate_limit] = lambda: None
+    app.dependency_overrides[register_rate_limit] = lambda: None
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:

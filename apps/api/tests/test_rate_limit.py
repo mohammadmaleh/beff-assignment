@@ -158,3 +158,87 @@ async def test_the_key_is_never_a_raw_ip(db_session: AsyncSession) -> None:
     for (key,) in rows.fetchall():
         assert "." not in key
         assert ":" not in key
+
+
+async def test_login_is_rate_limited_per_origin(db_engine: AsyncEngine) -> None:
+    """**Credential stuffing is the threat this exists for.**
+
+    Per origin, not per email. Per-email would be worse than useless: an attacker
+    spraying one password across ten thousand addresses never trips it, and
+    anyone who knew a victim's address could lock them out on demand. Per-origin
+    costs the attacker the thing that is actually scarce.
+
+    Argon2 also makes every attempt expensive for *us*, so an unlimited login is
+    a denial-of-service surface as well as a takeover one.
+    """
+    from httpx import ASGITransport, AsyncClient
+
+    from beff.db import get_session
+    from beff.main import create_app
+    from beff.modules.auth.dependencies import LOGIN_LIMIT
+
+    factory = create_session_factory(db_engine)
+
+    async def session_override():  # type: ignore[no-untyped-def]
+        async with factory() as session:
+            yield session
+            await session.commit()
+
+    app = create_app()
+    app.dependency_overrides[get_session] = session_override
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        statuses = [
+            (
+                await client.post(
+                    "/api/v1/auth/login",
+                    json={"email": f"nobody{i}@beff.example", "password": "wrong password here"},
+                    headers={"x-forwarded-for": "203.0.113.44"},
+                )
+            ).status_code
+            for i in range(LOGIN_LIMIT.limit + 1)
+        ]
+
+    # Every attempt inside the budget is refused as a *credential* failure...
+    assert statuses[: LOGIN_LIMIT.limit] == [401] * LOGIN_LIMIT.limit
+    # ...and the one past it is refused as a rate-limit failure. The distinction
+    # matters: 429 tells an honest user to wait, 401 tells them to try again.
+    assert statuses[-1] == 429
+
+
+async def test_a_second_origin_has_its_own_login_budget(db_engine: AsyncEngine) -> None:
+    """One office behind a NAT must not be locked out by one bad actor
+    elsewhere."""
+    from httpx import ASGITransport, AsyncClient
+
+    from beff.db import get_session
+    from beff.main import create_app
+    from beff.modules.auth.dependencies import LOGIN_LIMIT
+
+    factory = create_session_factory(db_engine)
+
+    async def session_override():  # type: ignore[no-untyped-def]
+        async with factory() as session:
+            yield session
+            await session.commit()
+
+    app = create_app()
+    app.dependency_overrides[get_session] = session_override
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        for _ in range(LOGIN_LIMIT.limit + 1):
+            await client.post(
+                "/api/v1/auth/login",
+                json={"email": "nobody@beff.example", "password": "wrong password here"},
+                headers={"x-forwarded-for": "203.0.113.44"},
+            )
+
+        other = await client.post(
+            "/api/v1/auth/login",
+            json={"email": "nobody@beff.example", "password": "wrong password here"},
+            headers={"x-forwarded-for": "198.51.100.7"},
+        )
+
+    assert other.status_code == 401
