@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 
 import { Providers } from '@/components/Providers';
 import { ThemeScript } from '@/components/ThemeScript';
-import { getDictionary, isLocale, LOCALES, type Locale } from '@/lib/i18n';
+import { DEFAULT_LOCALE, getDictionary, isLocale, LOCALES, type Locale } from '@/lib/i18n';
 
 import '../globals.css';
 
@@ -32,11 +32,34 @@ export async function generateMetadata({
   return {
     title: { default: t.meta.title, template: '%s | Beff' },
     description: t.meta.description,
+    // Without this, Next emits `alternates` as **relative** hrefs. Lighthouse
+    // scores that as no canonical and no valid hreflang at all, and it is right
+    // to: both are defined as absolute URLs, and a crawler that has reached the
+    // page from a different host has no way to resolve `/de`. The declarations
+    // below looked correct and did nothing, which is the failure mode worth
+    // remembering — an SEO tag is not self-verifying.
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+    /*
+     * A plain file in `public/`, not an `app/icon.svg` metadata route.
+     *
+     * The convention route needs a layout to render into, and this app
+     * deliberately has no `app/layout.tsx` — the locale has to reach
+     * `<html lang>`, which a static root layout cannot know. So `app/icon.svg`
+     * built cleanly, emitted a `<link rel="icon">`, and then answered every
+     * request for it with a `NoFallbackError` 500. Same root cause as the
+     * `[...unmatched]` catch-all in the traps table.
+     */
+    icons: { icon: '/icon.svg' },
     // Tells a crawler these are translations of one another rather than
     // duplicate content, which is what a bare two-language site looks like.
     alternates: {
       canonical: `/${locale}`,
-      languages: Object.fromEntries(LOCALES.map((l) => [l, `/${l}`])),
+      languages: {
+        ...Object.fromEntries(LOCALES.map((l) => [l, `/${l}`])),
+        // Which one to serve a reader whose language matches neither. Without
+        // it a crawler picks, and it tends to pick the first it indexed.
+        'x-default': `/${DEFAULT_LOCALE}`,
+      },
     },
     openGraph: {
       title: t.meta.title,

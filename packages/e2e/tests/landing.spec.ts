@@ -64,6 +64,45 @@ test('both legal pages are linked from the footer', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Privacy policy' }).first()).toBeVisible();
 });
 
+test('the crawler tags are absolute, which is the only form that counts', async ({ page }) => {
+  /*
+   * Lighthouse scored this 82 on SEO with `canonical` and `hreflang` both
+   * present in the markup and both *relative*. Next emits relative hrefs unless
+   * `metadataBase` is set, and a relative canonical is not a weaker canonical —
+   * it is no canonical at all, because both tags are defined as absolute URLs.
+   * The declarations looked right and did nothing, which is why this is a test
+   * and not a comment.
+   */
+  const response = await page.goto('/en');
+  const html = (await response?.text()) ?? '';
+
+  const canonical = /<link rel="canonical" href="([^"]+)"/.exec(html)?.[1];
+  expect(canonical, 'no canonical tag').toBeDefined();
+  expect(canonical).toMatch(/^https?:\/\//);
+
+  const alternates = [...html.matchAll(/hrefLang="([^"]+)" href="([^"]+)"/gi)];
+  // Both locales plus `x-default` — without the last one a crawler picks for a
+  // reader whose language matches neither, and it tends to pick whichever it
+  // indexed first.
+  expect(alternates.map(([, lang]) => lang).sort()).toEqual(['de', 'en', 'x-default']);
+  for (const [, , href] of alternates) expect(href).toMatch(/^https?:\/\//);
+});
+
+test('the favicon is actually served, not just declared', async ({ page, request }) => {
+  // It was declared and 404ing: `app/icon.svg` is a metadata *route*, and a
+  // route needs a layout to render into — this app deliberately has no root
+  // layout, because the locale has to reach `<html lang>`. The file lives in
+  // `public/` now, which is plain static serving with no layout involved.
+  const response = await page.goto('/en');
+  const html = (await response?.text()) ?? '';
+
+  const href = /<link rel="icon" href="([^"]+)"/.exec(html)?.[1];
+  expect(href, 'no icon declared').toBeDefined();
+
+  const icon = await request.get(href!);
+  expect(icon.status()).toBe(200);
+});
+
 test('an unknown path renders the not-found page', async ({ page }) => {
   const response = await page.goto('/en/no-such-page');
 

@@ -51,10 +51,21 @@ export default defineConfig({
     // `apps/web/Dockerfile` does exactly this copy on lines 58-59. Without it
     // the server runs and every page arrives unstyled, which fails the contrast
     // rules for a reason that has nothing to do with the design.
-    // `public/` is not copied because the app does not have one; the Dockerfile
-    // copies it unconditionally, which would need revisiting if that changed.
+    // `public/` is copied for the same reason, and it is not hypothetical: the
+    // favicon lives there, and without this line it 404s here while working
+    // perfectly in Docker — the exact server-divergence this whole comment
+    // exists to prevent. These two copies mirror `apps/web/Dockerfile:58-59`;
+    // if one changes, so must the other.
+    //
+    // `mkdir -p` then `cp -r <src>/. <dst>/`, not `cp -r <src> <dst>`: the
+    // second form copies *into* the destination once it exists, so a second
+    // local run silently produces `.next/static/static` and every asset 404s.
+    // CI never sees it — it always starts from a fresh checkout — which is
+    // exactly the kind of failure that only ever happens on someone's laptop.
     command:
-      'cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/static ' +
+      'mkdir -p apps/web/.next/standalone/apps/web/.next/static apps/web/.next/standalone/apps/web/public ' +
+      '&& cp -r apps/web/.next/static/. apps/web/.next/standalone/apps/web/.next/static/ ' +
+      '&& cp -r apps/web/public/. apps/web/.next/standalone/apps/web/public/ ' +
       '&& node apps/web/.next/standalone/apps/web/server.js',
     url: 'http://127.0.0.1:3100/en',
     env: { PORT: '3100', HOSTNAME: '127.0.0.1' },

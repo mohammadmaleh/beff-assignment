@@ -46,6 +46,13 @@ pnpm install && pnpm dev                         # frontend
 cd apps/api && uv sync && uv run uvicorn beff.main:app --reload   # backend
 ```
 
+**Deploying anywhere real needs `NEXT_PUBLIC_SITE_URL`.** It is the origin the
+site is served from, and Next builds `canonical` and `hreflang` from it. It is
+read at **build** time, not run time — a `NEXT_PUBLIC_` variable is inlined into
+the bundle — so setting it after the image is built does nothing. Left unset it
+falls back to `http://localhost:3000`, which is correct locally and wrong the
+moment the site has a domain.
+
 ---
 
 ## Architecture
