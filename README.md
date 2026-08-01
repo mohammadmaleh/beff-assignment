@@ -303,8 +303,9 @@ Target **WCAG 2.2 AA**. What is actually in place today, separated from what is 
 **Not done, and not claimed:**
 
 - **The manual screen-reader pass has not happened.** Automated tooling catches only
-  30–50% of issues, so this is the half that matters, and without it I am not claiming
-  WCAG 2.2 AA — only that the automated gates pass.
+  30–50% of issues, so this is the half that matters. Without it, **this project does
+  not claim WCAG 2.2 AA** — only that its automated gates pass. Stating it the other way
+  round would be the kind of claim that gets found out by the first person who tries.
 - No `axe-core` run, because there is no E2E suite yet to run it in.
 - No Storybook, so there is no per-state a11y assertion.
 
@@ -383,38 +384,59 @@ UI.
 
 I would rather be precise about this than let a reviewer discover it.
 
-**Done and verified by running it.** Backend: `ruff`, `ruff format`, `mypy --strict`
-across 156 files, **247 tests at 87.49% coverage** against an 85% floor. Frontend: root
-`lint`, `typecheck`, `test`, `build`, **230 tests**. All eight routes prerender as static
-HTML in both locales — verified by grepping the built output for the German headline and
-`lang="de"`, not by assuming.
+### Verified by running it
 
-**Not verified, and this is the important one.** The 16 tests in
-`apps/api/tests/test_migrations.py` need a real PostgreSQL via testcontainers, and Docker
-was unavailable in the environment this was last built in. They **errored rather than
-passed**, which means the second migration has never been executed. `upgrade head` /
-`downgrade base`, the `compare_metadata` check, the partial-unique-index test and the
-schema assertions (TIMESTAMPTZ everywhere, no `VARCHAR`, no PG enums, every foreign key
-indexed) are all unrun against the new tables. The DDL was transcribed verbatim from
-`CreateTable(...).compile()` so it should match — but "should" is exactly what the gate
-exists to replace. Start Docker and run `cd apps/api && uv run pytest tests/` first.
+**Backend.** `ruff`, `ruff format --check`, `mypy --strict` across 168 files; **324
+tests at 88.62% coverage** against an 85% floor, with zero errors and zero skips. That
+includes 22 integration tests against a real PostgreSQL 16 via testcontainers —
+`upgrade head` then `downgrade base`, `compare_metadata` finding no drift, the partial
+unique index freeing a purged email, and the schema rules (TIMESTAMPTZ everywhere, no
+`VARCHAR(n)`, no PostgreSQL enums, every foreign key indexed).
 
-**Deliberately not built**, in the order I would build them:
+**Frontend.** Root `lint`, `typecheck`, `test`, `build`; **262 tests**. All eight routes
+prerender as static HTML in both locales — verified by grepping the built output for the
+German headline and `lang="de"`, not by assuming.
 
-1. **A runner for the export worker.** `ExportService.run_once()` exists and is tested,
-   but nothing calls it on a loop and the `worker` service is not in `docker-compose.yml`.
-   An export requested through the UI stays `pending`.
-2. **Rate limiting.** `POST /api/v1/waitlist` is unauthenticated and is the app's only
-   anonymous write. Without Redis this is a Postgres counter or an in-process one.
-3. **The generated API client and its CI drift check** — changing a Pydantic schema
-   without regenerating should fail the build.
-4. **Playwright E2E and the axe pass**, then the manual screen-reader pass. Automated
-   tooling catches only 30–50% of accessibility issues, and the manual pass is the half
-   that matters; claiming WCAG 2.2 AA without it would be a claim I cannot support.
-5. **Component tests for the dashboard, profile and wizard.** They are typechecked and
-   built, never behaviourally covered.
-6. Storybook, deployment, and the C4 diagrams.
+**The whole stack, end to end.** `docker compose down -v` then `up` migrates, seeds and
+starts five services from an empty volume. Against the running API: login as the demo
+account returns a session; the dashboard reports 71.68% first-pass yield on a pilot line
+with twelve scrap steps each between 1.04% and 6.43%; an export goes `pending` → `ready`
+in about two seconds and the downloaded document contains no password hash, no argon2
+material and no IP hash; granting then withdrawing consent leaves six rows in
+`consent_records` with nothing updated in place.
+
+### Two bugs that only running it could find
+
+Worth stating plainly, because they say something about where tests stop helping.
+
+**Consent was completely broken against a real database.** Two purposes had been renamed
+in the Python constants while the first migration's CHECK constraint kept the old names,
+so every `POST /privacy/consent` failed. Three hundred unit tests passed throughout,
+because they run against an in-memory fake that has no constraint to violate — and
+alembic's `compare_metadata` missed it too, since autogenerate compares whether a CHECK
+constraint _exists_, not what it says. There is now a parametrised test asserting each
+constraint accepts exactly the values its Python constant lists.
+
+**The second migration was unusable.** Its `down_revision` named the module rather than
+the revision id, which is a dangling edge in the revision map — every alembic command
+dies on a `KeyError`. The test that caught it needs no database at all; I had written it
+off as part of the Docker-blocked set, which was a lazier claim than it looked.
+
+### Not built, in the order I would build them
+
+1. **The generated API client and its CI drift check.** The frontend's request and
+   response types are hand-written today, so a Pydantic schema can change without
+   anything failing.
+2. **Rate limiting on auth.** The waitlist has it — a Postgres fixed-window counter keyed
+   on a hashed IP — because it is the only anonymous write. Login is the next target.
+3. **The manual screen-reader pass**, then Playwright and axe. Automated tooling catches
+   only 30–50% of accessibility issues, so **this project does not claim WCAG 2.2 AA** —
+   only that its automated gates pass. See the accessibility section.
+4. **Consent for signed-out visitors.** The cookie banner writes `localStorage` only;
+   nothing reaches `consent_records` until there is an account to attach it to.
+5. Storybook, deployment, and the C4 diagrams.
 
 The trade I made was depth over breadth: a backend where the interesting decisions —
-token reuse detection, append-only consent, an idempotent queue — are implemented and
-tested properly, rather than a wider surface with all of them stubbed.
+token reuse detection, append-only consent, an idempotent queue on Postgres — are
+implemented, tested, and then actually run, rather than a wider surface with all of them
+stubbed.
