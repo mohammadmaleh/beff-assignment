@@ -4,9 +4,22 @@ import { cx } from '../../lib/cx/index';
 
 export type AlertTone = 'info' | 'success' | 'warning' | 'danger';
 
+/**
+ * The word a screen reader hears before the title, per tone.
+ *
+ * Required, and with no English default on purpose. This string is spoken and
+ * never seen, so a wrong one is invisible to every visual check, every
+ * screenshot and every reviewer who is not listening — which is exactly how
+ * `packages/ui` came to announce "Error:" on the German pages. A default here
+ * would put the bug back one call site at a time.
+ */
+export type AlertPrefixes = Record<AlertTone, string>;
+
 export interface AlertProps {
   tone?: AlertTone;
   title: string;
+  /** Localised tone words. See {@link AlertPrefixes} for why there is no default. */
+  prefixes: AlertPrefixes;
   /**
    * Announce even when the tone would not normally warrant it. Needed when this
    * alert *replaces* a live region — an empty state arriving where a "loading…"
@@ -26,34 +39,37 @@ export interface AlertProps {
  * The glyph is `aria-hidden` because the prefix word beside it already conveys
  * the same thing to a screen reader; announcing both would read as noise.
  */
-const TONES: Record<AlertTone, { class: string; glyph: string; prefix: string; live: boolean }> = {
+const TONES: Record<AlertTone, { class: string; glyph: string; live: boolean }> = {
   info: {
     class: 'border-border-default text-text-default',
     glyph: 'ℹ',
-    prefix: 'Note',
     live: false,
   },
   success: {
     class: 'border-status-success-fg text-status-success-fg',
     glyph: '✓',
-    prefix: 'Success',
     live: true,
   },
   warning: {
     class: 'border-status-warning-fg text-status-warning-fg',
     glyph: '▲',
-    prefix: 'Warning',
     live: true,
   },
   danger: {
     class: 'border-status-danger-fg text-status-danger-fg',
     glyph: '✕',
-    prefix: 'Error',
     live: true,
   },
 };
 
-export function Alert({ tone = 'info', title, announce = false, children, className }: AlertProps) {
+export function Alert({
+  tone = 'info',
+  title,
+  prefixes,
+  announce = false,
+  children,
+  className,
+}: AlertProps) {
   const spec = TONES[tone];
 
   return (
@@ -75,7 +91,7 @@ export function Alert({ tone = 'info', title, announce = false, children, classN
       </span>
       <div className="flex flex-col gap-1">
         <p className="font-medium">
-          <span className="sr-only">{spec.prefix}: </span>
+          <span className="sr-only">{prefixes[tone]}: </span>
           {title}
         </p>
         {children ? <div className="text-text-default">{children}</div> : null}

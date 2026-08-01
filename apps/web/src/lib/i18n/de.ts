@@ -118,6 +118,33 @@ export const de: BaseDictionary = {
     dismiss: 'Schließen',
   },
 
+  a11y: {
+    alertPrefixes: {
+      info: 'Hinweis',
+      success: 'Erfolg',
+      warning: 'Warnung',
+      danger: 'Fehler',
+    },
+    trend: {
+      up: 'gestiegen',
+      down: 'gefallen',
+      flat: 'unverändert',
+    },
+    /**
+     * "In der Spezifikation" rather than a literal "in Spezifikation": this is
+     * the wording a German quality engineer uses on a Prüfprotokoll, and the
+     * point of the readout is that it sounds like the domain rather than like a
+     * translation of it.
+     */
+    specBand: {
+      inSpec: 'in der Spezifikation',
+      aboveUpper: 'außerhalb der Spezifikation, über der oberen Grenze',
+      belowLower: 'außerhalb der Spezifikation, unter der unteren Grenze',
+      specification: 'Spezifikation',
+      target: 'Ziel',
+    },
+  },
+
   errors: {
     notFoundTitle: 'Diese Seite gibt es nicht',
     notFoundBody:

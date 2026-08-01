@@ -74,7 +74,7 @@ export function AuthForm({ mode, locale }: { mode: Mode; locale: Locale }) {
   return (
     <form onSubmit={(event) => void onSubmit(event)} noValidate className="flex flex-col gap-6">
       {formError === null ? null : (
-        <Alert tone="danger" title={t.auth.failedTitle}>
+        <Alert tone="danger" title={t.auth.failedTitle} prefixes={t.a11y.alertPrefixes}>
           <p>{formError}</p>
         </Alert>
       )}

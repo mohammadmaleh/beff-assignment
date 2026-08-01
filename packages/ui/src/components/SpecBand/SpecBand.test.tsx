@@ -1,7 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { SpecBand } from './SpecBand';
+import { SpecBand, type SpecBandWords } from './SpecBand';
+
+const WORDS: SpecBandWords = {
+  inSpec: 'in spec',
+  aboveUpper: 'out of spec, above the upper limit',
+  belowLower: 'out of spec, below the lower limit',
+  specification: 'Specification',
+  target: 'target',
+};
 
 /** Porosity after calendering runs 30–35% — see CONTEXT.md. */
 const POROSITY = {
@@ -9,6 +17,7 @@ const POROSITY = {
   lowerLimit: 30,
   upperLimit: 35,
   unit: '%',
+  words: WORDS,
 } as const;
 
 describe('SpecBand', () => {
@@ -46,6 +55,36 @@ describe('SpecBand', () => {
   it('is a figure with a caption, so the label travels with the graphic', () => {
     render(<SpecBand {...POROSITY} value={32.4} />);
     expect(screen.getByRole('figure')).toHaveTextContent('Electrode porosity');
+  });
+
+  it('builds the whole readout from the caller’s words, with no English left in it', () => {
+    // The regression test for the finding that produced this API. `SpecBand`
+    // used to compose its readout from English literals, so the German landing
+    // page announced the product's signature element as "32.4 % — in spec.
+    // Specification 30.0–35.0 %, target 32.5 %" inside a `lang="de"` document —
+    // a WCAG 3.1.2 failure that no visual check and no axe rule could see.
+    render(
+      <SpecBand
+        {...POROSITY}
+        value={36.8}
+        target={32.5}
+        words={{
+          inSpec: 'in der Spezifikation',
+          aboveUpper: 'außerhalb der Spezifikation, über der oberen Grenze',
+          belowLower: 'außerhalb der Spezifikation, unter der unteren Grenze',
+          specification: 'Spezifikation',
+          target: 'Ziel',
+        }}
+      />,
+    );
+
+    const readout = screen.getByRole('figure').textContent ?? '';
+    expect(readout).toContain('außerhalb der Spezifikation, über der oberen Grenze');
+    expect(readout).toContain('Spezifikation 30.0–35.0 %');
+    expect(readout).toContain('Ziel 32.5 %');
+    for (const english of ['in spec', 'out of spec', 'Specification', 'target']) {
+      expect(readout).not.toContain(english);
+    }
   });
 
   it('does not draw outside the track when the reading is wildly out', () => {

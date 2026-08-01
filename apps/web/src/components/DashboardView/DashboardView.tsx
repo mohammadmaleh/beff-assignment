@@ -55,6 +55,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
           errorTitle={t.dashboard.errorTitle}
           emptyTitle={t.dashboard.emptyTitle}
           emptyBody={<p>{t.dashboard.emptyBody}</p>}
+          alertPrefixes={t.a11y.alertPrefixes}
         >
           {data === undefined ? null : (
             <div className="flex flex-col gap-16">
@@ -69,6 +70,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                     unit="%"
                     delta={`${signed.format(data.first_pass_yield_delta_pp)} pp`}
                     trend={trendOf(data.first_pass_yield_delta_pp)}
+                    trendWords={t.a11y.trend}
                     // Yield up is good news; the next tile inverts this for
                     // exactly the same arrow.
                     intent={data.first_pass_yield_delta_pp >= 0 ? 'positive' : 'negative'}
@@ -79,6 +81,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                     unit="%"
                     delta={`${signed.format(data.scrap_rate_delta_pp)} pp`}
                     trend={trendOf(data.scrap_rate_delta_pp)}
+                    trendWords={t.a11y.trend}
                     intent={data.scrap_rate_delta_pp <= 0 ? 'positive' : 'negative'}
                   />
                   <Metric
@@ -127,6 +130,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                         (t.dashboard.parameters as Record<string, string>)[band.parameter] ??
                         band.parameter
                       }
+                      words={t.a11y.specBand}
                       value={band.value}
                       lowerLimit={band.lower_limit}
                       upperLimit={band.upper_limit}

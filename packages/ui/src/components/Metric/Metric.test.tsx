@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { Metric } from './Metric';
+import { Metric, type MetricTrendWords } from './Metric';
+
+const TREND: MetricTrendWords = { up: 'up', down: 'down', flat: 'unchanged' };
 
 describe('Metric', () => {
   it('renders the figure with its label and unit', () => {
@@ -22,19 +24,19 @@ describe('Metric', () => {
     ['down', 'down'],
     ['flat', 'unchanged'],
   ] as const)('spells the %s trend out for a screen reader', (trend, word) => {
-    render(<Metric label="First-pass yield" value="72.4" delta="+1.4 pp" trend={trend} />);
+    render(<Metric label="First-pass yield" value="72.4" delta="+1.4 pp" trend={trend} trendWords={TREND} />);
     expect(screen.getByText(word, { exact: false })).toBeInTheDocument();
   });
 
   it('leaves the delta neutral when no intent is given', () => {
     // Yield rising is good news; scrap rising is not. The same arrow has to
     // mean opposite things in two tiles, so the component refuses to guess.
-    render(<Metric label="Scrap rate" value="4.1" delta="+0.3 pp" trend="up" />);
+    render(<Metric label="Scrap rate" value="4.1" delta="+0.3 pp" trend="up" trendWords={TREND} />);
     expect(screen.getByText('+0.3 pp').parentElement).toHaveClass('text-text-muted');
   });
 
   it('colours the delta by intent rather than by direction', () => {
-    render(<Metric label="Scrap rate" value="4.1" delta="+0.3 pp" trend="up" intent="negative" />);
+    render(<Metric label="Scrap rate" value="4.1" delta="+0.3 pp" trend="up" trendWords={TREND} intent="negative" />);
     expect(screen.getByText('+0.3 pp').parentElement).toHaveClass('text-status-danger-fg');
   });
 

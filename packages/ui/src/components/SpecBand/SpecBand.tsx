@@ -1,8 +1,29 @@
 import { cx } from '../../lib/cx/index';
 
+/**
+ * The words the text readout is built from.
+ *
+ * Required, with no English default. The readout is the *only* form of this
+ * component a screen reader can perceive — the bar itself is `aria-hidden` —
+ * so a default in the wrong language is not a cosmetic slip, it is the entire
+ * accessible content of the signature element in a language the reader may not
+ * have. This is precisely the bug the screen-reader pass found on `/de`.
+ */
+export interface SpecBandWords {
+  inSpec: string;
+  aboveUpper: string;
+  belowLower: string;
+  /** Introduces the limits, e.g. `Specification` / `Spezifikation`. */
+  specification: string;
+  /** Introduces the target value, e.g. `target` / `Ziel`. */
+  target: string;
+}
+
 export interface SpecBandProps {
   /** What is being measured, e.g. `Electrode porosity`. */
   label: string;
+  /** Localised readout vocabulary. See {@link SpecBandWords}. */
+  words: SpecBandWords;
   value: number;
   /** Lower specification limit. Below this the part is out of spec. */
   lowerLimit: number;
@@ -41,6 +62,7 @@ export interface SpecBandProps {
  */
 export function SpecBand({
   label,
+  words,
   value,
   lowerLimit,
   upperLimit,
@@ -59,11 +81,7 @@ export function SpecBand({
   const pct = (n: number): number => Math.min(100, Math.max(0, ((n - min) / span) * 100));
 
   const inSpec = value >= lowerLimit && value <= upperLimit;
-  const verdict = inSpec
-    ? 'in spec'
-    : value > upperLimit
-      ? 'out of spec, above the upper limit'
-      : 'out of spec, below the lower limit';
+  const verdict = inSpec ? words.inSpec : value > upperLimit ? words.aboveUpper : words.belowLower;
 
   const fmt = (n: number): string => n.toFixed(precision);
   const suffix = unit ? ` ${unit}` : '';
@@ -133,9 +151,9 @@ export function SpecBand({
 
       <p className="text-text-muted text-[length:var(--type-ui-size-xs)]">
         {fmt(value)}
-        {suffix} — {verdict}. Specification {fmt(lowerLimit)}–{fmt(upperLimit)}
+        {suffix} — {verdict}. {words.specification} {fmt(lowerLimit)}–{fmt(upperLimit)}
         {suffix}
-        {target === undefined ? '' : `, target ${fmt(target)}${suffix}`}.
+        {target === undefined ? '' : `, ${words.target} ${fmt(target)}${suffix}`}.
       </p>
     </figure>
   );

@@ -107,6 +107,15 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
     <DataState
       status={status === 'pending' ? 'loading' : status === 'error' ? 'error' : 'ready'}
       loadingLabel={t.common.loading}
+      // The wizard has no empty state — the step list is a constant, so a
+      // successful load always has something to render. The title is supplied
+      // anyway because `DataState` will not let a caller leave a user-facing
+      // string to a default, and a default is how the German pages ended up
+      // announcing English.
+      emptyTitle={t.errors.unexpectedTitle}
+      errorTitle={t.errors.unexpectedTitle}
+      errorBody={<p>{t.errors.unexpectedBody}</p>}
+      alertPrefixes={t.a11y.alertPrefixes}
     >
       <div className="mx-auto max-w-lg">
         <p className="text-text-muted text-[length:var(--type-ui-size-sm)]">
@@ -126,7 +135,12 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
 
         {resumed ? (
           <div className="mt-6">
-            <Alert tone="info" announce title={t.onboarding.resumeNotice} />
+            <Alert
+              tone="info"
+              announce
+              title={t.onboarding.resumeNotice}
+              prefixes={t.a11y.alertPrefixes}
+            />
           </div>
         ) : null}
 

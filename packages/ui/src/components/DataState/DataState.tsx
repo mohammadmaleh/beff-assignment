@@ -1,16 +1,24 @@
 import type { ReactNode } from 'react';
 
-import { Alert } from '../Alert/index';
+import { Alert, type AlertPrefixes } from '../Alert/index';
 
 export interface DataStateProps {
   status: 'loading' | 'error' | 'ready';
   /** True when the request succeeded but there is nothing to show. */
   empty?: boolean;
   loadingLabel: string;
-  emptyTitle?: string;
+  /**
+   * Every one of these is required and none has a default. The empty and error
+   * titles used to fall back to English, which meant a German panel read
+   * correctly right up until the request failed — the one moment the user most
+   * needs to understand what happened.
+   */
+  emptyTitle: string;
   emptyBody?: ReactNode;
-  errorTitle?: string;
+  errorTitle: string;
   errorBody?: ReactNode;
+  /** Passed through to the {@link Alert} this renders in its error and empty states. */
+  alertPrefixes: AlertPrefixes;
   /** Rendered only when the data is ready and non-empty. */
   children: ReactNode;
 }
@@ -27,10 +35,11 @@ export function DataState({
   status,
   empty = false,
   loadingLabel,
-  emptyTitle = 'Nothing to show yet',
+  emptyTitle,
   emptyBody,
-  errorTitle = 'That did not load',
+  errorTitle,
   errorBody,
+  alertPrefixes,
   children,
 }: DataStateProps) {
   if (status === 'loading') {
@@ -52,7 +61,7 @@ export function DataState({
 
   if (status === 'error') {
     return (
-      <Alert tone="danger" title={errorTitle}>
+      <Alert tone="danger" title={errorTitle} prefixes={alertPrefixes}>
         {errorBody}
       </Alert>
     );
@@ -63,7 +72,7 @@ export function DataState({
     // request with no rows is not an error — telling the user it is teaches
     // them to distrust every error the app shows.
     return (
-      <Alert tone="info" announce title={emptyTitle}>
+      <Alert tone="info" announce title={emptyTitle} prefixes={alertPrefixes}>
         {emptyBody}
       </Alert>
     );

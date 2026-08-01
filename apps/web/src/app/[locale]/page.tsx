@@ -99,6 +99,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
           <div className="mt-10 flex max-w-xl flex-col gap-8">
             <SpecBand
               label={t.landing.signatureExampleLabel}
+              words={t.a11y.specBand}
               value={32.4}
               lowerLimit={30}
               upperLimit={35}
@@ -107,6 +108,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             />
             <SpecBand
               label={t.landing.signatureExampleLabel}
+              words={t.a11y.specBand}
               value={36.8}
               lowerLimit={30}
               upperLimit={35}

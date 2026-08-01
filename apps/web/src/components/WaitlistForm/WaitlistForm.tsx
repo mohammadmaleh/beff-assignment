@@ -63,7 +63,7 @@ export function WaitlistForm({ locale }: { locale: Locale }) {
 
   if (status === 'sent') {
     return (
-      <Alert tone="success" title={t.landing.waitlistSuccessTitle}>
+      <Alert tone="success" title={t.landing.waitlistSuccessTitle} prefixes={t.a11y.alertPrefixes}>
         <p>{t.landing.waitlistSuccessBody}</p>
       </Alert>
     );
@@ -98,7 +98,7 @@ export function WaitlistForm({ locale }: { locale: Locale }) {
       />
 
       {status === 'failed' ? (
-        <Alert tone="danger" title={t.landing.waitlistErrorTitle}>
+        <Alert tone="danger" title={t.landing.waitlistErrorTitle} prefixes={t.a11y.alertPrefixes}>
           <p>{t.landing.waitlistErrorBody}</p>
         </Alert>
       ) : null}

@@ -121,6 +121,45 @@ export const en = {
   },
 
   /**
+   * Strings that are spoken but mostly never seen.
+   *
+   * These live here rather than inside `packages/ui` because a component
+   * library cannot know what language the page is in, and a component that
+   * guesses guesses English. The screen-reader pass found the consequence: the
+   * German landing page announced its signature element — the tolerance band —
+   * entirely in English, because `SpecBand` built its readout from literals.
+   * Every one of these is now a required prop with no default, so the compiler
+   * catches the next one.
+   */
+  a11y: {
+    /** Spoken before an alert's title, so the tone is not carried by colour alone. */
+    alertPrefixes: {
+      info: 'Note',
+      success: 'Success',
+      warning: 'Warning',
+      danger: 'Error',
+    },
+    /** Replaces the ▲ ▼ — glyphs, which are `aria-hidden`. */
+    trend: {
+      up: 'up',
+      down: 'down',
+      flat: 'unchanged',
+    },
+    /**
+     * The tolerance band's text readout. The bar is `aria-hidden`, so this is
+     * the whole of what a screen reader gets — the verdict in words rather than
+     * a description of a drawing.
+     */
+    specBand: {
+      inSpec: 'in spec',
+      aboveUpper: 'out of spec, above the upper limit',
+      belowLower: 'out of spec, below the lower limit',
+      specification: 'Specification',
+      target: 'target',
+    },
+  },
+
+  /**
    * Whole-page failures: a wrong URL, and an unhandled exception inside a route.
    * Distinct from `fieldErrors`, which is about one input being wrong.
    */

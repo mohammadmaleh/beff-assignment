@@ -356,13 +356,43 @@ Target **WCAG 2.2 AA**. What is actually in place today, separated from what is 
   executable.
 - The suite runs against the **standalone server the Docker image actually
   executes**, not `next start`, which does not support that output mode.
+- **The screen-reader pass was done, and its findings are now a gate.**
+  `packages/e2e/tests/screen-reader.spec.ts` walks Chromium's own accessibility
+  tree — the computed roles and names Chromium hands to UIA, IA2 and ATK, and so
+  the same text NVDA, JAWS and Orca read out. It asserts what axe cannot: that
+  every page has one `h1` and skips no heading level, that repeated landmarks
+  have distinct names, that no control is left unnamed or named "read more",
+  that no two links share a name and differ in destination, that every field
+  announces its label, its required state and its `autocomplete` purpose — and
+  that **the German surfaces are announced in German**.
+
+  That last rule exists because the pass found a real defect. `packages/ui`
+  built its screen-reader text from English literals, so `/de` announced the
+  product's signature element as _"32.4 % — in spec. Specification 30.0–35.0 %,
+  target 32.5 %"_ inside a `lang="de"` document. The tolerance-band drawing is
+  `aria-hidden`, so that readout was the **entire** accessible content of the
+  component — a WCAG 3.1.2 (AA) failure that no screenshot, no contrast gate and
+  no axe rule could see, because every one of them is indifferent to which
+  language a correct-looking string is in. Three sibling components (`Alert`,
+  `Metric`, `DataState`) carried the same latent bug in states the static pages
+  never reach.
+
+  The fix is an API change, not a translation: every user-perceivable string in
+  `packages/ui` is now a **required prop with no English default**, so the
+  compiler — not a reviewer's ear — catches the next one. The gate keeps a list
+  of the offending English phrases and fails if any is spoken on a German page
+  without a `lang` marking.
 
 **Not done, and not claimed:**
 
-- **The manual screen-reader pass has not happened.** Automated tooling catches only
-  30–50% of issues, so this is the half that matters. Without it, **this project does
-  not claim WCAG 2.2 AA** — only that its automated gates pass. Stating it the other way
-  round would be the kind of claim that gets found out by the first person who tries.
+- **No human has listened to this with a real screen reader.** The gate above
+  verifies what Chromium _exposes_; it cannot verify how NVDA, JAWS or VoiceOver
+  behave with it — browse-versus-focus mode switching, verbosity settings, and
+  the places where each of them diverges from the spec. That gap is real, so
+  **this project still does not claim WCAG 2.2 AA** — it claims that its
+  automated gates pass and that the accessibility tree has been audited
+  surface by surface. Stating it the other way round would be the kind of claim
+  that gets found out by the first person who tries.
 - Only Chromium. WebKit and mobile are on the documented cut list.
 - The authenticated surfaces are not in the E2E suite — those need the stack up,
   and the suite is deliberately scoped to what runs without a database.
@@ -540,10 +570,12 @@ off as part of the Docker-blocked set, which was a lazier claim than it looked.
 
 ### Not built, in the order I would build them
 
-1. **The manual screen-reader pass.** Playwright and axe now run in CI over
-   every surface that does not need the API, but automated tooling catches only
-   30–50% of accessibility issues, so **this project does not claim WCAG 2.2 AA**
-   — only that its automated gates pass. See the accessibility section.
+1. **Listening to it with a real screen reader.** The accessibility tree is now
+   audited surface by surface and the audit is a gate — it found the German
+   pages announcing their signature element in English. But nobody has run NVDA,
+   JAWS or VoiceOver against this, and those diverge from the tree in ways only
+   listening reveals. **This project therefore still does not claim WCAG 2.2
+   AA.** See the accessibility section.
 2. **Consent for signed-out visitors.** The cookie banner writes `localStorage`
    only; nothing reaches `consent_records` until there is an account to attach it
    to. Defensible, but the privacy page should say so.
