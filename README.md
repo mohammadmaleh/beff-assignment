@@ -50,24 +50,67 @@ cd apps/api && uv sync && uv run uvicorn beff.main:app --reload   # backend
 
 ## Architecture
 
+### C4 level 1 — context
+
+Who uses the system, and what it touches. Deliberately short: at pre-launch there
+are no third-party processors, and that is itself a GDPR decision — every
+external dependency is a data flow to justify in the privacy policy.
+
+```mermaid
+graph LR
+    engineer["Process engineer<br/><i>quality engineer, production manager</i>"]
+    visitor["Prospective customer"]
+    crawler["Search crawler"]
+
+    beff["<b>Beff</b><br/>Production intelligence for<br/>battery cell manufacturing"]
+
+    visitor --> beff
+    engineer --> beff
+    crawler --> beff
+
+    beff -.->|"no third-party processors —<br/>fonts self-hosted, no analytics vendor,<br/>no email provider yet"| none[" "]
+
+    style beff fill:#476f95,color:#faf8f5
+    style none fill:none,stroke:none
 ```
-                     ┌──────────────────────────────┐
-   crawlers ────────▶│  Next.js 16 (App Router)     │
-                     │  (marketing)  STATIC ◀── SSG per locale
-                     │  (auth)       static shell + CSR
-                     │  (dashboard)  CSR + React Query
-                     └──────────┬───────────────────┘
-                                │ credentials: include
-                     ┌──────────▼───────────────────┐
-                     │  FastAPI (Python 3.12)       │
-                     │  auth · onboarding · privacy │
-                     │  metrics · waitlist          │
-                     └──────────┬───────────────────┘
-                                ▼
-                          PostgreSQL 16
-                     (also the job queue —
-                      FOR UPDATE SKIP LOCKED)
+
+### C4 level 2 — containers
+
+```mermaid
+graph TD
+    subgraph browser["Browser"]
+        web["<b>apps/web</b><br/>Next.js 16 App Router<br/><br/>Marketing + legal: SSG per locale<br/>Authenticated app: client-rendered"]
+    end
+
+    subgraph server["Server"]
+        api["<b>apps/api</b><br/>FastAPI, Python 3.12<br/><br/>auth · onboarding · privacy<br/>metrics · waitlist"]
+        worker["<b>worker</b><br/>Same image, different command<br/><br/>Drains the export queue"]
+        migrate["<b>migrate</b><br/>One-shot<br/><br/>alembic upgrade head, then seed"]
+    end
+
+    db[("<b>PostgreSQL 16</b><br/><br/>Application data<br/>+ the job queue<br/>+ rate-limit counters")]
+
+    web -->|"JSON over HTTPS<br/>bearer access token<br/>+ httpOnly refresh cookie"| api
+    api --> db
+    worker -->|"SELECT … FOR UPDATE<br/>SKIP LOCKED"| db
+    migrate --> db
+    migrate -.->|"gates startup<br/>service_completed_successfully"| api
+    migrate -.-> worker
+
+    style web fill:#476f95,color:#faf8f5
+    style api fill:#476f95,color:#faf8f5
+    style worker fill:#2f5374,color:#faf8f5
+    style migrate fill:#686662,color:#faf8f5
 ```
+
+**The frontend never talks to the database, and the backend never renders HTML.**
+That boundary is what makes the two independently deployable, and it is the
+reason authenticated pages are client-rendered — see decision 3 below.
+
+**There is no Redis.** The queue, the rate limiter and the application data all
+live in one PostgreSQL. At pre-launch volume a second datastore is a thing to
+run, deploy, monitor and back up, in exchange for capabilities a table already
+provides.
 
 | Layer    | Choice                                                                   |
 | -------- | ------------------------------------------------------------------------ |
@@ -367,6 +410,54 @@ IP addresses are personal data, so they are stored as a salted hash plus country
 never raw, never city-level.
 
 ---
+
+## Art. 30 register — records of processing activities
+
+Art. 30 GDPR requires a controller to maintain a written record of its processing.
+It is not the privacy policy: the policy is what the data subject reads, this is
+what a supervisory authority asks for. Both exist here, and the rows below mirror
+the table on `/datenschutz` — **if they ever disagree, one of the two is a lie.**
+
+**Controller.** Beff GmbH, Musterstraße 1, 70173 Stuttgart, Germany.
+`datenschutz@example.invalid`. (Placeholders — this is a demonstration project.)
+
+| #   | Processing activity  | Categories of data subject | Categories of personal data                                      | Purpose                                             | Legal basis                                  | Retention                                 | Recipients            |
+| --- | -------------------- | -------------------------- | ---------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------- | ----------------------------------------- | --------------------- |
+| 1   | Account provision    | Users                      | Email, display name, password hash                               | Provide the service                                 | Art. 6(1)(b) contract                        | Until erasure, then scrubbed in place     | None                  |
+| 2   | Session management   | Users                      | Refresh tokens (hashed), access tokens                           | Keep the user signed in                             | Art. 6(1)(b) contract                        | 30 days from last use                     | None                  |
+| 3   | Waiting list         | Prospective customers      | Work email, company name                                         | Contact about pre-launch access                     | Art. 6(1)(a) consent                         | 24 months, or until withdrawal            | None                  |
+| 4   | Consent records      | Users                      | Purpose, policy version, timestamp, salted IP hash, country code | Demonstrate consent (accountability)                | Art. 6(1)(c) legal obligation, per Art. 7(1) | 3 years after the consent ends            | None                  |
+| 5   | Production data      | Users                      | Plant and line names, batch metrics                              | Deliver the product's core function                 | Art. 6(1)(b) contract                        | Until erasure                             | None                  |
+| 6   | Data subject exports | Users                      | A copy of rows 1, 4 and 5                                        | Satisfy Art. 15 and Art. 20                         | Art. 6(1)(c) legal obligation                | Deleted on erasure; no separate retention | The data subject only |
+| 7   | Abuse prevention     | All callers                | Salted IP hash, request counts                                   | Rate limiting on anonymous and credential endpoints | Art. 6(1)(f) legitimate interest             | Counters expire with their window         | None                  |
+
+### Technical and organisational measures (Art. 32)
+
+| Measure                   | How                                                                                                                                                                                |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pseudonymisation          | IP addresses are **only ever** stored as a salted SHA-256, in both consent records and rate-limit counters. Country code is the finest location granularity anywhere in the schema |
+| Encryption of credentials | Argon2id, parameters stored with the hash so the cost factor can be raised and upgraded on next login                                                                              |
+| Confidentiality           | Refresh tokens are httpOnly, `SameSite=lax`, scoped to `/api/v1/auth`, and stored hashed. Access tokens live in memory, never `localStorage`                                       |
+| Resilience                | Refresh-token rotation with **reuse detection** — replaying a spent token revokes the whole family                                                                                 |
+| Integrity                 | `consent_records` is append-only, enforced by a database trigger rather than by convention                                                                                         |
+| Availability              | Export jobs are persistent, retried, and have a dead-letter state; the queue survives a worker being killed mid-job                                                                |
+| Testing                   | Schema rules, GDPR behaviour and accessibility are all gated in CI. Each gate was observed failing before being trusted                                                            |
+
+### Data subject rights, and where they are exercised
+
+| Right            | Article   | Where                                                        |
+| ---------------- | --------- | ------------------------------------------------------------ |
+| Access           | Art. 15   | Profile → "Take your data with you"                          |
+| Rectification    | Art. 16   | Profile → details                                            |
+| Erasure          | Art. 17   | Profile → danger zone. Also the brief's mandated offboarding |
+| Portability      | Art. 20   | The same export — JSON, self-describing                      |
+| Withdraw consent | Art. 7(3) | Profile → consent, and the cookie panel                      |
+| Complain         | Art. 77   | Landesbeauftragte für den Datenschutz Baden-Württemberg      |
+
+**Not in scope, and stated rather than omitted:** no third-country transfers, no
+automated decision-making under Art. 22, no processors, and no special-category
+data under Art. 9. Adding any of those would need a new row here before it needs
+code.
 
 ## Testing
 
