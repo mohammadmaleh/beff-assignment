@@ -300,13 +300,29 @@ Target **WCAG 2.2 AA**. What is actually in place today, separated from what is 
   surfaces.
 - `prefers-reduced-motion` respected globally; only `transform` and `opacity` animate.
 
+- **`axe-core` runs in a real browser** at WCAG 2.2 AA over the landing page in
+  both locales, both legal pages, login, register, the cookie banner, dark mode
+  and the 404. `best-practice` is deliberately excluded: it mixes genuine
+  failures with stylistic opinion, and a gate that fires on opinion is one people
+  learn to override. Dark mode gets its own pass because contrast is the one axe
+  rule that depends on rendered colour.
+- **Keyboard flows are asserted, which axe cannot do.** The skip link is the
+  first thing `Tab` reaches and is visible when focused; the focus ring is never
+  removed; the cookie banner can be answered and the locale switched without a
+  mouse. That is the M4 gate — every flow completable keyboard-only — made
+  executable.
+- The suite runs against the **standalone server the Docker image actually
+  executes**, not `next start`, which does not support that output mode.
+
 **Not done, and not claimed:**
 
 - **The manual screen-reader pass has not happened.** Automated tooling catches only
   30–50% of issues, so this is the half that matters. Without it, **this project does
   not claim WCAG 2.2 AA** — only that its automated gates pass. Stating it the other way
   round would be the kind of claim that gets found out by the first person who tries.
-- No `axe-core` run, because there is no E2E suite yet to run it in.
+- Only Chromium. WebKit and mobile are on the documented cut list.
+- The authenticated surfaces are not in the E2E suite — those need the stack up,
+  and the suite is deliberately scoped to what runs without a database.
 - No Storybook, so there is no per-state a11y assertion.
 
 ## GDPR
@@ -433,10 +449,10 @@ off as part of the Docker-blocked set, which was a lazier claim than it looked.
 
 ### Not built, in the order I would build them
 
-1. **The manual screen-reader pass**, then Playwright and axe. Automated tooling
-   catches only 30–50% of accessibility issues, so **this project does not claim
-   WCAG 2.2 AA** — only that its automated gates pass. See the accessibility
-   section.
+1. **The manual screen-reader pass.** Playwright and axe now run in CI over
+   every surface that does not need the API, but automated tooling catches only
+   30–50% of accessibility issues, so **this project does not claim WCAG 2.2 AA**
+   — only that its automated gates pass. See the accessibility section.
 2. **Consent for signed-out visitors.** The cookie banner writes `localStorage`
    only; nothing reaches `consent_records` until there is an account to attach it
    to. Defensible, but the privacy page should say so.
