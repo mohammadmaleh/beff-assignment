@@ -1,5 +1,17 @@
 """Waitlist wiring."""
 
-from beff.modules.waitlist.dependencies.providers import Service, get_waitlist_service
+from beff.modules.waitlist.dependencies.providers import (
+    WAITLIST_LIMIT,
+    Service,
+    WaitlistRateLimit,
+    get_waitlist_service,
+    waitlist_rate_limit,
+)
 
-__all__ = ["Service", "get_waitlist_service"]
+__all__ = [
+    "WAITLIST_LIMIT",
+    "Service",
+    "WaitlistRateLimit",
+    "get_waitlist_service",
+    "waitlist_rate_limit",
+]

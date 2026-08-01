@@ -47,7 +47,7 @@ from beff.modules.privacy.repository import (
     InMemoryExportRepository,
 )
 from beff.modules.privacy.service import ConsentService, ErasureService, ExportService
-from beff.modules.waitlist.dependencies import get_waitlist_service
+from beff.modules.waitlist.dependencies import get_waitlist_service, waitlist_rate_limit
 from beff.modules.waitlist.repository import InMemoryWaitlistRepository
 from beff.modules.waitlist.service import WaitlistService
 
@@ -120,6 +120,11 @@ async def api(fx: Fixtures) -> AsyncIterator[AsyncClient]:
     )
     app.dependency_overrides[get_erasure_service] = lambda: ErasureService(fx.erasure)
     app.dependency_overrides[get_waitlist_service] = lambda: WaitlistService(fx.waitlist)
+    # The waitlist route carries a rate limiter that needs a real session. It is
+    # covered against a live database in `test_rate_limit.py`, including that the
+    # route enforces it; here it would only mean these tests silently start
+    # 429ing once someone raises the parametrisation count.
+    app.dependency_overrides[waitlist_rate_limit] = lambda: None
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -137,6 +142,7 @@ async def anon(fx: Fixtures) -> AsyncIterator[AsyncClient]:
     """
     app = create_app()
     app.dependency_overrides[get_waitlist_service] = lambda: WaitlistService(fx.waitlist)
+    app.dependency_overrides[waitlist_rate_limit] = lambda: None
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:

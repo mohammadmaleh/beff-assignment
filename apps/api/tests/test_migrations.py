@@ -77,6 +77,7 @@ async def test_upgrade_head_then_downgrade_base_runs_clean(
             "onboarding_progress",
             "plants",
             "process_measurements",
+            "rate_limit_counters",
             "refresh_tokens",
             "scrap_events",
             "users",

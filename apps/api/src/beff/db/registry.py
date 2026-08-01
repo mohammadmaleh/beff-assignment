@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from sqlalchemy import MetaData
 
+from beff.core.ratelimit.model import RateLimitCounter
 from beff.db.base import Base
 from beff.modules.auth.models import RefreshToken, User
 from beff.modules.metrics.models import Batch, ProcessMeasurement, ScrapEvent
@@ -29,6 +30,7 @@ __all__ = [
     "OnboardingProgress",
     "Plant",
     "ProcessMeasurement",
+    "RateLimitCounter",
     "RefreshToken",
     "ScrapEvent",
     "User",

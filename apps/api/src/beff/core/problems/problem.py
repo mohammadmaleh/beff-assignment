@@ -21,6 +21,7 @@ from beff.core.errors import (
     NotFoundError,
     PermissionDeniedError,
 )
+from beff.core.ratelimit.errors import RateLimitExceededError
 
 __all__ = [
     "PROBLEM_CONTENT_TYPE",
@@ -43,6 +44,10 @@ _STATUS_BY_CATEGORY: tuple[tuple[type[AppError], int], ...] = (
     (NotFoundError, status.HTTP_404_NOT_FOUND),
     (ConflictError, status.HTTP_409_CONFLICT),
     (DomainValidationError, status.HTTP_422_UNPROCESSABLE_CONTENT),
+    # 429, not 422. The request was well-formed and would have succeeded a
+    # minute ago; calling it "invalid" sends the caller looking for a mistake in
+    # a payload that does not have one.
+    (RateLimitExceededError, status.HTTP_429_TOO_MANY_REQUESTS),
 )
 
 
