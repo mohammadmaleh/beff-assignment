@@ -86,6 +86,33 @@ class Settings(BaseSettings):
         return self.environment == "production"
 
     @model_validator(mode="after")
+    def normalise_database_driver(self) -> Self:
+        """Accept the URI managed Postgres actually hands out.
+
+        Northflank, Neon, Render, Railway and Heroku all issue
+        `postgres://...` or `postgresql://...`. `create_async_engine` rejects
+        both — without an explicit `+asyncpg` it loads the *sync* driver and
+        fails at connect time with "The asyncio extension requires an async
+        driver", which reads like a dependency problem rather than a URL one.
+
+        Doing it here rather than in the deployment is what lets a platform's
+        credential injection point straight at `DATABASE_URL`: no secret
+        rewritten by hand, and no password routed through a human to add six
+        characters. A URL that already names a driver is left alone — someone
+        who asked for psycopg meant it.
+        """
+        prefixes = ("postgresql+", "postgres+")
+        if not self.database_url.startswith(prefixes):
+            for scheme in ("postgresql://", "postgres://"):
+                if self.database_url.startswith(scheme):
+                    # Sliced, not `str.replace` — a generated password is
+                    # arbitrary bytes and may contain the scheme itself.
+                    rest = self.database_url[len(scheme) :]
+                    self.database_url = f"postgresql+asyncpg://{rest}"
+                    break
+        return self
+
+    @model_validator(mode="after")
     def reject_placeholder_secrets_in_production(self) -> Self:
         """Fail fast rather than serve production traffic on a published secret."""
         if self.environment != "production":

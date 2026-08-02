@@ -1,0 +1,14 @@
+{
+  "//": "Postgres for the deployed stack. Apply with: northflank create addon --project beff -f deploy/northflank/addon-postgres.json",
+  "//type": "The addon type string is `postgresql`, not `postgres` — the latter is rejected.",
+  "//version": "16 to match docker-compose.yml. Production and local disagreeing on a major version is how you find out about a behaviour change from a user.",
+  "//plan": "nf-compute-20 = 0.2 vCPU / 512 MB. nf-compute-10 (256 MB) is below what Postgres wants once a few connections are open.",
+  "name": "beff-postgres",
+  "type": "postgresql",
+  "version": "16-latest",
+  "billing": {
+    "deploymentPlan": "nf-compute-20",
+    "storage": 4096,
+    "replicas": 1
+  }
+}

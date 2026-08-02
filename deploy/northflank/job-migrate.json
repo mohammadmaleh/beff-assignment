@@ -1,0 +1,30 @@
+{
+  "//": "Schema migration + demo seed, as a one-shot. Apply with: northflank create job --project beff -f deploy/northflank/job-migrate.json",
+  "//why-a-job": "Migrations and serving are different concerns with different failure modes. A failed migration should stop the deploy with a readable error, not put the API into a crash loop — and this is also the shape that survives more than one API replica, where N containers racing to migrate on boot is a genuine hazard. Same reasoning as the compose `migrate` service.",
+  "//target": "The ONLY resource built from the `migrate` stage. That stage extends `prod` by adding alembic.ini and migrations/, so this image can rewrite the schema and the one serving traffic cannot.",
+  "//command": "Left as the image's CMD: `alembic upgrade head && python -m beff.seed`. The && is load-bearing — a failed upgrade must not be followed by a seed against a half-built schema.",
+  "//idempotency": "Verified locally by running it twice against the same database: the second run is an alembic no-op and the seed upserts. Northflank re-runs this on every deploy, so that is not optional.",
+  "name": "beff-migrate",
+  "description": "alembic upgrade head, then seed the demo account.",
+  "billing": {
+    "deploymentPlan": "nf-compute-10"
+  },
+  "vcsData": {
+    "projectUrl": "https://github.com/mohammadmaleh/beff-assignment",
+    "projectType": "github",
+    "projectBranch": "main"
+  },
+  "buildSettings": {
+    "dockerfile": {
+      "dockerFilePath": "/apps/api/Dockerfile",
+      "dockerWorkDir": "/apps/api",
+      "dockerfileTarget": "migrate",
+      "buildEngine": "buildkit"
+    }
+  },
+  "deployment": {
+    "docker": {
+      "configType": "default"
+    }
+  }
+}

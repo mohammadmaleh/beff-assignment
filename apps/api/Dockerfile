@@ -65,3 +65,23 @@ EXPOSE 8000
 # balancer in production.
 CMD ["uvicorn", "beff.main:app", "--host", "0.0.0.0", "--port", "8000", \
      "--proxy-headers", "--forwarded-allow-ips", "*"]
+
+# ── migrate ─────────────────────────────────────────────────────────────────
+# The one-shot that creates the schema and seeds the demo account, for hosts
+# where compose's `migrate` service has no equivalent (Northflank calls it a
+# job).
+#
+# It extends `prod` rather than `prod` being loosened to include these files.
+# The distinction is the whole point: `alembic.ini` and `migrations/` exist in
+# THIS image and not in the one that serves traffic, so a running API still
+# cannot rewrite the schema it is serving. Same reasoning as the compose
+# comment, and the same reason the bind-mounts there are scoped to `migrate`.
+FROM prod AS migrate
+
+COPY --chown=beff:beff alembic.ini ./alembic.ini
+COPY --chown=beff:beff migrations/ ./migrations/
+
+# Fails the deploy on a bad migration instead of leaving the API to crash-loop
+# against a schema that was never created. `&&` matters: a failed upgrade must
+# not be followed by a seed against a half-built schema.
+CMD ["sh", "-c", "alembic upgrade head && python -m beff.seed"]

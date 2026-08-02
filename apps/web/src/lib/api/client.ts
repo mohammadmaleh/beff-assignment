@@ -16,7 +16,11 @@ const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
  * `fetch` in the codebase. `/healthz` and `/readyz` deliberately sit outside it
  * — a load balancer probing liveness should not care what version the API is
  * on.
+ *
+ * Exported because the production Next rewrite proxies exactly this prefix
+ * (`lib/rewrites`). If the two ever disagree, every authenticated call 404s —
+ * so they read from one constant rather than repeating the string.
  */
-const PREFIX = '/api/v1';
+export const API_PREFIX = '/api/v1';
 
-export const apiUrl = (path: string): string => `${BASE}${PREFIX}${path}`;
+export const apiUrl = (path: string): string => `${BASE}${API_PREFIX}${path}`;

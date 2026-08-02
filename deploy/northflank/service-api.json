@@ -1,0 +1,37 @@
+{
+  "//": "The API. Apply with: northflank create service combined --project beff -f deploy/northflank/service-api.json",
+  "//target": "dockerfileTarget MATTERS. `migrate` is the last stage in apps/api/Dockerfile (it must be, since it does FROM prod), and a build with no target builds the LAST stage. Without this line the API would run an image carrying alembic.ini and migrations/ — exactly the property the stage split exists to prevent.",
+  "//command": "configType `default` means the image's own CMD: uvicorn with --proxy-headers, which is what lets the rate limiter read the real client IP from X-Forwarded-For behind Northflank's load balancer.",
+  "name": "beff-api",
+  "description": "FastAPI — auth, onboarding, GDPR rights, production metrics.",
+  "billing": {
+    "deploymentPlan": "nf-compute-20"
+  },
+  "vcsData": {
+    "projectUrl": "https://github.com/mohammadmaleh/beff-assignment",
+    "projectType": "github",
+    "projectBranch": "main"
+  },
+  "buildSettings": {
+    "dockerfile": {
+      "dockerFilePath": "/apps/api/Dockerfile",
+      "dockerWorkDir": "/apps/api",
+      "dockerfileTarget": "prod",
+      "buildEngine": "buildkit"
+    }
+  },
+  "deployment": {
+    "instances": 1,
+    "docker": {
+      "configType": "default"
+    }
+  },
+  "ports": [
+    {
+      "name": "http",
+      "internalPort": 8000,
+      "public": true,
+      "protocol": "HTTP"
+    }
+  ]
+}
