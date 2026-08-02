@@ -203,12 +203,62 @@ are separate probes (`/healthz` deliberately touches no dependencies — restart
 container because the database blipped makes an outage worse), config is env-only, and
 the API is stateless.
 
+### Passwords are Argon2id; refresh tokens deliberately are not
+
+Two secrets are stored, and treating them the same way is wrong in both directions.
+
+A **password** is chosen by a human — low entropy, reused, guessable from a wordlist — so
+it gets Argon2id at 64 MiB / 3 iterations / 4 lanes. That is above OWASP's minimum on the
+memory axis, which is the one that actually costs a GPU attacker. Because the parameters
+are embedded in the encoded hash, login detects a hash made under weaker settings and
+re-hashes it while the plaintext is legitimately in memory: raising the cost later needs
+no migration and no password reset.
+
+A **refresh token** is 384 bits from a CSPRNG. There is nothing to guess, so Argon2 would
+buy nothing and charge us for it on every silent renewal. They are stored as a SHA-256
+digest, which is all a stored token needs — a leaked table still cannot be replayed.
+
+Two things fall out of Argon2 being slow **for us** as well as the attacker, and both are
+implemented rather than noted. A dummy hash is verified when no user matches, so response
+latency does not answer "is this address registered?". And login is rate limited, because
+without it a deliberately expensive hash function is a denial-of-service amplifier
+pointed at ourselves.
+
+### Accessibility is compiled, not reviewed
+
+Design tokens are authored once as JSON and compiled by Style Dictionary into the
+stylesheet, a typed TS module and a flat hex export — so the CSS, the components and the
+code that does perceptual maths on the palette cannot drift apart.
+
+Two gates run in that build and **fail it**, rather than reporting. Every semantic
+text/surface pair must clear WCAG 4.5:1 (3:1 large/UI), and chart series must stay
+separable under simulated deuteranopia and protanopia. The palette here was _solved
+against the gate_, not picked and then checked: the first hand-chosen pass failed two
+pairs in light mode and the entire set in dark.
+
+One subtlety worth stating, because it is the part that is easy to get wrong: **contrast
+is directional.** A wrong colour that happens to be lighter _raises_ the ratio and passes
+every WCAG assertion. So the gate pins exact values too — otherwise it cheerfully blesses
+a palette nobody chose.
+
 ### Colour is a data decision, not a taste one
 
 The brand accent is deliberately kept away from `success` / `warning` / `danger`. In a
 yield dashboard green means _in spec_ and red means _out of spec_; a green brand would
-make every chart ambiguous. Chart palettes are colourblind-safe and never encode meaning
-in hue alone.
+make every chart ambiguous. Copper was cut from the palette for the same reason — it
+collides with `warning` amber.
+
+The accent appears in navigation, links, focus rings and the primary button, and **never
+inside a data visualisation**. That is enforced as a checked pair, not a convention: the
+first pass had the accent 4.0° of hue from chart series 1, which is the same blue at two
+lightnesses, and it was found by adding the pair to the gate rather than by looking.
+
+The limit is stated rather than discovered later: **only series 1–4 are separable by hue
+alone** (CIEDE2000 ≥ 12 under deuteranopia and protanopia). Forcing every series to clear
+3:1 against the light surface compresses the lightness range until orange and vermillion
+converge. A chart using more than four series must therefore add a non-colour
+encoding — dash pattern, marker shape or direct labelling. Colour is never the only
+signal anywhere in the app.
 
 ---
 
@@ -502,6 +552,40 @@ code.
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
 cd apps/api && uv run ruff check . && uv run mypy && uv run pytest --cov
 ```
+
+### The rule: a gate is not trusted until it has been observed failing
+
+Not reasoned about — run, with a deliberate probe, and seen to exit non-zero. Every gate
+in this repo has been through it: the contrast gate on a lightened muted-text colour and
+a rotated brand hue; the OpenAPI drift job on an added probe field; each coverage floor
+raised above its real number once, and `packages/tokens`, already at 100%, by deleting a
+test file instead.
+
+That rule is here because a green suite has twice failed to see a shipped bug in this
+project, and both times the test and the code were wrong in the _same direction_, so
+their agreement proved nothing:
+
+- **300 green unit tests** sat on top of a consent feature that was completely broken
+  against a real database — the CHECK constraint still held the pre-rename purpose names,
+  so every consent write failed on first contact with PostgreSQL.
+- **A login rate limiter** passed its tests while counting only the requests that did not
+  need limiting. It shared the request transaction, and the session rolls back on
+  exception, so every _failed_ login rolled back its own increment. An attacker sending
+  nothing but wrong passwords was never limited.
+
+Adding tests could not have found either. Running the assertion against a known-bad input
+is what does.
+
+Five layers, each answering a question the others cannot: co-located unit tests
+(does this branch do what it says), integration via testcontainers (does it survive a real
+PostgreSQL), the generated-client drift job (does the frontend's idea of the API match the
+API), Playwright including axe (does the built app work keyboard-only in a browser), and
+an accessibility-tree audit (what does a screen reader actually _announce_).
+
+The last one is not redundant with axe. axe decides its rules from markup alone — it
+cannot tell you that two links named "Datenschutzerklärung" go to different places, or
+that the text is in the wrong language. Walking the tree is how the German pages were
+caught announcing the product's signature element entirely in English.
 
 **Every package enforces a coverage floor, and the build fails below it.** Unit tests are
 co-located with the code they cover; `tests/` holds only fixtures and integration tests
