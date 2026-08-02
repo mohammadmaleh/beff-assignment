@@ -103,6 +103,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async (): Promise<void> => {
     try {
       await authFetch<void>('/auth/logout', { method: 'POST', retry: false });
+    } catch {
+      // Swallowed, not re-thrown. `finally` alone still rejects the promise the
+      // caller is holding — so `logout().then(() => router.replace(...))` skips
+      // its redirect on a 401 or a dropped connection, and the browser logs an
+      // unhandled rejection, for a call that *did* what the caller asked. The
+      // server-side revoke is best-effort by design; there is nothing a caller
+      // can do about it, and every call site would otherwise need this catch.
     } finally {
       // Local state clears whatever the server said. A logout that appears to
       // fail and leaves the user looking signed in is worse than one that

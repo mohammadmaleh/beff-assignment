@@ -47,16 +47,21 @@ export default defineConfig({
         'src/app/**',
       ],
 
-      // The honest number, not an aspiration. See the note in ROADMAP.md: a
-      // block of client components (AppShell, AuthForm, CookieBanner,
-      // WaitlistForm, AuthProvider) has no unit tests and is exercised only
-      // through Playwright, which is what holds this floor near 50%. The gate
-      // exists to stop it *falling* — raise each number as those land.
+      // The honest number, not an aspiration. `ENG-44` closed the gap this
+      // comment used to describe: AppShell, AuthForm, CookieBanner,
+      // WaitlistForm and AuthProvider each have a suite now, as do the four
+      // remaining zero-coverage units (SiteHeader, SiteFooter, ThemeScript,
+      // Providers), which took the floor from ~50% to the numbers below.
+      //
+      // Each is set a little under the measured value, which is the point of a
+      // floor: it fails on a *regression*, not on the ordinary drift of a
+      // refactor that removes a covered line. Raise them when real coverage
+      // rises; never lower one to make a red run green.
       thresholds: {
-        statements: 48,
-        branches: 54,
-        functions: 50,
-        lines: 47,
+        statements: 93,
+        branches: 87,
+        functions: 86,
+        lines: 94,
       },
     },
   },
