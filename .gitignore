@@ -63,3 +63,9 @@ packages/tokens/dist/
 # Playwright output
 packages/e2e/playwright-report/
 packages/e2e/test-results/
+# Added by `vercel link`. The CLI also appended `.env*`, which was removed: it
+# sits after the `!.env.example` negation above and the last matching pattern
+# wins, so it silently re-ignored the file this project treats as the env
+# contract. Harmless while the file stays tracked, and a trap the moment
+# someone re-adds it.
+.vercel
