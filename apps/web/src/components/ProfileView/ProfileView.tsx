@@ -153,7 +153,12 @@ export function ProfileView({ locale }: { locale: Locale }) {
 
         <div className="mt-6 flex flex-col gap-4">
           {job?.status === 'pending' || job?.status === 'running' ? (
-            <Alert tone="info" announce title={t.profile.exportPending} prefixes={t.a11y.alertPrefixes} />
+            <Alert
+              tone="info"
+              announce
+              title={t.profile.exportPending}
+              prefixes={t.a11y.alertPrefixes}
+            />
           ) : null}
           {job?.status === 'failed' ? (
             <Alert tone="warning" title={t.profile.exportFailed} prefixes={t.a11y.alertPrefixes} />

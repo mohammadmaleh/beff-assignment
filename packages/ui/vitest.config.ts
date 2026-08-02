@@ -15,5 +15,28 @@ export default defineConfig({
     // with "Timeout waiting for worker to respond" — a starved worker, not a
     // failing test. CI runners are two-core, so this is the honest ceiling.
     maxWorkers: 2,
+
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'html'],
+
+      // `include` is what makes this a gate rather than a readout. Vitest 4
+      // counts only the files a test actually imported unless you name them,
+      // so an untested component scores *nothing* instead of scoring 0% — and
+      // the percentage goes up when you add one. Barrels are excluded because
+      // a re-export has no branches and dilutes the denominator.
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.{test,spec,stories}.{ts,tsx}', 'src/**/index.ts'],
+
+      // Set just under where the suite already sits, so an ordinary refactor
+      // does not trip it and deleting a test does. Raise these when the real
+      // number rises — a floor left far below reality gates nothing.
+      thresholds: {
+        statements: 95,
+        branches: 90,
+        functions: 95,
+        lines: 95,
+      },
+    },
   },
 });

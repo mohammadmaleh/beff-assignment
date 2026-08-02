@@ -503,8 +503,36 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build
 cd apps/api && uv run ruff check . && uv run mypy && uv run pytest --cov
 ```
 
-Backend enforces an **85% coverage floor**. Unit tests are co-located with the code they
-cover; `tests/` holds only fixtures and integration tests that span units.
+**Every package enforces a coverage floor, and the build fails below it.** Unit tests are
+co-located with the code they cover; `tests/` holds only fixtures and integration tests
+that span units.
+
+| Package           | Floor (stmts / branches / funcs / lines) | Actual                        |
+| ----------------- | ---------------------------------------- | ----------------------------- |
+| `apps/api`        | 85% overall                              | 88.27%                        |
+| `packages/tokens` | 100 / 100 / 100 / 100                    | 100 / 100 / 100 / 100         |
+| `packages/ui`     | 95 / 90 / 95 / 95                        | 100 / 93.33 / 100 / 100       |
+| `apps/web`        | 48 / 54 / 50 / 47                        | 49.87 / 56.38 / 52.67 / 49.31 |
+
+Two things are worth saying about that table rather than leaving them to be discovered.
+
+**The web floor is low, and it is the honest number.** A block of client components —
+`AppShell`, `AuthForm`, `CookieBanner`, `WaitlistForm`, `AuthProvider` — has no unit
+tests and is exercised only through Playwright. The floor exists to stop that falling
+further, not to claim the code is well covered. Route files under `src/app/**` are
+excluded outright: they are server components Next renders and vitest does not, and
+counting them would either drag the floor to a number that gates nothing or invite unit
+tests that render a server component in jsdom and prove only that it did not throw.
+
+**The frontend configs name `coverage.include` explicitly, and that is the part that
+makes it a gate.** Vitest 4 counts only the files a test actually imported unless you say
+otherwise — so an untested component scores _nothing_ rather than scoring 0%, and adding
+one makes the percentage go **up**. A threshold on top of that default measures the
+tested files against themselves.
+
+Each floor was proved to bite before it was trusted: raised above the real number once
+per package and observed exiting non-zero. For `packages/tokens`, already at 100%, the
+probe was to drop a test file instead.
 
 ---
 
@@ -530,14 +558,15 @@ I would rather be precise about this than let a reviewer discover it.
 
 ### Verified by running it
 
-**Backend.** `ruff`, `ruff format --check`, `mypy --strict` across 168 files; **324
-tests at 88.62% coverage** against an 85% floor, with zero errors and zero skips. That
+**Backend.** `ruff`, `ruff format --check`, `mypy --strict` across 178 files; **334
+tests at 88.27% coverage** against an 85% floor, with zero errors and zero skips. That
 includes 22 integration tests against a real PostgreSQL 16 via testcontainers —
 `upgrade head` then `downgrade base`, `compare_metadata` finding no drift, the partial
 unique index freeing a purged email, and the schema rules (TIMESTAMPTZ everywhere, no
 `VARCHAR(n)`, no PostgreSQL enums, every foreign key indexed).
 
-**Frontend.** Root `lint`, `typecheck`, `test`, `build`; **262 tests**. All eight routes
+**Frontend.** Root `lint`, `typecheck`, `test`, `build`; **266 tests**, each package
+against its own coverage floor. All eight routes
 prerender as static HTML in both locales — verified by grepping the built output for the
 German headline and `lang="de"`, not by assuming.
 

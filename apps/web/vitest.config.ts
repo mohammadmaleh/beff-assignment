@@ -23,6 +23,42 @@ export default defineConfig({
     // to re-run the suite instead of reading it.
     testTimeout: 20_000,
     hookTimeout: 20_000,
+
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary', 'html'],
+
+      // Naming `include` is what makes this a gate rather than a readout.
+      // Vitest 4 counts only the files a test actually imported unless you say
+      // otherwise, so an untested component scores *nothing* instead of
+      // scoring 0% — and the percentage goes up when you add one. That is the
+      // opposite of what a floor is for.
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.{test,spec}.{ts,tsx}',
+        // Test infrastructure, not the thing under test.
+        'src/test/**',
+        // Route files: server components, layouts and metadata that Next
+        // renders and vitest does not. They are covered by the 54 Playwright
+        // tests running against the standalone server the Docker image
+        // executes — counting them here would either drag the floor to a
+        // number that gates nothing, or invite fake unit tests that render a
+        // server component in jsdom and prove only that it did not throw.
+        'src/app/**',
+      ],
+
+      // The honest number, not an aspiration. See the note in ROADMAP.md: a
+      // block of client components (AppShell, AuthForm, CookieBanner,
+      // WaitlistForm, AuthProvider) has no unit tests and is exercised only
+      // through Playwright, which is what holds this floor near 50%. The gate
+      // exists to stop it *falling* — raise each number as those land.
+      thresholds: {
+        statements: 48,
+        branches: 54,
+        functions: 50,
+        lines: 47,
+      },
+    },
   },
   resolve: {
     alias: {

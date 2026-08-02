@@ -15,7 +15,7 @@
     "build": "node build.js && tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "test:watch": "vitest",
     "clean": "rm -rf dist node_modules .turbo"
   },
@@ -23,6 +23,7 @@
     "@beff/config": "workspace:*",
     "@types/culori": "4.0.1",
     "@types/node": "^26.1.2",
+    "@vitest/coverage-v8": "4.1.10",
     "culori": "^4.0.2",
     "eslint": "^9.39.5",
     "style-dictionary": "^5.5.0",

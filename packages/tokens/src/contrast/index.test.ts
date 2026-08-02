@@ -32,6 +32,10 @@ describe('hueOf', () => {
     // on this, so undefined must never escape.
     expect(hueOf('#808080')).toBe(0);
   });
+
+  it('throws on an unparseable colour rather than returning NaN', () => {
+    expect(() => hueOf('#gggggg')).toThrow(/#gggggg/);
+  });
 });
 
 describe('hueSeparation', () => {
@@ -55,5 +59,20 @@ describe('cvdDistance', () => {
 
   it('reports a large distance for colours that stay distinct under CVD', () => {
     expect(cvdDistance('#F4F4F1', '#1C1A17')).toBeGreaterThan(20);
+  });
+
+  // The parse guards below were the only uncovered branches in this file when
+  // the coverage gate went in. They matter more than their size suggests: if
+  // an unparseable value returned NaN instead of throwing, every `>=` in the
+  // contrast and CVD gates would be false-y and the gate would report a
+  // failure it could not explain — or, with a `<=` assertion, pass silently.
+  it('throws on an unparseable colour rather than returning NaN', () => {
+    expect(() => cvdDistance('not-a-colour', '#317952')).toThrow(/not-a-colour/);
+  });
+
+  it('names the second colour when it is the unparseable one', () => {
+    // A guard that always reports `a` would pass a test that only ever breaks
+    // the first argument.
+    expect(() => cvdDistance('#317952', 'not-a-colour')).toThrow(/not-a-colour/);
   });
 });

@@ -24,7 +24,15 @@ describe('Metric', () => {
     ['down', 'down'],
     ['flat', 'unchanged'],
   ] as const)('spells the %s trend out for a screen reader', (trend, word) => {
-    render(<Metric label="First-pass yield" value="72.4" delta="+1.4 pp" trend={trend} trendWords={TREND} />);
+    render(
+      <Metric
+        label="First-pass yield"
+        value="72.4"
+        delta="+1.4 pp"
+        trend={trend}
+        trendWords={TREND}
+      />,
+    );
     expect(screen.getByText(word, { exact: false })).toBeInTheDocument();
   });
 
@@ -36,7 +44,16 @@ describe('Metric', () => {
   });
 
   it('colours the delta by intent rather than by direction', () => {
-    render(<Metric label="Scrap rate" value="4.1" delta="+0.3 pp" trend="up" trendWords={TREND} intent="negative" />);
+    render(
+      <Metric
+        label="Scrap rate"
+        value="4.1"
+        delta="+0.3 pp"
+        trend="up"
+        trendWords={TREND}
+        intent="negative"
+      />,
+    );
     expect(screen.getByText('+0.3 pp').parentElement).toHaveClass('text-status-danger-fg');
   });
 
