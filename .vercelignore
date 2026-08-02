@@ -1,0 +1,46 @@
+# Vercel does NOT reliably fall back to .gitignore when deploying from the CLI.
+# Without this file the CLI uploads the entire working tree — measured at 5.1 GB
+# here, most of it apps/api/.venv and node_modules — and the upload aborts.
+#
+# The API is not deployed by Vercel at all (it runs on Northflank), so none of
+# apps/api needs to be sent.
+
+# Dependencies and virtualenvs
+node_modules
+**/node_modules
+.venv
+**/.venv
+
+# Build output and caches — Vercel builds from source
+.next
+**/.next
+.turbo
+**/.turbo
+dist
+**/dist
+coverage
+**/coverage
+.mypy_cache
+**/.mypy_cache
+.pytest_cache
+**/.pytest_cache
+.ruff_cache
+**/.ruff_cache
+__pycache__
+**/__pycache__
+
+# Test artefacts
+playwright-report
+**/playwright-report
+test-results
+**/test-results
+storybook-static
+
+# The backend. Deployed to Northflank from the same repo; irrelevant here.
+apps/api
+
+# Local only
+.git
+.env
+.env.*
+!.env.example
