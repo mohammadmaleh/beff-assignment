@@ -12,6 +12,42 @@ a Linear board, with a verification command defined per checkpoint.
 
 ---
 
+## Live
+
+|              |                                                      |
+| ------------ | ---------------------------------------------------- |
+| **App**      | <https://beff-eta.vercel.app>                        |
+| **API docs** | <https://http--beff-api--ygq2pkp2lvtn.code.run/docs> |
+| **Sign in**  | `demo@beff.example` / `beff-demo-password`           |
+
+The demo account has onboarding complete and sixty batches of production data behind
+it, so the dashboard is populated on first load.
+
+**Web on Vercel, everything else on Northflank** (London) — API, export worker and
+Postgres, none of which sleep. Two decisions there are worth a reviewer's attention.
+
+**The browser never talks to the API directly.** Next rewrites `/api/v1/*` to the API
+host, so both live on one origin. This is not tidiness: `*.vercel.app` and
+`*.code.run` are both under public suffixes, so they share no registrable domain and
+are **cross-site** to a browser. The refresh cookie is `SameSite=Lax` on purpose, and
+cross-site it would be neither stored nor sent — login would appear to succeed and
+the session would die at the first refresh, with nothing in the API logs to show for
+it. One origin keeps the cookie unchanged and removes CORS entirely.
+
+**The rate limiter still sees the real client.** A proxy hop can leave the API
+reading the proxy's address for every request, which turns a per-user limit into one
+shared bucket while still looking present. Verified on the deployment rather than
+assumed: `auth.register` allows 5/hour and had never been used, so it was exhausted
+through Vercel in exactly five attempts and a direct request to the API then landed
+in the **same** bucket. The client IP survives.
+
+Deployment is declared in [`deploy/northflank/`](deploy/northflank/) rather than
+clicked together. Secrets are generated at apply time and never committed, and
+`DATABASE_URL` is _linked_ from the database rather than copied, so no password
+passes through a human and credential rotation flows through on its own.
+
+---
+
 ## Quickstart
 
 ```bash
@@ -701,12 +737,37 @@ off as part of the Docker-blocked set, which was a lazier claim than it looked.
    to. Defensible, but the privacy page should say so.
 3. **Email sending.** Registration deliberately does not depend on it, so there
    is no verification mail and no password reset.
-4. Storybook, deployment, and the C4 diagrams.
+4. Storybook and the C4 diagrams.
 
-Since the first draft of this list, four of its items have been built and are
+Since the first draft of this list, five of its items have been built and are
 described above: the generated API client and its drift check, rate limiting on
-every anonymous and credential endpoint, the export worker, and request-id
-correlation.
+every anonymous and credential endpoint, the export worker, request-id
+correlation, and the deployment.
+
+### What deploying it found
+
+Four defects, none of which any test could have caught, because each lived in the
+gap between the app and a platform:
+
+- **Turborepo silently ate `API_ORIGIN`.** `turbo.json` declared no `env` on the
+  build task, so the variable never reached Next. The build failed rather than
+  shipping — the rewrite guard throws when the client expects a proxy that is not
+  configured, instead of emitting `destination: "undefined/api/v1/..."`. Declaring
+  it also puts it in the cache key, which matters because `rewrites()` is evaluated
+  once at build and frozen into `routes-manifest.json`.
+- **Northflank's service API accepts `dockerfileTarget` and discards it.** No error;
+  the field simply round-trips as absent. Since `migrate` had to be the last stage
+  (it does `FROM runtime`), every service would have deployed the migration image,
+  whose CMD runs alembic and exits. The Dockerfile now declares `prod` last so the
+  default is the image that is safe to run. Its _job_ API does honour the field.
+- **`.dockerignore` used `__pycache__/` without `**/`**, which matches only at the
+  context root, so `migrations/__pycache__` was shipping inside the image.
+- **`vercel link` appends `.env*` to `.gitignore`**, after the existing
+  `!.env.example` negation. Last match wins, so the env contract became ignored —
+  invisible, because the file was already tracked.
+
+The general shape: a platform that quietly ignores your configuration is more
+dangerous than one that rejects it, so the default has to be the safe one.
 
 The trade I made was depth over breadth: a backend where the interesting decisions —
 token reuse detection, append-only consent, an idempotent queue on Postgres — are
