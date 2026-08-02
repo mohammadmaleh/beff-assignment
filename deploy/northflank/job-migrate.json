@@ -1,7 +1,8 @@
 {
   "//": "Schema migration + demo seed, as a one-shot. Apply with: northflank create job --project beff -f deploy/northflank/job-migrate.json",
   "//why-a-job": "Migrations and serving are different concerns with different failure modes. A failed migration should stop the deploy with a readable error, not put the API into a crash loop — and this is also the shape that survives more than one API replica, where N containers racing to migrate on boot is a genuine hazard. Same reasoning as the compose `migrate` service.",
-  "//target": "The ONLY resource built from the `migrate` stage. That stage extends `prod` by adding alembic.ini and migrations/, so this image can rewrite the schema and the one serving traffic cannot.",
+  "//schema-warning": "A JOB nests the repo under `deployment.vcs` and the stage under `buildConfiguration.dockerfileTarget`. A SERVICE uses top-level `vcsData` and `buildSettings.dockerfile.dockerfileTarget`. They are NOT interchangeable: passing the service shape here does not error — the API silently reinterprets `vcsData` as the Dockerfile paths and the job is created with no repository at all.",
+  "//target": "The ONLY resource built from the `migrate` stage, which extends `prod` by adding alembic.ini and migrations/. So this image can rewrite the schema and the one serving traffic cannot.",
   "//command": "Left as the image's CMD: `alembic upgrade head && python -m beff.seed`. The && is load-bearing — a failed upgrade must not be followed by a seed against a half-built schema.",
   "//idempotency": "Verified locally by running it twice against the same database: the second run is an alembic no-op and the seed upserts. Northflank re-runs this on every deploy, so that is not optional.",
   "name": "beff-migrate",
@@ -9,22 +10,24 @@
   "billing": {
     "deploymentPlan": "nf-compute-10"
   },
-  "vcsData": {
-    "projectUrl": "https://github.com/mohammadmaleh/beff-assignment",
-    "projectType": "github",
-    "projectBranch": "main"
+  "deployment": {
+    "vcs": {
+      "projectUrl": "https://github.com/mohammadmaleh/beff-assignment",
+      "projectType": "github",
+      "projectBranch": "main"
+    },
+    "docker": {
+      "configType": "default"
+    }
+  },
+  "buildConfiguration": {
+    "dockerfileTarget": "migrate"
   },
   "buildSettings": {
     "dockerfile": {
+      "buildEngine": "buildkit",
       "dockerFilePath": "/apps/api/Dockerfile",
-      "dockerWorkDir": "/apps/api",
-      "dockerfileTarget": "migrate",
-      "buildEngine": "buildkit"
-    }
-  },
-  "deployment": {
-    "docker": {
-      "configType": "default"
+      "dockerWorkDir": "/apps/api"
     }
   }
 }

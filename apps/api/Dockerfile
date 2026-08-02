@@ -39,8 +39,10 @@ EXPOSE 8000
 CMD ["uv", "run", "--no-sync", "uvicorn", "beff.main:app", \
      "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app/src"]
 
-# ── prod ────────────────────────────────────────────────────────────────────
-FROM base AS prod
+# ── runtime ─────────────────────────────────────────────────────────────────
+# The real production image. `prod` is a thin alias for it declared LAST in
+# this file — see the note down there for why the ordering is load-bearing.
+FROM base AS runtime
 
 # Runs unprivileged. A container that does not need root should not have it.
 RUN groupadd --system --gid 1001 beff \
@@ -71,12 +73,12 @@ CMD ["uvicorn", "beff.main:app", "--host", "0.0.0.0", "--port", "8000", \
 # where compose's `migrate` service has no equivalent (Northflank calls it a
 # job).
 #
-# It extends `prod` rather than `prod` being loosened to include these files.
-# The distinction is the whole point: `alembic.ini` and `migrations/` exist in
-# THIS image and not in the one that serves traffic, so a running API still
-# cannot rewrite the schema it is serving. Same reasoning as the compose
+# It extends `runtime` rather than `runtime` being loosened to include these
+# files. The distinction is the whole point: `alembic.ini` and `migrations/`
+# exist in THIS image and not in the one that serves traffic, so a running API
+# still cannot rewrite the schema it is serving. Same reasoning as the compose
 # comment, and the same reason the bind-mounts there are scoped to `migrate`.
-FROM prod AS migrate
+FROM runtime AS migrate
 
 COPY --chown=beff:beff alembic.ini ./alembic.ini
 COPY --chown=beff:beff migrations/ ./migrations/
@@ -85,3 +87,23 @@ COPY --chown=beff:beff migrations/ ./migrations/
 # against a schema that was never created. `&&` matters: a failed upgrade must
 # not be followed by a seed against a half-built schema.
 CMD ["sh", "-c", "alembic upgrade head && python -m beff.seed"]
+
+# ── prod ────────────────────────────────────────────────────────────────────
+# Identical to `runtime`, and LAST on purpose. This stage exists only to make
+# the file's default safe.
+#
+# `docker build` with no `--target` builds the final stage. `migrate` has to
+# come after `runtime` because it does `FROM runtime`, so if the file simply
+# ended there, every target-less build would produce the migration image —
+# whose CMD runs alembic and exits. An API deployed from it would never serve a
+# request.
+#
+# That is not hypothetical. Northflank's service API accepts `dockerfileTarget`
+# and silently discards it: the field round-trips as absent and no error is
+# returned, so the platform builds the last stage no matter what the deployment
+# definition asks for. Its *job* API honours the field, which is why
+# `deploy/northflank/job-migrate.json` can still name `migrate` explicitly.
+#
+# The general rule this encodes: when a platform can quietly ignore your build
+# target, the default has to be the one that is safe to run.
+FROM runtime AS prod

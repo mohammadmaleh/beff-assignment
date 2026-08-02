@@ -1,9 +1,9 @@
 {
   "//": "The export queue worker. Apply with: northflank create service combined --project beff -f deploy/northflank/service-worker.json",
-  "//why-separate": "Same image as the API, different command — exactly as docker-compose.yml does it. Building a second image for one entry point would guarantee the two drift apart, and the worker shares the models, repositories and ExportService.",
+  "//why-separate": "Same image as the API, different command \u2014 exactly as docker-compose.yml does it. Building a second image for one entry point would guarantee the two drift apart, and the worker shares the models, repositories and ExportService.",
   "//scaling": "`SELECT ... FOR UPDATE SKIP LOCKED` means a second replica steps over whatever the first has claimed rather than blocking behind it, so scaling this is `instances: 2` and nothing else.",
   "//no-ports": "Deliberately empty. The worker polls the database; nothing calls it, so it has no reason to be reachable.",
-  "//plan": "nf-compute-10 (0.1 vCPU / 256 MB) — it wakes every 2s, asks one question and sleeps. It does not need what the API needs.",
+  "//plan": "nf-compute-10 (0.1 vCPU / 256 MB) \u2014 it wakes every 2s, asks one question and sleeps. It does not need what the API needs.",
   "name": "beff-worker",
   "description": "Drains the GDPR export queue. Postgres-backed, no Redis (ADR-0006).",
   "billing": {
@@ -18,7 +18,6 @@
     "dockerfile": {
       "dockerFilePath": "/apps/api/Dockerfile",
       "dockerWorkDir": "/apps/api",
-      "dockerfileTarget": "prod",
       "buildEngine": "buildkit"
     }
   },
