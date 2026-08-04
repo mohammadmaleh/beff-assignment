@@ -69,3 +69,6 @@ packages/e2e/test-results/
 # contract. Harmless while the file stays tracked, and a trap the moment
 # someone re-adds it.
 .vercel
+
+# SDD scratch — ledger, briefs, review packages. Never committed.
+.superpowers/
