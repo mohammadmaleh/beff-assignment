@@ -103,6 +103,33 @@ export const deApp: typeof enApp = {
     columnCost: 'Verlorene gebundene Wertschöpfung',
     showTable: 'Daten als Tabelle anzeigen',
     hideTable: 'Tabelle ausblenden',
+    /*
+     * Texte der Datentabelle. `viewChart` / `viewTable` benennen die beiden
+     * Ansichten jedes Diagramms; der Rest gehört zur Werkzeugleiste der Tabelle.
+     *
+     * Jede Zeichenkette ist Pflicht für die Komponente, die sie anzeigt — keine
+     * hat einen Standardwert, denn eine Komponente kann die Seitensprache nicht
+     * kennen, und ein Standard wäre darum eine Vermutung, die ausgeliefert wird.
+     * `SpecBand` hat das gelernt: Die deutsche Zielseite kündigte das Markenzeichen
+     * des Produkts ganz auf Englisch an, unsichtbar für axe und für jeden Screenshot.
+     */
+    table: {
+      viewChart: 'Diagramm',
+      viewTable: 'Tabelle',
+      search: 'Suchen',
+      searchPlaceholder: 'Charge oder Prozessschritt',
+      rangeMin: 'Von',
+      rangeMax: 'Bis',
+      dateFrom: 'Frühestens',
+      dateTo: 'Spätestens',
+      reset: 'Filter zurücksetzen',
+      exportCsv: 'CSV herunterladen',
+      summary: '{shown} von {total} Zeilen',
+      empty: 'Keine Zeilen entsprechen diesen Filtern.',
+      sortedAscending: 'Sortiert nach {column}, aufsteigend',
+      sortedDescending: 'Sortiert nach {column}, absteigend',
+      sortCleared: 'Sortierung aufgehoben, zurück zur Reihenfolge nach {column}',
+    },
     bandsTitle: 'Prozessparameter gegen Spezifikation',
 
     kpi: {

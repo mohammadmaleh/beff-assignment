@@ -107,6 +107,33 @@ export const enApp = {
     columnCost: 'Committed value lost',
     showTable: 'Show the data as a table',
     hideTable: 'Hide the table',
+    /*
+     * The data table's own copy. `viewChart` / `viewTable` name the two views
+     * of every chart; the rest is the table's toolbar.
+     *
+     * Every string is required by the component that shows it — none has a
+     * default, because a component cannot know the page's language and a
+     * default is therefore a guess that ships. `SpecBand` established this
+     * after the German landing page announced the product's signature element
+     * entirely in English, invisible to axe and to every screenshot.
+     */
+    table: {
+      viewChart: 'Chart',
+      viewTable: 'Table',
+      search: 'Search',
+      searchPlaceholder: 'Batch or process step',
+      rangeMin: 'From',
+      rangeMax: 'To',
+      dateFrom: 'Earliest',
+      dateTo: 'Latest',
+      reset: 'Clear filters',
+      exportCsv: 'Download CSV',
+      summary: 'Showing {shown} of {total} rows',
+      empty: 'No rows match these filters.',
+      sortedAscending: 'Sorted by {column}, lowest first',
+      sortedDescending: 'Sorted by {column}, highest first',
+      sortCleared: 'Sorting cleared, back to {column} order',
+    },
     bandsTitle: 'Process parameters against specification',
 
     kpi: {
