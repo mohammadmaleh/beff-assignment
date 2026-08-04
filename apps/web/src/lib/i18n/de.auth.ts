@@ -91,6 +91,9 @@ export const deApp: typeof enApp = {
       retention: 'Kapazitätserhalt nach 1000 Zyklen',
       co2: 'CO₂-Intensität',
     },
+    readingsTitle: 'Wo die Linie heute steht',
+    readingsBody:
+      'Die aktuellen Werte für den Zeitraum oben, jeder gegen die Grenze, an der er gemessen wird. Die Diagramme zeigen die Bewegung; diese Werte zeigen, wo sie geendet hat.',
     scrapTitle: 'Wo der Ausschuss entstanden ist',
     scrapBody:
       'Nach Prozessschritt geordnet. Eine in der Formierung verlorene Zelle hat alle vorgelagerten Kosten aufgenommen — späte Verluste sind die teuren.',
@@ -101,6 +104,83 @@ export const deApp: typeof enApp = {
     showTable: 'Daten als Tabelle anzeigen',
     hideTable: 'Tabelle ausblenden',
     bandsTitle: 'Prozessparameter gegen Spezifikation',
+
+    kpi: {
+      costLabel: 'Verlorene gebundene Wertschöpfung',
+      costNote: 'Was die verworfenen Zellen bis zum Verlust bereits gekostet hatten.',
+      cellsLabel: 'Zellen bis zur Endprüfung',
+      cellsNote: 'Ohne Nacharbeit bestanden, von {started} gestarteten.',
+      benchmarkLabel: 'Gegenüber vergleichbaren Linien',
+      benchmarkNote: 'Der Median von {n} Pilotlinien liegt bei {median}.',
+      worstLabel: 'Schwächste Charge',
+      worstNote: 'Niedrigste Erstdurchlaufquote von {count} Chargen in diesem Zeitraum.',
+    },
+
+    /*
+     * Diagrammtexte. Jede Zeichenkette ist Pflicht — keine hat einen englischen
+     * Standardwert. Die Zeichnung selbst ist `aria-hidden`, also ist die
+     * Beschriftung die gesamte angekündigte Identität des Diagramms, und axe
+     * ist es gleichgültig, in welcher Sprache eine wohlgeformte Zeichenkette
+     * steht.
+     */
+    charts: {
+      trendTitle: 'Wie es dazu kam',
+      trendBody:
+        'Die Kennzahl oben sagt, wo die Linie heute steht. Diese Diagramme zeigen die Bewegung dorthin — der Unterschied zwischen einem Messwert und einem Prozess, den man sich ansehen muss.',
+
+      yieldTrend: {
+        title: 'Erstdurchlaufquote je Charge',
+        description:
+          'Jeder Punkt ist ein Produktionslauf. Die gestrichelten Linien zeigen, was {n} vergleichbare Linien erreichen — und die Spezifikationsgrenzen dieser Linie, soweit sie in den Maßstab fallen.',
+        lowerLimit: 'Untergrenze',
+        upperLimit: 'Obergrenze',
+        seriesMeasured: 'Diese Linie',
+        cohortMedian: 'Median der Vergleichsgruppe',
+        cohortTop: 'Beste 10 % der Vergleichsgruppe',
+        tooltipCells: '{passed} von {started} Zellen',
+        tableCaption: 'Erstdurchlaufquote je Charge, mit den zugrunde liegenden Zellzahlen',
+        columnBatch: 'Charge',
+        columnDate: 'Gestartet',
+        columnYield: 'Erstdurchlaufquote',
+        columnCells: 'Zellen',
+      },
+
+      throughput: {
+        title: 'Was jeder Lauf produziert hat',
+        description:
+          'Dieselben Chargen nach Zellzahl statt nach Quote. 42 Prozent Ausbeute bei einem Versuch mit 180 Zellen und bei einem Lauf mit 1 400 Zellen sind derselbe Punkt im Diagramm darüber und sehr unterschiedliche Ereignisse.',
+        seriesPassed: 'Endprüfung bestanden',
+        seriesScrapped: 'Ausgeschleust',
+        axisLabel: 'Zellen',
+        tableCaption: 'Gestartete, bestandene und ausgeschleuste Zellen je Charge',
+        columnBatch: 'Charge',
+        columnStarted: 'Gestartete Zellen',
+      },
+
+      scrapCost: {
+        title: 'Was der Ausschuss wert war',
+        description:
+          'Dieselben Verluste, bewertet. Beim Beschichten gehen die meisten Zellen verloren; in der Formierung das meiste Geld, denn eine dort verworfene Zelle hat bereits alle vorgelagerten Kosten aufgenommen.',
+        seriesName: 'Verlorene gebundene Wertschöpfung',
+        tableCaption: 'Verlorene gebundene Wertschöpfung je Prozessschritt',
+        columnStep: 'Prozessschritt',
+        columnScrap: 'Ausschussquote',
+      },
+
+      control: {
+        descriptionInSpec: 'Alle Messwerte zwischen {lower} und {upper} {unit}.',
+        descriptionBreached: '{count} von {total} Messwerten außerhalb des Spezifikationsfensters.',
+        lowerLimit: 'Untergrenze',
+        upperLimit: 'Obergrenze',
+        target: 'Zielwert',
+        inSpec: 'In Spezifikation',
+        outOfSpec: 'Außerhalb der Spezifikation',
+        tableCaption: '{parameter} je Charge, gegen das Spezifikationsfenster',
+        columnDate: 'Gemessen',
+        columnValue: 'Messwert ({unit})',
+        columnVerdict: 'Gegen Spezifikation',
+      },
+    },
     parameters: {
       porosity_pct: 'Elektrodenporosität nach dem Kalandrieren',
       areal_loading_mg_cm2: 'Flächenbeladung',

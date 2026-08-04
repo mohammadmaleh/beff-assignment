@@ -1,0 +1,1 @@
+export { YieldTrendChart } from './YieldTrendChart';

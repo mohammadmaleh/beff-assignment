@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { describe, expect, it } from 'vitest';
 
-import { config, middleware } from './middleware';
+import { config, proxy } from './proxy';
 
 const request = (path: string, acceptLanguage?: string): NextRequest =>
   new NextRequest(new URL(path, 'https://beff.example'), {
@@ -9,15 +9,15 @@ const request = (path: string, acceptLanguage?: string): NextRequest =>
   });
 
 const location = (path: string, acceptLanguage?: string): string | null =>
-  middleware(request(path, acceptLanguage)).headers.get('location');
+  proxy(request(path, acceptLanguage)).headers.get('location');
 
-describe('locale middleware', () => {
+describe('locale proxy', () => {
   it('sends the bare root to the default locale', () => {
     expect(location('/')).toBe('https://beff.example/en');
   });
 
   it('leaves an already-localised path alone', () => {
-    // Everything under /en and /de is statically generated; the middleware must
+    // Everything under /en and /de is statically generated; the proxy must
     // not put itself in front of a static page.
     expect(location('/de/datenschutz')).toBeNull();
     expect(location('/en')).toBeNull();
@@ -53,7 +53,7 @@ describe('locale middleware', () => {
     // Which locale a visitor gets is a negotiation. A 308 would pin the first
     // answer in their browser cache forever, including after they change their
     // browser language.
-    expect(middleware(request('/')).status).toBe(307);
+    expect(proxy(request('/')).status).toBe(307);
   });
 });
 
@@ -70,7 +70,7 @@ describe('matcher', () => {
     // In production the browser calls /api/v1/* on THIS origin and a Next
     // rewrite forwards it to the API host (see lib/rewrites) — that is what
     // lets the SameSite=Lax refresh cookie survive a Vercel/Northflank split.
-    // If `api` ever leaves the matcher below, the locale middleware would take
+    // If `api` ever leaves the matcher below, the locale proxy would take
     // /api/v1/auth/refresh first and 307 it to /en/api/v1/auth/refresh, which
     // matches no route. Every authenticated call would 404 while the landing
     // page kept working perfectly.
@@ -79,7 +79,7 @@ describe('matcher', () => {
   });
 
   it('still intercepts locale-less page paths', () => {
-    // The exclusion above must not be so broad that it stops the middleware
+    // The exclusion above must not be so broad that it stops the proxy
     // doing its actual job.
     expect(matches('/impressum')).toBe(true);
     expect(matches('/')).toBe(true);

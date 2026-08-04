@@ -1,0 +1,1 @@
+export { ScrapCostChart } from './ScrapCostChart';

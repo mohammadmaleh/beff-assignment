@@ -60,6 +60,40 @@ body {
 }
 
 /*
+ * Put the pointer cursor back on buttons.
+ *
+ * Tailwind v3's Preflight carried `button, [role="button"] { cursor: pointer }`.
+ * v4 removed it deliberately, to defer to the user-agent stylesheet — and the
+ * UA default for a button is `cursor: default`, the plain arrow. So upgrading
+ * silently made every button in the app stop signalling that it is clickable,
+ * while links and `<summary>` kept their pointer and looked correct.
+ *
+ * That asymmetry is what makes it hard to spot: the page is full of working
+ * pointers, so the ones that are missing read as a single broken control rather
+ * than as a global regression. Measured before the fix — every `<button>` on the
+ * landing, login and dashboard surfaces computed `default`.
+ *
+ * ## Why `@layer base`, and why the guards as well
+ *
+ * Both are load-bearing, for different reasons.
+ *
+ * Unlayered, this rule would outrank every Tailwind utility, because unlayered
+ * CSS beats layered CSS regardless of specificity — and `disabled:cursor-not-allowed`
+ * on `Button` and `TextField` is a utility. A disabled button would then claim
+ * to be clickable, which is worse than the bug being fixed.
+ *
+ * `@layer base` alone would be enough for those two components. The `:not()`
+ * guards are there for anything that sets its disabled state without reaching
+ * for a Tailwind class, which is the case a future contributor will hit.
+ */
+@layer base {
+  button:not(:disabled):not([aria-disabled='true']),
+  [role='button']:not(:disabled):not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+}
+
+/*
  * The one asset the token system cannot re-colour.
  *
  * Every other colour on this page flips because a semantic token flips. A raster

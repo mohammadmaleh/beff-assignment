@@ -99,3 +99,81 @@ function installMatchMedia(): void {
 }
 
 installMatchMedia();
+
+/**
+ * Install a `ResizeObserver` that exists but never fires.
+ *
+ * jsdom does not implement it, for the honest reason that it does not do
+ * layout — there is no box to observe, so every element measures 0×0 and a
+ * faithful implementation would have nothing to report anyway.
+ *
+ * Absent, it is `ResizeObserver is not defined` thrown from inside an effect,
+ * which vitest reports as an unhandled rejection: the run exits 1 while every
+ * test still prints green. That is the failure mode this repo has already been
+ * bitten by once, so the stub is here rather than in each chart's test.
+ *
+ * Deliberately inert. A stub that invoked its callback would have the chart
+ * resize to 0×0 on mount and prove nothing except that the mock ran.
+ */
+function installResizeObserver(): void {
+  if (typeof globalThis.ResizeObserver === 'function') return;
+
+  class InertResizeObserver implements ResizeObserver {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+
+  Object.defineProperty(globalThis, 'ResizeObserver', {
+    value: InertResizeObserver,
+    configurable: true,
+    writable: true,
+  });
+}
+
+installResizeObserver();
+
+/**
+ * Give ECharts something to measure text with.
+ *
+ * The SVG renderer draws no canvas, but ECharts still calls
+ * `getContext('2d').measureText(…)` to lay out axis labels and legends — text
+ * metrics are the one thing SVG cannot supply synchronously. jsdom does not
+ * implement `getContext` without the native `canvas` package, so every chart
+ * mounted in a test prints eleven "Not implemented" lines through jsdom's
+ * virtual console.
+ *
+ * That is noise, not failure, and leaving it is worse than it sounds: a real
+ * error in a chart test would be one line among sixty identical ones. So this
+ * installs a context that measures, approximately, and does nothing else.
+ *
+ * The 0.6em-per-character estimate is deliberately crude. It is used only to
+ * decide label spacing in a layout jsdom is not performing anyway; nothing
+ * asserted in this repo depends on the number, and a stub that pretended to be
+ * accurate would invite one that did.
+ */
+function installCanvasTextMetrics(): void {
+  const prototype = globalThis.HTMLCanvasElement?.prototype;
+  if (prototype === undefined) return;
+
+  Object.defineProperty(prototype, 'getContext', {
+    value(this: HTMLCanvasElement, kind: string) {
+      if (kind !== '2d') return null;
+      return {
+        font: '',
+        measureText: (text: string) => ({ width: text.length * 6 }),
+        // ECharts probes for these before using the context; returning a bare
+        // `measureText` makes it throw on the next property access instead.
+        fillText: () => {},
+        strokeText: () => {},
+        save: () => {},
+        restore: () => {},
+        canvas: this,
+      };
+    },
+    configurable: true,
+    writable: true,
+  });
+}
+
+installCanvasTextMetrics();

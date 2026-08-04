@@ -1,17 +1,22 @@
 import type {
   ApiPathName,
+  CohortReferenceResponse,
   ConsentRequest,
   ConsentStateResponse,
   ExportJobResponse,
   JoinWaitlistRequest,
   LoginRequest,
   MetricsOverviewResponse,
+  MetricsTrendResponse,
   OnboardingResponse,
+  ParameterPointResponse,
+  ParameterSeriesResponse,
   RegisterRequest,
   SaveProgressRequest,
   ScrapByStepResponse,
   SessionResponse,
   SpecBandResponse,
+  TrendPointResponse,
   UserResponse,
   WaitlistEntryResponse,
 } from './schema.js';
@@ -31,6 +36,12 @@ import type {
 export type MetricsOverview = MetricsOverviewResponse;
 export type ScrapByStep = ScrapByStepResponse;
 export type SpecBandReading = SpecBandResponse;
+
+export type MetricsTrend = MetricsTrendResponse;
+export type TrendPoint = TrendPointResponse;
+export type ParameterSeries = ParameterSeriesResponse;
+export type ParameterPoint = ParameterPointResponse;
+export type CohortReference = CohortReferenceResponse;
 
 export type OnboardingProgress = OnboardingResponse;
 export type SaveProgress = SaveProgressRequest;

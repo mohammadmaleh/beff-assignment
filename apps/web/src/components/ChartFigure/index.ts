@@ -1,0 +1,1 @@
+export { ChartFigure } from './ChartFigure';

@@ -6,10 +6,21 @@ import { DataState } from '@beff/ui/data-state';
 import { Metric } from '@beff/ui/metric';
 import { SpecBand } from '@beff/ui/spec-band';
 
+import { ControlChart } from '@/components/ControlChart';
+import { KpiRow } from '@/components/KpiRow';
 import { ScrapChart } from '@/components/ScrapChart';
+import { ScrapCostChart } from '@/components/ScrapCostChart';
+import { ThroughputChart } from '@/components/ThroughputChart';
+import { YieldTrendChart } from '@/components/YieldTrendChart';
 import { authFetch } from '@/lib/auth';
 import { getDictionary, type Locale } from '@/lib/i18n';
-import { HEADLINE_WINDOWS, PROCESS_STEPS, yieldWindow, type MetricsOverview } from '@/lib/metrics';
+import {
+  HEADLINE_WINDOWS,
+  PROCESS_STEPS,
+  yieldWindow,
+  type MetricsOverview,
+  type MetricsTrend,
+} from '@/lib/metrics';
 
 /**
  * The daily surface. A process engineer arrives with one question — where did
@@ -49,6 +60,23 @@ export function DashboardView({ locale }: { locale: Locale }) {
     queryFn: () => authFetch<MetricsOverview>('/metrics/overview'),
   });
 
+  /*
+   * A second query, fired in parallel rather than chained.
+   *
+   * The overview is four numbers and twelve rows; the trend is sixty batches
+   * and their measurements. Putting them in one payload would make the headline
+   * — the thing the reader came for — wait on data it does not use. Two queries
+   * means the top of the page paints as soon as the small response lands.
+   *
+   * It has its own status because it has its own failure. A trend that fails
+   * must not blank the headline figures that already arrived; the charts render
+   * only when their data is there, and the rest of the page is unaffected.
+   */
+  const trend = useQuery({
+    queryKey: ['metrics', 'trend'],
+    queryFn: () => authFetch<MetricsTrend>('/metrics/trend'),
+  });
+
   const number = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
@@ -64,7 +92,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
 
   return (
     <>
-      <section className="mx-auto max-w-6xl px-6 pt-12 pb-16">
+      <section className="mx-auto max-w-6xl px-6 pt-12 pb-10">
         <h1 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
           {t.dashboard.title}
         </h1>
@@ -73,7 +101,65 @@ export function DashboardView({ locale }: { locale: Locale }) {
           {data === undefined ? '' : ` — ${data.line_name}`}
         </p>
 
-        <div className="mt-10">
+        {/*
+         * Facts about the window rather than measurements of the process — a
+         * total, a count, a position against peers, a batch code. None has a
+         * specification window, so none is banded; see `KpiRow`.
+         *
+         * In the masthead rather than under the readings because it is the
+         * cheapest thing on the page to read, and because it gives the charts
+         * immediately below it their frame: what the window cost, and where the
+         * line stands against comparable ones.
+         */}
+        {trend.data === undefined ? null : (
+          <div className="border-border-default mt-10 border-t pt-8">
+            <KpiRow trend={trend.data} locale={locale} />
+          </div>
+        )}
+      </section>
+
+      {/*
+       * "How it got here" — the two charts that need a series rather than a
+       * reading. Gated on the trend query alone, so a slow or failed trend
+       * leaves the headline band above intact rather than blanking the page.
+       */}
+      {trend.data === undefined || trend.data.points.length === 0 ? null : (
+        <section aria-labelledby="trend" className="border-border-default border-t">
+          <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
+            <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
+              <h2
+                id="trend"
+                className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]"
+              >
+                {t.dashboard.charts.trendTitle}
+              </h2>
+              <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
+                {t.dashboard.charts.trendBody}
+              </p>
+            </div>
+
+            {/*
+             * Two columns from `lg`, one below it. Both charts share an x-axis
+             * of the same sixty batches, so side by side the reader can carry a
+             * position across from one to the other — which is the whole reason
+             * throughput is a separate chart rather than a second y-axis on the
+             * first.
+             */}
+            <div className="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-x-16">
+              <YieldTrendChart
+                points={trend.data.points}
+                benchmark={trend.data.benchmark}
+                lineKind={trend.data.line_kind}
+                locale={locale}
+              />
+              <ThroughputChart points={trend.data.points} locale={locale} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="border-border-default mx-auto max-w-6xl border-t px-6 py-12">
+        <div>
           <DataState
             status={status === 'pending' ? 'loading' : status === 'error' ? 'error' : 'ready'}
             empty={data !== undefined && data.scrap_by_step.length === 0}
@@ -85,69 +171,91 @@ export function DashboardView({ locale }: { locale: Locale }) {
           >
             {data === undefined ? null : (
               <section aria-labelledby="headline-metrics">
-                <h2 id="headline-metrics" className="sr-only">
-                  {t.dashboard.title}
-                </h2>
-
                 {/*
-                 * The two readings that have limits, at reading scale, against
-                 * their windows — the same treatment the landing hero gives
-                 * first-pass yield, because it is the same measurement.
+                 * A real heading, not an `sr-only` one.
+                 *
+                 * It used to be visually hidden and to repeat the page title,
+                 * which was defensible while this band opened the page — the h1
+                 * directly above it was the heading. Once the charts moved in
+                 * front, two things broke at once: a screen reader announced
+                 * "Production overview" twice with unrelated content under the
+                 * second, and sighted readers got a bare strip of figures
+                 * wedged between two titled bands with nothing saying what it
+                 * was. Same fix for both.
                  */}
-                <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-                  <div className="flex flex-col gap-2">
-                    <SpecBand
-                      label={t.dashboard.metrics.fpy}
-                      words={t.a11y.specBand}
-                      value={data.first_pass_yield_pct}
-                      unit="%"
-                      {...yieldWindow(data.line_kind)}
-                    />
-                    {/*
-                     * The band says where the reading sits; this says which way
-                     * it is moving. Both are real information and the band
-                     * replacing the old tile must not quietly drop one.
-                     *
-                     * Stated as a signed number and a phrase, with no arrow and
-                     * no colour: direction is already in the sign, and an arrow
-                     * here would need its own spoken word to satisfy the rule
-                     * that colour and glyph are never the only signal.
-                     */}
-                    <p className="text-text-muted text-[length:var(--type-ui-size-sm)]">
-                      {`${signed.format(data.first_pass_yield_delta_pp)} pp ${t.dashboard.deltaNote}`}
-                    </p>
-                  </div>
-                  <SpecBand
-                    label={t.dashboard.metrics.retention}
-                    words={t.a11y.specBand}
-                    value={data.capacity_retention_pct}
-                    unit="%"
-                    {...HEADLINE_WINDOWS.retention}
-                  />
+                <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
+                  <h2
+                    id="headline-metrics"
+                    className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]"
+                  >
+                    {t.dashboard.readingsTitle}
+                  </h2>
+                  <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
+                    {t.dashboard.readingsBody}
+                  </p>
                 </div>
 
-                {/*
-                 * The two that do not. Kept as figures with their movement,
-                 * beneath the banded pair, so the hierarchy says which readings
-                 * carry a verdict and which are context.
-                 */}
-                <div className="border-border-default mt-12 grid gap-8 border-t pt-8 sm:grid-cols-2 lg:gap-16">
-                  <Metric
-                    label={t.dashboard.metrics.scrap}
-                    value={number.format(data.scrap_rate_pct)}
-                    unit="%"
-                    delta={`${signed.format(data.scrap_rate_delta_pp)} pp`}
-                    trend={trendOf(data.scrap_rate_delta_pp)}
-                    trendWords={t.a11y.trend}
-                    // Falling scrap is good news; the yield band above inverts
-                    // this reading for the same underlying movement.
-                    intent={data.scrap_rate_delta_pp <= 0 ? 'positive' : 'negative'}
-                  />
-                  <Metric
-                    label={t.dashboard.metrics.co2}
-                    value={number.format(data.co2_intensity_kg_per_kwh)}
-                    unit="kg CO₂e/kWh"
-                  />
+                <div className="mt-12">
+                  {/*
+                   * The two readings that have limits, at reading scale, against
+                   * their windows — the same treatment the landing hero gives
+                   * first-pass yield, because it is the same measurement.
+                   */}
+                  <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+                    <div className="flex flex-col gap-2">
+                      <SpecBand
+                        label={t.dashboard.metrics.fpy}
+                        words={t.a11y.specBand}
+                        value={data.first_pass_yield_pct}
+                        unit="%"
+                        {...yieldWindow(data.line_kind)}
+                      />
+                      {/*
+                       * The band says where the reading sits; this says which way
+                       * it is moving. Both are real information and the band
+                       * replacing the old tile must not quietly drop one.
+                       *
+                       * Stated as a signed number and a phrase, with no arrow and
+                       * no colour: direction is already in the sign, and an arrow
+                       * here would need its own spoken word to satisfy the rule
+                       * that colour and glyph are never the only signal.
+                       */}
+                      <p className="text-text-muted text-[length:var(--type-ui-size-sm)]">
+                        {`${signed.format(data.first_pass_yield_delta_pp)} pp ${t.dashboard.deltaNote}`}
+                      </p>
+                    </div>
+                    <SpecBand
+                      label={t.dashboard.metrics.retention}
+                      words={t.a11y.specBand}
+                      value={data.capacity_retention_pct}
+                      unit="%"
+                      {...HEADLINE_WINDOWS.retention}
+                    />
+                  </div>
+
+                  {/*
+                   * The two that do not. Kept as figures with their movement,
+                   * beneath the banded pair, so the hierarchy says which readings
+                   * carry a verdict and which are context.
+                   */}
+                  <div className="border-border-default mt-12 grid gap-8 border-t pt-8 sm:grid-cols-2 lg:gap-16">
+                    <Metric
+                      label={t.dashboard.metrics.scrap}
+                      value={number.format(data.scrap_rate_pct)}
+                      unit="%"
+                      delta={`${signed.format(data.scrap_rate_delta_pp)} pp`}
+                      trend={trendOf(data.scrap_rate_delta_pp)}
+                      trendWords={t.a11y.trend}
+                      // Falling scrap is good news; the yield band above inverts
+                      // this reading for the same underlying movement.
+                      intent={data.scrap_rate_delta_pp <= 0 ? 'positive' : 'negative'}
+                    />
+                    <Metric
+                      label={t.dashboard.metrics.co2}
+                      value={number.format(data.co2_intensity_kg_per_kwh)}
+                      unit="kg CO₂e/kWh"
+                    />
+                  </div>
                 </div>
               </section>
             )}
@@ -161,7 +269,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
             aria-labelledby="scrap-breakdown"
             className="calibration-ground border-border-default border-t"
           >
-            <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
+            <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
               <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
                 <h2
                   id="scrap-breakdown"
@@ -178,11 +286,24 @@ export function DashboardView({ locale }: { locale: Locale }) {
               <div className="mt-12">
                 <ScrapChart rows={data.scrap_by_step} locale={locale} order={PROCESS_STEPS} />
               </div>
+
+              {/*
+               * The same twelve steps, priced.
+               *
+               * `ScrapChart` above plots the rate and its tallest bar is
+               * coating; this plots the euros and its tallest bar is formation.
+               * The two charts disagree, and that disagreement is the product's
+               * entire argument — it was already in the payload, sitting in a
+               * column of a table behind a `<details>` that nobody opens.
+               */}
+              <div className="border-border-default mt-16 border-t pt-12">
+                <ScrapCostChart rows={data.scrap_by_step} locale={locale} />
+              </div>
             </div>
           </section>
 
           <section aria-labelledby="spec-bands" className="border-border-default border-t">
-            <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
+            <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
               <h2
                 id="spec-bands"
                 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]"
@@ -211,6 +332,36 @@ export function DashboardView({ locale }: { locale: Locale }) {
                   />
                 ))}
               </div>
+
+              {/*
+               * The same parameters over time.
+               *
+               * A band says "out of spec"; a control chart says "and it has
+               * been drifting for six weeks", which is the difference between a
+               * symptom and a diagnosis. They sit in the same section because
+               * they are two readings of one thing — the band is today, the
+               * chart is how today happened.
+               *
+               * Small multiples, one per parameter, each with its own scale.
+               * Porosity is a percentage near 32, energy density is Wh/kg near
+               * 250; three of those on one plot needs either a second y-axis or
+               * a normalisation that throws away the limits. See `ControlChart`.
+               */}
+              {trend.data === undefined || trend.data.parameters.length === 0 ? null : (
+                <div className="border-border-default mt-16 grid gap-12 border-t pt-12 lg:grid-cols-3 lg:gap-x-10">
+                  {trend.data.parameters.map((series) => (
+                    <ControlChart
+                      key={series.parameter}
+                      series={series}
+                      label={
+                        (t.dashboard.parameters as Record<string, string>)[series.parameter] ??
+                        series.parameter
+                      }
+                      locale={locale}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         </>

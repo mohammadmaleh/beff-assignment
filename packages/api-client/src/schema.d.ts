@@ -7,6 +7,22 @@
  */
 
 /**
+ * What comparable lines achieve.
+ *
+ * `sample_size` is part of the contract, not decoration. A benchmark rendered
+ * without its n reads as a measurement of something; the UI states "34 pilot
+ * lines" beside it so it reads as what it is.
+ */
+export type CohortReferenceResponse = {
+  co2_intensity_p50_kg_per_kwh: number;
+  first_pass_yield_p50_pct: number;
+  first_pass_yield_p90_pct: number;
+  line_kind: string;
+  sample_size: number;
+  scrap_rate_p50_pct: number;
+};
+
+/**
  * A grant or a withdrawal.
  *
  * One purpose per request, because consent must be *specific* (Art. 4(11)). A
@@ -84,6 +100,30 @@ export type MetricsOverviewResponse = {
 };
 
 /**
+ * The series behind the charts, in one request.
+ *
+ * Separate from the overview by design — see `MetricsTrend`. The overview is
+ * what the page needs for its first useful pixel; this is sixty batches, and
+ * putting it in the same payload would make the headline wait on data it does
+ * not use.
+ */
+export type MetricsTrendResponse = {
+  benchmark: CohortReferenceResponse;
+  best_batch_code: string | null;
+  line_kind: string;
+  line_name: string;
+  parameters: ParameterSeriesResponse[];
+  points: TrendPointResponse[];
+  total_cells_passed: number;
+  total_cells_scrapped: number;
+  total_cells_started: number;
+  total_committed_value_lost_eur: number;
+  window_days: number;
+  window_first_pass_yield_pct: number;
+  worst_batch_code: string | null;
+};
+
+/**
  * The whole wizard state, in one shape the client can render from cold.
  *
  * `steps` and `missing` are sent rather than hard-coded in the client so that
@@ -96,6 +136,20 @@ export type OnboardingResponse = {
   current_step: string;
   missing?: string[];
   steps?: string[];
+};
+
+export type ParameterPointResponse = {
+  started_at: string;
+  value: number;
+};
+
+export type ParameterSeriesResponse = {
+  lower_limit: number;
+  parameter: string;
+  points: ParameterPointResponse[];
+  target: number | null;
+  unit: string;
+  upper_limit: number;
 };
 
 /**
@@ -142,6 +196,19 @@ export type SpecBandResponse = {
   value: number;
 };
 
+export type TrendPointResponse = {
+  batch_code: string;
+  capacity_retention_pct: number;
+  cells_passed: number;
+  cells_scrapped: number;
+  cells_started: number;
+  co2_intensity_kg_per_kwh: number;
+  committed_value_lost_eur: number;
+  first_pass_yield_pct: number;
+  scrap_rate_pct: number;
+  started_at: string;
+};
+
 /**
  * A user as the owner of that account sees themselves.
  *
@@ -185,6 +252,7 @@ export type ApiPathName =
   | "/api/v1/auth/refresh"
   | "/api/v1/auth/register"
   | "/api/v1/metrics/overview"
+  | "/api/v1/metrics/trend"
   | "/api/v1/onboarding"
   | "/api/v1/onboarding/complete"
   | "/api/v1/privacy/consent"
@@ -197,6 +265,7 @@ export type ApiPathName =
 
 export interface components {
   schemas: {
+    CohortReferenceResponse: CohortReferenceResponse;
     ConsentRequest: ConsentRequest;
     ConsentStateResponse: ConsentStateResponse;
     ExportJobResponse: ExportJobResponse;
@@ -204,12 +273,16 @@ export interface components {
     JoinWaitlistRequest: JoinWaitlistRequest;
     LoginRequest: LoginRequest;
     MetricsOverviewResponse: MetricsOverviewResponse;
+    MetricsTrendResponse: MetricsTrendResponse;
     OnboardingResponse: OnboardingResponse;
+    ParameterPointResponse: ParameterPointResponse;
+    ParameterSeriesResponse: ParameterSeriesResponse;
     RegisterRequest: RegisterRequest;
     SaveProgressRequest: SaveProgressRequest;
     ScrapByStepResponse: ScrapByStepResponse;
     SessionResponse: SessionResponse;
     SpecBandResponse: SpecBandResponse;
+    TrendPointResponse: TrendPointResponse;
     UserResponse: UserResponse;
     ValidationError: ValidationError;
     WaitlistEntryResponse: WaitlistEntryResponse;

@@ -1,6 +1,45 @@
 {
   "components": {
     "schemas": {
+      "CohortReferenceResponse": {
+        "description": "What comparable lines achieve.\n\n`sample_size` is part of the contract, not decoration. A benchmark rendered\nwithout its n reads as a measurement of something; the UI states \"34 pilot\nlines\" beside it so it reads as what it is.",
+        "properties": {
+          "co2_intensity_p50_kg_per_kwh": {
+            "title": "Co2 Intensity P50 Kg Per Kwh",
+            "type": "number"
+          },
+          "first_pass_yield_p50_pct": {
+            "title": "First Pass Yield P50 Pct",
+            "type": "number"
+          },
+          "first_pass_yield_p90_pct": {
+            "title": "First Pass Yield P90 Pct",
+            "type": "number"
+          },
+          "line_kind": {
+            "title": "Line Kind",
+            "type": "string"
+          },
+          "sample_size": {
+            "title": "Sample Size",
+            "type": "integer"
+          },
+          "scrap_rate_p50_pct": {
+            "title": "Scrap Rate P50 Pct",
+            "type": "number"
+          }
+        },
+        "required": [
+          "line_kind",
+          "sample_size",
+          "first_pass_yield_p50_pct",
+          "first_pass_yield_p90_pct",
+          "scrap_rate_p50_pct",
+          "co2_intensity_p50_kg_per_kwh"
+        ],
+        "title": "CohortReferenceResponse",
+        "type": "object"
+      },
       "ConsentRequest": {
         "additionalProperties": false,
         "description": "A grant or a withdrawal.\n\nOne purpose per request, because consent must be *specific* (Art. 4(11)). A\npayload that accepted a list would let a client send one \"I agree\" covering\neverything, which is exactly the shape the law rejects.",
@@ -220,6 +259,99 @@
         "title": "MetricsOverviewResponse",
         "type": "object"
       },
+      "MetricsTrendResponse": {
+        "description": "The series behind the charts, in one request.\n\nSeparate from the overview by design — see `MetricsTrend`. The overview is\nwhat the page needs for its first useful pixel; this is sixty batches, and\nputting it in the same payload would make the headline wait on data it does\nnot use.",
+        "properties": {
+          "benchmark": {
+            "$ref": "#/components/schemas/CohortReferenceResponse"
+          },
+          "best_batch_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Batch Code"
+          },
+          "line_kind": {
+            "title": "Line Kind",
+            "type": "string"
+          },
+          "line_name": {
+            "title": "Line Name",
+            "type": "string"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterSeriesResponse"
+            },
+            "title": "Parameters",
+            "type": "array"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/TrendPointResponse"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "total_cells_passed": {
+            "title": "Total Cells Passed",
+            "type": "integer"
+          },
+          "total_cells_scrapped": {
+            "title": "Total Cells Scrapped",
+            "type": "integer"
+          },
+          "total_cells_started": {
+            "title": "Total Cells Started",
+            "type": "integer"
+          },
+          "total_committed_value_lost_eur": {
+            "title": "Total Committed Value Lost Eur",
+            "type": "number"
+          },
+          "window_days": {
+            "title": "Window Days",
+            "type": "integer"
+          },
+          "window_first_pass_yield_pct": {
+            "title": "Window First Pass Yield Pct",
+            "type": "number"
+          },
+          "worst_batch_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Worst Batch Code"
+          }
+        },
+        "required": [
+          "line_name",
+          "line_kind",
+          "window_days",
+          "total_cells_started",
+          "total_cells_passed",
+          "total_cells_scrapped",
+          "total_committed_value_lost_eur",
+          "window_first_pass_yield_pct",
+          "best_batch_code",
+          "worst_batch_code",
+          "benchmark",
+          "points",
+          "parameters"
+        ],
+        "title": "MetricsTrendResponse",
+        "type": "object"
+      },
       "OnboardingResponse": {
         "description": "The whole wizard state, in one shape the client can render from cold.\n\n`steps` and `missing` are sent rather than hard-coded in the client so that\nadding a step is a backend change. A client with its own copy of the step\nlist is a client that disagrees with the server about where the user is.",
         "properties": {
@@ -265,6 +397,73 @@
           "completed_at"
         ],
         "title": "OnboardingResponse",
+        "type": "object"
+      },
+      "ParameterPointResponse": {
+        "properties": {
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "started_at",
+          "value"
+        ],
+        "title": "ParameterPointResponse",
+        "type": "object"
+      },
+      "ParameterSeriesResponse": {
+        "properties": {
+          "lower_limit": {
+            "title": "Lower Limit",
+            "type": "number"
+          },
+          "parameter": {
+            "title": "Parameter",
+            "type": "string"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterPointResponse"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "upper_limit": {
+            "title": "Upper Limit",
+            "type": "number"
+          }
+        },
+        "required": [
+          "parameter",
+          "unit",
+          "lower_limit",
+          "upper_limit",
+          "target",
+          "points"
+        ],
+        "title": "ParameterSeriesResponse",
         "type": "object"
       },
       "RegisterRequest": {
@@ -416,6 +615,65 @@
           "unit"
         ],
         "title": "SpecBandResponse",
+        "type": "object"
+      },
+      "TrendPointResponse": {
+        "properties": {
+          "batch_code": {
+            "title": "Batch Code",
+            "type": "string"
+          },
+          "capacity_retention_pct": {
+            "title": "Capacity Retention Pct",
+            "type": "number"
+          },
+          "cells_passed": {
+            "title": "Cells Passed",
+            "type": "integer"
+          },
+          "cells_scrapped": {
+            "title": "Cells Scrapped",
+            "type": "integer"
+          },
+          "cells_started": {
+            "title": "Cells Started",
+            "type": "integer"
+          },
+          "co2_intensity_kg_per_kwh": {
+            "title": "Co2 Intensity Kg Per Kwh",
+            "type": "number"
+          },
+          "committed_value_lost_eur": {
+            "title": "Committed Value Lost Eur",
+            "type": "number"
+          },
+          "first_pass_yield_pct": {
+            "title": "First Pass Yield Pct",
+            "type": "number"
+          },
+          "scrap_rate_pct": {
+            "title": "Scrap Rate Pct",
+            "type": "number"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "batch_code",
+          "started_at",
+          "cells_started",
+          "cells_passed",
+          "cells_scrapped",
+          "first_pass_yield_pct",
+          "scrap_rate_pct",
+          "capacity_retention_pct",
+          "co2_intensity_kg_per_kwh",
+          "committed_value_lost_eur"
+        ],
+        "title": "TrendPointResponse",
         "type": "object"
       },
       "UserResponse": {
@@ -782,6 +1040,48 @@
           }
         },
         "summary": "Production overview for the signed-in user's line",
+        "tags": [
+          "metrics"
+        ]
+      }
+    },
+    "/api/v1/metrics/trend": {
+      "get": {
+        "description": "The series behind the charts: one point per batch, plus the control\ncharts and the cohort benchmark.\n\nScoped to the signed-in user by `user.id`, never by a client-supplied line\nid — the same rule as `/overview`, and the reason both take the line from\nthe session rather than the query string.",
+        "operationId": "trend_api_v1_metrics_trend_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "window_days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 365,
+              "minimum": 1,
+              "title": "Window Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetricsTrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing or invalid access token."
+          },
+          "422": {
+            "description": "The account has no production line yet — code `metrics.no_line_configured`. Send the user back to onboarding."
+          }
+        },
+        "summary": "Batch-by-batch series for the signed-in user's line",
         "tags": [
           "metrics"
         ]

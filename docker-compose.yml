@@ -12,13 +12,13 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-beff_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-beff}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - '${POSTGRES_PORT:-5432}:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
       # Depends on postgres being ready to accept connections, not just the
       # container being up — otherwise the API races it on startup.
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-beff} -d ${POSTGRES_DB:-beff}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-beff} -d ${POSTGRES_DB:-beff}']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -39,7 +39,7 @@ services:
     command:
       - sh
       - -c
-      - "uv run --no-sync alembic upgrade head && uv run --no-sync python -m beff.seed"
+      - 'uv run --no-sync alembic upgrade head && uv run --no-sync python -m beff.seed'
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-beff}:${POSTGRES_PASSWORD:-beff_dev_password}@postgres:5432/${POSTGRES_DB:-beff}
       JWT_SECRET: ${JWT_SECRET:-dev_only_do_not_use_in_production}
@@ -68,7 +68,7 @@ services:
       CORS_ORIGINS: http://localhost:3000
       ENVIRONMENT: development
     ports:
-      - "${API_PORT:-8000}:8000"
+      - '${API_PORT:-8000}:8000'
     volumes:
       - ./apps/api/src:/app/src
       - ./apps/api/tests:/app/tests
@@ -91,7 +91,7 @@ services:
       context: ./apps/api
       dockerfile: Dockerfile
       target: dev
-    command: ["uv", "run", "--no-sync", "python", "-m", "beff.worker"]
+    command: ['uv', 'run', '--no-sync', 'python', '-m', 'beff.worker']
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-beff}:${POSTGRES_PASSWORD:-beff_dev_password}@postgres:5432/${POSTGRES_DB:-beff}
       JWT_SECRET: ${JWT_SECRET:-dev_only_do_not_use_in_production}
@@ -118,7 +118,7 @@ services:
       NEXT_PUBLIC_API_URL: http://localhost:8000
       NODE_ENV: development
     ports:
-      - "${WEB_PORT:-3000}:3000"
+      - '${WEB_PORT:-3000}:3000'
     volumes:
       - ./apps/web:/app/apps/web
       - ./packages:/app/packages
@@ -126,6 +126,21 @@ services:
       # above would otherwise overwrite them with the (possibly empty) host dirs.
       - /app/node_modules
       - /app/apps/web/node_modules
+      # And keep the container's build output out of the host tree entirely.
+      #
+      # This container runs as root, so through the bind-mount above it wrote
+      # `.next` back to the host owned by root — after which the *host's*
+      # `pnpm dev`, running as an ordinary user, could not create a directory
+      # inside its own build output. Turbopack reports that as a FATAL panic
+      # with a bug-report URL, which sends you looking for a Next.js bug rather
+      # than a `chown`.
+      #
+      # An anonymous volume rather than `user:` on the service: the image
+      # installs node_modules as root, so running the container as the host UID
+      # trades this problem for an unwritable store. Two `.next` directories
+      # that never meet is the honest model anyway — the container and the host
+      # are running two different Next servers.
+      - /app/apps/web/.next
       - /app/packages/config/node_modules
       - /app/packages/tokens/node_modules
       - /app/packages/ui/node_modules

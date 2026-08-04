@@ -11,6 +11,13 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "storybook-static/**"]
     },
     "dev": {
+      // `^build` so `@beff/tokens/dist` exists before anything imports it.
+      // `globals.css` does `@import '@beff/tokens/css'`, which resolves to a
+      // *generated* file — without this, a fresh clone's first `pnpm dev` fails
+      // on a missing stylesheet, and the error names the CSS rather than the
+      // build that never ran. Cheap: turbo caches `build`, so it is a cache hit
+      // on every run where the tokens have not changed.
+      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true
     },

@@ -218,6 +218,20 @@ describe('AuthForm', () => {
     });
   });
 
+  it('never lets a submit before hydration put the password in the URL', () => {
+    // A form with no `method` submits by **GET** to its own URL. The handler
+    // that calls `preventDefault` only exists once the bundle has hydrated, so
+    // a submit in the window before that navigates to
+    // `/en/login?email=…&password=…` — and the password is then in the address
+    // bar, in browser history, in the `Referer` of the next request, and in
+    // every access log between here and the origin.
+    for (const mode of ['login', 'register'] as const) {
+      const { container, unmount } = render(<AuthForm mode={mode} locale="en" />);
+      expect(container.querySelector('form')).toHaveAttribute('method', 'post');
+      unmount();
+    }
+  });
+
   it('hands validation to the server rather than to the browser bubble', () => {
     // The browser's own bubble cannot be styled, cannot be translated, and
     // disappears on blur.

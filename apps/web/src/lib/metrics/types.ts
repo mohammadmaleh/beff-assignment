@@ -9,4 +9,12 @@
  * Percentages are 0–100, never 0–1, and the field names say so — the schema uses
  * the same convention, so the unit is unambiguous at every call site.
  */
-export type { MetricsOverview, ScrapByStep, SpecBandReading } from '@beff/api-client/types';
+export type {
+  CohortReference,
+  MetricsOverview,
+  MetricsTrend,
+  ParameterSeries,
+  ScrapByStep,
+  SpecBandReading,
+  TrendPoint,
+} from '@beff/api-client/types';

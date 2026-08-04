@@ -74,7 +74,7 @@ export function ScrapChart({
             </span>
             <span className="bg-surface-sunken block h-4">
               <span
-                className="bg-band-range block h-4"
+                className="bg-chart-series-2 block h-4"
                 style={{ inlineSize: `${String((row.scrap_rate_pct / worst) * 100)}%` }}
               />
             </span>

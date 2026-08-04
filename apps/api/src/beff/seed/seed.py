@@ -105,6 +105,58 @@ MEASUREMENTS: list[dict[str, object]] = [
 ]
 
 
+# Where each parameter sat at the *start* of the window. The end of the walk is
+# the value in `MEASUREMENTS`, so the newest reading is unchanged and the spec
+# bands still show exactly what they showed before.
+#
+# Energy density is the story the control chart exists to tell: it starts
+# comfortably inside the 240-265 Wh/kg window and drifts out of the bottom of it
+# over two months. "It is out of spec" is what a spec band says; "it has been
+# falling since week three" is what a control chart adds, and it is the
+# difference between knowing there is a problem and knowing when it started.
+DRIFT_ORIGIN: dict[str, Decimal] = {
+    "porosity_pct": Decimal("31.9"),
+    "areal_loading_mg_cm2": Decimal("21.1"),
+    "energy_density_wh_kg": Decimal("251.0"),
+}
+
+# Scatter around the trend, in each parameter's own unit — measurement noise,
+# which is a different thing from process drift. A series with drift and no
+# noise is a clean diagonal that no instrument has ever produced, and it reads
+# as synthetic to exactly the reviewer this data is meant to convince.
+DRIFT_NOISE: dict[str, float] = {
+    "porosity_pct": 0.42,
+    "areal_loading_mg_cm2": 0.34,
+    "energy_density_wh_kg": 2.30,
+}
+
+
+def _drifted(
+    reading: dict[str, object], *, index: int, count: int, rng: random.Random
+) -> dict[str, object]:
+    """One reading's worth of history: the trend at `index`, plus noise.
+
+    The final batch returns the constant untouched. That is what keeps
+    `test_seed.py`'s assertions about `MEASUREMENTS` meaningful — they pin the
+    values a reviewer sees on the spec bands, and a walk that merely *ended
+    near* them would leave those assertions describing a number the dashboard
+    does not actually show.
+    """
+    parameter = str(reading["parameter"])
+    final = reading["value"]
+    assert isinstance(final, Decimal)
+
+    if index >= count - 1 or count < 2:
+        return dict(reading)
+
+    origin = DRIFT_ORIGIN[parameter]
+    progress = Decimal(index) / Decimal(count - 1)
+    trend = origin + (final - origin) * progress
+    noise = Decimal(str(rng.gauss(0.0, DRIFT_NOISE[parameter])))
+
+    return {**reading, "value": (trend + noise).quantize(Decimal("0.001"))}
+
+
 async def seed(session: AsyncSession, *, seed_value: int = 20260731) -> User:
     """Create or refresh the demo account. Returns the user.
 
@@ -231,12 +283,24 @@ async def seed(session: AsyncSession, *, seed_value: int = 20260731) -> User:
                 )
             )
 
-        # Measurements only on the newest batch — the dashboard shows the
-        # latest reading per parameter, and seeding sixty of each would be
-        # sixty times the rows for the same three numbers on screen.
-        if index == BATCH_COUNT - 1:
-            for reading in MEASUREMENTS:
-                session.add(ProcessMeasurement(batch_id=batch.id, **reading))
+        # A reading per parameter on every batch.
+        #
+        # This used to be the newest batch only, on the reasoning that the
+        # dashboard shows the latest reading per parameter and sixty of each
+        # would be sixty times the rows for the same three numbers. That was
+        # true of the spec bands and false of the control charts: a control
+        # chart *is* the history, and with one row per parameter it renders a
+        # single dot and says nothing about whether the process is stable.
+        #
+        # The newest batch still lands exactly on the values in `MEASUREMENTS`,
+        # so the spec-band section is unchanged and its assertions still hold.
+        for reading in MEASUREMENTS:
+            session.add(
+                ProcessMeasurement(
+                    batch_id=batch.id,
+                    **_drifted(reading, index=index, count=BATCH_COUNT, rng=rng),
+                )
+            )
 
     await session.commit()
     return user

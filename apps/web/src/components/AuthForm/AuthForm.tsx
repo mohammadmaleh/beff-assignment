@@ -72,7 +72,22 @@ export function AuthForm({ mode, locale }: { mode: Mode; locale: Locale }) {
   };
 
   return (
-    <form onSubmit={(event) => void onSubmit(event)} noValidate className="flex flex-col gap-6">
+    <form
+      onSubmit={(event) => void onSubmit(event)}
+      // `onSubmit` calls `preventDefault`, but only once the bundle has
+      // hydrated — and a form with no `method` submits by **GET** to its own
+      // URL. A submit in the window before hydration therefore navigates to
+      // `/en/login?email=…&password=…`, putting the password in the address
+      // bar, in browser history, in the `Referer` of the next request, and in
+      // every access log on the way. `post` is the fix: the same submit puts
+      // the credentials in a request body that no route reads, so the visitor
+      // lands back on the form — a dead end rather than a leak. There is no
+      // server route to point an `action` at; auth is owned end to end by
+      // FastAPI and this surface is client-rendered by design.
+      method="post"
+      noValidate
+      className="flex flex-col gap-6"
+    >
       {formError === null ? null : (
         <Alert tone="danger" title={t.auth.failedTitle} prefixes={t.a11y.alertPrefixes}>
           <p>{formError}</p>

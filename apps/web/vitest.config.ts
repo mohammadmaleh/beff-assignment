@@ -57,11 +57,15 @@ export default defineConfig({
       // floor: it fails on a *regression*, not on the ordinary drift of a
       // refactor that removes a covered line. Raise them when real coverage
       // rises; never lower one to make a red run green.
+      // Raised with the chart layer (`lib/chart`, `ChartFigure`, `EChart` and
+      // the four charts), which landed with its tooltips and option builders
+      // split out as pure functions precisely so they could be covered rather
+      // than only rendered. Measured 96.17 / 89.06 / 92.34 / 96.92.
       thresholds: {
-        statements: 93,
-        branches: 87,
-        functions: 86,
-        lines: 94,
+        statements: 95,
+        branches: 88,
+        functions: 91,
+        lines: 96,
       },
     },
   },
