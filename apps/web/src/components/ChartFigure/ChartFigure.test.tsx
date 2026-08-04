@@ -94,6 +94,26 @@ describe('ChartFigure', () => {
     expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
   });
 
+  it('marks the selected tab with something other than colour', async () => {
+    // `aria-selected` covers assistive technology, but colour reaching only
+    // fill and text tone is invisible to a low-vision sighted user reading the
+    // tab strip directly. `aria-selected` is not itself a rendered cue — it is
+    // a font-weight difference here, asserted on the class that carries it
+    // rather than on colour classes, which this test must never mention.
+    const user = userEvent.setup();
+    renderFigure();
+
+    const chartTab = screen.getByRole('tab', { name: 'Chart' });
+    const tableTab = screen.getByRole('tab', { name: 'Table' });
+    expect(chartTab).toHaveClass('font-semibold');
+    expect(tableTab).not.toHaveClass('font-semibold');
+
+    await user.click(tableTab);
+
+    expect(tableTab).toHaveClass('font-semibold');
+    expect(chartTab).not.toHaveClass('font-semibold');
+  });
+
   it('shows one panel at a time and switches on click', async () => {
     const user = userEvent.setup();
     renderFigure();

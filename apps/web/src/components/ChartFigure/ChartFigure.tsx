@@ -69,7 +69,7 @@ export function ChartFigure({
   ];
 
   /** Arrow keys move between tabs and select as they go, per the APG pattern. */
-  function onKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
+  function onKeyDown(event: React.KeyboardEvent<HTMLButtonElement>): void {
     const order: View[] = ['chart', 'table'];
     const index = order.indexOf(view);
     const next =
@@ -110,15 +110,11 @@ export function ChartFigure({
         </p>
       </figcaption>
 
-      {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- the
-           APG roving-tabindex pattern puts focus on the tabs themselves, never
-           on the tablist container; the plugin has no exception for that. */}
       <div
         role="tablist"
         // Named by the chart's own heading. Five figures on a page each carry
         // one of these, and "Chart / Table" alone does not say which chart.
         aria-labelledby={id}
-        onKeyDown={onKeyDown}
         className="border-border-default rounded-chamfer flex border sm:justify-self-end"
       >
         {views.map(({ key, label }) => {
@@ -136,12 +132,21 @@ export function ChartFigure({
               aria-controls={`${id}-panel-${key}`}
               // Roving tabindex: one stop for the whole tablist, arrows inside.
               tabIndex={selected ? 0 : -1}
+              // Attached to the button rather than the tablist div: the
+              // handler only ever fires by bubbling from whichever tab is
+              // focused, and a native button is focusable on its own — no
+              // need to silence jsx-a11y/interactive-supports-focus for it.
+              onKeyDown={onKeyDown}
               onClick={() => {
                 setView(key);
               }}
               className={`px-3 py-1.5 text-[length:var(--type-ui-size-sm)] ${
                 selected
-                  ? 'bg-surface-sunken text-text-default'
+                  ? // Weight carries the selection, not just fill and text
+                    // tone — colour alone is never the only signal, and
+                    // `aria-selected` says nothing to a sighted low-vision
+                    // reader looking straight at the tab strip.
+                    'bg-surface-sunken text-text-default font-semibold'
                   : 'text-text-muted hover:text-text-default'
               }`}
             >
