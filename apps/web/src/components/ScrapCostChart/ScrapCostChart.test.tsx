@@ -96,6 +96,36 @@ describe('ScrapCostChart', () => {
     expect(within(screen.getByRole('table')).getByText(/12\.800\s€/)).toBeInTheDocument();
   });
 
+  it('offers sorting by cost without imposing it', async () => {
+    /*
+     * Process order is the argument this chart makes: a cell lost at formation
+     * has absorbed every upstream cost, so a bar's position carries economic
+     * meaning that re-sorting destroys. Sorting is therefore the reader's
+     * choice and never the default — the first assertion is the important one.
+     */
+    render(<ScrapCostChart rows={rows} locale="en" />);
+    await openTable();
+
+    expect(
+      within(screen.getByRole('table'))
+        .getAllByRole('rowheader')
+        .map((row) => row.textContent),
+    ).toEqual(['Mixing', 'Coating', 'Formation']);
+
+    const header = screen.getByRole('columnheader', { name: /Committed value lost/ });
+    await userEvent.click(within(header).getByRole('button'));
+    await userEvent.click(within(header).getByRole('button'));
+
+    expect(header).toHaveAttribute('aria-sort', 'descending');
+    expect(
+      within(screen.getByRole('table'))
+        .getAllByRole('rowheader')
+        .map((row) => row.textContent),
+      // Formation first: the most expensive step, which is the whole point the
+      // chart exists to make against the rate breakdown beside it.
+    ).toEqual(['Formation', 'Coating', 'Mixing']);
+  });
+
   it('falls back to the raw key for a step the frontend has not been taught', async () => {
     // A step added to the backend must appear as an unfamiliar name, not vanish
     // from a chart that claims to break down all of the scrap.

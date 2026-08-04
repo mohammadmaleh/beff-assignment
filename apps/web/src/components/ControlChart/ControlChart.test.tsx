@@ -132,6 +132,42 @@ describe('ControlChart', () => {
     expect(screen.getAllByText('In Spezifikation')).toHaveLength(2);
   });
 
+  it('shapes the verdict as a badge that still carries the word', async () => {
+    // The pill is what makes the column scannable; the word inside it is what
+    // makes it legal. A badge distinguished only by fill would put the whole
+    // verdict back into colour, which is the one thing this column exists to
+    // avoid.
+    render(<ControlChart series={series()} label="Energy density" locale="en" />);
+    await openTable();
+
+    expect(screen.getByText('Out of spec')).toHaveClass('border-status-danger-fg');
+    expect(screen.getAllByText('In spec')[0]).not.toHaveClass('border-status-danger-fg');
+  });
+
+  it('isolates an outlier with the range filter', async () => {
+    render(<ControlChart series={series()} label="Energy density" locale="en" />);
+    await openTable();
+
+    // Below the lower limit of 240 — the reading that breached, and nothing else.
+    await userEvent.type(screen.getByLabelText(/^To$/), '239');
+
+    expect(screen.getByText('Showing 1 of 3 rows')).toBeInTheDocument();
+    expect(screen.getByText('Out of spec')).toBeVisible();
+  });
+
+  it('sorts the readings by value, which the time axis cannot do', async () => {
+    render(<ControlChart series={series()} label="Energy density" locale="en" />);
+    await openTable();
+
+    const header = screen.getByRole('columnheader', { name: /Value/ });
+    await userEvent.click(within(header).getByRole('button'));
+
+    expect(header).toHaveAttribute('aria-sort', 'ascending');
+    const cells = within(screen.getByRole('table')).getAllByRole('cell');
+    // The worst reading first: 238 breached, and it is the one to look at.
+    expect(cells[0]).toHaveTextContent('238.0');
+  });
+
   it('renders a parameter with no target without inventing one', () => {
     // Drawing `(lower + upper) / 2` would put a target line the process
     // engineer never set exactly where they would look for the one they did.

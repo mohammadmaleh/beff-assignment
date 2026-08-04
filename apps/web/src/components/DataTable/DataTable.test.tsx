@@ -313,3 +313,80 @@ describe('DataTable export', () => {
     revokeObjectURL.mockRestore();
   });
 });
+
+describe('DataTable badges', () => {
+  interface Reading {
+    day: string;
+    value: number;
+    failed: boolean;
+  }
+
+  const READINGS: Reading[] = [
+    { day: '2026-01-04', value: 31.2, failed: false },
+    { day: '2026-02-08', value: 44.9, failed: true },
+  ];
+
+  const BADGE_COLUMNS: DataColumn<Reading>[] = [
+    {
+      key: 'day',
+      header: 'Measured',
+      rowHeader: true,
+      render: (row) => row.day,
+      text: (row) => row.day,
+    },
+    {
+      key: 'verdict',
+      header: 'Against spec',
+      // The badge replaces the cell entirely; `text` is what search and the CSV
+      // read, which is why it must still carry the word.
+      render: () => null,
+      text: (row) => (row.failed ? 'Out of spec' : 'In spec'),
+      badge: (row) =>
+        row.failed
+          ? { label: 'Out of spec', intent: 'danger' }
+          : { label: 'In spec', intent: 'neutral' },
+    },
+  ];
+
+  function renderBadges() {
+    return render(
+      <DataTable
+        caption="Porosity by batch"
+        columns={BADGE_COLUMNS}
+        rows={READINGS}
+        rowKey={(row) => row.day}
+        locale="en"
+        csvName="porosity"
+        copy={COPY}
+      />,
+    );
+  }
+
+  it('puts the verdict inside the badge as a word, never as colour alone', () => {
+    // The same rule the red marker on the drawing follows: colour is the second
+    // encoding. Roughly one man in twelve gets nothing from the fill, and a
+    // greyscale printout gets nothing from it either.
+    renderBadges();
+
+    expect(screen.getByText('Out of spec')).toBeVisible();
+    expect(screen.getByText('In spec')).toBeVisible();
+  });
+
+  it('marks the failing badge with a border as well as a colour', () => {
+    renderBadges();
+
+    expect(screen.getByText('Out of spec')).toHaveClass('border-status-danger-fg');
+    expect(screen.getByText('In spec')).not.toHaveClass('border-status-danger-fg');
+  });
+
+  it('still exports and searches the badge text, not an empty cell', async () => {
+    // `render` returns null for this column. If the search read `render`
+    // instead of `text`, filtering on the verdict would silently match nothing.
+    const user = userEvent.setup();
+    renderBadges();
+
+    await user.type(screen.getByLabelText(/^Search/), 'Out of spec');
+
+    expect(screen.getByText('Showing 1 of 2')).toBeInTheDocument();
+  });
+});

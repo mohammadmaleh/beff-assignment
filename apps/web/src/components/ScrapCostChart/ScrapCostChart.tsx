@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 
 import { ChartFigure } from '@/components/ChartFigure';
+import { DataTable, type DataColumn } from '@/components/DataTable';
 import { EChart } from '@/components/EChart';
 import {
   baseOption,
@@ -96,6 +97,37 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
     return [...rows].sort((a, b) => order.indexOf(a.process_step) - order.indexOf(b.process_step));
   }, [rows]);
 
+  const columns = useMemo<DataColumn<ScrapByStep>[]>(
+    () => [
+      {
+        key: 'step',
+        header: copy.columnStep,
+        rowHeader: true,
+        render: (row) => steps[row.process_step] ?? row.process_step,
+        text: (row) => steps[row.process_step] ?? row.process_step,
+        sortValue: (row) => steps[row.process_step] ?? row.process_step,
+      },
+      {
+        key: 'scrap',
+        header: copy.columnScrap,
+        align: 'end',
+        render: (row) => format.percent(row.scrap_rate_pct),
+        text: (row) => format.percent(row.scrap_rate_pct),
+        sortValue: (row) => row.scrap_rate_pct,
+      },
+      {
+        key: 'cost',
+        header: copy.seriesName,
+        align: 'end',
+        render: (row) => format.euro(row.committed_value_eur),
+        text: (row) => format.euro(row.committed_value_eur),
+        sortValue: (row) => row.committed_value_eur,
+        filterRange: (row) => row.committed_value_eur,
+      },
+    ],
+    [copy, format, steps],
+  );
+
   const option = useMemo<EChartsOption>(() => {
     const base = baseOption({ tokens, reducedMotion });
 
@@ -164,39 +196,21 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
       viewTableLabel={t.dashboard.table.viewTable}
       chart={<EChart option={option} height="24rem" />}
       table={
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
-            <caption className="text-text-muted pb-3 text-start">{copy.tableCaption}</caption>
-            <thead>
-              <tr className="border-border-default border-b">
-                <th scope="col" className="py-2 pe-4 text-start font-medium">
-                  {copy.columnStep}
-                </th>
-                <th scope="col" className="py-2 pe-4 text-end font-medium">
-                  {copy.columnScrap}
-                </th>
-                <th scope="col" className="py-2 text-end font-medium">
-                  {copy.seriesName}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {ordered.map((row) => (
-                <tr key={row.process_step} className="border-border-default border-b">
-                  <th scope="row" className="py-2 pe-4 text-start font-normal">
-                    {steps[row.process_step] ?? row.process_step}
-                  </th>
-                  <td className="py-2 pe-4 text-end tabular-nums">
-                    {format.percent(row.scrap_rate_pct)}
-                  </td>
-                  <td className="py-2 text-end tabular-nums">
-                    {format.euro(row.committed_value_eur)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        /*
+         * `ordered` — process order, the same array the bars are drawn from.
+         * Sorting is offered and never imposed: a cell lost at formation has
+         * absorbed every upstream cost, so position carries economic meaning
+         * that a default sort by size would quietly destroy.
+         */
+        <DataTable
+          caption={copy.tableCaption}
+          columns={columns}
+          rows={ordered}
+          rowKey={(row) => row.process_step}
+          locale={locale}
+          csvName="committed-value-lost"
+          copy={t.dashboard.table}
+        />
       }
     />
   );

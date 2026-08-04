@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 
 import { ChartFigure } from '@/components/ChartFigure';
+import { DataTable, type DataColumn } from '@/components/DataTable';
 import { EChart } from '@/components/EChart';
 import {
   baseOption,
@@ -104,6 +105,51 @@ export function ControlChart({
   const tokens = useChartTokens();
   const reducedMotion = useReducedMotion();
   const format = useMemo(() => chartFormatters(locale), [locale]);
+
+  const columns = useMemo<DataColumn<ParameterPoint>[]>(
+    () => [
+      {
+        key: 'measured',
+        header: copy.columnDate,
+        rowHeader: true,
+        render: (point) => format.fullDate(point.started_at),
+        text: (point) => format.fullDate(point.started_at),
+        sortValue: (point) => point.started_at,
+        filterDate: (point) => point.started_at,
+      },
+      {
+        key: 'value',
+        header: copy.columnValue.replace('{unit}', series.unit),
+        align: 'end',
+        render: (point) => format.decimal(point.value, 1),
+        text: (point) => format.decimal(point.value, 1),
+        sortValue: (point) => point.value,
+        filterRange: (point) => point.value,
+      },
+      {
+        key: 'verdict',
+        header: copy.columnVerdict,
+        // The badge replaces the cell; `text` is what search and the CSV read,
+        // so the word has to live there too.
+        render: () => null,
+        text: (point) => (breaches(point.value, series) ? copy.outOfSpec : copy.inSpec),
+        // Breaches first on a descending sort — "show me the ones that failed"
+        // is the question this column exists for.
+        sortValue: (point) => (breaches(point.value, series) ? 1 : 0),
+        /*
+         * Reads the same `breaches()` helper as the drawing and the
+         * description. Three inline comparisons would be three chances for one
+         * of them to use `<=` and disagree with the other two about a reading
+         * sitting exactly on a limit.
+         */
+        badge: (point) =>
+          breaches(point.value, series)
+            ? { label: copy.outOfSpec, intent: 'danger' }
+            : { label: copy.inSpec, intent: 'neutral' },
+      },
+    ],
+    [copy, format, series],
+  );
 
   // One definition of "out of spec" for the whole component — the drawing, the
   // description and the table all read it. Three inline comparisons is three
@@ -230,47 +276,15 @@ export function ControlChart({
       viewTableLabel={t.dashboard.table.viewTable}
       chart={<EChart option={option} height="14rem" />}
       table={
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
-            <caption className="text-text-muted pb-3 text-start">
-              {copy.tableCaption.replace('{parameter}', label)}
-            </caption>
-            <thead>
-              <tr className="border-border-default border-b">
-                <th scope="col" className="py-2 pe-4 text-start font-medium">
-                  {copy.columnDate}
-                </th>
-                <th scope="col" className="py-2 pe-4 text-end font-medium">
-                  {copy.columnValue.replace('{unit}', series.unit)}
-                </th>
-                <th scope="col" className="py-2 text-start font-medium">
-                  {copy.columnVerdict}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {series.points.map((point) => {
-                const failed = breaches(point.value, series);
-                return (
-                  <tr key={point.started_at} className="border-border-default border-b">
-                    <th scope="row" className="py-2 pe-4 text-start font-normal">
-                      {format.fullDate(point.started_at)}
-                    </th>
-                    <td className="py-2 pe-4 text-end tabular-nums">
-                      {format.decimal(point.value, 1)}
-                    </td>
-                    {/*
-                     * The verdict as a word, in the table, for every row. This is
-                     * what makes the red marker on the drawing a redundant second
-                     * encoding rather than the only one.
-                     */}
-                    <td className="py-2">{failed ? copy.outOfSpec : copy.inSpec}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          caption={copy.tableCaption.replace('{parameter}', label)}
+          columns={columns}
+          rows={series.points}
+          rowKey={(point) => point.started_at}
+          locale={locale}
+          csvName={series.parameter}
+          copy={t.dashboard.table}
+        />
       }
     />
   );

@@ -244,7 +244,33 @@ export function DataTable<Row>({
                   className="border-border-default even:bg-surface-sunken/40 border-b"
                 >
                   {columns.map((column) => {
-                    const content = column.render(row);
+                    const badge = column.badge?.(row);
+                    /*
+                     * A badge replaces the cell rather than decorating it, and
+                     * carries its label as a word inside the pill — the same
+                     * rule the drawing's red marker follows, where colour is the
+                     * second encoding and never the only one.
+                     *
+                     * Bordered rather than filled, reusing `Alert`'s
+                     * `border-status-danger-fg` / `text-status-danger-fg` pair.
+                     * There is no `status-danger-bg` token: a filled pill would
+                     * mean inventing a colour pair the contrast gate has never
+                     * solved, which is how a palette nobody chose gets blessed.
+                     */
+                    const content =
+                      badge === undefined ? (
+                        column.render(row)
+                      ) : (
+                        <span
+                          className={`rounded-chamfer inline-block border px-2 py-0.5 ${
+                            badge.intent === 'danger'
+                              ? 'border-status-danger-fg text-status-danger-fg'
+                              : 'border-border-default text-text-muted'
+                          }`}
+                        >
+                          {badge.label}
+                        </span>
+                      );
                     const alignment =
                       column.align === 'end' ? 'text-end tabular-nums' : 'text-start';
 
