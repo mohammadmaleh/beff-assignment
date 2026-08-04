@@ -116,8 +116,6 @@ export const enApp = {
     columnStep: 'Process step',
     columnScrap: 'Scrap rate',
     columnCost: 'Committed value lost',
-    showTable: 'Show the data as a table',
-    hideTable: 'Hide the table',
     /*
      * The data table's own copy. `viewChart` / `viewTable` name the two views
      * of every chart; the rest is the table's toolbar.

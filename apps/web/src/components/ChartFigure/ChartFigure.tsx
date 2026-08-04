@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-type View = 'chart' | 'table';
+import { ChartViews } from './ChartViews';
 
 /**
  * The frame every chart in this app is mounted in.
@@ -60,35 +60,6 @@ export function ChartFigure({
   id: string;
 }) {
   const Heading = headingLevel;
-  const [view, setView] = useState<View>('chart');
-  const tabRefs = useRef<Record<View, HTMLButtonElement | null>>({ chart: null, table: null });
-
-  const views: readonly { key: View; label: string }[] = [
-    { key: 'chart', label: viewChartLabel },
-    { key: 'table', label: viewTableLabel },
-  ];
-
-  /** Arrow keys move between tabs and select as they go, per the APG pattern. */
-  function onKeyDown(event: React.KeyboardEvent<HTMLButtonElement>): void {
-    const order: View[] = ['chart', 'table'];
-    const index = order.indexOf(view);
-    const next =
-      event.key === 'ArrowRight'
-        ? order[(index + 1) % order.length]
-        : event.key === 'ArrowLeft'
-          ? order[(index - 1 + order.length) % order.length]
-          : event.key === 'Home'
-            ? order[0]
-            : event.key === 'End'
-              ? order[order.length - 1]
-              : undefined;
-
-    if (next === undefined) return;
-
-    event.preventDefault();
-    setView(next);
-    tabRefs.current[next]?.focus();
-  }
 
   return (
     /*
@@ -110,69 +81,14 @@ export function ChartFigure({
         </p>
       </figcaption>
 
-      <div
-        role="tablist"
-        // Named by the chart's own heading. Five figures on a page each carry
-        // one of these, and "Chart / Table" alone does not say which chart.
-        aria-labelledby={id}
-        className="border-border-default rounded-chamfer flex border sm:justify-self-end"
-      >
-        {views.map(({ key, label }) => {
-          const selected = view === key;
-          return (
-            <button
-              key={key}
-              ref={(node) => {
-                tabRefs.current[key] = node;
-              }}
-              type="button"
-              role="tab"
-              id={`${id}-tab-${key}`}
-              aria-selected={selected}
-              aria-controls={`${id}-panel-${key}`}
-              // Roving tabindex: one stop for the whole tablist, arrows inside.
-              tabIndex={selected ? 0 : -1}
-              // Attached to the button rather than the tablist div: the
-              // handler only ever fires by bubbling from whichever tab is
-              // focused, and a native button is focusable on its own — no
-              // need to silence jsx-a11y/interactive-supports-focus for it.
-              onKeyDown={onKeyDown}
-              onClick={() => {
-                setView(key);
-              }}
-              className={`px-3 py-1.5 text-[length:var(--type-ui-size-sm)] ${
-                selected
-                  ? // Weight carries the selection, not just fill and text
-                    // tone — colour alone is never the only signal, and
-                    // `aria-selected` says nothing to a sighted low-vision
-                    // reader looking straight at the tab strip.
-                    'bg-surface-sunken text-text-default font-semibold'
-                  : 'text-text-muted hover:text-text-default'
-              }`}
-            >
-              {label}
-            </button>
-          );
-        })}
-      </div>
-
-      {views.map(({ key }) => (
-        <div
-          key={key}
-          role="tabpanel"
-          id={`${id}-panel-${key}`}
-          aria-labelledby={`${id}-tab-${key}`}
-          hidden={view !== key}
-          // Focusable so a keyboard user can scroll the panel they just
-          // opened, per the APG tabpanel pattern — the plugin's role list
-          // treats "tabpanel" as non-interactive and has no exception for it.
-          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-          tabIndex={0}
-          className="sm:col-span-2"
-        >
-          {key === 'chart' ? chart : table}
-        </div>
-      ))}
+      <ChartViews
+        id={id}
+        labelledBy={id}
+        viewChartLabel={viewChartLabel}
+        viewTableLabel={viewTableLabel}
+        chart={chart}
+        table={table}
+      />
     </figure>
   );
 }

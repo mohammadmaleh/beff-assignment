@@ -1,5 +1,6 @@
 import { cx } from '@beff/ui/cx';
 
+import { ChartViews } from '@/components/ChartFigure';
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { committedValueCurve, PROCESS_STEPS } from '@/lib/metrics';
 
@@ -71,9 +72,12 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
     }));
 
   return (
-    <figure className="flex flex-col gap-6">
+    <figure className="grid grid-cols-1 items-start gap-6 sm:grid-cols-[1fr_auto]">
       <figcaption className="flex flex-col gap-2">
-        <span className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase">
+        <span
+          id="cost-of-position"
+          className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase"
+        >
           {t.landing.costFigureLabel}
         </span>
         <span className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
@@ -81,135 +85,141 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
         </span>
       </figcaption>
 
-      <div className="relative">
-        <svg
-          aria-hidden="true"
-          viewBox={`0 0 ${String(VIEW.width)} ${String(VIEW.height)}`}
-          className="block h-auto w-full"
-        >
-          {/* Step boundaries — the calibration marks the whole design is built from. */}
-          {PROCESS_STEPS.map((step, index) => (
-            <line
-              key={step}
-              x1={index * COLUMN}
-              x2={index * COLUMN}
-              y1={VIEW.top}
-              y2={VIEW.bottom}
-              // Same token as the page's calibration ground, for the same
-              // reason: it is one step off the surface in both themes, where the
-              // border token is deliberately light in dark and would shout.
-              stroke="var(--color-surface-sunken)"
-              strokeWidth="1"
-            />
-          ))}
+      <ChartViews
+        id="cost-of-position-views"
+        labelledBy="cost-of-position"
+        viewChartLabel={t.dashboard.table.viewChart}
+        viewTableLabel={t.dashboard.table.viewTable}
+        chart={
+          <>
+            <div className="relative">
+              <svg
+                aria-hidden="true"
+                viewBox={`0 0 ${String(VIEW.width)} ${String(VIEW.height)}`}
+                className="block h-auto w-full"
+              >
+                {/* Step boundaries — the calibration marks the whole design is built from. */}
+                {PROCESS_STEPS.map((step, index) => (
+                  <line
+                    key={step}
+                    x1={index * COLUMN}
+                    x2={index * COLUMN}
+                    y1={VIEW.top}
+                    y2={VIEW.bottom}
+                    // Same token as the page's calibration ground, for the same
+                    // reason: it is one step off the surface in both themes, where the
+                    // border token is deliberately light in dark and would shout.
+                    stroke="var(--color-surface-sunken)"
+                    strokeWidth="1"
+                  />
+                ))}
 
-          {/* The finished cell: the ceiling everything accrues towards. */}
-          <line
-            x1="0"
-            x2={VIEW.width}
-            y1={VIEW.top}
-            y2={VIEW.top}
-            stroke="var(--color-border-default)"
-            strokeDasharray="2 6"
-            strokeWidth="1"
-          />
+                {/* The finished cell: the ceiling everything accrues towards. */}
+                <line
+                  x1="0"
+                  x2={VIEW.width}
+                  y1={VIEW.top}
+                  y2={VIEW.top}
+                  stroke="var(--color-border-default)"
+                  strokeDasharray="2 6"
+                  strokeWidth="1"
+                />
 
-          <path
-            d={`${outline} L ${String(VIEW.width)} ${String(VIEW.bottom)} L 0 ${String(VIEW.bottom)} Z`}
-            fill="var(--color-band-track)"
-          />
-          <path d={outline} fill="none" stroke="var(--color-band-range)" strokeWidth="3" />
+                <path
+                  d={`${outline} L ${String(VIEW.width)} ${String(VIEW.bottom)} L 0 ${String(VIEW.bottom)} Z`}
+                  fill="var(--color-band-track)"
+                />
+                <path d={outline} fill="none" stroke="var(--color-band-range)" strokeWidth="3" />
 
-          {/* The baseline. A cell at zero has had nothing put into it yet. */}
-          <line
-            x1="0"
-            x2={VIEW.width}
-            y1={VIEW.bottom}
-            y2={VIEW.bottom}
-            stroke="var(--color-band-tick)"
-            strokeWidth="2"
-          />
+                {/* The baseline. A cell at zero has had nothing put into it yet. */}
+                <line
+                  x1="0"
+                  x2={VIEW.width}
+                  y1={VIEW.bottom}
+                  y2={VIEW.bottom}
+                  stroke="var(--color-band-tick)"
+                  strokeWidth="2"
+                />
 
-          {annotated.map(({ step, pct }) => (
-            <circle
-              key={step}
-              cx={(PROCESS_STEPS.indexOf(step) + 0.5) * COLUMN}
-              cy={y(pct)}
-              r="6"
-              fill="var(--color-band-tick)"
-            />
-          ))}
-        </svg>
+                {annotated.map(({ step, pct }) => (
+                  <circle
+                    key={step}
+                    cx={(PROCESS_STEPS.indexOf(step) + 0.5) * COLUMN}
+                    cy={y(pct)}
+                    r="6"
+                    fill="var(--color-band-tick)"
+                  />
+                ))}
+              </svg>
 
-        {/*
-         * Annotations in HTML rather than SVG `<text>`: real type, real tokens,
-         * selectable, and they wrap. SVG text scales with the drawing, which at
-         * mobile widths would set the labels at about six pixels.
-         */}
-        {annotated.map(({ step, pct, x, yPct, flip }) => (
-          <p
-            key={step}
-            className={cx(
-              'text-text-default absolute hidden max-w-40 -translate-y-full pb-3 font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tabular-nums md:block',
-              flip ? '-translate-x-full pe-3 text-end' : 'ps-3',
-            )}
-            style={{ insetInlineStart: `${String(x)}%`, top: `${String(yPct)}%` }}
-          >
-            {percent.format(pct / 100)} · {steps[step] ?? step}
-          </p>
-        ))}
-      </div>
-
-      {/* The axis: twelve ordinals, and what the two ends of the chain mean. */}
-      <div aria-hidden="true" className="flex flex-col gap-2">
-        <ol className="grid grid-cols-12">
-          {PROCESS_STEPS.map((step, index) => (
-            <li
-              key={step}
-              className="text-text-muted border-border-default border-t pt-2 text-center font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tabular-nums"
-            >
-              {String(index + 1).padStart(2, '0')}
-            </li>
-          ))}
-        </ol>
-        <div className="text-text-muted flex justify-between font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase">
-          <span>{t.landing.costAxisStart}</span>
-          <span>{t.landing.costAxisEnd}</span>
-        </div>
-      </div>
-
-      <details className="border-border-default border-t pt-4">
-        <summary className="cursor-pointer text-[length:var(--type-ui-size-sm)]">
-          {t.dashboard.showTable}
-        </summary>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
-            <caption className="text-text-muted pb-3 text-start">
-              {t.landing.costTableCaption}
-            </caption>
-            <thead>
-              <tr className="border-border-default border-b">
-                <th scope="col" className="py-2 pe-4 text-start font-medium">
-                  {t.landing.costColumnStep}
-                </th>
-                <th scope="col" className="py-2 text-end font-medium">
-                  {t.landing.costColumnCommitted}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {committedValueCurve.map(({ step, pct }) => (
-                <tr key={step} className="border-border-default border-b">
-                  <th scope="row" className="py-2 pe-4 text-start font-normal">
-                    {steps[step] ?? step}
-                  </th>
-                  <td className="py-2 text-end tabular-nums">{percent.format(pct / 100)}</td>
-                </tr>
+              {/*
+               * Annotations in HTML rather than SVG `<text>`: real type, real tokens,
+               * selectable, and they wrap. SVG text scales with the drawing, which at
+               * mobile widths would set the labels at about six pixels.
+               */}
+              {annotated.map(({ step, pct, x, yPct, flip }) => (
+                <p
+                  key={step}
+                  className={cx(
+                    'text-text-default absolute hidden max-w-40 -translate-y-full pb-3 font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tabular-nums md:block',
+                    flip ? '-translate-x-full pe-3 text-end' : 'ps-3',
+                  )}
+                  style={{ insetInlineStart: `${String(x)}%`, top: `${String(yPct)}%` }}
+                >
+                  {percent.format(pct / 100)} · {steps[step] ?? step}
+                </p>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </details>
+            </div>
+
+            {/* The axis: twelve ordinals, and what the two ends of the chain mean. */}
+            <div aria-hidden="true" className="flex flex-col gap-2">
+              <ol className="grid grid-cols-12">
+                {PROCESS_STEPS.map((step, index) => (
+                  <li
+                    key={step}
+                    className="text-text-muted border-border-default border-t pt-2 text-center font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tabular-nums"
+                  >
+                    {String(index + 1).padStart(2, '0')}
+                  </li>
+                ))}
+              </ol>
+              <div className="text-text-muted flex justify-between font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase">
+                <span>{t.landing.costAxisStart}</span>
+                <span>{t.landing.costAxisEnd}</span>
+              </div>
+            </div>
+          </>
+        }
+        table={
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
+              <caption className="text-text-muted pb-3 text-start">
+                {t.landing.costTableCaption}
+              </caption>
+              <thead>
+                <tr className="border-border-default border-b">
+                  <th scope="col" className="py-2 pe-4 text-start font-medium">
+                    {t.landing.costColumnStep}
+                  </th>
+                  <th scope="col" className="py-2 text-end font-medium">
+                    {t.landing.costColumnCommitted}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {committedValueCurve.map(({ step, pct }) => (
+                  <tr key={step} className="border-border-default border-b">
+                    <th scope="row" className="py-2 pe-4 text-start font-normal">
+                      {steps[step] ?? step}
+                    </th>
+                    <td className="py-2 text-end tabular-nums">{percent.format(pct / 100)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        }
+      />
     </figure>
   );
 }

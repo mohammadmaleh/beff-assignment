@@ -111,8 +111,6 @@ export const deApp: typeof enApp = {
     columnStep: 'Prozessschritt',
     columnScrap: 'Ausschussquote',
     columnCost: 'Verlorene gebundene Wertschöpfung',
-    showTable: 'Daten als Tabelle anzeigen',
-    hideTable: 'Tabelle ausblenden',
     /*
      * Texte der Datentabelle. `viewChart` / `viewTable` benennen die beiden
      * Ansichten jedes Diagramms; der Rest gehört zur Werkzeugleiste der Tabelle.
