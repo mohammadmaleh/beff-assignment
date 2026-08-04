@@ -56,24 +56,49 @@ describe('DashboardView', () => {
     mockFetch(OVERVIEW);
     renderWithProviders(<DashboardView locale="en" />);
 
-    expect(await screen.findByText('71.7')).toBeInTheDocument();
+    // First-pass yield is a spec band now, not a bare tile, so the figure sits
+    // between a status glyph and its unit. Assert the *readout* — the sentence a
+    // screen reader gets — because that is the thing that has to be true.
+    expect(
+      await screen.findByText(/71\.7\s*% — in spec\. Specification 40\.0–80\.0 %/),
+    ).toBeInTheDocument();
     expect(screen.getByText('First-pass yield')).toBeInTheDocument();
     expect(screen.getByText('Pilotlinie 1', { exact: false })).toBeInTheDocument();
   });
 
-  it('reads yield rising as good news and scrap rising as bad', async () => {
-    // The same arrow means opposite things in the two tiles. Getting this
-    // backwards would make a worsening line look like an improving one.
+  it('states which way yield moved, without leaning on a colour', async () => {
     mockFetch(OVERVIEW);
     renderWithProviders(<DashboardView locale="en" />);
 
-    const yieldDelta = await screen.findByText('+5.4 pp');
-    const scrapDelta = screen.getByText('-5.3 pp');
+    // Yield is a band now: the band carries the verdict and this line carries
+    // the movement. Direction is in the sign, so the reading needs no arrow and
+    // no status colour — and must not acquire one, or it would be a second
+    // signal saying something the band already said better.
+    const delta = await screen.findByText('+5.4 pp versus the previous period');
+    expect(delta.className).not.toMatch(/status-/);
+  });
 
-    expect(yieldDelta.parentElement).toHaveClass('text-status-success-fg');
-    // Scrap fell, which is also good — intent is derived from meaning, not
-    // from the sign.
+  it('reads falling scrap as good news', async () => {
+    // Scrap is not a band — no plant specifies a total scrap rate — so it keeps
+    // a tile, and the tile's intent is derived from meaning rather than from
+    // the sign. Getting this backwards makes a worsening line look improving.
+    mockFetch(OVERVIEW);
+    renderWithProviders(<DashboardView locale="en" />);
+
+    const scrapDelta = await screen.findByText('-5.3 pp');
     expect(scrapDelta.parentElement).toHaveClass('text-status-success-fg');
+  });
+
+  it('judges yield against the band for the kind of line it is', async () => {
+    mockFetch(OVERVIEW);
+    renderWithProviders(<DashboardView locale="en" />);
+
+    // 71.7% is a good week on a pilot line and a crisis on a production one.
+    // The fixture's line is `pilot`, so the reading must be drawn against
+    // 40–80 — the whole reason a bare number with an arrow could not do this.
+    expect(
+      await screen.findByText(/Specification 40\.0–80\.0 %, target 70\.0 %/),
+    ).toBeInTheDocument();
   });
 
   it('orders the scrap breakdown by process step, never by size', async () => {
@@ -98,11 +123,15 @@ describe('DashboardView', () => {
     expect(screen.getByRole('columnheader', { name: 'Committed value lost' })).toBeInTheDocument();
   });
 
-  it('renders the spec band with its verdict in words', async () => {
+  it('renders every spec band with its verdict in words', async () => {
     mockFetch(OVERVIEW);
     renderWithProviders(<DashboardView locale="en" />);
 
-    expect(await screen.findByText(/in spec/)).toBeInTheDocument();
+    // Three bands now — yield, capacity retention, and the one process
+    // parameter in the fixture. Each states its verdict in words rather than by
+    // hue, so a reader who cannot see the colour still gets the answer.
+    const readouts = await screen.findAllByText(/— (in spec|out of spec)/);
+    expect(readouts).toHaveLength(3);
   });
 
   it('shows a readable error rather than an empty dashboard', async () => {

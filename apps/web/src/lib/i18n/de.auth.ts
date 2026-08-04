@@ -84,6 +84,7 @@ export const deApp: typeof enApp = {
     errorTitle: 'Produktionskennzahlen konnten nicht geladen werden',
     emptyTitle: 'Noch keine Chargen erfasst',
     emptyBody: 'Sobald die Linie die erste Charge meldet, füllt sich diese Ansicht.',
+    deltaNote: 'gegenüber dem vorherigen Zeitraum',
     metrics: {
       fpy: 'Erstdurchlaufquote',
       scrap: 'Ausschussquote',

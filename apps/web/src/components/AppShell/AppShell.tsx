@@ -6,6 +6,7 @@ import { useEffect, type ReactNode } from 'react';
 
 import { Button } from '@beff/ui/button';
 
+import { BrandMark } from '@/components/BrandMark';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/lib/auth';
 import { getDictionary, type Locale } from '@/lib/i18n';
@@ -71,45 +72,53 @@ export function AppShell({
   return (
     <>
       {bare ? null : (
+        /*
+         * The same header as the marketing surface, deliberately. It used to be
+         * a different product: `Beff` set in Archivo instead of the wordmark,
+         * `max-w-5xl` against the marketing `6xl`, and nav links that were
+         * underlined at the same weight as everything beside them. A reader who
+         * signs in should not feel they have left the site they signed in to.
+         */
         <header className="border-border-default border-b">
-          <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-4">
-            <div className="flex items-center gap-8">
-              <Link
-                href={surfacePath('dashboard', locale)}
-                className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-lg)] [font-stretch:125%]"
-              >
-                Beff
-              </Link>
-              <nav aria-label={t.nav.primary}>
-                <ul className="flex items-center gap-6">
-                  {primaryNav.map((surface) => {
-                    const href = surfacePath(surface.key, locale);
-                    const current = pathname === href;
-                    return (
-                      <li key={surface.key}>
-                        <Link
-                          href={href}
-                          // `aria-current` is what tells a screen reader which
-                          // item is the current page. The underline alone says
-                          // it to sighted users only.
-                          aria-current={current ? 'page' : undefined}
-                          className={
-                            current
-                              ? 'decoration-brand-default underline decoration-2 underline-offset-8'
-                              : 'hover:underline hover:underline-offset-8'
-                          }
-                        >
-                          {label[surface.key]}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
-            </div>
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-4 px-6 py-4">
+            <Link
+              href={surfacePath('dashboard', locale)}
+              className="inline-flex items-center rounded-xs"
+            >
+              <BrandMark className="h-6" />
+            </Link>
 
-            <div className="flex items-center gap-4">
+            <nav aria-label={t.nav.primary}>
+              <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                {primaryNav.map((surface) => {
+                  const href = surfacePath(surface.key, locale);
+                  const current = pathname === href;
+                  return (
+                    <li key={surface.key}>
+                      <Link
+                        href={href}
+                        // `aria-current` is what tells a screen reader which
+                        // item is the current page. The underline alone says
+                        // it to sighted users only.
+                        aria-current={current ? 'page' : undefined}
+                        className={
+                          current
+                            ? 'text-text-default decoration-brand-default underline decoration-2 underline-offset-8'
+                            : 'text-text-muted hover:text-text-default underline-offset-8 transition-colors duration-150 hover:underline'
+                        }
+                      >
+                        {label[surface.key]}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+
+            <div className="ms-auto flex items-center gap-4">
               <ThemeToggle locale={locale} />
+              {/* Decorative: the grouping is already in the markup. */}
+              <span aria-hidden="true" className="bg-border-default hidden h-5 w-px sm:block" />
               <Button
                 variant="ghost"
                 size="sm"
@@ -126,9 +135,13 @@ export function AppShell({
         </header>
       )}
 
-      <main id="main" className="mx-auto max-w-5xl px-6 py-12">
-        {children}
-      </main>
+      {/*
+       * No width and no padding here. The dashboard composes itself in
+       * full-bleed bands the way the landing page does, so a wrapper with a
+       * measure would defeat the alternating grounds before they started. Every
+       * surface that needs a measure sets its own.
+       */}
+      <main id="main">{children}</main>
     </>
   );
 }

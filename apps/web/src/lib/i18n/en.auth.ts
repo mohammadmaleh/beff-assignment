@@ -88,6 +88,7 @@ export const enApp = {
     errorTitle: 'Could not load production figures',
     emptyTitle: 'No batches recorded yet',
     emptyBody: 'Once the line reports its first batch, this fills in.',
+    deltaNote: 'versus the previous period',
     metrics: {
       fpy: 'First-pass yield',
       scrap: 'Scrap rate',

@@ -104,236 +104,238 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
   const copy = t.onboarding.steps;
 
   return (
-    <DataState
-      status={status === 'pending' ? 'loading' : status === 'error' ? 'error' : 'ready'}
-      loadingLabel={t.common.loading}
-      // The wizard has no empty state — the step list is a constant, so a
-      // successful load always has something to render. The title is supplied
-      // anyway because `DataState` will not let a caller leave a user-facing
-      // string to a default, and a default is how the German pages ended up
-      // announcing English.
-      emptyTitle={t.errors.unexpectedTitle}
-      errorTitle={t.errors.unexpectedTitle}
-      errorBody={<p>{t.errors.unexpectedBody}</p>}
-      alertPrefixes={t.a11y.alertPrefixes}
-    >
-      <div className="mx-auto max-w-lg">
-        <p className="text-text-muted text-[length:var(--type-ui-size-sm)]">
-          {t.onboarding.stepOf
-            .replace('{current}', String(index + 1))
-            .replace('{total}', String(STEPS.length))}
-        </p>
+    <div className="mx-auto max-w-5xl px-6 py-12">
+      <DataState
+        status={status === 'pending' ? 'loading' : status === 'error' ? 'error' : 'ready'}
+        loadingLabel={t.common.loading}
+        // The wizard has no empty state — the step list is a constant, so a
+        // successful load always has something to render. The title is supplied
+        // anyway because `DataState` will not let a caller leave a user-facing
+        // string to a default, and a default is how the German pages ended up
+        // announcing English.
+        emptyTitle={t.errors.unexpectedTitle}
+        errorTitle={t.errors.unexpectedTitle}
+        errorBody={<p>{t.errors.unexpectedBody}</p>}
+        alertPrefixes={t.a11y.alertPrefixes}
+      >
+        <div className="mx-auto max-w-lg">
+          <p className="text-text-muted text-[length:var(--type-ui-size-sm)]">
+            {t.onboarding.stepOf
+              .replace('{current}', String(index + 1))
+              .replace('{total}', String(STEPS.length))}
+          </p>
 
-        {/* A real `<progress>`, so assistive technology gets the position
+          {/* A real `<progress>`, so assistive technology gets the position
             without a hand-rolled ARIA widget. */}
-        <progress
-          value={index + 1}
-          max={STEPS.length}
-          className="mt-2 h-1 w-full"
-          aria-label={t.onboarding.title}
-        />
+          <progress
+            value={index + 1}
+            max={STEPS.length}
+            className="mt-2 h-1 w-full"
+            aria-label={t.onboarding.title}
+          />
 
-        {resumed ? (
-          <div className="mt-6">
-            <Alert
-              tone="info"
-              announce
-              title={t.onboarding.resumeNotice}
-              prefixes={t.a11y.alertPrefixes}
-            />
+          {resumed ? (
+            <div className="mt-6">
+              <Alert
+                tone="info"
+                announce
+                title={t.onboarding.resumeNotice}
+                prefixes={t.a11y.alertPrefixes}
+              />
+            </div>
+          ) : null}
+
+          <h1
+            ref={headingRef}
+            tabIndex={-1}
+            className="mt-8 font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]"
+          >
+            {copy[step].title}
+          </h1>
+          <p className="text-text-muted mt-2">{copy[step].body}</p>
+
+          <div className="mt-10 flex flex-col gap-6">
+            {step === 'role' ? (
+              <Field label={copy.role.label} required>
+                {(control) => (
+                  <select
+                    {...control}
+                    value={answers.role ?? ''}
+                    onChange={(event) => {
+                      set('role', event.target.value);
+                    }}
+                    className={SELECT_CLASS}
+                  >
+                    <option value="" disabled>
+                      —
+                    </option>
+                    {Object.entries(copy.role.options).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </Field>
+            ) : null}
+
+            {step === 'plant' ? (
+              <>
+                <TextField
+                  label={copy.plant.nameLabel}
+                  value={answers.plant_name ?? ''}
+                  onChange={(event) => {
+                    set('plant_name', event.target.value);
+                  }}
+                  required
+                />
+                <TextField
+                  label={copy.plant.countryLabel}
+                  value={answers.plant_country ?? ''}
+                  onChange={(event) => {
+                    set('plant_country', event.target.value);
+                  }}
+                  description="ISO 3166-1 alpha-2, e.g. DE"
+                  autoComplete="country"
+                  maxLength={2}
+                  required
+                />
+              </>
+            ) : null}
+
+            {step === 'lines' ? (
+              <>
+                <TextField
+                  label={copy.lines.nameLabel}
+                  value={answers.line_name ?? ''}
+                  onChange={(event) => {
+                    set('line_name', event.target.value);
+                  }}
+                  required
+                />
+                <Field label={copy.lines.kindLabel} required>
+                  {(control) => (
+                    <select
+                      {...control}
+                      value={answers.line_kind ?? ''}
+                      onChange={(event) => {
+                        set('line_kind', event.target.value);
+                      }}
+                      className={SELECT_CLASS}
+                    >
+                      <option value="" disabled>
+                        —
+                      </option>
+                      <option value="pilot">{copy.lines.kindPilot}</option>
+                      <option value="production">{copy.lines.kindProduction}</option>
+                    </select>
+                  )}
+                </Field>
+                <Field label={copy.lines.formatLabel} required>
+                  {(control) => (
+                    <select
+                      {...control}
+                      value={answers.cell_format ?? ''}
+                      onChange={(event) => {
+                        set('cell_format', event.target.value);
+                      }}
+                      className={SELECT_CLASS}
+                    >
+                      <option value="" disabled>
+                        —
+                      </option>
+                      <option value="pouch">{copy.lines.formatPouch}</option>
+                      <option value="prismatic">{copy.lines.formatPrismatic}</option>
+                      <option value="cylindrical">{copy.lines.formatCylindrical}</option>
+                    </select>
+                  )}
+                </Field>
+              </>
+            ) : null}
+
+            {step === 'units' ? (
+              <Field label={copy.units.label} required>
+                {(control) => (
+                  <select
+                    {...control}
+                    value={answers.unit_system ?? ''}
+                    onChange={(event) => {
+                      set('unit_system', event.target.value);
+                    }}
+                    className={SELECT_CLASS}
+                  >
+                    <option value="" disabled>
+                      —
+                    </option>
+                    <option value="metric">{copy.units.metric}</option>
+                    <option value="imperial">{copy.units.imperial}</option>
+                  </select>
+                )}
+              </Field>
+            ) : null}
+
+            {step === 'review' ? (
+              <dl className="grid gap-2 sm:grid-cols-[12rem_1fr]">
+                {(
+                  [
+                    [copy.role.label, answers.role],
+                    [copy.plant.nameLabel, answers.plant_name],
+                    [copy.plant.countryLabel, answers.plant_country],
+                    [copy.lines.nameLabel, answers.line_name],
+                    [copy.lines.kindLabel, answers.line_kind],
+                    [copy.lines.formatLabel, answers.cell_format],
+                    [copy.units.label, answers.unit_system],
+                  ] as const
+                ).map(([label, value]) => (
+                  <div key={label} className="contents">
+                    <dt className="text-text-muted">{label}</dt>
+                    <dd>{value ?? '—'}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
           </div>
-        ) : null}
 
-        <h1
-          ref={headingRef}
-          tabIndex={-1}
-          className="mt-8 font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]"
-        >
-          {copy[step].title}
-        </h1>
-        <p className="text-text-muted mt-2">{copy[step].body}</p>
-
-        <div className="mt-10 flex flex-col gap-6">
-          {step === 'role' ? (
-            <Field label={copy.role.label} required>
-              {(control) => (
-                <select
-                  {...control}
-                  value={answers.role ?? ''}
-                  onChange={(event) => {
-                    set('role', event.target.value);
-                  }}
-                  className={SELECT_CLASS}
-                >
-                  <option value="" disabled>
-                    —
-                  </option>
-                  {Object.entries(copy.role.options).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </Field>
-          ) : null}
-
-          {step === 'plant' ? (
-            <>
-              <TextField
-                label={copy.plant.nameLabel}
-                value={answers.plant_name ?? ''}
-                onChange={(event) => {
-                  set('plant_name', event.target.value);
+          <div className="mt-10 flex items-center gap-3">
+            {index > 0 ? (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  const previous = STEPS[index - 1];
+                  if (previous !== undefined) goTo(previous);
                 }}
-                required
-              />
-              <TextField
-                label={copy.plant.countryLabel}
-                value={answers.plant_country ?? ''}
-                onChange={(event) => {
-                  set('plant_country', event.target.value);
+              >
+                {t.onboarding.back}
+              </Button>
+            ) : null}
+
+            {step === 'review' ? (
+              <Button
+                // The server re-checks this; the client copy only saves a round
+                // trip, because a client check can always be bypassed.
+                disabled={(data?.missing?.length ?? 0) > 0}
+                loading={complete.isPending}
+                loadingLabel={t.onboarding.finishing}
+                onClick={() => {
+                  complete.mutate();
                 }}
-                description="ISO 3166-1 alpha-2, e.g. DE"
-                autoComplete="country"
-                maxLength={2}
-                required
-              />
-            </>
-          ) : null}
-
-          {step === 'lines' ? (
-            <>
-              <TextField
-                label={copy.lines.nameLabel}
-                value={answers.line_name ?? ''}
-                onChange={(event) => {
-                  set('line_name', event.target.value);
+              >
+                {t.onboarding.finish}
+              </Button>
+            ) : (
+              <Button
+                disabled={missing.length > 0}
+                onClick={() => {
+                  const next = STEPS[index + 1];
+                  if (next !== undefined) goTo(next);
                 }}
-                required
-              />
-              <Field label={copy.lines.kindLabel} required>
-                {(control) => (
-                  <select
-                    {...control}
-                    value={answers.line_kind ?? ''}
-                    onChange={(event) => {
-                      set('line_kind', event.target.value);
-                    }}
-                    className={SELECT_CLASS}
-                  >
-                    <option value="" disabled>
-                      —
-                    </option>
-                    <option value="pilot">{copy.lines.kindPilot}</option>
-                    <option value="production">{copy.lines.kindProduction}</option>
-                  </select>
-                )}
-              </Field>
-              <Field label={copy.lines.formatLabel} required>
-                {(control) => (
-                  <select
-                    {...control}
-                    value={answers.cell_format ?? ''}
-                    onChange={(event) => {
-                      set('cell_format', event.target.value);
-                    }}
-                    className={SELECT_CLASS}
-                  >
-                    <option value="" disabled>
-                      —
-                    </option>
-                    <option value="pouch">{copy.lines.formatPouch}</option>
-                    <option value="prismatic">{copy.lines.formatPrismatic}</option>
-                    <option value="cylindrical">{copy.lines.formatCylindrical}</option>
-                  </select>
-                )}
-              </Field>
-            </>
-          ) : null}
-
-          {step === 'units' ? (
-            <Field label={copy.units.label} required>
-              {(control) => (
-                <select
-                  {...control}
-                  value={answers.unit_system ?? ''}
-                  onChange={(event) => {
-                    set('unit_system', event.target.value);
-                  }}
-                  className={SELECT_CLASS}
-                >
-                  <option value="" disabled>
-                    —
-                  </option>
-                  <option value="metric">{copy.units.metric}</option>
-                  <option value="imperial">{copy.units.imperial}</option>
-                </select>
-              )}
-            </Field>
-          ) : null}
-
-          {step === 'review' ? (
-            <dl className="grid gap-2 sm:grid-cols-[12rem_1fr]">
-              {(
-                [
-                  [copy.role.label, answers.role],
-                  [copy.plant.nameLabel, answers.plant_name],
-                  [copy.plant.countryLabel, answers.plant_country],
-                  [copy.lines.nameLabel, answers.line_name],
-                  [copy.lines.kindLabel, answers.line_kind],
-                  [copy.lines.formatLabel, answers.cell_format],
-                  [copy.units.label, answers.unit_system],
-                ] as const
-              ).map(([label, value]) => (
-                <div key={label} className="contents">
-                  <dt className="text-text-muted">{label}</dt>
-                  <dd>{value ?? '—'}</dd>
-                </div>
-              ))}
-            </dl>
-          ) : null}
+              >
+                {t.onboarding.next}
+              </Button>
+            )}
+          </div>
         </div>
-
-        <div className="mt-10 flex items-center gap-3">
-          {index > 0 ? (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                const previous = STEPS[index - 1];
-                if (previous !== undefined) goTo(previous);
-              }}
-            >
-              {t.onboarding.back}
-            </Button>
-          ) : null}
-
-          {step === 'review' ? (
-            <Button
-              // The server re-checks this; the client copy only saves a round
-              // trip, because a client check can always be bypassed.
-              disabled={(data?.missing?.length ?? 0) > 0}
-              loading={complete.isPending}
-              loadingLabel={t.onboarding.finishing}
-              onClick={() => {
-                complete.mutate();
-              }}
-            >
-              {t.onboarding.finish}
-            </Button>
-          ) : (
-            <Button
-              disabled={missing.length > 0}
-              onClick={() => {
-                const next = STEPS[index + 1];
-                if (next !== undefined) goTo(next);
-              }}
-            >
-              {t.onboarding.next}
-            </Button>
-          )}
-        </div>
-      </div>
-    </DataState>
+      </DataState>
+    </div>
   );
 }

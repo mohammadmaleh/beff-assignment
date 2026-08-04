@@ -81,7 +81,9 @@ export function ProfileView({ locale }: { locale: Locale }) {
   const job = exportJob.data ?? null;
 
   return (
-    <div className="flex flex-col gap-16">
+    // `AppShell` no longer wraps its children in a measure — the dashboard
+    // composes itself in full-bleed bands — so each surface sets its own.
+    <div className="mx-auto flex max-w-5xl flex-col gap-16 px-6 py-12">
       <div>
         <h1 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
           {t.profile.title}
