@@ -86,6 +86,30 @@ export const pairs: readonly Pair[] = [
     bg: `color-surface-${s}` as TokenName,
     threshold: 3,
   })),
+  // `border-strong` draws the outline *and* the plinth of every bordered
+  // control. It is the edge that says "this is a thing you can press", so it is
+  // non-text UI under 1.4.11 and asserted on every surface a button can sit on
+  // — including `raised`, which is the cookie banner's ground.
+  ...(['base', 'raised', 'sunken'] as const).map((s): Pair => ({
+    name: `strong border on ${s} surface`,
+    fg: 'color-border-strong',
+    bg: `color-surface-${s}` as TokenName,
+    threshold: 3,
+  })),
+  // The primary button's plinth. It reads against the page behind the button,
+  // not against the button's own fill, because it is the 2px strip *outside* it.
+  {
+    name: 'brand edge on base surface',
+    fg: 'color-brand-edge',
+    bg: 'color-surface-base',
+    threshold: 3,
+  },
+  {
+    name: 'brand edge on raised surface',
+    fg: 'color-brand-edge',
+    bg: 'color-surface-raised',
+    threshold: 3,
+  },
   {
     name: 'focus ring on base surface',
     fg: 'color-border-focus',

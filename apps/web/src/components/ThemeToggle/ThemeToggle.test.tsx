@@ -1,58 +1,162 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { THEME_STORAGE_KEY } from '@/components/ThemeScript';
 
 import { ThemeToggle } from './ThemeToggle';
 
-/*
- * `window.localStorage`, never the bare global. Node 22 ships its own
- * experimental `localStorage` on `globalThis`, and it wins over jsdom's — the
- * bare form fails with "localStorage.clear is not a function" in a test that
- * works perfectly in a browser.
+/**
+ * `window.localStorage`, never the bare global. Node 25 defines `localStorage`
+ * on `globalThis`, and in vitest's jsdom environment `window === globalThis`, so
+ * Node's inert version shadows jsdom's — the bare form fails with
+ * "localStorage.clear is not a function" in a test that works in a browser.
+ *
+ * `matchMedia` is the same story one level worse: jsdom does not implement it at
+ * all. `vitest.setup.ts` installs a never-matching default; the tests below that
+ * care about the OS preference stub their own.
  */
+
+/** A `matchMedia` whose result can be flipped, so an OS change is testable. */
+function stubPrefersDark(matches: boolean): (next: boolean) => void {
+  const listeners = new Set<(event: MediaQueryListEvent) => void>();
+  let current = matches;
+
+  vi.stubGlobal('matchMedia', (query: string) => ({
+    media: query,
+    get matches() {
+      return current;
+    },
+    onchange: null,
+    addEventListener: (_type: string, listener: (event: MediaQueryListEvent) => void) => {
+      listeners.add(listener);
+    },
+    removeEventListener: (_type: string, listener: (event: MediaQueryListEvent) => void) => {
+      listeners.delete(listener);
+    },
+    dispatchEvent: () => true,
+    addListener: () => {},
+    removeListener: () => {},
+  }));
+
+  // `act`, because the OS changing its mind is a React state update that
+  // originates outside React. Without it the assertion reads the pre-update
+  // render and the failure looks like the component ignored the event.
+  return (next: boolean) => {
+    current = next;
+    act(() => {
+      for (const listener of listeners) listener({ matches: next } as MediaQueryListEvent);
+    });
+  };
+}
+
 describe('ThemeToggle', () => {
   beforeEach(() => {
     window.localStorage.clear();
     document.documentElement.removeAttribute('data-theme');
   });
 
-  it('is a native select, so it needs no ARIA to be operable', () => {
-    render(<ThemeToggle locale="en" />);
-    expect(screen.getByRole('combobox', { name: /appearance/i }).tagName).toBe('SELECT');
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
-  it('defaults to following the system', () => {
+  it('is a plain button, so it needs no ARIA to be operable', () => {
+    stubPrefersDark(false);
     render(<ThemeToggle locale="en" />);
-    expect(screen.getByRole('combobox')).toHaveValue('system');
+    expect(screen.getByRole('button').tagName).toBe('BUTTON');
   });
 
-  it('pins the theme and remembers the choice', async () => {
+  it('is named for the action it performs, not for the setting it holds', () => {
+    stubPrefersDark(false);
     render(<ThemeToggle locale="en" />);
-    await userEvent.selectOptions(screen.getByRole('combobox'), 'dark');
+    // "Appearance" names a preference and leaves the reader to infer the effect.
+    // A button announces what pressing it does.
+    expect(screen.getByRole('button', { name: /switch to dark/i })).toBeInTheDocument();
+  });
+
+  it('adopts the system preference with no choice stored', () => {
+    stubPrefersDark(true);
+    render(<ThemeToggle locale="en" />);
+    // The OS says dark, so the only thing left to offer is light.
+    expect(screen.getByRole('button', { name: /switch to light/i })).toBeInTheDocument();
+  });
+
+  it('does not pin anything until the reader actually chooses', () => {
+    stubPrefersDark(true);
+    render(<ThemeToggle locale="en" />);
+    // Reading the system preference must not *write* it. Pinning on load would
+    // freeze the visitor into whatever their OS said the first time they came,
+    // and the page would stop following them ever after.
+    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBeNull();
+    expect(document.documentElement).not.toHaveAttribute('data-theme');
+  });
+
+  it('keeps following the system while nothing is pinned', () => {
+    const setPrefersDark = stubPrefersDark(false);
+    render(<ThemeToggle locale="en" />);
+    expect(screen.getByRole('button', { name: /switch to dark/i })).toBeInTheDocument();
+
+    setPrefersDark(true);
+
+    // The media query drives the page here, so a control claiming otherwise
+    // would be lying about what the reader is looking at.
+    expect(screen.getByRole('button', { name: /switch to light/i })).toBeInTheDocument();
+  });
+
+  it('pins the opposite theme and remembers it', async () => {
+    stubPrefersDark(false);
+    render(<ThemeToggle locale="en" />);
+
+    await userEvent.click(screen.getByRole('button'));
+
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
     expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
+    expect(screen.getByRole('button', { name: /switch to light/i })).toBeInTheDocument();
   });
 
-  it('hands control back to the media query when set to system', async () => {
-    // Removing the attribute, not setting it to "light" — otherwise "system"
-    // would silently mean "light" for a user whose OS is dark.
-    window.localStorage.setItem(THEME_STORAGE_KEY, 'dark');
+  it('stops following the system once a choice is pinned', async () => {
+    const setPrefersDark = stubPrefersDark(false);
     render(<ThemeToggle locale="en" />);
-    await userEvent.selectOptions(screen.getByRole('combobox'), 'system');
-    expect(document.documentElement).not.toHaveAttribute('data-theme');
-    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBeNull();
+
+    await userEvent.click(screen.getByRole('button'));
+    setPrefersDark(true);
+
+    // An explicit choice outranks the OS. Otherwise the reader's decision would
+    // be silently overwritten the next time their machine switched at sunset.
+    expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
+    expect(screen.getByRole('button', { name: /switch to light/i })).toBeInTheDocument();
   });
 
-  it('reads the stored choice after mount', () => {
+  it('reads the pinned choice after mount, over the system preference', () => {
+    stubPrefersDark(true);
     window.localStorage.setItem(THEME_STORAGE_KEY, 'light');
     render(<ThemeToggle locale="en" />);
-    expect(screen.getByRole('combobox')).toHaveValue('light');
+    expect(screen.getByRole('button', { name: /switch to dark/i })).toBeInTheDocument();
   });
 
-  it('is labelled in German in the German locale', () => {
+  it('toggles back, and back again', async () => {
+    stubPrefersDark(false);
+    render(<ThemeToggle locale="en" />);
+
+    await userEvent.click(screen.getByRole('button'));
+    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
+
+    await userEvent.click(screen.getByRole('button'));
+    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
+    expect(document.documentElement).toHaveAttribute('data-theme', 'light');
+  });
+
+  it('is named in German in the German locale', () => {
+    stubPrefersDark(false);
     render(<ThemeToggle locale="de" />);
-    expect(screen.getByRole('combobox', { name: /darstellung/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /dunkler darstellung/i })).toBeInTheDocument();
+  });
+
+  it('carries no visible label text, only the icon and its accessible name', () => {
+    stubPrefersDark(false);
+    render(<ThemeToggle locale="en" />);
+    // The header is four items wide at 320px. "Appearance" plus a select ate a
+    // third of it to say something the icon says in 20 pixels.
+    expect(screen.getByRole('button').textContent).toBe('');
   });
 });

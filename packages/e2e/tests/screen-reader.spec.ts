@@ -23,8 +23,30 @@ import { expect, test, type Page } from '@playwright/test';
 const TAG = '@a11y';
 
 /** Surfaces that render without the API. Same scope as the rest of the suite. */
-const EN_SURFACES = ['/en', '/en/impressum', '/en/datenschutz', '/en/login', '/en/register'];
-const DE_SURFACES = ['/de', '/de/impressum', '/de/datenschutz', '/de/login', '/de/register'];
+const EN_SURFACES = [
+  '/en',
+  '/en/product',
+  '/en/technology',
+  '/en/about',
+  '/en/impressum',
+  '/en/datenschutz',
+  '/en/agb',
+  '/en/barrierefreiheit',
+  '/en/login',
+  '/en/register',
+];
+const DE_SURFACES = [
+  '/de',
+  '/de/product',
+  '/de/technology',
+  '/de/about',
+  '/de/impressum',
+  '/de/datenschutz',
+  '/de/agb',
+  '/de/barrierefreiheit',
+  '/de/login',
+  '/de/register',
+];
 
 interface Announced {
   text: string;
@@ -121,14 +143,22 @@ test(`the spec band states its verdict in the page's own language ${TAG}`, async
   // would also pass a "no English" check, so assert the German is present, and
   // assert both verdicts — the landing page shows one reading inside the
   // window and one outside it.
+  //
+  // Matched by content rather than by position. The landing page grew a second
+  // kind of figure and a panel of readings, so `first()` and `nth(1)` asserted
+  // against whichever band happened to be highest in the document — a test that
+  // fails when the page is rearranged says nothing about the language it is in.
   await page.goto('/de');
 
-  const figures = page.getByRole('figure');
-  await expect(figures.first()).toContainText('in der Spezifikation');
-  await expect(figures.nth(1)).toContainText('außerhalb der Spezifikation');
+  const de = page.getByRole('figure');
+  await expect(de.filter({ hasText: 'in der Spezifikation' }).first()).toBeVisible();
+  await expect(de.filter({ hasText: 'außerhalb der Spezifikation' }).first()).toBeVisible();
 
   await page.goto('/en');
-  await expect(page.getByRole('figure').first()).toContainText('in spec');
+  const en = page.getByRole('figure');
+  // "out of spec" does not contain "in spec", so these two select disjoint sets.
+  await expect(en.filter({ hasText: 'in spec' }).first()).toBeVisible();
+  await expect(en.filter({ hasText: 'out of spec' }).first()).toBeVisible();
 });
 
 for (const path of [...EN_SURFACES, ...DE_SURFACES]) {
@@ -209,24 +239,36 @@ for (const path of [...EN_SURFACES, ...DE_SURFACES]) {
   test(`${path} names every control it offers ${TAG}`, async ({ page }) => {
     await page.goto(path);
 
-    // Chromium's computed accessible name — the string AT receives, not the
-    // markup it was derived from.
-    const controls = await page
+    /*
+     * The accessible name, computed by Playwright's implementation of the
+     * accname spec — the string AT actually receives.
+     *
+     * This used to be hand-rolled as `aria-label ?? textContent`, which is not
+     * accname and quietly disagreed with it. A link whose only content is an
+     * `<img alt>` has a perfectly good name and no text content at all, so the
+     * approximation reported the site's home link as unnamed the moment the
+     * wordmark became an image — a false failure on a page that was correct.
+     * The inverse is the dangerous direction: `textContent` also happily returns
+     * text from an `aria-hidden` child that no screen reader will ever read, and
+     * would have blessed a genuinely unnamed control.
+     *
+     * `ariaSnapshot()` on a single element yields that element on its first line
+     * as `- role "name":`, with the name absent when there is none.
+     */
+    const elements = await page
       .locator('a[href]:visible, button:visible, input:visible, select:visible')
-      .evaluateAll((elements) =>
-        elements.map((el) => ({
-          tag: el.tagName,
-          name: (
-            el.getAttribute('aria-label') ??
-            (el.tagName === 'INPUT' || el.tagName === 'SELECT'
-              ? (document.querySelector(`label[for="${el.id}"]`)?.textContent ??
-                el.closest('label')?.textContent ??
-                '')
-              : (el.textContent ?? ''))
-          ).trim(),
-          href: el.getAttribute('href'),
-        })),
-      );
+      .all();
+
+    const controls = await Promise.all(
+      elements.map(async (element) => {
+        const [firstLine = ''] = (await element.ariaSnapshot()).split('\n');
+        return {
+          tag: await element.evaluate((el) => el.tagName),
+          name: /^\s*-\s+\S+\s+"([^"]*)"/.exec(firstLine)?.[1]?.trim() ?? '',
+          href: await element.getAttribute('href'),
+        };
+      }),
+    );
 
     expect(controls.length).toBeGreaterThan(0);
     expect(controls.filter((c) => c.name === '')).toEqual([]);

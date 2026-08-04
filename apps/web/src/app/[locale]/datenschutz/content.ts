@@ -7,6 +7,24 @@ interface ProcessingRow {
   retention: string;
 }
 
+/**
+ * One thing stored on the reader's device.
+ *
+ * Not "one cookie". §25 TDDDG governs *storing information on, or accessing
+ * information from, terminal equipment* — the mechanism is irrelevant, so
+ * `localStorage` is covered exactly as a cookie is. Cookie tables that list only
+ * cookies are the single most common way this obligation is missed, and the two
+ * entries this site would have omitted are the two it actually relies on.
+ */
+interface StorageRow {
+  name: string;
+  kind: string;
+  purpose: string;
+  duration: string;
+  /** Strictly necessary, or consent-requiring. There is no third category. */
+  category: string;
+}
+
 interface PrivacyContent {
   controllerTitle: string;
   processingTitle: string;
@@ -15,6 +33,13 @@ interface PrivacyContent {
   columnBasis: string;
   columnRetention: string;
   processing: readonly ProcessingRow[];
+  storageTitle: string;
+  storageNote: string;
+  columnName: string;
+  columnKind: string;
+  columnDuration: string;
+  columnCategory: string;
+  storage: readonly StorageRow[];
   rightsTitle: string;
   rights: readonly string[];
   noTrackingTitle: string;
@@ -69,6 +94,46 @@ export const PRIVACY_CONTENT: Record<Locale, PrivacyContent> = {
         retention: '14 months',
       },
     ],
+    storageTitle: 'What we store on your device',
+    storageNote:
+      '§25 TDDDG covers anything stored on or read from your device, not only cookies — so browser storage is listed here too. Nothing below is used for advertising, and nothing is shared with a third party.',
+    columnName: 'Name',
+    columnKind: 'Kind',
+    columnDuration: 'Duration',
+    columnCategory: 'Category',
+    storage: [
+      {
+        name: 'beff_refresh_token',
+        kind: 'Cookie, httpOnly, SameSite=Lax, scoped to /api/v1/auth',
+        purpose: 'Keeps you signed in between visits. Stored hashed on our side.',
+        duration: '30 days',
+        category: 'Strictly necessary',
+      },
+      {
+        name: 'beff-cookie-consent',
+        kind: 'Local storage',
+        purpose:
+          'Remembers the choice you made in the cookie panel, so you are not asked again on every page.',
+        duration: 'Until you clear it or change your choice',
+        category: 'Strictly necessary',
+      },
+      {
+        name: 'beff-theme',
+        kind: 'Local storage',
+        purpose:
+          'Remembers whether you chose the light or dark appearance. Absent unless you pick one — by default we follow your operating system.',
+        duration: 'Until you clear it',
+        category: 'Strictly necessary',
+      },
+      {
+        name: '— none —',
+        kind: 'Analytics',
+        purpose:
+          'No analytics tool is loaded on this site today. The panel still asks, because your answer is recorded before anything could be added, and consent gathered afterwards is consent nobody gave.',
+        duration: 'Not applicable',
+        category: 'Consent required',
+      },
+    ],
     rightsTitle: 'Your rights',
     rights: [
       'Access (Art. 15) — a copy of your data. Available as a machine-readable export from your profile.',
@@ -120,6 +185,46 @@ export const PRIVACY_CONTENT: Record<Locale, PrivacyContent> = {
         data: 'Anonyme Seitenaufrufe',
         basis: 'Art. 6 Abs. 1 lit. a — Einwilligung, jederzeit widerrufbar',
         retention: '14 Monate',
+      },
+    ],
+    storageTitle: 'Was wir auf Ihrem Gerät speichern',
+    storageNote:
+      '§25 TDDDG erfasst alles, was auf Ihrem Gerät gespeichert oder von dort ausgelesen wird — nicht nur Cookies. Deshalb steht der Browser-Speicher hier ebenfalls. Nichts davon dient Werbezwecken, nichts wird an Dritte weitergegeben.',
+    columnName: 'Name',
+    columnKind: 'Art',
+    columnDuration: 'Dauer',
+    columnCategory: 'Kategorie',
+    storage: [
+      {
+        name: 'beff_refresh_token',
+        kind: 'Cookie, httpOnly, SameSite=Lax, beschränkt auf /api/v1/auth',
+        purpose: 'Hält Sie zwischen Besuchen angemeldet. Bei uns nur gehasht gespeichert.',
+        duration: '30 Tage',
+        category: 'Technisch notwendig',
+      },
+      {
+        name: 'beff-cookie-consent',
+        kind: 'Local Storage',
+        purpose:
+          'Merkt sich Ihre Auswahl im Cookie-Panel, damit Sie nicht auf jeder Seite erneut gefragt werden.',
+        duration: 'Bis Sie ihn löschen oder Ihre Auswahl ändern',
+        category: 'Technisch notwendig',
+      },
+      {
+        name: 'beff-theme',
+        kind: 'Local Storage',
+        purpose:
+          'Merkt sich, ob Sie die helle oder dunkle Darstellung gewählt haben. Wird nur gesetzt, wenn Sie aktiv wählen — standardmäßig folgen wir Ihrem Betriebssystem.',
+        duration: 'Bis Sie ihn löschen',
+        category: 'Technisch notwendig',
+      },
+      {
+        name: '— keine —',
+        kind: 'Analyse',
+        purpose:
+          'Auf dieser Website ist derzeit kein Analysewerkzeug eingebunden. Das Panel fragt trotzdem, weil Ihre Antwort erfasst wird, bevor etwas hinzukommen könnte — nachträglich eingeholte Einwilligung ist keine.',
+        duration: 'Nicht zutreffend',
+        category: 'Einwilligung erforderlich',
       },
     ],
     rightsTitle: 'Ihre Rechte',

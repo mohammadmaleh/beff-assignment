@@ -25,10 +25,10 @@ export const de: BaseDictionary = {
     logOut: 'Abmelden',
     getStarted: 'Zugang anfragen',
     primary: 'Hauptnavigation',
-    theme: 'Darstellung',
-    themeLight: 'Hell',
-    themeDark: 'Dunkel',
-    themeSystem: 'System',
+    product: 'Produkt',
+    technology: 'Technologie',
+    themeToLight: 'Zu heller Darstellung wechseln',
+    themeToDark: 'Zu dunkler Darstellung wechseln',
   },
 
   landing: {
@@ -39,30 +39,44 @@ export const de: BaseDictionary = {
     ctaPrimary: 'Zugang anfragen',
     ctaSecondary: 'Was gemessen wird',
 
+    heroReadingLabel: 'Erstdurchlaufquote · Linie 3 · KW 30',
+    heroReadingNote:
+      'Eine Produktionslinie ist auf 85 bis 97 Prozent spezifiziert. Diese verliert mehr als jede fünfte Zelle vor der Endprüfung — und die Zahl allein sagt nicht, wo.',
+
     problemTitle: 'Die Daten sind längst da. Verteilt auf vierzehn Tabellen.',
     problemBody:
       'Schichtdicken in einem Export, Formierungsergebnisse in einem anderen, Ausschuss schichtweise auf Papier. Bis das Bild zusammengesetzt ist, ist die Charge ausgeliefert und die Antwort drei Wochen alt.',
 
-    valueTitle: 'Das bekommen Sie',
-    values: [
-      {
-        title: 'Ausbeute je Prozessschritt',
-        body: 'Die Erstdurchlaufquote aufgeschlüsselt vom Mischen bis zur Endprüfung — gewichtet, damit späte Verluste als das erscheinen, was sie sind: die teuren.',
-      },
-      {
-        title: 'Ausschuss in Euro, nicht in Prozent',
-        body: '2 % Verlust beim Kalandrieren und 2 % Verlust in der Formierung sind nicht dasselbe Ereignis. Ausschuss wird gegen die bis dahin gebundene Wertschöpfung bewertet.',
-      },
-      {
-        title: 'CO₂ pro kWh, nachverfolgt',
-        body: 'Emissionsintensität je erzeugter Energieeinheit, mitlaufend mit Ihrer tatsächlichen Ausbeute — die Kennzahl, die Ihre Kunden zunehmend schriftlich verlangen.',
-      },
-    ],
+    costTitle: 'Wo die Wertschöpfung schon gebunden ist',
+    costBody:
+      'Die Kosten laufen entlang der Kette auf: Material, Energie und Linienzeit gehen an jedem Schritt hinein und kommen nicht wieder heraus. Eine Zelle, die in der Formierung ausgeschleust wird, trägt 90 Prozent ihrer Endkosten. Dieselbe Zelle beim Coating trägt 21 Prozent. In Prozent gemeldet sehen die beiden Verluste gleich aus.',
+    costFigureLabel: 'Gebundene Wertschöpfung je Zelle nach Prozessschritt',
+    costFigureDescription:
+      'Die gebundene Wertschöpfung steigt Schritt für Schritt von 7 Prozent der Endkosten beim Mischen auf 100 Prozent bei der Endprüfung, mit den größten Einzelsprüngen beim Coating, beim Elektrolytbefüllen und in der Formierung.',
+    costAxisStart: 'Zelle angesetzt',
+    costAxisEnd: 'Zelle fertig',
+    costColumnStep: 'Prozessschritt',
+    costColumnCommitted: 'Gebundene Wertschöpfung',
+    costTableCaption:
+      'Gebundene Wertschöpfung je Zelle an jedem Prozessschritt, als Anteil der Endkosten',
+
+    productTitle: 'Der Blick um 08:40',
+    productBody:
+      'Die Ausbeute ist über Nacht gefallen, um neun ist Besprechung. Das ist der Bildschirm — mit den Komponenten, die die Anwendung ausliefert, auf den Zahlen, die eine Pilotlinie tatsächlich erzeugt.',
+    productLineLabel: 'Pilotlinie 1 · letzte 30 Tage',
+    productNote:
+      'Jeder Messwert steht vor seinem Spezifikationsfenster, und hinter jedem Diagramm liegt eine Tabelle.',
 
     signatureTitle: 'Aufgebaut auf dem Toleranzband',
     signatureBody:
       'Jeder Messwert steht in Beff vor seinem Spezifikationsfenster — so, wie ihn eine Regelkarte oder ein Kalibrierschein ohnehin zeigt. In der Spezifikation, außerhalb, und um wie viel. Auf einen Blick lesbar, und auch ohne Farbe lesbar.',
     signatureExampleLabel: 'Elektrodenporosität nach dem Kalandrieren',
+
+    filmEyebrow: 'Das Unternehmen',
+    filmTitle: 'Beff in gut einer Minute',
+    filmBody:
+      'Beffs eigene Einführung in die Arbeit dahinter: der Expertenchat, der Navigator für die Spezifikation und die Virtual Factory Platform, die das Team bereits mit Zellherstellern betreibt.',
+    filmLabel: 'Beff Unternehmensfilm',
 
     waitlistTitle: 'Zugang anfragen',
     waitlistBody:
@@ -85,6 +99,10 @@ export const de: BaseDictionary = {
     legal: 'Rechtliches',
     impressum: 'Impressum',
     privacy: 'Datenschutzerklärung',
+    terms: 'Nutzungsbedingungen',
+    accessibility: 'Barrierefreiheit',
+    company: 'Unternehmen',
+    about: 'Über uns',
     language: 'Sprache',
     rights: 'Alle Rechte vorbehalten.',
   },
@@ -110,6 +128,41 @@ export const de: BaseDictionary = {
     privacyTitle: 'Datenschutzerklärung',
     privacyNote:
       'Angaben gemäß Art. 13 DSGVO. Dies ist ein Demonstrationsprojekt; die folgenden Angaben sind Platzhalter.',
+    termsTitle: 'Nutzungsbedingungen',
+    termsNote:
+      'Für Unternehmer, nach deutschem Recht. Dies ist ein Demonstrationsprojekt; diese Bedingungen wurden nicht anwaltlich geprüft.',
+    accessibilityTitle: 'Erklärung zur Barrierefreiheit',
+    accessibilityNote:
+      'Angaben gemäß §14 BFSG. Abschnitt 3 listet auf, was noch nicht barrierefrei ist — das ist der Teil, der sich zu lesen lohnt.',
+    cookieTitle: 'Cookies, die wir setzen',
+    cookieNote:
+      'Nach §25 TDDDG ist alles, was über das technisch Notwendige hinausgeht, einwilligungspflichtig. Dies ist die vollständige Liste.',
+    cookieColumnName: 'Name',
+    cookieColumnPurpose: 'Zweck',
+    cookieColumnDuration: 'Dauer',
+    cookieColumnCategory: 'Kategorie',
+  },
+
+  about: {
+    eyebrow: 'Über uns',
+    title: 'Von Leuten gebaut, die selbst an der Linie standen.',
+    lede: 'Beff ist ein Ingenieurunternehmen für die Lithium-Ionen-Batterieindustrie — von der Zellauslegung über den Prototypenbau bis zum Hochlauf der Serienfertigung. Dieses Produkt ist ein Teil dieser Arbeit, in Software übersetzt.',
+
+    originTitle: 'Woher das kommt',
+    originBody:
+      'Beff wurde von Ingenieuren gegründet, die jahrelang in der Lithium-Ionen-Batterieindustrie gearbeitet haben: Zellen ausgelegt, Fertigungslinien hochgefahren und internationale Märkte aus erster Hand kennengelernt.',
+    originBodyTwo:
+      'Das ist der Grund, warum dieses Produkt über gebundenen Wert argumentiert und nicht über Prozentwerte. Eine in der Formierung ausgeschleuste Zelle und eine in der Beschichtung ausgeschleuste Zelle sind nicht dasselbe Ereignis — und jedes Dashboard, das beides als Verlustquote ausweist, wirft genau das weg, was jeder in der Fertigung ohnehin weiß.',
+
+    whereTitle: 'Wo wir sind',
+    stuttgart: 'Stuttgart, Deutschland',
+    stuttgartRole: 'Europäische Zentrale',
+    tokyo: 'Tokio, Japan',
+    tokyoRole: 'Zentrale Asien-Pazifik',
+
+    prelaunchTitle: 'Was heute gilt',
+    prelaunchBody:
+      'Dieses Produkt ist noch nicht auf dem Markt. Es gibt keinen kostenpflichtigen Tarif, keine Kundenliste und keine Fallstudie — und sich davon etwas auszudenken, würde jedem auffallen, der an einer Zellfertigung arbeitet. Was es gibt: eine Warteliste, ein Konto zum Ansehen und Zahlen auf dieser Website, die durchgehend in den Bereichen bleiben, die eine echte Pilot- oder Serienlinie liefert.',
   },
 
   common: {

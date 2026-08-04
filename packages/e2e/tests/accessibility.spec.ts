@@ -15,8 +15,21 @@ import { expect, test } from '@playwright/test';
 const SURFACES = [
   { path: '/en', name: 'landing (EN)' },
   { path: '/de', name: 'landing (DE)' },
+  { path: '/en/product', name: 'product (EN)' },
+  { path: '/de/product', name: 'product (DE)' },
+  { path: '/en/technology', name: 'technology (EN)' },
+  { path: '/de/technology', name: 'technology (DE)' },
+  { path: '/en/about', name: 'about (EN)' },
+  { path: '/de/about', name: 'about (DE)' },
   { path: '/en/impressum', name: 'imprint' },
   { path: '/de/datenschutz', name: 'privacy policy' },
+  // Both locales for the legal documents that are genuinely translated. The
+  // storage and processing tables are the densest markup on the site and the
+  // German column headings are the longest, so DE is where a table breaks first.
+  { path: '/en/agb', name: 'terms (EN)' },
+  { path: '/de/agb', name: 'terms (DE)' },
+  { path: '/en/barrierefreiheit', name: 'accessibility statement (EN)' },
+  { path: '/de/barrierefreiheit', name: 'accessibility statement (DE)' },
   { path: '/en/login', name: 'login' },
   { path: '/en/register', name: 'register' },
 ];
@@ -72,4 +85,69 @@ test('dark mode has no contrast violations @a11y', async ({ page }) => {
   const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
 
   expect(results.violations).toEqual([]);
+});
+
+test('the inverted product panel has no contrast violations @a11y', async ({ page }) => {
+  // The panel renders the *dark* palette inside a light page, so its pairs are
+  // never composed on this surface in either of the two theme passes above. That
+  // is the point of scoping `data-theme` to a subtree rather than adding an
+  // emphasis colour family — but "already gated in isolation" is a claim about
+  // tokens, and this is the claim about the page.
+  await page.goto('/en');
+
+  const panel = page.getByRole('region', { name: 'The view at 08:40' });
+  await expect(panel).toBeVisible();
+  await expect(panel).toHaveAttribute('data-theme', 'dark');
+
+  const results = await new AxeBuilder({ page })
+    .withTags(TAGS)
+    .include('[data-theme="dark"]')
+    .analyze();
+
+  expect(results.violations).toEqual([]);
+});
+
+test('the hero band draws itself, once @a11y', async ({ page }) => {
+  // The design brief allows exactly one orchestrated moment. If the keyframes
+  // stop applying, nothing breaks and nothing fails — the page just quietly
+  // loses the thing it was designed around, which is why this is asserted.
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/en');
+
+  const midDraw = await page.evaluate(() => {
+    const range = document.querySelector('[data-band-draw] [data-part="range"]');
+    return range === null ? null : getComputedStyle(range).scale;
+  });
+
+  // Mid-flight: partially drawn along x, untouched along y.
+  expect(midDraw).toMatch(/^0\.\d+ 1$/);
+});
+
+test('reduced motion collapses the band to its final state, delays included @a11y', async ({
+  page,
+}) => {
+  /*
+   * The regression test for a real defect. The global reduced-motion block
+   * zeroed `animation-duration` but not `animation-delay`, so each part still
+   * waited out its stagger before appearing instantly — the hero's measurement
+   * was invisible for 480ms for exactly the people who asked for less motion.
+   *
+   * Measured at 120ms after load, which is inside every delay in the sequence.
+   */
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/en');
+  await page.waitForTimeout(120);
+
+  const state = await page.evaluate(() =>
+    ['range', 'limit', 'tick'].map((part) => {
+      const node = document.querySelector(`[data-band-draw] [data-part="${part}"]`);
+      return { part, opacity: node === null ? null : getComputedStyle(node).opacity };
+    }),
+  );
+
+  expect(state).toEqual([
+    { part: 'range', opacity: '1' },
+    { part: 'limit', opacity: '1' },
+    { part: 'tick', opacity: '1' },
+  ]);
 });

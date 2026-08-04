@@ -478,6 +478,25 @@ Target **WCAG 2.2 AA**. What is actually in place today, separated from what is 
 
 **Not done, and not claimed:**
 
+- **The company film on the landing page ships without captions.** It is Beff's
+  own 71-second introduction, it carries an audio track, and no transcript came
+  with it. That is **WCAG 1.2.2 Captions (Level A) and 1.2.5 Audio Description
+  (AA) unmet** — a known, deliberate exception, recorded here rather than left
+  as a silent hole in the claim above. Writing captions from guesswork was the
+  alternative, and wrong captions are worse than none for the people who need
+  them. Everything the film covers is also stated in text beside it, which
+  mitigates nothing for a deaf reader but does mean the section still carries
+  its meaning. Supplying a `.vtt` closes this; the `<video>` already has the
+  slot for it.
+
+  One gate did catch it: `jsx-a11y/media-has-caption` failed the build the
+  moment the element existed. It is suppressed **inline at the single call
+  site** with a reason, not switched off in `eslint.config.mjs` — a config-level
+  disable would silence the next uncaptioned video too, and nobody would watch
+  that happen. No runtime gate sees it: axe has no rule for "this video has
+  audio nobody transcribed", the contrast gate is indifferent, and the
+  screen-reader walk sees a correctly named control.
+
 - **No human has listened to this with a real screen reader.** The gate above
   verifies what Chromium _exposes_; it cannot verify how NVDA, JAWS or VoiceOver
   behave with it — browse-versus-focus mode switching, verbosity settings, and

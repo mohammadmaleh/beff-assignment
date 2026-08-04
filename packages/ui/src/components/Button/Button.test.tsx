@@ -78,4 +78,49 @@ describe('Button', () => {
       expect(screen.getByRole('button', { name: 'Go' }).tagName).toBe('BUTTON');
     },
   );
+
+  describe('the press', () => {
+    it.each(['primary', 'secondary', 'danger'] as const)(
+      'gives the %s variant a plinth to travel through',
+      (variant) => {
+        render(<Button variant={variant}>Go</Button>);
+        const button = screen.getByRole('button', { name: 'Go' });
+        // A hard-edged shadow — no blur radius — so it is a machined edge and
+        // not the floating card the design brief rules out.
+        expect(button.className).toContain('shadow-[0_2px_0_0_var(--plinth)]');
+        // Travel matches the plinth exactly, so the control lands flush.
+        expect(button.className).toContain('active:translate-y-[2px]');
+        expect(button.className).toContain('active:shadow-none');
+      },
+    );
+
+    it('leaves ghost flat, so it stays the quiet variant', () => {
+      render(<Button variant="ghost">Go</Button>);
+      // An edge would make ghost a third weight competing with secondary, which
+      // is the one thing it exists not to do.
+      expect(screen.getByRole('button', { name: 'Go' }).className).not.toContain('--plinth');
+    });
+
+    it('takes the plinth away when there is nothing to press', () => {
+      render(
+        <Button variant="primary" disabled>
+          Go
+        </Button>,
+      );
+      const button = screen.getByRole('button', { name: 'Go' });
+      // Travel on a dead control invites a click that feels like it worked.
+      expect(button.className).toContain('disabled:shadow-none');
+      expect(button.className).toContain('disabled:active:translate-y-0');
+    });
+
+    it('animates only the compositor-friendly property', () => {
+      render(<Button>Go</Button>);
+      const className = screen.getByRole('button', { name: 'Go' }).className;
+      // `translate`, not the `transform` shorthand — the shorthand cancels any
+      // positioning utility it lands beside. And never `box-shadow`, which
+      // repaints every frame.
+      expect(className).toContain('transition-[background-color,border-color,translate,opacity]');
+      expect(className).not.toContain('transition-[box-shadow');
+    });
+  });
 });

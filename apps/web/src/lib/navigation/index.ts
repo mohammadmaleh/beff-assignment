@@ -1,1 +1,9 @@
-export { SURFACES, surfacePath, primaryNav, type Surface, type SurfaceKey } from './surfaces';
+export {
+  SURFACES,
+  surfacePath,
+  primaryNav,
+  marketingNav,
+  type Surface,
+  type SurfaceKey,
+  type MarketingNavKey,
+} from './surfaces';

@@ -3,7 +3,12 @@ import { notFound } from 'next/navigation';
 
 import { SpecBand } from '@beff/ui/spec-band';
 
+import { ChainMarker } from '@/components/ChainMarker';
+import { CompanyFilm } from '@/components/CompanyFilm';
 import { CookieBanner } from '@/components/CookieBanner';
+import { CostOfPosition } from '@/components/CostOfPosition';
+import { LandingHero } from '@/components/LandingHero';
+import { ProductPanel } from '@/components/ProductPanel';
 import { SiteFooter } from '@/components/SiteFooter';
 import { SiteHeader } from '@/components/SiteHeader';
 import { WaitlistForm } from '@/components/WaitlistForm';
@@ -17,6 +22,30 @@ import { surfacePath } from '@/lib/navigation';
  *
  * Only the waitlist form, the cookie banner and the theme toggle are client
  * components. Everything a crawler or a reader needs is server-rendered.
+ *
+ * ## Structure
+ *
+ * The production chain is the page's structure, not a metaphor laid over it:
+ * every section boundary sits at a real process step, and the ordinals come from
+ * `PROCESS_STEPS` rather than from a designer's sense of rhythm.
+ *
+ *     01  mixing          the data exists, scattered
+ *     02  coating         where value is already committed  ← the argument
+ *     10  formation       the product, on real figures      ← the proof
+ *     12  end-of-line     the tolerance band
+ *         —               the company, on film              ← who is asking
+ *         —               the ask
+ *
+ * The last two bands carry no ordinal on purpose. They are not process steps,
+ * and borrowing a number for them would be exactly the decoration the ordinals
+ * exist to avoid — the markers mean "this is position N in a real sequence", or
+ * they mean nothing.
+ *
+ * Sections are full-bleed bands with their own inner measure, so the page has
+ * tonal rhythm instead of six identically-inset blocks of prose. The design
+ * brief called that "the band becomes the unit of composition"; the first
+ * implementation used one width and one rule six times, which is what makes a
+ * page read as a document.
  */
 export default async function LandingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -28,114 +57,120 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
       <SiteHeader locale={locale} />
 
       <main id="main">
-        <section className="mx-auto max-w-5xl px-6 py-20">
-          <p className="text-text-muted text-[length:var(--type-ui-size-sm)] tracking-[0.12em] uppercase">
-            {t.landing.eyebrow}
-          </p>
-          <h1 className="mt-4 max-w-3xl font-(family-name:--type-family-display) text-[length:var(--type-ui-size-3xl)] leading-[1.1] [font-stretch:125%]">
-            {t.landing.headline}
-          </h1>
-          <p className="text-text-muted mt-6 max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-lg)] leading-(--type-prose-leading)">
-            {t.landing.subhead}
-          </p>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link
-              href="#waitlist"
-              className="bg-brand-default text-text-on-brand rounded-chamfer hover:bg-brand-hover inline-flex items-center px-4 py-2 font-medium"
-            >
-              {t.landing.ctaPrimary}
-            </Link>
-            <Link href="#what-you-get" className="underline underline-offset-4">
-              {t.landing.ctaSecondary}
-            </Link>
+        <LandingHero locale={locale} />
+
+        <section className="mx-auto max-w-6xl px-6 py-20">
+          <ChainMarker step="mixing" locale={locale} />
+          <div className="mt-10 grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
+            <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+              {t.landing.problemTitle}
+            </h2>
+            <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
+              {t.landing.problemBody}
+            </p>
           </div>
         </section>
 
         {/*
-         * A rule, not a card. The design brief settled on no cards anywhere —
-         * borders carry the structure a filled panel would, which is why
-         * `border-default` is gated at 3:1 as load-bearing UI rather than at
-         * the 1.5:1 a decorative hairline would need.
+         * The argument, as a drawing. This is where a three-column feature grid
+         * used to be — the "icon trio" the design brief ruled out, and the part
+         * of the page that made it look like every other pre-launch site.
          */}
-        <section className="border-border-default mx-auto max-w-5xl border-t px-6 py-16">
-          <h2 className="max-w-2xl font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
-            {t.landing.problemTitle}
-          </h2>
-          <p className="text-text-muted mt-4 max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-            {t.landing.problemBody}
-          </p>
-        </section>
-
         <section
-          id="what-you-get"
-          className="border-border-default mx-auto max-w-5xl scroll-mt-8 border-t px-6 py-16"
+          id="cost"
+          className="calibration-ground border-border-default scroll-mt-8 border-t"
         >
-          <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
-            {t.landing.valueTitle}
-          </h2>
-          <ul className="mt-8 grid gap-8 sm:grid-cols-3">
-            {t.landing.values.map((value) => (
-              <li key={value.title} className="flex flex-col gap-2">
-                {/* The calibration mark from the brief's visual vocabulary. */}
-                <span aria-hidden="true" className="bg-band-tick h-px w-8" />
-                <h3 className="text-[length:var(--type-ui-size-lg)] font-medium">{value.title}</h3>
-                <p className="text-text-muted text-[length:var(--type-prose-size-sm)] leading-(--type-prose-leading)">
-                  {value.body}
+          <div className="mx-auto max-w-6xl px-6 py-20 lg:py-24">
+            <ChainMarker step="coating" locale={locale} />
+            <div className="mt-10 flex flex-col gap-10">
+              <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
+                <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+                  {t.landing.costTitle}
+                </h2>
+                <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
+                  {t.landing.costBody}
                 </p>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="border-border-default mx-auto max-w-5xl border-t px-6 py-16">
-          <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
-            {t.landing.signatureTitle}
-          </h2>
-          <p className="text-text-muted mt-4 max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-            {t.landing.signatureBody}
-          </p>
-          {/* Porosity after calendering runs 30–35% — see CONTEXT.md. These are
-              plausible numbers, not decorative ones. */}
-          <div className="mt-10 flex max-w-xl flex-col gap-8">
-            <SpecBand
-              label={t.landing.signatureExampleLabel}
-              words={t.a11y.specBand}
-              value={32.4}
-              lowerLimit={30}
-              upperLimit={35}
-              target={32.5}
-              unit="%"
-            />
-            <SpecBand
-              label={t.landing.signatureExampleLabel}
-              words={t.a11y.specBand}
-              value={36.8}
-              lowerLimit={30}
-              upperLimit={35}
-              target={32.5}
-              unit="%"
-            />
+              </div>
+              <CostOfPosition locale={locale} />
+            </div>
           </div>
         </section>
+
+        <ProductPanel locale={locale} />
+
+        <section className="mx-auto max-w-6xl px-6 py-20">
+          <ChainMarker step="eol_test" locale={locale} />
+          <div className="mt-10 grid gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
+            <div className="flex flex-col gap-4">
+              <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+                {t.landing.signatureTitle}
+              </h2>
+              <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
+                {t.landing.signatureBody}
+              </p>
+            </div>
+
+            {/*
+             * The same measurement, twice: in spec, and past its upper limit.
+             * Porosity after calendering runs 30–35% — see CONTEXT.md. These are
+             * plausible numbers, not decorative ones.
+             */}
+            <div className="flex max-w-xl flex-col gap-8">
+              <SpecBand
+                label={t.landing.signatureExampleLabel}
+                words={t.a11y.specBand}
+                value={32.4}
+                lowerLimit={30}
+                upperLimit={35}
+                target={32.5}
+                unit="%"
+              />
+              <SpecBand
+                label={t.landing.signatureExampleLabel}
+                words={t.a11y.specBand}
+                value={36.8}
+                lowerLimit={30}
+                upperLimit={35}
+                target={32.5}
+                unit="%"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/*
+         * The argument is finished by here. What is left before the ask is
+         * "who are you", which is the one question a company film answers.
+         */}
+        <CompanyFilm locale={locale} />
 
         <section
           id="waitlist"
-          className="border-border-default mx-auto max-w-5xl scroll-mt-8 border-t px-6 py-16"
+          className="calibration-ground border-border-default scroll-mt-8 border-t"
         >
-          <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
-            {t.landing.waitlistTitle}
-          </h2>
-          <p className="text-text-muted mt-4 max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-            {t.landing.waitlistBody}
-          </p>
-          <div className="mt-8 max-w-md">
-            <WaitlistForm locale={locale} />
+          <div className="mx-auto max-w-6xl px-6 py-20 lg:py-24">
+            <div className="grid gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
+              <div className="flex flex-col gap-4">
+                <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+                  {t.landing.waitlistTitle}
+                </h2>
+                <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
+                  {t.landing.waitlistBody}
+                </p>
+                <p className="text-text-muted mt-2 text-[length:var(--type-ui-size-sm)]">
+                  <Link
+                    href={surfacePath('privacy', locale)}
+                    className="underline underline-offset-4"
+                  >
+                    {t.footer.privacy}
+                  </Link>
+                </p>
+              </div>
+              <div className="max-w-md">
+                <WaitlistForm locale={locale} />
+              </div>
+            </div>
           </div>
-          <p className="text-text-muted mt-6 max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
-            <Link href={surfacePath('privacy', locale)} className="underline underline-offset-4">
-              {t.footer.privacy}
-            </Link>
-          </p>
         </section>
       </main>
 

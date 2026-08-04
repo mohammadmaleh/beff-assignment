@@ -59,6 +59,138 @@ body {
   outline-offset: 2px;
 }
 
+/*
+ * The one asset the token system cannot re-colour.
+ *
+ * Every other colour on this page flips because a semantic token flips. A raster
+ * logo has its colours baked in, and Beff's navy mark sits at roughly 2:1
+ * against Graphite — present, but reading as a smudge rather than as a mark.
+ *
+ * `brightness(0) invert(1)` collapses it to a white silhouette: the standard
+ * monochrome treatment a brand ships for dark grounds, and the honest one here,
+ * because it preserves the mark's *form* rather than inventing a colour nobody
+ * at Beff chose. A plain `invert(1)` would turn navy into mustard.
+ *
+ * Both selectors, matching the token sheet exactly — the media query for readers
+ * who never chose, the attribute for readers who did. Getting only the first
+ * means the logo breaks for precisely the people who picked dark on purpose.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .brand-mark {
+    filter: brightness(0) invert(1);
+  }
+}
+
+[data-theme='dark'] .brand-mark {
+  filter: brightness(0) invert(1);
+}
+
+/*
+ * The dry-room ground: graph paper at the scale of a control chart.
+ *
+ * Drawn on a pseudo-element rather than on the section itself so the mask that
+ * fades it out cannot also fade the content, and so it stays out of the
+ * accessibility tree without needing `aria-hidden` on a wrapper. `z-index: -1`
+ * paints it behind the content but still inside the section, which needs the
+ * `isolation` — without it the negative index escapes to the page background
+ * and the grid disappears under `body`.
+ */
+.calibration-ground {
+  position: relative;
+  isolation: isolate;
+}
+
+.calibration-ground::before {
+  /*
+   * `surface-sunken`, not a translucent border. The border token is solved for
+   * 3:1 as load-bearing UI, so in the dark theme it is *light* — a grid drawn
+   * from it reads subtle on the light ground and busy on the dark one. Sunken is
+   * defined as one step away from the base surface in both themes, which is
+   * exactly what a background rule wants, and it needs no opacity to get there.
+   */
+  --calibration-line: var(--color-surface-sunken);
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--calibration-line) 0 1px,
+      transparent 1px var(--space-12)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--calibration-line) 0 1px,
+      transparent 1px var(--space-12)
+    );
+  /* Fades before the section boundary, so the grid reads as a field the content
+     sits on rather than as a texture tiled to the edge. */
+  mask-image: linear-gradient(to bottom, rgb(0 0 0 / 0.85), transparent 92%);
+}
+
+/*
+ * ## The one orchestrated moment
+ *
+ * The design brief allows exactly one: an instrument taking a reading. The
+ * in-spec window draws outward from its centre, the limit marks appear, then the
+ * reading settles onto its position. Nothing else on the page animates.
+ *
+ * The keyframes live here, in the app, rather than in `packages/ui` — a
+ * component that animates on mount animates everywhere it is placed, including
+ * twelve at a time on the dashboard. `SpecBand` exposes `data-part` hooks and
+ * the page decides.
+ *
+ * `scale` and `opacity`, never `transform`. The parts already carry Tailwind
+ * translate utilities that compile into `transform`, and animating that property
+ * would cancel their positioning. `scale` is an independent transform property,
+ * so the two compose instead of fighting — and it is still compositor-driven.
+ *
+ * `both` fill mode is what makes the reduced-motion block below a *collapse to
+ * final state* rather than a flicker: at 0.01ms the animation lands on its `to`
+ * frame immediately.
+ */
+@keyframes band-draw-range {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+@keyframes band-draw-mark {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes band-settle {
+  from {
+    opacity: 0;
+    scale: 1.6;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+[data-band-draw] [data-part='range'] {
+  animation: band-draw-range 420ms var(--motion-easing-enter) both;
+}
+
+[data-band-draw] [data-part='limit'] {
+  animation: band-draw-mark 160ms var(--motion-easing-standard) 380ms both;
+}
+
+[data-band-draw] [data-part='tick'] {
+  animation: band-settle 260ms var(--motion-easing-standard) 480ms both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -66,5 +198,19 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    /*
+     * The delays too, and this is not tidiness.
+     *
+     * Zeroing only the duration collapses each animation to an instant that
+     * still waits out its `animation-delay` first. The hero band is staggered —
+     * the limits at 380ms, the reading at 480ms — so with reduced motion
+     * honoured and delays intact, the measurement a screen reader user is
+     * *told* about was invisible on screen for half a second. Measured, not
+     * theorised: at 120ms after load the tick read `opacity: 0`.
+     *
+     * "Collapses to final state" is only true if the wait collapses as well.
+     */
+    animation-delay: 0s !important;
+    transition-delay: 0s !important;
   }
 }

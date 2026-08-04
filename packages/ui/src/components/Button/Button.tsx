@@ -26,22 +26,56 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
  * surfaces. Restyling it per component is how a design system ends up with
  * seven different focus rings.
  */
+/**
+ * The press.
+ *
+ * Every variant sits on a 2px plinth drawn with a **hard-edged** `box-shadow` —
+ * no blur, no offset sideways. That is a bevel, not a drop shadow, so it does
+ * not reintroduce the floating card the design brief rules out: the button is
+ * not hovering above the page, it has a machined edge, the way a key on a
+ * control panel does.
+ *
+ * On `:active` it travels exactly the height of its own plinth and the plinth is
+ * removed, so the control lands flush with the surface. The previous version
+ * moved 1px with nothing underneath it, which reads as a jitter rather than as
+ * a press — there was no depth for it to travel through.
+ *
+ * Only `translate` is transitioned. The shadow is swapped instantly, because
+ * animating `box-shadow` is a paint on every frame and the brief allows
+ * `transform` and `opacity` only. `translate` is the independent property, not
+ * the `transform` shorthand, so it composes with any positioning utility
+ * instead of cancelling it.
+ */
+const PLINTH = 'shadow-[0_2px_0_0_var(--plinth)] active:translate-y-[2px] active:shadow-none';
+
 const VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand-default text-text-on-brand border border-brand-default hover:bg-brand-hover hover:border-brand-hover active:translate-y-px',
+    'bg-brand-default text-text-on-brand border border-brand-edge [--plinth:var(--color-brand-edge)] hover:bg-brand-hover ' +
+    PLINTH,
   secondary:
-    'bg-transparent text-text-default border border-border-default hover:bg-surface-raised active:translate-y-px',
+    'bg-surface-base text-text-default border border-border-strong [--plinth:var(--color-border-strong)] hover:bg-surface-raised ' +
+    PLINTH,
+  // No plinth. Ghost is the quiet variant — giving it an edge would make it a
+  // third weight competing with secondary, which is the whole thing it exists
+  // not to do.
   ghost:
     'bg-transparent text-text-default border border-transparent hover:bg-surface-raised active:translate-y-px',
   // Destructive actions are never the primary weight — the shape has to read as
   // a consequence, not as the happy path.
   danger:
-    'bg-transparent text-status-danger-fg border border-status-danger-fg hover:bg-status-danger-fg hover:text-surface-base active:translate-y-px',
+    'bg-surface-base text-status-danger-fg border border-status-danger-fg [--plinth:var(--color-status-danger-fg)] hover:bg-status-danger-fg hover:text-surface-base ' +
+    PLINTH,
 };
 
+/*
+ * Roomier than before. The old `px-4 py-2` at the body size produced a control
+ * whose label nearly touched its own border, which is most of what made these
+ * read as unstyled browser buttons. Horizontal padding is now roughly double
+ * the vertical, the proportion a physical key has.
+ */
 const SIZES: Record<ButtonSize, string> = {
-  sm: 'text-[length:var(--type-ui-size-sm)] px-3 py-1.5 gap-1.5',
-  md: 'text-[length:var(--type-ui-size-md)] px-4 py-2 gap-2',
+  sm: 'text-[length:var(--type-ui-size-sm)] px-4 py-2 gap-2 min-h-9',
+  md: 'text-[length:var(--type-ui-size-md)] px-6 py-2.5 gap-2 min-h-11',
 };
 
 export function Button({
@@ -72,7 +106,11 @@ export function Button({
       onClick={inert ? undefined : onClick}
       className={cx(
         'rounded-chamfer inline-flex items-center justify-center font-[family-name:var(--type-family-body)] font-medium',
-        'transition-[background-color,border-color,transform,opacity] duration-(--motion-duration-fast) ease-(--motion-easing-standard)',
+        'transition-[background-color,border-color,translate,opacity] duration-(--motion-duration-fast) ease-(--motion-easing-standard)',
+        // A disabled control has nothing to press into, so it keeps neither the
+        // plinth nor the travel. Leaving them on invites a click that does
+        // nothing but still feels like it worked.
+        'disabled:shadow-none disabled:active:translate-y-0 aria-disabled:shadow-none aria-disabled:active:translate-y-0',
         'disabled:cursor-not-allowed disabled:opacity-55 aria-disabled:cursor-not-allowed aria-disabled:opacity-55',
         VARIANTS[variant],
         SIZES[size],

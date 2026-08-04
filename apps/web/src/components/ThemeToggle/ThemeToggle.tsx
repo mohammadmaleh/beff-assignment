@@ -5,64 +5,119 @@ import { useEffect, useState } from 'react';
 import { THEME_STORAGE_KEY } from '@/components/ThemeScript';
 import { getDictionary, type Locale } from '@/lib/i18n';
 
-type Choice = 'system' | 'light' | 'dark';
+type Theme = 'light' | 'dark';
 
-const CHOICES: readonly Choice[] = ['system', 'light', 'dark'];
+const DARK_QUERY = '(prefers-color-scheme: dark)';
 
 /**
- * A native `<select>`, not a custom listbox.
+ * A two-state theme control.
  *
- * Native HTML before ARIA: this one element already ships keyboard navigation,
- * type-ahead, a mobile picker and every screen-reader announcement a
- * hand-rolled combobox spends two hundred lines failing to reproduce.
+ * There is no "system" option, because offering one asked the reader to pick a
+ * default they already had. The page reads `prefers-color-scheme` and follows it
+ * — including when it changes mid-session, which is what an OS on a sunset
+ * schedule does — and only stops once the reader overrides it. That is the same
+ * behaviour the three-option select had, minus the option that explained it.
+ *
+ * A `<button>`, not a `<select>`: two mutually exclusive states with an obvious
+ * next step is a toggle, and a native button already carries keyboard
+ * operation, focus and an accessible name with no ARIA at all. The name is the
+ * *action* ("Switch to dark appearance"), so a screen-reader user hears what
+ * pressing it does rather than a setting they must infer the effect of.
+ *
+ * The glyph shows the theme you would move to, and is `aria-hidden` — the
+ * button's name is its entire accessible content, which is why that name is a
+ * required, translated string rather than anything assembled from literals.
  */
 export function ThemeToggle({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
-  const [choice, setChoice] = useState<Choice>('system');
 
-  // Reads after mount rather than during render. The server has no
-  // localStorage, and a value read during render would not match the markup it
-  // hydrates against.
+  // "light" is the server's guess, and it has to be *a* guess: the markup is
+  // static, and no amount of care lets it know the reader's OS. The effect
+  // corrects it before paint matters, and `ThemeScript` has already applied any
+  // pinned choice to <html>, so nothing flashes for the readers who chose.
+  const [theme, setTheme] = useState<Theme>('light');
+  const [pinned, setPinned] = useState(false);
+
   useEffect(() => {
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === 'light' || stored === 'dark') setChoice(stored);
-  }, []);
-
-  const apply = (next: Choice): void => {
-    setChoice(next);
-    if (next === 'system') {
-      window.localStorage.removeItem(THEME_STORAGE_KEY);
-      // Removing the attribute hands control back to the token sheet's
-      // `prefers-color-scheme` block rather than pinning either theme.
-      document.documentElement.removeAttribute('data-theme');
+    if (stored === 'light' || stored === 'dark') {
+      setTheme(stored);
+      setPinned(true);
       return;
     }
+
+    // Nothing pinned, so the media query is what the reader is actually looking
+    // at. Reading it is not the same as writing it: pinning on load would freeze
+    // a visitor into whatever their OS said the first time they arrived.
+    const query = window.matchMedia(DARK_QUERY);
+    setTheme(query.matches ? 'dark' : 'light');
+
+    const follow = (event: MediaQueryListEvent): void => {
+      setTheme(event.matches ? 'dark' : 'light');
+    };
+    query.addEventListener('change', follow);
+    return () => {
+      query.removeEventListener('change', follow);
+    };
+  }, [pinned]);
+
+  const next: Theme = theme === 'dark' ? 'light' : 'dark';
+
+  const choose = (): void => {
+    setTheme(next);
+    setPinned(true);
     window.localStorage.setItem(THEME_STORAGE_KEY, next);
     document.documentElement.setAttribute('data-theme', next);
   };
 
-  const labels: Record<Choice, string> = {
-    system: t.nav.themeSystem,
-    light: t.nav.themeLight,
-    dark: t.nav.themeDark,
-  };
-
   return (
-    <label className="flex items-center gap-2 text-[length:var(--type-ui-size-sm)]">
-      <span className="text-text-muted">{t.nav.theme}</span>
-      <select
-        value={choice}
-        onChange={(event) => {
-          apply(event.target.value as Choice);
-        }}
-        className="border-border-default bg-surface-base text-text-default rounded-chamfer border px-2 py-1"
-      >
-        {CHOICES.map((value) => (
-          <option key={value} value={value}>
-            {labels[value]}
-          </option>
-        ))}
-      </select>
-    </label>
+    <button
+      type="button"
+      onClick={choose}
+      aria-label={next === 'dark' ? t.nav.themeToDark : t.nav.themeToLight}
+      className="border-border-default text-text-muted hover:border-border-strong hover:text-text-default hover:bg-surface-raised rounded-chamfer inline-flex size-9 items-center justify-center border transition-colors duration-150"
+    >
+      {next === 'dark' ? <MoonGlyph /> : <SunGlyph />}
+    </button>
+  );
+}
+
+/*
+ * Drawn rather than pulled from an icon set. Two glyphs do not justify a
+ * dependency, and a stroke weight chosen to sit on the same hairline as every
+ * rule and border on the page is the whole point — a stock 2px icon reads as
+ * imported, because it is.
+ */
+
+function SunGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+    >
+      <circle cx="10" cy="10" r="3.5" />
+      <path d="M10 1.5v2M10 16.5v2M1.5 10h2M16.5 10h2M4 4l1.4 1.4M14.6 14.6L16 16M16 4l-1.4 1.4M5.4 14.6L4 16" />
+    </svg>
+  );
+}
+
+function MoonGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinejoin="round"
+    >
+      <path d="M16.5 12.4A7 7 0 0 1 7.6 3.5a7 7 0 1 0 8.9 8.9Z" />
+    </svg>
   );
 }

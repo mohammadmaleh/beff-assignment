@@ -28,10 +28,15 @@ export const en = {
     logOut: 'Log out',
     getStarted: 'Request access',
     primary: 'Main',
-    theme: 'Appearance',
-    themeLight: 'Light',
-    themeDark: 'Dark',
-    themeSystem: 'System',
+    product: 'Product',
+    technology: 'Technology',
+    // The theme control is a button, so its name is the action it performs
+    // rather than the setting it holds. There is no "system" string because
+    // there is no longer a system *option*: the page reads the OS preference and
+    // follows it until the reader overrides it, which is what "system" meant
+    // anyway — it was just asking them to choose the default they already had.
+    themeToLight: 'Switch to light appearance',
+    themeToDark: 'Switch to dark appearance',
   },
 
   landing: {
@@ -44,30 +49,64 @@ export const en = {
     ctaPrimary: 'Request access',
     ctaSecondary: 'See what it measures',
 
+    /*
+     * The hero is the signature element at full scale, showing one honest
+     * reading — the design brief's first instruction, and the thing the first
+     * implementation left out. A production line specifies 85–97% first-pass
+     * yield (CONTEXT.md); this reading is below that, which is the whole point.
+     */
+    heroReadingLabel: 'First-pass yield · Line 3 · week 30',
+    heroReadingNote:
+      'A production line specifies 85 to 97 per cent. This one is losing more than one cell in five before it reaches end-of-line test, and the number alone does not say where.',
+
     problemTitle: 'The line already has the data. It is in fourteen spreadsheets.',
     problemBody:
       'Coating thickness in one export, formation results in another, scrap logged by shift on paper. By the time the picture assembles, the batch has shipped and the answer is three weeks old.',
 
-    valueTitle: 'What you get',
-    values: [
-      {
-        title: 'Yield, by process step',
-        body: 'First-pass yield broken down across mixing through end-of-line test, weighted so late-stage losses read as the expensive ones they are.',
-      },
-      {
-        title: 'Scrap in euros, not percentages',
-        body: 'A 2% loss at calendering and a 2% loss at formation are not the same event. Scrap is costed against the value already committed at that step.',
-      },
-      {
-        title: 'CO₂ per kWh, tracked',
-        body: 'Emissions intensity per unit energy produced, moving with your actual yield — the number your customers are starting to ask for in writing.',
-      },
-    ],
+    /*
+     * Replaces a three-column feature grid — the exact "icon trio" the design
+     * brief ruled out. The argument the product rests on is that position in the
+     * chain determines cost, and that is a shape, not three paragraphs.
+     */
+    costTitle: 'Where the value is already committed',
+    costBody:
+      'Cost accrues along the chain: material, energy and line time go in at every step and none of it comes back out. A cell scrapped at formation carries 90 per cent of its finished cost. The same cell scrapped at coating carries 21 per cent. Reported as percentages, those two losses look identical.',
+    costFigureLabel: 'Committed value per cell by process step',
+    costFigureDescription:
+      'Committed value rises from 7 per cent of finished cell cost at mixing to 100 per cent at end-of-line test, step by step, with the largest single increases at coating, electrolyte filling and formation.',
+    costAxisStart: 'Cell started',
+    costAxisEnd: 'Cell finished',
+    costColumnStep: 'Process step',
+    costColumnCommitted: 'Committed value',
+    costTableCaption: 'Committed value per cell at each process step, as a share of finished cost',
+
+    /*
+     * The brief was written before the product existed and ruled out a
+     * screenshot for that reason. There is a product now, so the panel renders
+     * the dashboard's own components with the demo line's own figures — not a
+     * picture of the product, the product.
+     */
+    productTitle: 'The view at 08:40',
+    productBody:
+      'Yield dropped overnight and there is a standup at nine. This is the screen, running the components the application ships, on the figures a pilot line actually produces.',
+    productLineLabel: 'Pilot line 1 · last 30 days',
+    productNote:
+      'Every reading is drawn against its specification window, and every chart has a table behind it.',
 
     signatureTitle: 'Built around the tolerance band',
     signatureBody:
       'Every measurement in Beff is shown against its specification window, the way a control chart or a calibration certificate already shows it. In spec, out of spec, and by how much — readable at a glance, and readable without colour.',
     signatureExampleLabel: 'Electrode porosity after calendering',
+
+    // The film is Beff's own, and it is about the work the company already does
+    // — the expert chat, Navigator, the virtual factory platform. Framing it as
+    // the *company's* introduction rather than this product's demo is what keeps
+    // it honest: this surface is pre-launch and has nothing to demo.
+    filmEyebrow: 'The company',
+    filmTitle: 'Beff, in about a minute',
+    filmBody:
+      'Beff’s own introduction to the work behind this: the expert chat, the Navigator specification workflow, and the virtual factory platform the team already runs with cell manufacturers.',
+    filmLabel: 'Beff company introduction film',
 
     waitlistTitle: 'Request access',
     waitlistBody:
@@ -88,6 +127,10 @@ export const en = {
     legal: 'Legal',
     impressum: 'Imprint',
     privacy: 'Privacy policy',
+    terms: 'Terms of use',
+    accessibility: 'Accessibility',
+    company: 'Company',
+    about: 'About',
     language: 'Language',
     rights: 'All rights reserved.',
   },
@@ -112,6 +155,41 @@ export const en = {
     privacyTitle: 'Privacy policy',
     privacyNote:
       'Provided under Art. 13 GDPR. This is a demonstration project; the details below are placeholders.',
+    termsTitle: 'Terms of use',
+    termsNote:
+      'For business users, under German law. This is a demonstration project; these terms have not been reviewed by a lawyer.',
+    accessibilityTitle: 'Accessibility statement',
+    accessibilityNote:
+      'Provided under §14 BFSG. Section 3 lists what is not yet accessible — it is the part worth reading.',
+    cookieTitle: 'Cookies we set',
+    cookieNote:
+      'Under §25 TDDDG, anything beyond what is strictly necessary needs your consent. This is the full list.',
+    cookieColumnName: 'Name',
+    cookieColumnPurpose: 'Purpose',
+    cookieColumnDuration: 'Duration',
+    cookieColumnCategory: 'Category',
+  },
+
+  about: {
+    eyebrow: 'About',
+    title: 'Built by people who have run the line.',
+    lede: 'Beff is an engineering company working with the lithium-ion battery industry — from cell design and prototyping through to scaling mass production. This product is one part of that work, turned into software.',
+
+    originTitle: 'Where this comes from',
+    originBody:
+      'Beff was founded by engineers who spent years in the lithium-ion battery industry: designing cells, scaling production lines, and navigating international markets first-hand.',
+    originBodyTwo:
+      'That is the reason this product argues about committed value rather than about percentages. A cell scrapped at formation and a cell scrapped at coating are not the same event, and every dashboard that reports both as a loss percentage is throwing away the thing an engineer on the floor already knows.',
+
+    whereTitle: 'Where we are',
+    stuttgart: 'Stuttgart, Germany',
+    stuttgartRole: 'European headquarters',
+    tokyo: 'Tokyo, Japan',
+    tokyoRole: 'Asia-Pacific headquarters',
+
+    prelaunchTitle: 'What is true today',
+    prelaunchBody:
+      'This product has not launched. There is no paid plan, no customer list and no case study, and inventing any of them would be transparent to anyone who works on a cell line. What there is: a waiting list, an account you can open to look around, and figures throughout this site that stay inside the ranges a real pilot or production line produces.',
   },
 
   common: {

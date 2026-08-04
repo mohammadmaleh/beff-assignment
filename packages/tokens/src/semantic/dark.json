@@ -36,6 +36,10 @@
       "focus": {
         "$value": "{color.steel.400}",
         "$type": "color"
+      },
+      "strong": {
+        "$value": "{color.graphite.300}",
+        "$type": "color"
       }
     },
     "brand": {
@@ -45,6 +49,10 @@
       },
       "hover": {
         "$value": "{color.steel.300}",
+        "$type": "color"
+      },
+      "edge": {
+        "$value": "{color.steel.400}",
         "$type": "color"
       }
     },

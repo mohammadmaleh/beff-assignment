@@ -26,10 +26,10 @@ import type { Locale } from '../i18n/index';
  * | Dashboard  | The daily user                    | Show where yield was lost                    |
  * | Profile    | A user exercising a right         | Consent, export, erasure — legible and reversible where the law says so |
  *
- * Legal pages (Impressum, Datenschutzerklärung) hang off Landing rather than
- * forming a sixth surface: they are required by §5 DDG and Art. 13 GDPR, they
- * are linked from every footer, and treating them as a destination would
- * overstate what they are.
+ * Legal pages (Impressum, Datenschutzerklärung, AGB, Barrierefreiheitserklärung)
+ * and About hang off Landing rather than forming a sixth surface: they are
+ * required by §5 DDG, Art. 13 GDPR and §3 BFSG, they are linked from every
+ * footer, and treating them as destinations would overstate what they are.
  */
 export interface Surface {
   key: SurfaceKey;
@@ -43,8 +43,13 @@ export interface Surface {
 
 export type SurfaceKey =
   | 'landing'
+  | 'product'
+  | 'technology'
+  | 'about'
   | 'impressum'
   | 'privacy'
+  | 'terms'
+  | 'accessibility'
   | 'login'
   | 'register'
   | 'onboarding'
@@ -53,6 +58,23 @@ export type SurfaceKey =
 
 export const SURFACES: Readonly<Record<SurfaceKey, Surface>> = {
   landing: { key: 'landing', segments: [], requiresAuth: false, inPrimaryNav: false },
+  /*
+   * The three marketing pages behind the header nav. `inPrimaryNav` stays false
+   * because that flag means the *authenticated* app's navigation — a signed-in
+   * user does not want "Product" in the bar above their dashboard. The
+   * marketing nav is its own list, below.
+   */
+  product: { key: 'product', segments: ['product'], requiresAuth: false, inPrimaryNav: false },
+  technology: {
+    key: 'technology',
+    segments: ['technology'],
+    requiresAuth: false,
+    inPrimaryNav: false,
+  },
+  // Not a legal page, so it keeps the international term. It hangs off Landing
+  // for the same reason the legal pages do — it is context for the pitch, not a
+  // destination someone signs in to reach.
+  about: { key: 'about', segments: ['about'], requiresAuth: false, inPrimaryNav: false },
   impressum: {
     key: 'impressum',
     segments: ['impressum'],
@@ -64,6 +86,16 @@ export const SURFACES: Readonly<Record<SurfaceKey, Surface>> = {
   privacy: {
     key: 'privacy',
     segments: ['datenschutz'],
+    requiresAuth: false,
+    inPrimaryNav: false,
+  },
+  // Same rule as `datenschutz`: the German legal term in both locales. "AGB" is
+  // what a German business user searches for, and it is the phrase with legal
+  // weight — "terms" is a translation of it, not a synonym for it.
+  terms: { key: 'terms', segments: ['agb'], requiresAuth: false, inPrimaryNav: false },
+  accessibility: {
+    key: 'accessibility',
+    segments: ['barrierefreiheit'],
     requiresAuth: false,
     inPrimaryNav: false,
   },
@@ -93,3 +125,28 @@ export const surfacePath = (key: SurfaceKey, locale: Locale): string =>
 export const primaryNav: readonly Surface[] = Object.values(SURFACES).filter(
   (surface) => surface.inPrimaryNav,
 );
+
+/**
+ * The marketing header's navigation, in order.
+ *
+ * Three destinations and no more. A visitor evaluating a pre-launch product is
+ * asking what it measures, how it would reach their line, and who is building
+ * it — in that order. Anything else in the bar competes with the one action the
+ * page exists to produce.
+ *
+ * Legal pages are deliberately absent: §5 DDG is satisfied by a footer present
+ * on every page, which is also where a German reader looks for it.
+ *
+ * `as const satisfies` rather than a `readonly SurfaceKey[]` annotation: the
+ * annotation widens every element back to `SurfaceKey`, so a consumer keying a
+ * lookup off this list would be forced to supply labels for all thirteen
+ * surfaces — including `onboarding` and `dashboard`, which are not in it. The
+ * `satisfies` still rejects a key that is not a real surface.
+ */
+export const marketingNav = ['product', 'technology', 'about'] as const satisfies readonly [
+  SurfaceKey,
+  ...SurfaceKey[],
+];
+
+/** The surfaces reachable from the marketing header, as a narrow union. */
+export type MarketingNavKey = (typeof marketingNav)[number];

@@ -94,7 +94,22 @@ ${block(dark, themed)}
   }
 }
 
-:root[data-theme="dark"] {
+/*
+ * Deliberately not root-scoped. Unscoping the attribute selector from the root
+ * makes the dark palette applicable to a *subtree*, which is what the landing
+ * page's inverted product panel needs: one section rendering in the opposite
+ * pole while the page around it stays light.
+ *
+ * The alternative was a \`surface-emphasis\` / \`text-on-emphasis\` token family,
+ * which would have been a second set of colours to solve against the contrast
+ * gate and to keep in step with the first. This way the panel reuses the dark
+ * theme wholesale, so every pair inside it is already asserted — bands, status
+ * colours, borders and the focus ring included.
+ *
+ * Still after the media query, for the same reason it always was: an explicit
+ * choice has to beat the device preference.
+ */
+[data-theme="dark"] {
   color-scheme: dark;
 ${block(dark, themed)}
 }

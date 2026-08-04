@@ -112,8 +112,24 @@ describe('theming cascade', () => {
   it('places the explicit dark selector after the media query', async () => {
     const css = await read('tokens.css');
     const media = css.indexOf('@media (prefers-color-scheme: dark)');
-    const explicit = css.indexOf(':root[data-theme="dark"]');
+    const explicit = css.indexOf('[data-theme="dark"] {');
     expect(media).toBeGreaterThan(-1);
     expect(explicit).toBeGreaterThan(media);
+  });
+
+  it('scopes the dark palette to a subtree, not only to the root', async () => {
+    const css = await read('tokens.css');
+    // The landing page's inverted product panel is one section rendering in the
+    // opposite pole while the page stays light. `:root[data-theme="dark"]`
+    // cannot express that, and the alternative — a second `surface-emphasis`
+    // colour family — would be another set of values to solve against the
+    // contrast gate. Unscoped, the panel reuses the dark theme wholesale and
+    // every pair inside it is already asserted.
+    //
+    // Matched with the brace, as selectors rather than as substrings: the first
+    // attempt at this assertion searched for the bare string and failed against
+    // the comment in `build.js` explaining why it is not used.
+    expect(css).not.toContain(':root[data-theme="dark"] {');
+    expect(css).toMatch(/^\[data-theme="dark"] \{$/m);
   });
 });

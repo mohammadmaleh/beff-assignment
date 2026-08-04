@@ -119,6 +119,14 @@
         "$value": "3rem",
         "$type": "dimension"
       },
+      "size-4xl": {
+        "$value": "clamp(2.75rem, 5.2vw, 3.75rem)",
+        "$type": "other"
+      },
+      "size-readout": {
+        "$value": "clamp(2.25rem, 4.5vw, 3.5rem)",
+        "$type": "other"
+      },
       "leading": {
         "$value": "1.35",
         "$type": "number"
