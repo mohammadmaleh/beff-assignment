@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 
 import { ChartFigure } from '@/components/ChartFigure';
+import { DataTable, type DataColumn } from '@/components/DataTable';
 import { EChart } from '@/components/EChart';
 import {
   baseOption,
@@ -90,6 +91,47 @@ export function ThroughputChart({
   const tokens = useChartTokens();
   const reducedMotion = useReducedMotion();
   const format = useMemo(() => chartFormatters(locale), [locale]);
+
+  const columns = useMemo<DataColumn<TrendPoint>[]>(
+    () => [
+      {
+        key: 'batch',
+        header: copy.columnBatch,
+        rowHeader: true,
+        render: (point) => point.batch_code,
+        text: (point) => point.batch_code,
+        sortValue: (point) => point.batch_code,
+      },
+      {
+        key: 'started',
+        header: copy.columnStarted,
+        align: 'end',
+        render: (point) => format.count(point.cells_started),
+        text: (point) => format.count(point.cells_started),
+        // The raw count, never the grouped string: '1.200' and '180' compare
+        // in the wrong order lexically, and the separator is locale-dependent.
+        sortValue: (point) => point.cells_started,
+        filterRange: (point) => point.cells_started,
+      },
+      {
+        key: 'passed',
+        header: copy.seriesPassed,
+        align: 'end',
+        render: (point) => format.count(point.cells_passed),
+        text: (point) => format.count(point.cells_passed),
+        sortValue: (point) => point.cells_passed,
+      },
+      {
+        key: 'scrapped',
+        header: copy.seriesScrapped,
+        align: 'end',
+        render: (point) => format.count(point.cells_scrapped),
+        text: (point) => format.count(point.cells_scrapped),
+        sortValue: (point) => point.cells_scrapped,
+      },
+    ],
+    [copy, format],
+  );
 
   const option = useMemo<EChartsOption>(() => {
     const base = baseOption({ tokens, reducedMotion });
@@ -208,45 +250,15 @@ export function ThroughputChart({
       viewTableLabel={t.dashboard.table.viewTable}
       chart={<EChart option={option} height="20rem" />}
       table={
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
-            <caption className="text-text-muted pb-3 text-start">{copy.tableCaption}</caption>
-            <thead>
-              <tr className="border-border-default border-b">
-                <th scope="col" className="py-2 pe-4 text-start font-medium">
-                  {copy.columnBatch}
-                </th>
-                <th scope="col" className="py-2 pe-4 text-end font-medium">
-                  {copy.columnStarted}
-                </th>
-                <th scope="col" className="py-2 pe-4 text-end font-medium">
-                  {copy.seriesPassed}
-                </th>
-                <th scope="col" className="py-2 text-end font-medium">
-                  {copy.seriesScrapped}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {points.map((point) => (
-                <tr key={point.batch_code} className="border-border-default border-b">
-                  <th scope="row" className="py-2 pe-4 text-start font-normal">
-                    {point.batch_code}
-                  </th>
-                  <td className="py-2 pe-4 text-end tabular-nums">
-                    {format.count(point.cells_started)}
-                  </td>
-                  <td className="py-2 pe-4 text-end tabular-nums">
-                    {format.count(point.cells_passed)}
-                  </td>
-                  <td className="py-2 text-end tabular-nums">
-                    {format.count(point.cells_scrapped)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          caption={copy.tableCaption}
+          columns={columns}
+          rows={points}
+          rowKey={(point) => point.batch_code}
+          locale={locale}
+          csvName="cells-by-batch"
+          copy={t.dashboard.table}
+        />
       }
     />
   );

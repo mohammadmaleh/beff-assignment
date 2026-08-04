@@ -99,6 +99,50 @@ describe('ThroughputChart', () => {
     expect(within(screen.getByRole('table')).getByText('1.200')).toBeInTheDocument();
   });
 
+  it('sorts by cells started, so the big runs can be found among the trials', async () => {
+    // A 180-cell trial and a 1 400-cell run are the same point on the yield
+    // chart and very different events. Sorting is how the reader separates them
+    // without reading sixty rows.
+    render(
+      <ThroughputChart
+        points={[
+          point({ batch_code: 'B-2026-001', cells_started: 1400 }),
+          point({ batch_code: 'B-2026-002', cells_started: 180 }),
+        ]}
+        locale="en"
+      />,
+    );
+    await openTable();
+
+    const header = screen.getByRole('columnheader', { name: /Cells started/ });
+    await userEvent.click(within(header).getByRole('button'));
+
+    expect(header).toHaveAttribute('aria-sort', 'ascending');
+    expect(
+      within(screen.getByRole('table'))
+        .getAllByRole('rowheader')
+        .map((row) => row.textContent),
+    ).toEqual(['B-2026-002', 'B-2026-001']);
+  });
+
+  it('finds one batch by code', async () => {
+    render(
+      <ThroughputChart
+        points={[point({ batch_code: 'B-2026-001' }), point({ batch_code: 'B-2026-002' })]}
+        locale="en"
+      />,
+    );
+    await openTable();
+
+    await userEvent.type(screen.getByLabelText(/^Search/), 'B-2026-002');
+
+    expect(
+      within(screen.getByRole('table'))
+        .getAllByRole('rowheader')
+        .map((row) => row.textContent),
+    ).toEqual(['B-2026-002']);
+  });
+
   it('renders an empty window without throwing', () => {
     expect(() => render(<ThroughputChart points={[]} locale="en" />)).not.toThrow();
   });

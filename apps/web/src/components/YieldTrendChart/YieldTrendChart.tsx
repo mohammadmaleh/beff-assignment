@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 
 import { ChartFigure } from '@/components/ChartFigure';
+import { DataTable, type DataColumn } from '@/components/DataTable';
 import { EChart } from '@/components/EChart';
 import {
   baseOption,
@@ -100,6 +101,64 @@ export function YieldTrendChart({
   const format = useMemo(() => chartFormatters(locale), [locale]);
 
   const spec = yieldWindow(lineKind);
+
+  const columns = useMemo<DataColumn<TrendPoint>[]>(() => {
+    /*
+     * One definition of the cells cell, read by both `render` and `text`.
+     *
+     * They must not drift: `render` is what the reader sees and `text` is what
+     * search matches and what the CSV carries. Two copies of the same
+     * interpolation is two chances for the export to disagree with the screen.
+     *
+     * Declared inside the memo rather than beside it so it is not a dependency
+     * — a hoisted arrow would be a new identity every render, and suppressing
+     * the lint rule that notices is worse than not tripping it.
+     */
+    const cellsLabel = (point: TrendPoint): string =>
+      copy.tooltipCells
+        .replace('{passed}', format.count(point.cells_passed))
+        .replace('{started}', format.count(point.cells_started));
+
+    return [
+      {
+        key: 'batch',
+        header: copy.columnBatch,
+        rowHeader: true,
+        render: (point) => point.batch_code,
+        text: (point) => point.batch_code,
+        sortValue: (point) => point.batch_code,
+      },
+      {
+        key: 'started',
+        header: copy.columnDate,
+        render: (point) => format.fullDate(point.started_at),
+        text: (point) => format.fullDate(point.started_at),
+        // Sorted and filtered on the ISO instant, never on the formatted date:
+        // "15 Jun" sorts before "1 Jul" as a string, and the German rendering
+        // sorts differently again.
+        sortValue: (point) => point.started_at,
+        filterDate: (point) => point.started_at,
+      },
+      {
+        key: 'yield',
+        header: copy.columnYield,
+        align: 'end',
+        render: (point) => format.percent(point.first_pass_yield_pct),
+        text: (point) => format.percent(point.first_pass_yield_pct),
+        // The number, never the formatted string — '9.0%' sorts after '100.0%'.
+        sortValue: (point) => point.first_pass_yield_pct,
+        filterRange: (point) => point.first_pass_yield_pct,
+      },
+      {
+        key: 'cells',
+        header: copy.columnCells,
+        align: 'end',
+        render: (point) => cellsLabel(point),
+        text: (point) => cellsLabel(point),
+        sortValue: (point) => point.cells_passed,
+      },
+    ];
+  }, [copy, format]);
 
   const option = useMemo<EChartsOption>(() => {
     const labels = points.map((point) => format.axisDate(point.started_at));
@@ -220,45 +279,15 @@ export function YieldTrendChart({
       viewTableLabel={t.dashboard.table.viewTable}
       chart={<EChart option={option} height="20rem" />}
       table={
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
-            <caption className="text-text-muted pb-3 text-start">{copy.tableCaption}</caption>
-            <thead>
-              <tr className="border-border-default border-b">
-                <th scope="col" className="py-2 pe-4 text-start font-medium">
-                  {copy.columnBatch}
-                </th>
-                <th scope="col" className="py-2 pe-4 text-start font-medium">
-                  {copy.columnDate}
-                </th>
-                <th scope="col" className="py-2 pe-4 text-end font-medium">
-                  {copy.columnYield}
-                </th>
-                <th scope="col" className="py-2 text-end font-medium">
-                  {copy.columnCells}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {points.map((point) => (
-                <tr key={point.batch_code} className="border-border-default border-b">
-                  <th scope="row" className="py-2 pe-4 text-start font-normal">
-                    {point.batch_code}
-                  </th>
-                  <td className="py-2 pe-4">{format.fullDate(point.started_at)}</td>
-                  <td className="py-2 pe-4 text-end tabular-nums">
-                    {format.percent(point.first_pass_yield_pct)}
-                  </td>
-                  <td className="py-2 text-end tabular-nums">
-                    {copy.tooltipCells
-                      .replace('{passed}', format.count(point.cells_passed))
-                      .replace('{started}', format.count(point.cells_started))}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          caption={copy.tableCaption}
+          columns={columns}
+          rows={points}
+          rowKey={(point) => point.batch_code}
+          locale={locale}
+          csvName="first-pass-yield"
+          copy={t.dashboard.table}
+        />
       }
     />
   );

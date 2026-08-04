@@ -121,6 +121,40 @@ describe('YieldTrendChart', () => {
     expect(rows.map((row) => row.textContent)).toEqual(['B-2026-001', 'B-2026-002']);
   });
 
+  it('sorts the batches by yield, which payload order cannot answer', async () => {
+    // The chart shows the shape of the series. "Which were the worst runs" is a
+    // different question, and sixty batches arrive chronologically — the one
+    // order that cannot answer it.
+    render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
+    await openTable();
+
+    const header = screen.getByRole('columnheader', { name: /First-pass yield/ });
+    await userEvent.click(within(header).getByRole('button'));
+
+    expect(header).toHaveAttribute('aria-sort', 'ascending');
+    const rows = within(screen.getByRole('table')).getAllByRole('rowheader');
+    expect(rows.map((row) => row.textContent)).toEqual(['B-2026-001', 'B-2026-002']);
+
+    await userEvent.click(within(header).getByRole('button'));
+
+    expect(header).toHaveAttribute('aria-sort', 'descending');
+    expect(
+      within(screen.getByRole('table'))
+        .getAllByRole('rowheader')
+        .map((row) => row.textContent),
+    ).toEqual(['B-2026-002', 'B-2026-001']);
+  });
+
+  it('finds one batch by code without scrolling the whole window', async () => {
+    render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
+    await openTable();
+
+    await userEvent.type(screen.getByLabelText(/^Search/), 'B-2026-002');
+
+    const rows = within(screen.getByRole('table')).getAllByRole('rowheader');
+    expect(rows.map((row) => row.textContent)).toEqual(['B-2026-002']);
+  });
+
   it('renders an empty window without throwing', () => {
     // A configured line that has produced nothing is a real state, not an error.
     expect(() =>
