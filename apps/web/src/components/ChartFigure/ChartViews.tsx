@@ -96,12 +96,29 @@ export function ChartViews({
               }}
               className={`px-3 py-1.5 text-[length:var(--type-ui-size-sm)] ${
                 selected
-                  ? // Weight carries the selection, not just fill and text tone
-                    // — colour alone is never the only signal, and
-                    // `aria-selected` says nothing to a sighted low-vision
-                    // reader looking straight at the tab strip.
-                    'bg-surface-sunken text-text-default font-semibold'
-                  : 'text-text-muted hover:text-text-default'
+                  ? /*
+                     * The inverted plate: the surface colour on the text
+                     * colour, the highest contrast the palette holds and
+                     * therefore unmistakably "on".
+                     *
+                     * `surface-sunken` was the first answer and failed the only
+                     * test that matters — in the dark theme it is a few per cent
+                     * off the base surface, so the selected tab read as
+                     * "slightly different black" and the control did not look
+                     * like a control.
+                     *
+                     * Brand was the second answer and is deliberately rejected:
+                     * `brand-default` is a blue, `chart-series-1` is a blue, and
+                     * a brand-filled tab sits directly above the bars it would
+                     * be confused with. The accent belongs on actions in the
+                     * toolbar, away from the plot — never beside a data mark.
+                     *
+                     * Weight stays on top of the fill, so the selection survives
+                     * greyscale and colour blindness. Fill is the second signal,
+                     * never the only one.
+                     */
+                    'bg-text-default text-surface-base font-semibold'
+                  : 'text-text-muted hover:bg-surface-sunken hover:text-text-default'
               }`}
             >
               {label}

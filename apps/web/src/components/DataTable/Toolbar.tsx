@@ -221,7 +221,17 @@ export function Toolbar({
               {copy.reset}
             </Button>
           ) : null}
-          <Button variant="ghost" onClick={onExport}>
+          {/*
+           * The brand plate, and the only one in the figure.
+           *
+           * An export nobody can see is an export nobody uses, and ghost was
+           * exactly that. The accent lands here rather than on the view switch
+           * because this is the one place in the figure it cannot be misread:
+           * `brand-default` is a blue and so is `chart-series-1`, so a brand
+           * fill beside the plot would sit above the bars it would be confused
+           * with. A button in the toolbar is not adjacent to any mark.
+           */}
+          <Button variant="primary" onClick={onExport}>
             {copy.exportCsv}
           </Button>
         </div>

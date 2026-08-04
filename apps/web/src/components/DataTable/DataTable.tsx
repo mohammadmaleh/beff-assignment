@@ -259,7 +259,9 @@ export function DataTable<Row>({
                       <th
                         key={column.key}
                         scope="row"
-                        className={`px-3 py-2 font-normal ${alignment}`}
+                        // A batch code is one token; wrapped over two lines it
+                        // reads as two, and the row grows to match.
+                        className={`px-3 py-2 font-normal whitespace-nowrap ${alignment}`}
                       >
                         {content}
                       </th>
