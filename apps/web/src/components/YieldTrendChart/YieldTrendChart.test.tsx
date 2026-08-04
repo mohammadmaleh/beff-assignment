@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { YieldTrendChart } from './YieldTrendChart';
@@ -47,6 +48,11 @@ const points = [
   }),
 ];
 
+/** The table is a panel behind the "Table" tab now, not open by default. */
+async function openTable(): Promise<void> {
+  await userEvent.click(screen.getByRole('tab', { name: 'Table' }));
+}
+
 describe('YieldTrendChart', () => {
   it('names itself so the figure is not anonymous', () => {
     render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
@@ -64,30 +70,34 @@ describe('YieldTrendChart', () => {
     expect(screen.getByText(/34 comparable lines/)).toBeInTheDocument();
   });
 
-  it('puts every batch in the table, not just the ones that fit on the axis', () => {
+  it('puts every batch in the table, not just the ones that fit on the axis', async () => {
     // The axis thins its labels to whatever fits. The table must not — it is
     // the authoritative rendering, and a reader using it is using it *because*
     // the drawing dropped something.
     render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
+    await openTable();
 
     expect(screen.getByRole('rowheader', { name: 'B-2026-001' })).toBeInTheDocument();
     expect(screen.getByRole('rowheader', { name: 'B-2026-002' })).toBeInTheDocument();
   });
 
-  it('reports the counts behind each rate, not only the percentage', () => {
+  it('reports the counts behind each rate, not only the percentage', async () => {
     // "812 of 1 140 cells" is the form a process engineer reasons in, and it
     // cannot be recovered from a rounded percentage.
     render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
+    await openTable();
 
     expect(screen.getByText('770 of 1,200 cells')).toBeInTheDocument();
   });
 
-  it('formats percentages for the reader’s locale', () => {
+  it('formats percentages for the reader’s locale', async () => {
     render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
+    await openTable();
+
     expect(screen.getByText('71.8%')).toBeInTheDocument();
   });
 
-  it('renders entirely in German on the German locale', () => {
+  it('renders entirely in German on the German locale', async () => {
     // The drawing is aria-hidden, so this caption is the chart's whole
     // announced identity. An English default here would ship silently: axe is
     // indifferent to which language a well-formed string is in, and so is every
@@ -97,12 +107,15 @@ describe('YieldTrendChart', () => {
     expect(
       screen.getByRole('heading', { name: 'Erstdurchlaufquote je Charge' }),
     ).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Tabelle' }));
     // Non-breaking space before the sign, and a comma decimal separator.
     expect(screen.getByText('71,8 %')).toBeInTheDocument();
   });
 
-  it('keeps the batches in the order they were produced', () => {
+  it('keeps the batches in the order they were produced', async () => {
     render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
+    await openTable();
 
     const rows = within(screen.getByRole('table')).getAllByRole('rowheader');
     expect(rows.map((row) => row.textContent)).toEqual(['B-2026-001', 'B-2026-002']);

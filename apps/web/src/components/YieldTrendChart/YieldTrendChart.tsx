@@ -216,46 +216,49 @@ export function YieldTrendChart({
       id="yield-trend"
       title={copy.title}
       description={copy.description.replace('{n}', String(benchmark.sample_size))}
-      showTableLabel={t.dashboard.showTable}
-      tableCaption={copy.tableCaption}
+      viewChartLabel={t.dashboard.table.viewChart}
+      viewTableLabel={t.dashboard.table.viewTable}
       chart={<EChart option={option} height="20rem" />}
       table={
-        <>
-          <thead>
-            <tr className="border-border-default border-b">
-              <th scope="col" className="py-2 pe-4 text-start font-medium">
-                {copy.columnBatch}
-              </th>
-              <th scope="col" className="py-2 pe-4 text-start font-medium">
-                {copy.columnDate}
-              </th>
-              <th scope="col" className="py-2 pe-4 text-end font-medium">
-                {copy.columnYield}
-              </th>
-              <th scope="col" className="py-2 text-end font-medium">
-                {copy.columnCells}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {points.map((point) => (
-              <tr key={point.batch_code} className="border-border-default border-b">
-                <th scope="row" className="py-2 pe-4 text-start font-normal">
-                  {point.batch_code}
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
+            <caption className="text-text-muted pb-3 text-start">{copy.tableCaption}</caption>
+            <thead>
+              <tr className="border-border-default border-b">
+                <th scope="col" className="py-2 pe-4 text-start font-medium">
+                  {copy.columnBatch}
                 </th>
-                <td className="py-2 pe-4">{format.fullDate(point.started_at)}</td>
-                <td className="py-2 pe-4 text-end tabular-nums">
-                  {format.percent(point.first_pass_yield_pct)}
-                </td>
-                <td className="py-2 text-end tabular-nums">
-                  {copy.tooltipCells
-                    .replace('{passed}', format.count(point.cells_passed))
-                    .replace('{started}', format.count(point.cells_started))}
-                </td>
+                <th scope="col" className="py-2 pe-4 text-start font-medium">
+                  {copy.columnDate}
+                </th>
+                <th scope="col" className="py-2 pe-4 text-end font-medium">
+                  {copy.columnYield}
+                </th>
+                <th scope="col" className="py-2 text-end font-medium">
+                  {copy.columnCells}
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </>
+            </thead>
+            <tbody>
+              {points.map((point) => (
+                <tr key={point.batch_code} className="border-border-default border-b">
+                  <th scope="row" className="py-2 pe-4 text-start font-normal">
+                    {point.batch_code}
+                  </th>
+                  <td className="py-2 pe-4">{format.fullDate(point.started_at)}</td>
+                  <td className="py-2 pe-4 text-end tabular-nums">
+                    {format.percent(point.first_pass_yield_pct)}
+                  </td>
+                  <td className="py-2 text-end tabular-nums">
+                    {copy.tooltipCells
+                      .replace('{passed}', format.count(point.cells_passed))
+                      .replace('{started}', format.count(point.cells_started))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       }
     />
   );

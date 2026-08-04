@@ -226,46 +226,51 @@ export function ControlChart({
               .replace('{count}', format.count(breached.length))
               .replace('{total}', format.count(series.points.length))
       }
-      showTableLabel={t.dashboard.showTable}
-      tableCaption={copy.tableCaption.replace('{parameter}', label)}
+      viewChartLabel={t.dashboard.table.viewChart}
+      viewTableLabel={t.dashboard.table.viewTable}
       chart={<EChart option={option} height="14rem" />}
       table={
-        <>
-          <thead>
-            <tr className="border-border-default border-b">
-              <th scope="col" className="py-2 pe-4 text-start font-medium">
-                {copy.columnDate}
-              </th>
-              <th scope="col" className="py-2 pe-4 text-end font-medium">
-                {copy.columnValue.replace('{unit}', series.unit)}
-              </th>
-              <th scope="col" className="py-2 text-start font-medium">
-                {copy.columnVerdict}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {series.points.map((point) => {
-              const failed = breaches(point.value, series);
-              return (
-                <tr key={point.started_at} className="border-border-default border-b">
-                  <th scope="row" className="py-2 pe-4 text-start font-normal">
-                    {format.fullDate(point.started_at)}
-                  </th>
-                  <td className="py-2 pe-4 text-end tabular-nums">
-                    {format.decimal(point.value, 1)}
-                  </td>
-                  {/*
-                   * The verdict as a word, in the table, for every row. This is
-                   * what makes the red marker on the drawing a redundant second
-                   * encoding rather than the only one.
-                   */}
-                  <td className="py-2">{failed ? copy.outOfSpec : copy.inSpec}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
+            <caption className="text-text-muted pb-3 text-start">
+              {copy.tableCaption.replace('{parameter}', label)}
+            </caption>
+            <thead>
+              <tr className="border-border-default border-b">
+                <th scope="col" className="py-2 pe-4 text-start font-medium">
+                  {copy.columnDate}
+                </th>
+                <th scope="col" className="py-2 pe-4 text-end font-medium">
+                  {copy.columnValue.replace('{unit}', series.unit)}
+                </th>
+                <th scope="col" className="py-2 text-start font-medium">
+                  {copy.columnVerdict}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {series.points.map((point) => {
+                const failed = breaches(point.value, series);
+                return (
+                  <tr key={point.started_at} className="border-border-default border-b">
+                    <th scope="row" className="py-2 pe-4 text-start font-normal">
+                      {format.fullDate(point.started_at)}
+                    </th>
+                    <td className="py-2 pe-4 text-end tabular-nums">
+                      {format.decimal(point.value, 1)}
+                    </td>
+                    {/*
+                     * The verdict as a word, in the table, for every row. This is
+                     * what makes the red marker on the drawing a redundant second
+                     * encoding rather than the only one.
+                     */}
+                    <td className="py-2">{failed ? copy.outOfSpec : copy.inSpec}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       }
     />
   );

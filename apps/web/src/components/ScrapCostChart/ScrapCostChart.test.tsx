@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { ScrapCostChart } from './ScrapCostChart';
@@ -18,6 +19,11 @@ const rows: ScrapByStep[] = [
   { process_step: 'coating', scrap_rate_pct: 7.8, committed_value_eur: 4100 },
 ];
 
+/** The table is a panel behind the "Table" tab now, not open by default. */
+async function openTable(): Promise<void> {
+  await userEvent.click(screen.getByRole('tab', { name: 'Table' }));
+}
+
 function stepNames(): string[] {
   return within(screen.getByRole('table'))
     .getAllByRole('rowheader')
@@ -25,16 +31,17 @@ function stepNames(): string[] {
 }
 
 describe('ScrapCostChart', () => {
-  it('orders the steps by position in the line, never by size', () => {
+  it('orders the steps by position in the line, never by size', async () => {
     // A Pareto sort would read more "correctly" as a chart and would destroy
     // the meaning: the horizontal position of a bar *is* the cell's progress
     // through the line, which is why committed value rises across it.
     render(<ScrapCostChart rows={rows} locale="en" />);
+    await openTable();
 
     expect(stepNames()).toEqual(['Mixing', 'Coating', 'Formation']);
   });
 
-  it('does not reorder when the largest loss is not the last step', () => {
+  it('does not reorder when the largest loss is not the last step', async () => {
     render(
       <ScrapCostChart
         rows={[
@@ -44,25 +51,28 @@ describe('ScrapCostChart', () => {
         locale="en"
       />,
     );
+    await openTable();
 
     expect(stepNames()).toEqual(['Coating', 'End-of-line test']);
   });
 
-  it('reports the money as money, without cents', () => {
+  it('reports the money as money, without cents', async () => {
     // Scoped to the table on purpose. The SVG renderer emits the bar's direct
     // label as real `<text>`, so an unscoped `getByText` finds the same figure
     // twice — which is itself worth knowing: the drawing is aria-hidden, so
     // role queries skip it while text queries do not.
     render(<ScrapCostChart rows={rows} locale="en" />);
+    await openTable();
 
     expect(within(screen.getByRole('table')).getByText('€12,800')).toBeInTheDocument();
   });
 
-  it('carries the scrap rate alongside the cost, so the two can be compared', () => {
+  it('carries the scrap rate alongside the cost, so the two can be compared', async () => {
     // The whole point of this chart sitting beside `ScrapChart`: coating leads
     // on rate, formation leads on cost. A reader must be able to see both
     // numbers for one step without switching tables.
     render(<ScrapCostChart rows={rows} locale="en" />);
+    await openTable();
 
     const coating = screen.getByRole('rowheader', { name: 'Coating' }).closest('tr');
     expect(coating).not.toBeNull();
@@ -70,21 +80,23 @@ describe('ScrapCostChart', () => {
     expect(within(coating as HTMLElement).getByText('€4,100')).toBeInTheDocument();
   });
 
-  it('names the process steps in German on the German locale', () => {
+  it('names the process steps in German on the German locale', async () => {
     // The API returns a stable key (`die_cutting`), never a display string —
     // which is the only reason the German locale can name it in German.
     render(<ScrapCostChart rows={rows} locale="de" />);
+    await userEvent.click(screen.getByRole('tab', { name: 'Tabelle' }));
 
     expect(stepNames()).toEqual(['Mischen', 'Beschichten', 'Formierung']);
   });
 
-  it('puts the euro sign where German puts it', () => {
+  it('puts the euro sign where German puts it', async () => {
     render(<ScrapCostChart rows={rows} locale="de" />);
+    await userEvent.click(screen.getByRole('tab', { name: 'Tabelle' }));
 
     expect(within(screen.getByRole('table')).getByText(/12\.800\s€/)).toBeInTheDocument();
   });
 
-  it('falls back to the raw key for a step the frontend has not been taught', () => {
+  it('falls back to the raw key for a step the frontend has not been taught', async () => {
     // A step added to the backend must appear as an unfamiliar name, not vanish
     // from a chart that claims to break down all of the scrap.
     render(
@@ -93,6 +105,7 @@ describe('ScrapCostChart', () => {
         locale="en"
       />,
     );
+    await openTable();
 
     expect(screen.getByRole('rowheader', { name: 'laser_notching' })).toBeInTheDocument();
   });

@@ -160,40 +160,43 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
       id="scrap-cost"
       title={copy.title}
       description={copy.description}
-      showTableLabel={t.dashboard.showTable}
-      tableCaption={copy.tableCaption}
+      viewChartLabel={t.dashboard.table.viewChart}
+      viewTableLabel={t.dashboard.table.viewTable}
       chart={<EChart option={option} height="24rem" />}
       table={
-        <>
-          <thead>
-            <tr className="border-border-default border-b">
-              <th scope="col" className="py-2 pe-4 text-start font-medium">
-                {copy.columnStep}
-              </th>
-              <th scope="col" className="py-2 pe-4 text-end font-medium">
-                {copy.columnScrap}
-              </th>
-              <th scope="col" className="py-2 text-end font-medium">
-                {copy.seriesName}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {ordered.map((row) => (
-              <tr key={row.process_step} className="border-border-default border-b">
-                <th scope="row" className="py-2 pe-4 text-start font-normal">
-                  {steps[row.process_step] ?? row.process_step}
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
+            <caption className="text-text-muted pb-3 text-start">{copy.tableCaption}</caption>
+            <thead>
+              <tr className="border-border-default border-b">
+                <th scope="col" className="py-2 pe-4 text-start font-medium">
+                  {copy.columnStep}
                 </th>
-                <td className="py-2 pe-4 text-end tabular-nums">
-                  {format.percent(row.scrap_rate_pct)}
-                </td>
-                <td className="py-2 text-end tabular-nums">
-                  {format.euro(row.committed_value_eur)}
-                </td>
+                <th scope="col" className="py-2 pe-4 text-end font-medium">
+                  {copy.columnScrap}
+                </th>
+                <th scope="col" className="py-2 text-end font-medium">
+                  {copy.seriesName}
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </>
+            </thead>
+            <tbody>
+              {ordered.map((row) => (
+                <tr key={row.process_step} className="border-border-default border-b">
+                  <th scope="row" className="py-2 pe-4 text-start font-normal">
+                    {steps[row.process_step] ?? row.process_step}
+                  </th>
+                  <td className="py-2 pe-4 text-end tabular-nums">
+                    {format.percent(row.scrap_rate_pct)}
+                  </td>
+                  <td className="py-2 text-end tabular-nums">
+                    {format.euro(row.committed_value_eur)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       }
     />
   );

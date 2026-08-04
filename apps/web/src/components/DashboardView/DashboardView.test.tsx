@@ -205,11 +205,10 @@ describe('DashboardView', () => {
     await screen.findByText('Where the scrap happened');
     const scrap = screen.getByRole('region', { name: 'Where the scrap happened' });
 
-    // Scoped: every chart on the page carries its own disclosure now, which is
+    // Scoped: every chart on the page carries its own tablist now, which is
     // the point — but it means "the table" is ambiguous and this test is about
     // the scrap breakdown's one specifically.
-    const disclosure = within(scrap).getAllByText('Show the data as a table')[0];
-    await userEvent.click(disclosure as HTMLElement);
+    await userEvent.click(within(scrap).getAllByRole('tab', { name: 'Table' })[0] as HTMLElement);
 
     // Addressed by its caption, which is the table's accessible name. The
     // section holds two tables — the rate breakdown and the cost breakdown —
@@ -230,9 +229,11 @@ describe('DashboardView', () => {
 
     await screen.findByText('How it got here');
 
-    // Scrap rate, scrap cost, yield trend, throughput, and one control chart.
-    expect(screen.getAllByText('Show the data as a table')).toHaveLength(5);
-    expect(screen.getAllByRole('table')).toHaveLength(5);
+    // Scrap rate, scrap cost, yield trend, throughput, and one control chart —
+    // ScrapChart still carries its own `<details>` at this point (Task 8
+    // converts it onto this frame), so only four of the five carry a tablist.
+    expect(screen.getAllByRole('tab', { name: 'Table' })).toHaveLength(4);
+    expect(screen.getAllByRole('tabpanel', { hidden: true })).toHaveLength(8);
   });
 
   it('states what the window cost and how the line compares to its peers', async () => {
@@ -260,6 +261,13 @@ describe('DashboardView', () => {
     expect(
       await screen.findByRole('heading', { name: 'First-pass yield, batch by batch' }),
     ).toBeInTheDocument();
+
+    // Both figures' tables are behind their own Table tab now. Clicked in
+    // sequence — userEvent's pointer state is not safe to drive concurrently.
+    for (const tab of screen.getAllByRole('tab', { name: 'Table' })) {
+      await userEvent.click(tab);
+    }
+
     // A batch code that appears only in the trend payload, so this assertion
     // cannot pass on the overview's data. Twice: the yield chart and the
     // throughput chart plot the same batches, which is exactly why they sit

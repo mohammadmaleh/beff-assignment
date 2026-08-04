@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { ControlChart } from './ControlChart';
@@ -31,9 +32,15 @@ function series(overrides: Partial<ParameterSeries> = {}): ParameterSeries {
   };
 }
 
+/** The table is a panel behind the "Table" tab now, not open by default. */
+async function openTable(): Promise<void> {
+  await userEvent.click(screen.getByRole('tab', { name: 'Table' }));
+}
+
 describe('ControlChart', () => {
-  it('states the verdict as a word for every reading', () => {
+  it('states the verdict as a word for every reading', async () => {
     render(<ControlChart series={series()} label="Energy density" locale="en" />);
+    await openTable();
 
     expect(screen.getAllByText('In spec')).toHaveLength(2);
     expect(screen.getAllByText('Out of spec')).toHaveLength(1);
@@ -64,14 +71,15 @@ describe('ControlChart', () => {
     expect(screen.getByText('Every reading inside 240.0 to 265.0 Wh/kg.')).toBeInTheDocument();
   });
 
-  it('treats a value below the lower limit as out of spec', () => {
+  it('treats a value below the lower limit as out of spec', async () => {
     render(<ControlChart series={series()} label="Energy density" locale="en" />);
+    await openTable();
 
     const row = screen.getByText('238.0').closest('tr');
     expect(within(row as HTMLElement).getByText('Out of spec')).toBeInTheDocument();
   });
 
-  it('treats a value above the upper limit as out of spec too', () => {
+  it('treats a value above the upper limit as out of spec too', async () => {
     // Both directions. A control chart that only catches the low side is one
     // that was written against a single example.
     render(
@@ -81,11 +89,12 @@ describe('ControlChart', () => {
         locale="en"
       />,
     );
+    await openTable();
 
     expect(screen.getByText('Out of spec')).toBeInTheDocument();
   });
 
-  it('treats a value exactly on a limit as in spec', () => {
+  it('treats a value exactly on a limit as in spec', async () => {
     // The limits are inclusive — a reading *at* 240.0 has not breached 240.0,
     // and an off-by-one here reports a conforming batch as a failure.
     render(
@@ -95,12 +104,14 @@ describe('ControlChart', () => {
         locale="en"
       />,
     );
+    await openTable();
 
     expect(screen.getByText('In spec')).toBeInTheDocument();
   });
 
-  it('puts the unit in the column heading rather than on every cell', () => {
+  it('puts the unit in the column heading rather than on every cell', async () => {
     render(<ControlChart series={series()} label="Energy density" locale="en" />);
+    await openTable();
 
     expect(screen.getByRole('columnheader', { name: 'Value (Wh/kg)' })).toBeInTheDocument();
   });
@@ -113,8 +124,9 @@ describe('ControlChart', () => {
     expect(screen.getByRole('heading', { name: 'Energiedichte' })).toBeInTheDocument();
   });
 
-  it('renders the German verdicts on the German locale', () => {
+  it('renders the German verdicts on the German locale', async () => {
     render(<ControlChart series={series()} label="Energiedichte" locale="de" />);
+    await userEvent.click(screen.getByRole('tab', { name: 'Tabelle' }));
 
     expect(screen.getByText('Außerhalb der Spezifikation')).toBeInTheDocument();
     expect(screen.getAllByText('In Spezifikation')).toHaveLength(2);

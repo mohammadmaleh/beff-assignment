@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { ChartFigure } from './ChartFigure';
@@ -15,16 +16,19 @@ function renderFigure(overrides: Partial<Parameters<typeof ChartFigure>[0]> = {}
       id="test-chart"
       title="First-pass yield, batch by batch"
       description="Each point is one production run."
-      showTableLabel="Show the data as a table"
-      tableCaption="First-pass yield by batch"
+      viewChartLabel="Chart"
+      viewTableLabel="Table"
       chart={<div data-testid="drawing" aria-hidden="true" />}
       table={
-        <tbody>
-          <tr>
-            <th scope="row">B-2026-001</th>
-            <td>71.8%</td>
-          </tr>
-        </tbody>
+        <table>
+          <caption>First-pass yield by batch</caption>
+          <tbody>
+            <tr>
+              <th scope="row">B-2026-001</th>
+              <td>71.8%</td>
+            </tr>
+          </tbody>
+        </table>
       }
       {...overrides}
     />,
@@ -49,31 +53,81 @@ describe('ChartFigure', () => {
     expect(screen.getByText('Each point is one production run.')).toBeVisible();
   });
 
-  it('exposes the numbers as a real table', () => {
+  it('exposes the numbers as a real table', async () => {
+    const user = userEvent.setup();
     renderFigure();
+
+    await user.click(screen.getByRole('tab', { name: 'Table' }));
 
     const table = screen.getByRole('table');
     expect(table).toBeInTheDocument();
     expect(screen.getByRole('rowheader', { name: 'B-2026-001' })).toBeInTheDocument();
   });
 
-  it('names the table with a caption rather than leaving it anonymous', () => {
+  it('names the table with a caption rather than leaving it anonymous', async () => {
     // A table is announced by its caption. Without one, a reader arriving at it
     // from the rotor gets "table, 4 columns" and no idea which chart it belongs
     // to — and this page has five.
+    const user = userEvent.setup();
     renderFigure();
+
+    await user.click(screen.getByRole('tab', { name: 'Table' }));
 
     expect(screen.getByRole('table')).toHaveAccessibleName('First-pass yield by batch');
   });
 
-  it('puts the table behind a native disclosure that is keyboard operable', () => {
-    // `<details>` rather than a state toggle: announced as expanded or
-    // collapsed, operable with the keyboard, and working before hydration.
+  it('offers the chart and the table as two named views, not one and a footnote', () => {
+    /*
+     * `<details>` was defensible while the table was an alternative. It is not
+     * once the table is the authoritative rendering — the component's own
+     * docstring says it is, and a grey line of text below a hairline rule says
+     * otherwise to everyone who can see it.
+     *
+     * The pre-hydration argument for `<details>` is void on this surface: the
+     * dashboard is client-rendered off React Query, so before JS runs there are
+     * no rows to disclose either way.
+     */
     renderFigure();
 
-    const summary = screen.getByText('Show the data as a table');
-    expect(summary.tagName).toBe('SUMMARY');
-    expect(summary.closest('details')).not.toBeNull();
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs.map((tab) => tab.textContent)).toEqual(['Chart', 'Table']);
+    expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('shows one panel at a time and switches on click', async () => {
+    const user = userEvent.setup();
+    renderFigure();
+
+    expect(screen.getByTestId('drawing')).toBeVisible();
+    expect(screen.queryByRole('table')).toBeNull();
+
+    await user.click(screen.getByRole('tab', { name: 'Table' }));
+
+    expect(screen.getByRole('table')).toBeVisible();
+    expect(screen.getByRole('tab', { name: 'Table' })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('moves between the views with the arrow keys, as a tablist must', async () => {
+    // A tablist that only responds to clicks is a set of buttons wearing the
+    // wrong role, and a keyboard user is told to expect arrow keys by the role
+    // itself.
+    const user = userEvent.setup();
+    renderFigure();
+
+    await user.tab();
+    expect(screen.getByRole('tab', { name: 'Chart' })).toHaveFocus();
+
+    await user.keyboard('{ArrowRight}');
+
+    expect(screen.getByRole('tab', { name: 'Table' })).toHaveFocus();
+    expect(screen.getByRole('table')).toBeVisible();
+  });
+
+  it('keeps the panels wired to the tabs that name them', () => {
+    renderFigure();
+
+    const panel = screen.getByRole('tabpanel');
+    expect(panel).toHaveAccessibleName('Chart');
   });
 
   it('hides the drawing from assistive technology', () => {
