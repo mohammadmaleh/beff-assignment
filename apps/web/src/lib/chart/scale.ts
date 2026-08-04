@@ -114,7 +114,8 @@ export function niceBounds(values: readonly number[], options: BoundsOptions = {
         Math.ceil(paddedHigh / candidate) - Math.floor(paddedLow / candidate) <= maxIntervals,
     ) ?? steps[steps.length - 1];
 
-  if (step === undefined) return { min: paddedLow, max: paddedHigh, interval: paddedHigh - paddedLow };
+  if (step === undefined)
+    return { min: paddedLow, max: paddedHigh, interval: paddedHigh - paddedLow };
 
   const min = Math.max(clampMin, Math.floor(paddedLow / step) * step);
   const max = Math.min(clampMax, Math.ceil(paddedHigh / step) * step);
