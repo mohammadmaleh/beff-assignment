@@ -79,48 +79,84 @@ describe('Button', () => {
     },
   );
 
-  describe('the press', () => {
-    it.each(['primary', 'secondary', 'danger'] as const)(
-      'gives the %s variant a plinth to travel through',
+  describe('shape and weight', () => {
+    it.each(['primary', 'secondary', 'ghost', 'danger'] as const)(
+      'draws the %s variant without an outline',
       (variant) => {
         render(<Button variant={variant}>Go</Button>);
-        const button = screen.getByRole('button', { name: 'Go' });
-        // A hard-edged shadow — no blur radius — so it is a machined edge and
-        // not the floating card the design brief rules out.
-        expect(button.className).toContain('shadow-[0_2px_0_0_var(--plinth)]');
-        // Travel matches the plinth exactly, so the control lands flush.
-        expect(button.className).toContain('active:translate-y-[2px]');
-        expect(button.className).toContain('active:shadow-none');
+        // Weight is carried by fill. An outline around a filled button is a
+        // second edge describing a boundary the fill already states.
+        expect(screen.getByRole('button', { name: 'Go' }).className).not.toMatch(/\bborder\b/);
       },
     );
 
-    it('leaves ghost flat, so it stays the quiet variant', () => {
-      render(<Button variant="ghost">Go</Button>);
-      // An edge would make ghost a third weight competing with secondary, which
-      // is the one thing it exists not to do.
-      expect(screen.getByRole('button', { name: 'Go' }).className).not.toContain('--plinth');
+    it.each(['primary', 'secondary', 'ghost', 'danger'] as const)(
+      'gives the %s variant no bevel',
+      (variant) => {
+        render(<Button variant={variant}>Go</Button>);
+        // A hard plinth asks the control to imitate a physical key. It reads as
+        // dated rather than as machined, which is why it is gone.
+        expect(screen.getByRole('button', { name: 'Go' }).className).not.toContain('shadow-[');
+      },
+    );
+
+    it('uses the control radius, not the panel one', () => {
+      render(<Button>Go</Button>);
+      const className = screen.getByRole('button', { name: 'Go' }).className;
+      // 2px on a full-width band reads as machined; the same 2px on a 44px
+      // control reads as a browser default nobody styled.
+      expect(className).toContain('rounded-control');
+      expect(className).not.toContain('rounded-chamfer');
     });
 
-    it('takes the plinth away when there is nothing to press', () => {
+    it('separates secondary from the page with sunken, not raised', () => {
+      render(<Button variant="secondary">Go</Button>);
+      // `raised` sits ~2% off the base surface, so a borderless plate drawn on
+      // it would be invisible on the very page it lives on.
+      expect(screen.getByRole('button', { name: 'Go' }).className).toContain('bg-surface-sunken');
+    });
+
+    it('spends no ink on danger until the pointer is on it', () => {
+      render(<Button variant="danger">Go</Button>);
+      const className = screen.getByRole('button', { name: 'Go' }).className;
+      // Also a palette constraint: danger text clears 4.5:1 on the base surface
+      // and nothing else, so it cannot carry a resting plate.
+      expect(className).toContain('bg-transparent');
+      expect(className).toContain('hover:bg-status-danger-fg');
+    });
+  });
+
+  describe('the press', () => {
+    it.each(['primary', 'secondary', 'ghost', 'danger'] as const)(
+      'moves the %s variant on activation',
+      (variant) => {
+        render(<Button variant={variant}>Go</Button>);
+        expect(screen.getByRole('button', { name: 'Go' }).className).toContain(
+          'active:translate-y-px',
+        );
+      },
+    );
+
+    it('holds a dead control still', () => {
       render(
         <Button variant="primary" disabled>
           Go
         </Button>,
       );
-      const button = screen.getByRole('button', { name: 'Go' });
-      // Travel on a dead control invites a click that feels like it worked.
-      expect(button.className).toContain('disabled:shadow-none');
-      expect(button.className).toContain('disabled:active:translate-y-0');
+      // Travel on something that cannot be activated makes a click that did
+      // nothing still feel like it worked.
+      expect(screen.getByRole('button', { name: 'Go' }).className).toContain(
+        'disabled:active:translate-y-0',
+      );
     });
 
-    it('animates only the compositor-friendly property', () => {
+    it('animates only compositor-friendly properties', () => {
       render(<Button>Go</Button>);
       const className = screen.getByRole('button', { name: 'Go' }).className;
       // `translate`, not the `transform` shorthand — the shorthand cancels any
-      // positioning utility it lands beside. And never `box-shadow`, which
-      // repaints every frame.
-      expect(className).toContain('transition-[background-color,border-color,translate,opacity]');
-      expect(className).not.toContain('transition-[box-shadow');
+      // positioning utility it lands beside.
+      expect(className).toContain('transition-[background-color,color,translate,opacity]');
+      expect(className).not.toContain('box-shadow');
     });
   });
 });

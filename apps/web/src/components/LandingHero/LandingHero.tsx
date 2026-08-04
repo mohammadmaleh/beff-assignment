@@ -64,7 +64,7 @@ export function LandingHero({ locale }: { locale: Locale }) {
                * which. Asserted in `screen-reader.spec.ts`.
                */
               href={`${surfacePath('landing', locale)}#waitlist`}
-              className="bg-brand-default text-text-on-brand border-brand-edge rounded-chamfer hover:bg-brand-hover inline-flex min-h-12 items-center justify-center gap-2 border px-6 py-3 font-medium shadow-[0_2px_0_0_var(--color-brand-edge)] transition-[background-color,translate] duration-(--motion-duration-fast) ease-(--motion-easing-standard) active:translate-y-[2px] active:shadow-none"
+              className="bg-brand-default text-text-on-brand rounded-control hover:bg-brand-hover active:translate-y-px transition-[background-color,translate] duration-(--motion-duration-fast) ease-(--motion-easing-standard) inline-flex items-center justify-center font-medium min-h-12 gap-2 px-6 py-3"
             >
               {t.landing.ctaPrimary}
               <span aria-hidden="true">→</span>

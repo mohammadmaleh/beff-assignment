@@ -74,7 +74,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
            */}
           <Link
             href={`${surfacePath('landing', locale)}#waitlist`}
-            className="bg-brand-default text-text-on-brand border-brand-edge rounded-chamfer hover:bg-brand-hover inline-flex min-h-9 items-center justify-center border px-4 py-2 text-[length:var(--type-ui-size-sm)] font-medium shadow-[0_2px_0_0_var(--color-brand-edge)] transition-[background-color,translate] duration-(--motion-duration-fast) ease-(--motion-easing-standard) active:translate-y-[2px] active:shadow-none"
+            className="bg-brand-default text-text-on-brand rounded-control hover:bg-brand-hover active:translate-y-px transition-[background-color,translate] duration-(--motion-duration-fast) ease-(--motion-easing-standard) inline-flex items-center justify-center font-medium min-h-9 px-4 py-2 text-[length:var(--type-ui-size-sm)]"
           >
             {t.landing.ctaPrimary}
           </Link>

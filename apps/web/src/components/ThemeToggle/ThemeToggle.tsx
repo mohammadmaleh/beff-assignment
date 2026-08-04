@@ -75,7 +75,7 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
       type="button"
       onClick={choose}
       aria-label={next === 'dark' ? t.nav.themeToDark : t.nav.themeToLight}
-      className="border-border-default text-text-muted hover:border-border-strong hover:text-text-default hover:bg-surface-raised rounded-chamfer inline-flex size-9 items-center justify-center border transition-colors duration-150"
+      className="border-border-default text-text-muted hover:border-border-strong hover:text-text-default hover:bg-surface-raised rounded-control inline-flex size-9 items-center justify-center border transition-colors duration-150"
     >
       {next === 'dark' ? <MoonGlyph /> : <SunGlyph />}
     </button>

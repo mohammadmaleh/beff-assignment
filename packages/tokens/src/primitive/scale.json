@@ -50,6 +50,10 @@
       "$value": "2px",
       "$type": "dimension"
     },
+    "control": {
+      "$value": "0.5rem",
+      "$type": "dimension"
+    },
     "full": {
       "$value": "9999px",
       "$type": "dimension"

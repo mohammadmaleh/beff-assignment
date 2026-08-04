@@ -25,46 +25,47 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
  * `--color-border-focus`, which the contrast gate proves clears 3:1 on both
  * surfaces. Restyling it per component is how a design system ends up with
  * seven different focus rings.
+ *
+ * ## Weight comes from fill, never from an outline.
+ *
+ * The previous revision drew every variant with a 1px border and a 2px bevel.
+ * Both are gone. An outline around a filled button is a second edge describing
+ * a boundary the fill already states, and a hard bevel is skeuomorphic — it
+ * asks the control to imitate a physical key, which reads as dated rather than
+ * as machined. What separates the variants now is how much ink each one
+ * spends: solid brand, a tinted plate, or nothing at all.
+ *
+ * Contrast survives the change. `surface-sunken` rather than `surface-raised`
+ * for the secondary plate: raised sits ~2% off the base surface and a
+ * borderless button drawn on it would be invisible on the very page it lives
+ * on. Sunken is the separation that was previously being done by the border.
+ *
+ * The press is `translate` alone — the independent property, not the
+ * `transform` shorthand, which would cancel any positioning utility beside it.
+ * One pixel, because there is no longer a plinth to travel through and a
+ * larger movement without depth reads as a jitter.
  */
-/**
- * The press.
- *
- * Every variant sits on a 2px plinth drawn with a **hard-edged** `box-shadow` —
- * no blur, no offset sideways. That is a bevel, not a drop shadow, so it does
- * not reintroduce the floating card the design brief rules out: the button is
- * not hovering above the page, it has a machined edge, the way a key on a
- * control panel does.
- *
- * On `:active` it travels exactly the height of its own plinth and the plinth is
- * removed, so the control lands flush with the surface. The previous version
- * moved 1px with nothing underneath it, which reads as a jitter rather than as
- * a press — there was no depth for it to travel through.
- *
- * Only `translate` is transitioned. The shadow is swapped instantly, because
- * animating `box-shadow` is a paint on every frame and the brief allows
- * `transform` and `opacity` only. `translate` is the independent property, not
- * the `transform` shorthand, so it composes with any positioning utility
- * instead of cancelling it.
- */
-const PLINTH = 'shadow-[0_2px_0_0_var(--plinth)] active:translate-y-[2px] active:shadow-none';
-
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary:
-    'bg-brand-default text-text-on-brand border border-brand-edge [--plinth:var(--color-brand-edge)] hover:bg-brand-hover ' +
-    PLINTH,
-  secondary:
-    'bg-surface-base text-text-default border border-border-strong [--plinth:var(--color-border-strong)] hover:bg-surface-raised ' +
-    PLINTH,
-  // No plinth. Ghost is the quiet variant — giving it an edge would make it a
-  // third weight competing with secondary, which is the whole thing it exists
-  // not to do.
-  ghost:
-    'bg-transparent text-text-default border border-transparent hover:bg-surface-raised active:translate-y-px',
-  // Destructive actions are never the primary weight — the shape has to read as
-  // a consequence, not as the happy path.
+  primary: 'bg-brand-default text-text-on-brand hover:bg-brand-hover active:translate-y-px',
+  secondary: 'bg-surface-sunken text-text-default hover:bg-surface-raised active:translate-y-px',
+  // Ghost spends no ink at rest. It is the quiet variant, and giving it a
+  // resting fill would make it a third weight competing with secondary.
+  ghost: 'bg-transparent text-text-default hover:bg-surface-sunken active:translate-y-px',
+  /*
+   * Destructive actions are never the primary weight — the shape has to read as
+   * a consequence, not as the happy path. So there is no resting plate at all:
+   * the danger colour as text, with the solid fill held back until hover, when
+   * the intent is already deliberate.
+   *
+   * That is also the only thing the palette allows. `status-danger-fg` in dark
+   * clears 4.5:1 against `surface-base` and **nothing else** — the gate rejected
+   * it on `sunken` and on `raised`. This variant may therefore only be used on
+   * the base surface, which is where the Profile danger zone puts it (a left
+   * rule, no background). Moving it onto a panel needs the token re-solved
+   * first, not a `className` override.
+   */
   danger:
-    'bg-surface-base text-status-danger-fg border border-status-danger-fg [--plinth:var(--color-status-danger-fg)] hover:bg-status-danger-fg hover:text-surface-base ' +
-    PLINTH,
+    'bg-transparent text-status-danger-fg hover:bg-status-danger-fg hover:text-surface-base active:translate-y-px',
 };
 
 /*
@@ -105,12 +106,14 @@ export function Button({
       aria-busy={loading || undefined}
       onClick={inert ? undefined : onClick}
       className={cx(
-        'rounded-chamfer inline-flex items-center justify-center font-[family-name:var(--type-family-body)] font-medium',
-        'transition-[background-color,border-color,translate,opacity] duration-(--motion-duration-fast) ease-(--motion-easing-standard)',
-        // A disabled control has nothing to press into, so it keeps neither the
-        // plinth nor the travel. Leaving them on invites a click that does
-        // nothing but still feels like it worked.
-        'disabled:shadow-none disabled:active:translate-y-0 aria-disabled:shadow-none aria-disabled:active:translate-y-0',
+        // `rounded-control`, not `rounded-chamfer`. 2px on a full-width band
+        // reads as machined; the same 2px on a 44px control reads as a browser
+        // default nobody styled.
+        'rounded-control inline-flex items-center justify-center font-[family-name:var(--type-family-body)] font-medium',
+        'transition-[background-color,color,translate,opacity] duration-(--motion-duration-fast) ease-(--motion-easing-standard)',
+        // A dead control does not move. Travel on something that cannot be
+        // activated makes a click that did nothing still feel like it worked.
+        'disabled:active:translate-y-0 aria-disabled:active:translate-y-0',
         'disabled:cursor-not-allowed disabled:opacity-55 aria-disabled:cursor-not-allowed aria-disabled:opacity-55',
         VARIANTS[variant],
         SIZES[size],

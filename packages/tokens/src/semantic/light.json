@@ -50,10 +50,6 @@
       "hover": {
         "$value": "{color.steel.700}",
         "$type": "color"
-      },
-      "edge": {
-        "$value": "{color.steel.800}",
-        "$type": "color"
       }
     },
     "status": {
