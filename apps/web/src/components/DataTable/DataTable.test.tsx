@@ -218,6 +218,18 @@ describe('DataTable filtering', () => {
     expect(renderedCodes()).toEqual(['B-003', 'B-002']);
   });
 
+  it('bounds the date range from both ends', async () => {
+    // The `to` side had no test at all — the input's handler and the matching
+    // comparison in applyFilters were both carried by the `from` test alone.
+    const user = userEvent.setup();
+    renderTable();
+
+    await user.type(screen.getByLabelText(/^To$/), '2026-01-31');
+
+    expect(renderedCodes()).toEqual(['B-001']);
+    expect(screen.getByText('Showing 1 of 3')).toBeInTheDocument();
+  });
+
   it('shows an empty state rather than a headed table with no rows', async () => {
     const user = userEvent.setup();
     renderTable();

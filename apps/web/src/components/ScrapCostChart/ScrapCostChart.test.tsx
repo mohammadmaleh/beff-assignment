@@ -2,6 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
+import { captureCsvDownload } from '@/test/csvDownload';
+
 import { ScrapCostChart } from './ScrapCostChart';
 
 import type { ScrapByStep } from '@beff/api-client/types';
@@ -124,6 +126,26 @@ describe('ScrapCostChart', () => {
       // Formation first: the most expensive step, which is the whole point the
       // chart exists to make against the rate breakdown beside it.
     ).toEqual(['Formation', 'Coating', 'Mixing']);
+  });
+
+  it('exports with the delimiter the reader’s Excel expects', async () => {
+    /*
+     * German Excel splits on semicolons. A comma-delimited file opens there as
+     * one column per row, which reads to the user as a broken export rather
+     * than as a locale mismatch — and German formats the euro amount with a
+     * comma inside it, so the two collide in exactly the wrong way.
+     */
+    const csv = captureCsvDownload();
+    render(<ScrapCostChart rows={rows} locale="de" />);
+    await userEvent.click(screen.getByRole('tab', { name: 'Tabelle' }));
+
+    await userEvent.click(screen.getByRole('button', { name: 'CSV herunterladen' }));
+
+    const text = await csv.text();
+    expect(text).toContain('Prozessschritt;Ausschussquote;Verlorene gebundene Wertschöpfung');
+    expect(text).not.toContain('Prozessschritt,');
+
+    csv.restore();
   });
 
   it('falls back to the raw key for a step the frontend has not been taught', async () => {

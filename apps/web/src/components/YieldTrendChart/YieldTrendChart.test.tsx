@@ -2,6 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
+import { captureCsvDownload } from '@/test/csvDownload';
+
 import { YieldTrendChart } from './YieldTrendChart';
 
 import type { CohortReference, TrendPoint } from '@beff/api-client/types';
@@ -153,6 +155,33 @@ describe('YieldTrendChart', () => {
 
     const rows = within(screen.getByRole('table')).getAllByRole('rowheader');
     expect(rows.map((row) => row.textContent)).toEqual(['B-2026-002']);
+  });
+
+  it('exports every column as the reader sees it, not as raw precision', async () => {
+    /*
+     * The export reads each column's `text`, which is the formatted value on
+     * screen. This project has already had full NUMERIC precision reach a
+     * payload once — 88.3248275862069 where the instrument measured 88.3 — and
+     * an export is exactly where that would resurface, implying a precision
+     * nobody has.
+     */
+    const csv = captureCsvDownload();
+    render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
+    await openTable();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const bytes = await csv.bytes();
+    // UTF-8 BOM, or Excel reads the file as the system codepage.
+    expect(Array.from(bytes.slice(0, 3))).toEqual([0xef, 0xbb, 0xbf]);
+
+    const text = await csv.text();
+    expect(text).toContain('Batch,Started,First-pass yield,Cells');
+    expect(text).toContain('B-2026-001');
+    expect(text).toContain('64.2%');
+    expect(text).not.toContain('64.19999');
+
+    csv.restore();
   });
 
   it('renders an empty window without throwing', () => {

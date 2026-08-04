@@ -2,6 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
+import { captureCsvDownload } from '@/test/csvDownload';
+
 import { ThroughputChart } from './ThroughputChart';
 
 import type { TrendPoint } from '@beff/api-client/types';
@@ -141,6 +143,22 @@ describe('ThroughputChart', () => {
         .getAllByRole('rowheader')
         .map((row) => row.textContent),
     ).toEqual(['B-2026-002']);
+  });
+
+  it('exports the counts as the reader sees them', async () => {
+    const csv = captureCsvDownload();
+    render(<ThroughputChart points={[point({ batch_code: 'B-2026-001' })]} locale="en" />);
+    await openTable();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const text = await csv.text();
+    expect(text).toContain('B-2026-001');
+    // 1200 grouped as '1,200' in English, and the comma is the delimiter — so
+    // the cell has to arrive quoted or every column after it shifts by one.
+    expect(text).toContain('"1,200"');
+
+    csv.restore();
   });
 
   it('renders an empty window without throwing', () => {

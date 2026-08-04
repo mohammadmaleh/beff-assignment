@@ -2,6 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
+import { captureCsvDownload } from '@/test/csvDownload';
+
 import { ControlChart } from './ControlChart';
 
 import type { ParameterSeries } from '@beff/api-client/types';
@@ -166,6 +168,24 @@ describe('ControlChart', () => {
     const cells = within(screen.getByRole('table')).getAllByRole('cell');
     // The worst reading first: 238 breached, and it is the one to look at.
     expect(cells[0]).toHaveTextContent('238.0');
+  });
+
+  it('exports the verdict as a word, even though the cell renders a badge', async () => {
+    // The verdict column's `render` returns null — the badge replaces it. If
+    // the export read `render` instead of `text`, the most important column in
+    // the file would be empty.
+    const csv = captureCsvDownload();
+    render(<ControlChart series={series()} label="Energy density" locale="en" />);
+    await openTable();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const text = await csv.text();
+    expect(text).toContain('Out of spec');
+    expect(text).toContain('In spec');
+    expect(text).toContain('238.0');
+
+    csv.restore();
   });
 
   it('renders a parameter with no target without inventing one', () => {

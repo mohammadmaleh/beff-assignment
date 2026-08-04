@@ -118,6 +118,39 @@ describe('ScrapChart', () => {
     expect(within(screen.getByRole('table')).getByText('7.8%')).toBeInTheDocument();
   });
 
+  it('searches across the step name, the rate and the money', async () => {
+    // Search reads every column's `text`, which is the formatted value the
+    // reader sees. A column whose text() disagreed with its render() would let
+    // a search miss a row that is visibly on screen.
+    renderChart();
+    await openTable();
+
+    await userEvent.type(screen.getByLabelText(/^Search/), 'Formation');
+
+    expect(
+      within(screen.getByRole('table'))
+        .getAllByRole('rowheader')
+        .map((row) => row.textContent),
+    ).toEqual(['Formation']);
+    expect(screen.getByText('Showing 1 of 2 rows')).toBeInTheDocument();
+  });
+
+  it('sorts by step name alphabetically when asked', async () => {
+    renderChart();
+    await openTable();
+
+    const header = screen.getByRole('columnheader', { name: /Process step/ });
+    await userEvent.click(within(header).getByRole('button'));
+    await userEvent.click(within(header).getByRole('button'));
+
+    expect(header).toHaveAttribute('aria-sort', 'descending');
+    expect(
+      within(screen.getByRole('table'))
+        .getAllByRole('rowheader')
+        .map((row) => row.textContent),
+    ).toEqual(['Formation', 'Coating']);
+  });
+
   it('falls back to the raw key for a step the frontend has not been taught', async () => {
     render(
       <ScrapChart

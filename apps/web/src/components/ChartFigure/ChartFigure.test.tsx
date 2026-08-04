@@ -143,6 +143,49 @@ describe('ChartFigure', () => {
     expect(screen.getByRole('table')).toBeVisible();
   });
 
+  it('moves back with ArrowLeft, and to the ends with Home and End', async () => {
+    // ArrowRight had a test and the other three did not, so three quarters of
+    // the key handler was carried by a comment rather than by the suite.
+    const user = userEvent.setup();
+    renderFigure();
+
+    await user.tab();
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'Table' })).toHaveFocus();
+
+    await user.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('tab', { name: 'Chart' })).toHaveFocus();
+
+    await user.keyboard('{End}');
+    expect(screen.getByRole('tab', { name: 'Table' })).toHaveFocus();
+    expect(screen.getByRole('table')).toBeVisible();
+
+    await user.keyboard('{Home}');
+    expect(screen.getByRole('tab', { name: 'Chart' })).toHaveFocus();
+  });
+
+  it('ignores a key that is not a tablist key', async () => {
+    // The early return. Without it every keystroke would re-select a tab and
+    // steal focus back from anything the user was doing.
+    const user = userEvent.setup();
+    renderFigure();
+
+    await user.tab();
+    await user.keyboard('{ArrowDown}');
+
+    expect(screen.getByRole('tab', { name: 'Chart' })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('keeps only one tab in the tab order at a time', () => {
+    // Roving tabindex. Two tab stops would make a five-figure page cost ten
+    // keystrokes to walk past.
+    renderFigure();
+
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs[0]).toHaveAttribute('tabindex', '0');
+    expect(tabs[1]).toHaveAttribute('tabindex', '-1');
+  });
+
   it('keeps the panels wired to the tabs that name them', () => {
     renderFigure();
 
