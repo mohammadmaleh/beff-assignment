@@ -70,4 +70,31 @@ describe('sortRows', () => {
 
     expect(ROWS).toEqual(original);
   });
+
+  it('preserves payload order for equal sort values (stable sort, ascending)', () => {
+    // Two batches with the same yield preserve their original order when sorted.
+    // This is the tie-break behavior: payload order is chronological and matters.
+    const tiedRows: Batch[] = [
+      { code: 'B-A', cells: 50 },
+      { code: 'B-B', cells: 50 },
+      { code: 'B-C', cells: 100 },
+    ];
+
+    const sorted = sortRows(tiedRows, COLUMNS, { key: 'cells', direction: 'ascending' });
+
+    expect(sorted.map((row) => row.code)).toEqual(['B-A', 'B-B', 'B-C']);
+  });
+
+  it('preserves payload order for equal sort values (stable sort, descending)', () => {
+    // Same tie-break check in the opposite direction.
+    const tiedRows: Batch[] = [
+      { code: 'B-A', cells: 50 },
+      { code: 'B-B', cells: 50 },
+      { code: 'B-C', cells: 100 },
+    ];
+
+    const sorted = sortRows(tiedRows, COLUMNS, { key: 'cells', direction: 'descending' });
+
+    expect(sorted.map((row) => row.code)).toEqual(['B-C', 'B-A', 'B-B']);
+  });
 });

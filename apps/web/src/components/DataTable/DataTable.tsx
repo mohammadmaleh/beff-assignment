@@ -37,6 +37,7 @@ function nextSort(current: SortState | null, key: string): SortState | null {
  */
 export function DataTable<Row>({ caption, columns, rows, rowKey, copy }: DataTableProps<Row>) {
   const [sort, setSort] = useState<SortState | null>(null);
+  const [lastSortedKey, setLastSortedKey] = useState<string | null>(null);
 
   const visible = useMemo(() => sortRows(rows, columns, sort), [rows, columns, sort]);
 
@@ -45,11 +46,15 @@ export function DataTable<Row>({ caption, columns, rows, rowKey, copy }: DataTab
    * unless one is spoken, so the state is mirrored here as a sentence.
    */
   const announcement = useMemo(() => {
+    if (sort === null && lastSortedKey !== null) {
+      const header = columns.find((column) => column.key === lastSortedKey)?.header ?? '';
+      return copy.sortCleared.replace('{column}', header);
+    }
     if (sort === null) return '';
     const header = columns.find((column) => column.key === sort.key)?.header ?? '';
     const template = sort.direction === 'ascending' ? copy.sortedAscending : copy.sortedDescending;
     return template.replace('{column}', header);
-  }, [sort, columns, copy]);
+  }, [sort, lastSortedKey, columns, copy]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -80,6 +85,7 @@ export function DataTable<Row>({ caption, columns, rows, rowKey, copy }: DataTab
                       <button
                         type="button"
                         onClick={() => {
+                          setLastSortedKey(column.key);
                           setSort((current) => nextSort(current, column.key));
                         }}
                         className="hover:text-text-default focus-visible:outline-border-strong inline-flex items-center gap-1 focus-visible:outline-2 focus-visible:outline-offset-2"

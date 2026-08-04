@@ -165,4 +165,24 @@ describe('DataTable', () => {
     expect(within(header).queryByRole('button')).toBeNull();
     expect(header).not.toHaveAttribute('aria-sort');
   });
+
+  it('announces when a sort is cleared by clicking a third time', async () => {
+    const user = userEvent.setup();
+    renderTable();
+
+    const header = screen.getByRole('columnheader', { name: /Yield/ });
+    const button = within(header).getByRole('button');
+
+    // First click: ascending
+    await user.click(button);
+    expect(screen.getByRole('status')).toHaveTextContent('Sorted by Yield, ascending');
+
+    // Second click: descending
+    await user.click(button);
+    expect(screen.getByRole('status')).toHaveTextContent('Sorted by Yield, descending');
+
+    // Third click: cleared, still names the column
+    await user.click(button);
+    expect(screen.getByRole('status')).toHaveTextContent('Sorting cleared, Yield');
+  });
 });
