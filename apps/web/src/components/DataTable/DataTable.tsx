@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '@beff/ui/button';
 import { TextField } from '@beff/ui/text-field';
 
+import { csvDelimiter, downloadCsv, toCsv } from './csv';
 import { applyFilters, EMPTY_FILTERS, hasActiveFilter, sortRows } from './model';
 
 import type { DataColumn, DataTableCopy, SortState } from './types';
@@ -38,7 +39,15 @@ function nextSort(current: SortState | null, key: string): SortState | null {
  * six charts previously handed `ChartFigure` six hand-rolled `<tbody>` blobs,
  * and markup cannot be sorted, so nothing shared could exist even in principle.
  */
-export function DataTable<Row>({ caption, columns, rows, rowKey, copy }: DataTableProps<Row>) {
+export function DataTable<Row>({
+  caption,
+  columns,
+  rows,
+  rowKey,
+  locale,
+  csvName,
+  copy,
+}: DataTableProps<Row>) {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [sort, setSort] = useState<SortState | null>(null);
   const [lastSortedKey, setLastSortedKey] = useState<string | null>(null);
@@ -152,6 +161,22 @@ export function DataTable<Row>({ caption, columns, rows, rowKey, copy }: DataTab
             {copy.reset}
           </Button>
         ) : null}
+
+        <Button
+          variant="secondary"
+          onClick={() => {
+            const stamp = new Date().toISOString().slice(0, 10);
+            // `visible`, not `rows`: the export is what the reader is looking
+            // at, filters and sort included. An export that quietly differs
+            // from the screen is worse than none.
+            downloadCsv(
+              toCsv(columns, visible, csvDelimiter(locale)),
+              `beff-${csvName}-${stamp}.csv`,
+            );
+          }}
+        >
+          {copy.exportCsv}
+        </Button>
       </div>
 
       <p

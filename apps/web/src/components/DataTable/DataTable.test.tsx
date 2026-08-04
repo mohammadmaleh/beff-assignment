@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { DataTable } from './DataTable';
 
@@ -257,5 +257,59 @@ describe('DataTable filtering', () => {
       'aria-sort',
       'ascending',
     );
+  });
+});
+
+describe('DataTable export', () => {
+  it('exports what the user is looking at, not the unfiltered payload', async () => {
+    /*
+     * jsdom does implement `URL.createObjectURL`/`revokeObjectURL` here, but not
+     * a real anchor navigation, so both are stubbed to observe the call rather
+     * than actually download anything. The brief's own draft spread `URL` into a
+     * plain object (`{ ...URL }`) to stub it — that loses the class's
+     * non-enumerable statics (`canParse`, etc.) and, worse, produces something
+     * that is no longer constructable: `new URL(...)` throws `TypeError: URL is
+     * not a constructor` once that stub is active. Anything else touching `URL`
+     * as a constructor during the test would fail far from this file. Since the
+     * methods already exist natively in this jsdom, `vi.spyOn` on the real `URL`
+     * object is both simpler and safe — it leaves the constructor intact.
+     */
+    const blobs: Blob[] = [];
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockImplementation((obj) => {
+      blobs.push(obj as Blob);
+      return 'blob:stub';
+    });
+    const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => undefined);
+
+    const user = userEvent.setup();
+    renderTable();
+
+    await user.type(screen.getByLabelText(/^Search/), 'B-002');
+    await user.click(screen.getByRole('button', { name: 'Export CSV' }));
+
+    expect(click).toHaveBeenCalledOnce();
+    expect(blobs).toHaveLength(1);
+
+    /*
+     * `Blob.text()` decodes via the WHATWG "UTF-8 decode" algorithm, which
+     * strips a leading BOM by spec — in a real browser too, not only here. So
+     * `text.startsWith('\uFEFF')` can never pass; the BOM only survives as raw
+     * bytes. Check those directly (`EF BB BF`, UTF-8's BOM encoding), then
+     * decode the rest for the content assertions.
+     */
+    const bytes = new Uint8Array(await (blobs[0] as Blob).arrayBuffer());
+    expect(Array.from(bytes.slice(0, 3))).toEqual([0xef, 0xbb, 0xbf]);
+
+    const text = await (blobs[0] as Blob).text();
+    expect(text).toContain('Batch,Yield,Started');
+    expect(text).toContain('B-002');
+    expect(text).not.toContain('B-001');
+
+    click.mockRestore();
+    createObjectURL.mockRestore();
+    revokeObjectURL.mockRestore();
   });
 });
