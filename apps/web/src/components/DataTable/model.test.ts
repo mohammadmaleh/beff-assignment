@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { sortRows } from './model';
+import { applyFilters, EMPTY_FILTERS, hasActiveFilter, sortRows } from './model';
 
 import type { DataColumn } from './types';
 
@@ -96,5 +96,104 @@ describe('sortRows', () => {
     const sorted = sortRows(tiedRows, COLUMNS, { key: 'cells', direction: 'descending' });
 
     expect(sorted.map((row) => row.code)).toEqual(['B-C', 'B-A', 'B-B']);
+  });
+});
+
+interface Reading {
+  code: string;
+  value: number;
+  measured: string;
+}
+
+const READINGS: Reading[] = [
+  { code: 'B-001', value: 10, measured: '2026-01-04T08:00:00Z' },
+  { code: 'B-002', value: 20, measured: '2026-02-08T08:00:00Z' },
+  { code: 'B-003', value: 30, measured: '2026-03-10T08:00:00Z' },
+];
+
+const READING_COLUMNS: DataColumn<Reading>[] = [
+  { key: 'code', header: 'Batch', render: (row) => row.code, text: (row) => row.code },
+  {
+    key: 'value',
+    header: 'Value',
+    render: (row) => String(row.value),
+    text: (row) => String(row.value),
+    filterRange: (row) => row.value,
+  },
+  {
+    key: 'measured',
+    header: 'Measured',
+    render: (row) => row.measured,
+    text: (row) => row.measured,
+    filterDate: (row) => row.measured,
+  },
+];
+
+describe('applyFilters', () => {
+  it('returns everything when nothing is filtered', () => {
+    expect(applyFilters(READINGS, READING_COLUMNS, EMPTY_FILTERS)).toEqual(READINGS);
+  });
+
+  it('matches the search against any column, case-insensitively', () => {
+    const found = applyFilters(READINGS, READING_COLUMNS, { ...EMPTY_FILTERS, search: 'b-002' });
+
+    expect(found.map((row) => row.code)).toEqual(['B-002']);
+  });
+
+  it('treats the range bounds as inclusive', () => {
+    // A reading sitting exactly on the bound is in the range. Exclusive bounds
+    // silently drop the readings a process engineer is most interested in.
+    const found = applyFilters(READINGS, READING_COLUMNS, {
+      ...EMPTY_FILTERS,
+      min: '10',
+      max: '20',
+    });
+
+    expect(found.map((row) => row.value)).toEqual([10, 20]);
+  });
+
+  it('leaves one side of the range unbounded when it is blank', () => {
+    const found = applyFilters(READINGS, READING_COLUMNS, { ...EMPTY_FILTERS, min: '20' });
+
+    expect(found.map((row) => row.value)).toEqual([20, 30]);
+  });
+
+  it('ignores a range bound that is not a number', () => {
+    // `<input type="number">` can hold '' or a partial entry like '-'. Number('-')
+    // is NaN, and every comparison against NaN is false — which would silently
+    // return zero rows and read as a broken table.
+    const found = applyFilters(READINGS, READING_COLUMNS, { ...EMPTY_FILTERS, min: '-' });
+
+    expect(found).toHaveLength(3);
+  });
+
+  it('filters by date inclusively, comparing the ISO day', () => {
+    const found = applyFilters(READINGS, READING_COLUMNS, {
+      ...EMPTY_FILTERS,
+      from: '2026-02-08',
+      to: '2026-03-10',
+    });
+
+    expect(found.map((row) => row.code)).toEqual(['B-002', 'B-003']);
+  });
+
+  it('combines the filters rather than letting the last one win', () => {
+    const found = applyFilters(READINGS, READING_COLUMNS, {
+      ...EMPTY_FILTERS,
+      search: 'B-0',
+      min: '25',
+    });
+
+    expect(found.map((row) => row.code)).toEqual(['B-003']);
+  });
+});
+
+describe('hasActiveFilter', () => {
+  it('is false for the empty state', () => {
+    expect(hasActiveFilter(EMPTY_FILTERS)).toBe(false);
+  });
+
+  it('is true as soon as any one field is set', () => {
+    expect(hasActiveFilter({ ...EMPTY_FILTERS, to: '2026-03-10' })).toBe(true);
   });
 });

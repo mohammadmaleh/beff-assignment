@@ -186,3 +186,76 @@ describe('DataTable', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Sorting cleared, Yield');
   });
 });
+
+describe('DataTable filtering', () => {
+  it('narrows the rows and says so, in one place a screen reader will hear', async () => {
+    const user = userEvent.setup();
+    renderTable();
+
+    expect(screen.getByText('Showing 3 of 3')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/^Search/), 'B-002');
+
+    expect(renderedCodes()).toEqual(['B-002']);
+    expect(screen.getByText('Showing 1 of 3')).toBeInTheDocument();
+  });
+
+  it('offers a range pair because a column declared filterRange', async () => {
+    const user = userEvent.setup();
+    renderTable();
+
+    await user.type(screen.getByLabelText(/^Minimum/), '40');
+
+    expect(renderedCodes()).toEqual(['B-001', 'B-002']);
+  });
+
+  it('offers a date pair because a column declared filterDate', async () => {
+    const user = userEvent.setup();
+    renderTable();
+
+    await user.type(screen.getByLabelText(/^From/), '2026-02-08');
+
+    expect(renderedCodes()).toEqual(['B-003', 'B-002']);
+  });
+
+  it('shows an empty state rather than a headed table with no rows', async () => {
+    const user = userEvent.setup();
+    renderTable();
+
+    await user.type(screen.getByLabelText(/^Search/), 'nothing matches this');
+
+    expect(screen.getByText('No rows match these filters.')).toBeInTheDocument();
+    expect(screen.getByText('Showing 0 of 3')).toBeInTheDocument();
+  });
+
+  it('hides Reset until a filter is actually active', async () => {
+    const user = userEvent.setup();
+    renderTable();
+
+    expect(screen.queryByRole('button', { name: 'Reset filters' })).toBeNull();
+
+    await user.type(screen.getByLabelText(/^Search/), 'B-0');
+
+    expect(screen.getByRole('button', { name: 'Reset filters' })).toBeInTheDocument();
+  });
+
+  it('clears the filters on reset and leaves the sort alone', async () => {
+    // Two different pieces of state that look like one control cluster. Reset
+    // that silently un-sorted the table would lose work the user did not ask
+    // to undo.
+    const user = userEvent.setup();
+    renderTable();
+
+    await user.click(
+      within(screen.getByRole('columnheader', { name: /Yield/ })).getByRole('button'),
+    );
+    await user.type(screen.getByLabelText(/^Search/), 'B-00');
+    await user.click(screen.getByRole('button', { name: 'Reset filters' }));
+
+    expect(renderedCodes()).toEqual(['B-003', 'B-002', 'B-001']);
+    expect(screen.getByRole('columnheader', { name: /Yield/ })).toHaveAttribute(
+      'aria-sort',
+      'ascending',
+    );
+  });
+});

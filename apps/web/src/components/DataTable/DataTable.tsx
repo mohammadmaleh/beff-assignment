@@ -2,7 +2,10 @@
 
 import { useMemo, useState } from 'react';
 
-import { sortRows } from './model';
+import { Button } from '@beff/ui/button';
+import { TextField } from '@beff/ui/text-field';
+
+import { applyFilters, EMPTY_FILTERS, hasActiveFilter, sortRows } from './model';
 
 import type { DataColumn, DataTableCopy, SortState } from './types';
 import type { Locale } from '@/lib/i18n';
@@ -36,10 +39,28 @@ function nextSort(current: SortState | null, key: string): SortState | null {
  * and markup cannot be sorted, so nothing shared could exist even in principle.
  */
 export function DataTable<Row>({ caption, columns, rows, rowKey, copy }: DataTableProps<Row>) {
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [sort, setSort] = useState<SortState | null>(null);
   const [lastSortedKey, setLastSortedKey] = useState<string | null>(null);
 
-  const visible = useMemo(() => sortRows(rows, columns, sort), [rows, columns, sort]);
+  const hasRange = columns.some((column) => column.filterRange !== undefined);
+  const hasDate = columns.some((column) => column.filterDate !== undefined);
+  const filtering = hasActiveFilter(filters);
+
+  // Filter first, then sort. The other order sorts rows that are about to be
+  // discarded, which on sixty rows is invisible and on six hundred is not.
+  const visible = useMemo(
+    () => sortRows(applyFilters(rows, columns, filters), columns, sort),
+    [rows, columns, filters, sort],
+  );
+
+  const summary = copy.summary
+    .replace('{shown}', String(visible.length))
+    .replace('{total}', String(rows.length));
+
+  const set = (key: keyof typeof filters) => (value: string) => {
+    setFilters((current) => ({ ...current, [key]: value }));
+  };
 
   /*
    * Sorting reorders rows silently. A screen reader user gets no signal at all
@@ -58,90 +79,170 @@ export function DataTable<Row>({ caption, columns, rows, rowKey, copy }: DataTab
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="border-border-default max-h-[24rem] overflow-auto border">
-        <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
-          <caption className="text-text-muted px-3 py-2 text-start">{caption}</caption>
-          <thead className="bg-surface-base sticky top-0 z-10">
-            <tr className="border-border-default border-b">
-              {columns.map((column) => {
-                const sortable = column.sortValue !== undefined;
-                const active = sort !== null && sort.key === column.key;
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="min-w-[12rem] flex-1">
+          <TextField
+            label={copy.search}
+            type="search"
+            placeholder={copy.searchPlaceholder}
+            value={filters.search}
+            onChange={(event) => {
+              set('search')(event.target.value);
+            }}
+          />
+        </div>
 
-                return (
-                  <th
-                    key={column.key}
-                    scope="col"
-                    // `aria-sort` only where sorting is possible. On an
-                    // unsortable column it would claim an affordance that is
-                    // not there.
-                    {...(sortable
-                      ? { 'aria-sort': active ? sort.direction : ('none' as const) }
-                      : {})}
-                    className={`bg-surface-base px-3 py-2 font-medium ${
-                      column.align === 'end' ? 'text-end' : 'text-start'
-                    }`}
-                  >
-                    {sortable ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLastSortedKey(column.key);
-                          setSort((current) => nextSort(current, column.key));
-                        }}
-                        className="hover:text-text-default focus-visible:outline-border-strong inline-flex items-center gap-1 focus-visible:outline-2 focus-visible:outline-offset-2"
-                      >
-                        {column.header}
-                        <span aria-hidden="true" className="text-text-muted">
-                          {active ? (sort.direction === 'ascending' ? '↑' : '↓') : '↕'}
-                        </span>
-                      </button>
-                    ) : (
-                      column.header
-                    )}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {visible.map((row) => (
-              <tr
-                key={rowKey(row)}
-                className="border-border-default even:bg-surface-sunken/40 border-b"
-              >
+        {hasRange ? (
+          <>
+            <div className="w-28">
+              <TextField
+                label={copy.rangeMin}
+                type="number"
+                value={filters.min}
+                onChange={(event) => {
+                  set('min')(event.target.value);
+                }}
+              />
+            </div>
+            <div className="w-28">
+              <TextField
+                label={copy.rangeMax}
+                type="number"
+                value={filters.max}
+                onChange={(event) => {
+                  set('max')(event.target.value);
+                }}
+              />
+            </div>
+          </>
+        ) : null}
+
+        {hasDate ? (
+          <>
+            <div className="w-40">
+              <TextField
+                label={copy.dateFrom}
+                type="date"
+                value={filters.from}
+                onChange={(event) => {
+                  set('from')(event.target.value);
+                }}
+              />
+            </div>
+            <div className="w-40">
+              <TextField
+                label={copy.dateTo}
+                type="date"
+                value={filters.to}
+                onChange={(event) => {
+                  set('to')(event.target.value);
+                }}
+              />
+            </div>
+          </>
+        ) : null}
+
+        {filtering ? (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setFilters(EMPTY_FILTERS);
+            }}
+          >
+            {copy.reset}
+          </Button>
+        ) : null}
+      </div>
+
+      <p
+        role="status"
+        aria-live="polite"
+        className="text-text-muted text-[length:var(--type-ui-size-sm)]"
+      >
+        {announcement === '' ? summary : `${summary}. ${announcement}`}
+      </p>
+
+      {visible.length === 0 ? (
+        <p className="text-text-muted px-3 py-6 text-[length:var(--type-ui-size-sm)]">
+          {copy.empty}
+        </p>
+      ) : (
+        <div className="border-border-default max-h-[24rem] overflow-auto border">
+          <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
+            <caption className="text-text-muted px-3 py-2 text-start">{caption}</caption>
+            <thead className="bg-surface-base sticky top-0 z-10">
+              <tr className="border-border-default border-b">
                 {columns.map((column) => {
-                  const content = column.render(row);
-                  const alignment = column.align === 'end' ? 'text-end tabular-nums' : 'text-start';
+                  const sortable = column.sortValue !== undefined;
+                  const active = sort !== null && sort.key === column.key;
 
-                  return column.rowHeader === true ? (
+                  return (
                     <th
                       key={column.key}
-                      scope="row"
-                      className={`px-3 py-2 font-normal ${alignment}`}
+                      scope="col"
+                      // `aria-sort` only where sorting is possible. On an
+                      // unsortable column it would claim an affordance that is
+                      // not there.
+                      {...(sortable
+                        ? { 'aria-sort': active ? sort.direction : ('none' as const) }
+                        : {})}
+                      className={`bg-surface-base px-3 py-2 font-medium ${
+                        column.align === 'end' ? 'text-end' : 'text-start'
+                      }`}
                     >
-                      {content}
+                      {sortable ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLastSortedKey(column.key);
+                            setSort((current) => nextSort(current, column.key));
+                          }}
+                          className="hover:text-text-default focus-visible:outline-border-strong inline-flex items-center gap-1 focus-visible:outline-2 focus-visible:outline-offset-2"
+                        >
+                          {column.header}
+                          <span aria-hidden="true" className="text-text-muted">
+                            {active ? (sort.direction === 'ascending' ? '↑' : '↓') : '↕'}
+                          </span>
+                        </button>
+                      ) : (
+                        column.header
+                      )}
                     </th>
-                  ) : (
-                    <td key={column.key} className={`px-3 py-2 ${alignment}`}>
-                      {content}
-                    </td>
                   );
                 })}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {visible.map((row) => (
+                <tr
+                  key={rowKey(row)}
+                  className="border-border-default even:bg-surface-sunken/40 border-b"
+                >
+                  {columns.map((column) => {
+                    const content = column.render(row);
+                    const alignment =
+                      column.align === 'end' ? 'text-end tabular-nums' : 'text-start';
 
-      {/*
-       * `role="status"` is an assertive-free live region: it is announced when
-       * it changes and never interrupts. Rendered always, empty when there is
-       * nothing to say — a live region added to the DOM at the moment it gains
-       * content is frequently not announced at all.
-       */}
-      <p role="status" aria-live="polite" className="sr-only">
-        {announcement}
-      </p>
+                    return column.rowHeader === true ? (
+                      <th
+                        key={column.key}
+                        scope="row"
+                        className={`px-3 py-2 font-normal ${alignment}`}
+                      >
+                        {content}
+                      </th>
+                    ) : (
+                      <td key={column.key} className={`px-3 py-2 ${alignment}`}>
+                        {content}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
