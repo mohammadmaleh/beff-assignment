@@ -98,6 +98,16 @@ export const deApp: typeof enApp = {
     scrapBody:
       'Nach Prozessschritt geordnet. Eine in der Formierung verlorene Zelle hat alle vorgelagerten Kosten aufgenommen — späte Verluste sind die teuren.',
     scrapTableCaption: 'Ausschussquote je Prozessschritt',
+    /*
+     * Die eigene Überschrift der Abbildung, getrennt von `scrapTitle` darüber.
+     *
+     * `DashboardView` rendert `scrapTitle` als h2 des Abschnitts, und das
+     * Diagramm steht direkt darunter. Dieselbe Zeichenkette als h3 zu
+     * wiederholen würde einem Screenreader zweimal dasselbe ansagen.
+     */
+    scrapChartTitle: 'Ausschussquote je Schritt',
+    scrapChartDescription:
+      'Jeder Balken ist ein Schritt der Linie, in Prozessreihenfolge. Die Zahl daneben ist der Anteil der dort verlorenen Zellen.',
     columnStep: 'Prozessschritt',
     columnScrap: 'Ausschussquote',
     columnCost: 'Verlorene gebundene Wertschöpfung',

@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { COMMITTED_VALUE_EUR, PROCESS_STEPS } from '@/lib/metrics';
@@ -26,8 +27,13 @@ describe('ProductPanel', () => {
     expect(screen.getByText(/out of spec, below the lower limit/)).toBeInTheDocument();
   });
 
-  it('keeps the chart’s table alternative', () => {
+  it('keeps the chart’s table alternative', async () => {
+    // The table is a named view behind a tab now rather than an always-open
+    // block, but it is still every process step — the marketing surface must
+    // not ship a chart whose numbers a screen reader cannot reach.
     render(<ProductPanel locale="en" />);
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Table' }));
 
     const rows = screen.getAllByRole('rowheader');
     expect(rows).toHaveLength(PROCESS_STEPS.length);

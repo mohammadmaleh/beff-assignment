@@ -102,6 +102,17 @@ export const enApp = {
     scrapBody:
       'Ordered by process step. A cell lost at formation has absorbed every upstream cost, so late-stage losses are the expensive ones.',
     scrapTableCaption: 'Scrap rate by process step',
+    /*
+     * The figure's own heading, distinct from `scrapTitle` above it.
+     *
+     * `DashboardView` renders `scrapTitle` as the section's h2 and the chart
+     * sits directly beneath it. Reusing that string as the figure's h3 would
+     * announce the same words twice in a row to a screen reader and read as a
+     * duplication to everyone else.
+     */
+    scrapChartTitle: 'Scrap rate by step',
+    scrapChartDescription:
+      'Each bar is one step of the line, in process order. The figure beside it is the share of cells lost there.',
     columnStep: 'Process step',
     columnScrap: 'Scrap rate',
     columnCost: 'Committed value lost',

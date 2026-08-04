@@ -229,11 +229,26 @@ describe('DashboardView', () => {
 
     await screen.findByText('How it got here');
 
-    // Scrap rate, scrap cost, yield trend, throughput, and one control chart —
-    // ScrapChart still carries its own `<details>` at this point (Task 8
-    // converts it onto this frame), so only four of the five carry a tablist.
-    expect(screen.getAllByRole('tab', { name: 'Table' })).toHaveLength(4);
-    expect(screen.getAllByRole('tabpanel', { hidden: true })).toHaveLength(8);
+    // Scrap rate, scrap cost, yield trend, throughput, and one control chart.
+    const tabs = screen.getAllByRole('tab', { name: 'Table' });
+    expect(tabs).toHaveLength(5);
+
+    /*
+     * Counting tabs is not the assertion this test is named for.
+     *
+     * A `ChartFigure` rendered with `table={undefined}` would have a Table tab,
+     * a Table panel, and nothing inside it — and a count of either would pass
+     * while the rule the whole chart layer rests on was broken. Each panel is
+     * therefore opened by the id its tab controls and asked for a real table.
+     */
+    for (const tab of tabs) {
+      const panelId = tab.getAttribute('aria-controls');
+      expect(panelId).not.toBeNull();
+
+      const panel = document.getElementById(panelId as string);
+      expect(panel).not.toBeNull();
+      expect(within(panel as HTMLElement).getByRole('table', { hidden: true })).toBeInTheDocument();
+    }
   });
 
   it('states what the window cost and how the line compares to its peers', async () => {
