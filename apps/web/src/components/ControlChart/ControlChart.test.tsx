@@ -150,8 +150,13 @@ describe('ControlChart', () => {
     render(<ControlChart series={series()} label="Energy density" locale="en" />);
     await openTable();
 
-    // Below the lower limit of 240 — the reading that breached, and nothing else.
-    await userEvent.type(screen.getByLabelText(/^To$/), '239');
+    /*
+     * Below the lower limit of 240 — the reading that breached, and nothing
+     * else. The label is `Maximum`, not `To`: the group is captioned by the
+     * column it filters, so "to" no longer has to carry the question of *what*
+     * on a page where four tables each filter a different measure.
+     */
+    await userEvent.type(screen.getByLabelText(/^Maximum$/), '239');
 
     expect(screen.getByText('Showing 1 of 3 rows')).toBeInTheDocument();
     expect(screen.getByText('Out of spec')).toBeVisible();

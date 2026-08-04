@@ -2,10 +2,8 @@
 
 import { useMemo, useState } from 'react';
 
-import { Button } from '@beff/ui/button';
-import { TextField } from '@beff/ui/text-field';
-
 import { csvDelimiter, downloadCsv, toCsv } from './csv';
+import { Toolbar } from './Toolbar';
 import { applyFilters, EMPTY_FILTERS, hasActiveFilter, sortRows } from './model';
 
 import type { DataColumn, DataTableCopy, SortState } from './types';
@@ -52,8 +50,40 @@ export function DataTable<Row>({
   const [sort, setSort] = useState<SortState | null>(null);
   const [lastSortedKey, setLastSortedKey] = useState<string | null>(null);
 
-  const hasRange = columns.some((column) => column.filterRange !== undefined);
-  const hasDate = columns.some((column) => column.filterDate !== undefined);
+  /*
+   * The *header* of the filtering column, not merely whether one exists.
+   *
+   * This is what the toolbar captions each group with. `From` and `To` alone
+   * meant per cent here, cells on the throughput table, euros on scrap cost and
+   * Wh/kg on a control chart — four different measures wearing the same two
+   * words, with nothing on screen to tell them apart.
+   */
+  const rangeColumn = columns.find((column) => column.filterRange !== undefined)?.header ?? null;
+  const dateColumn = columns.find((column) => column.filterDate !== undefined)?.header ?? null;
+
+  /*
+   * The observed low and high of the range column, formatted by that column.
+   *
+   * These are the range inputs' placeholders, and they earn their place twice
+   * over: an empty bounded control is otherwise just a box with a dash in it
+   * and no hint that it holds two fields, and "what range is even available?"
+   * is the question a reader has *before* they can pick a bound. Rendered
+   * through the column's own `text`, so the hint is formatted exactly like the
+   * values in the column it filters — per cent here, euros on scrap cost.
+   */
+  const rangeHint = useMemo(() => {
+    const column = columns.find((entry) => entry.filterRange !== undefined);
+    const read = column?.filterRange;
+    if (column === undefined || read === undefined || rows.length === 0) return null;
+
+    let low = rows[0] as Row;
+    let high = rows[0] as Row;
+    for (const row of rows) {
+      if (read(row) < read(low)) low = row;
+      if (read(row) > read(high)) high = row;
+    }
+    return { low: column.text(low), high: column.text(high) };
+  }, [columns, rows]);
   const filtering = hasActiveFilter(filters);
 
   // Filter first, then sort. The other order sorts rows that are about to be
@@ -88,104 +118,37 @@ export function DataTable<Row>({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="min-w-[12rem] flex-1">
-          <TextField
-            label={copy.search}
-            type="search"
-            placeholder={copy.searchPlaceholder}
-            value={filters.search}
-            onChange={(event) => {
-              set('search')(event.target.value);
-            }}
-          />
-        </div>
-
-        {hasRange ? (
-          <>
-            <div className="w-28">
-              <TextField
-                label={copy.rangeMin}
-                type="number"
-                value={filters.min}
-                onChange={(event) => {
-                  set('min')(event.target.value);
-                }}
-              />
-            </div>
-            <div className="w-28">
-              <TextField
-                label={copy.rangeMax}
-                type="number"
-                value={filters.max}
-                onChange={(event) => {
-                  set('max')(event.target.value);
-                }}
-              />
-            </div>
-          </>
-        ) : null}
-
-        {hasDate ? (
-          <>
-            <div className="w-40">
-              <TextField
-                label={copy.dateFrom}
-                type="date"
-                value={filters.from}
-                onChange={(event) => {
-                  set('from')(event.target.value);
-                }}
-              />
-            </div>
-            <div className="w-40">
-              <TextField
-                label={copy.dateTo}
-                type="date"
-                value={filters.to}
-                onChange={(event) => {
-                  set('to')(event.target.value);
-                }}
-              />
-            </div>
-          </>
-        ) : null}
-
-        {filtering ? (
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setFilters(EMPTY_FILTERS);
-            }}
+      <Toolbar
+        copy={copy}
+        filters={filters}
+        setFilter={set}
+        onReset={() => {
+          setFilters(EMPTY_FILTERS);
+        }}
+        onExport={() => {
+          const stamp = new Date().toISOString().slice(0, 10);
+          // `visible`, not `rows`: the export is what the reader is looking at,
+          // filters and sort included. An export that quietly differs from the
+          // screen is worse than none.
+          downloadCsv(
+            toCsv(columns, visible, csvDelimiter(locale)),
+            `beff-${csvName}-${stamp}.csv`,
+          );
+        }}
+        filtering={filtering}
+        rangeColumn={rangeColumn}
+        rangeHint={rangeHint}
+        dateColumn={dateColumn}
+        summary={
+          <p
+            role="status"
+            aria-live="polite"
+            className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase tabular-nums"
           >
-            {copy.reset}
-          </Button>
-        ) : null}
-
-        <Button
-          variant="secondary"
-          onClick={() => {
-            const stamp = new Date().toISOString().slice(0, 10);
-            // `visible`, not `rows`: the export is what the reader is looking
-            // at, filters and sort included. An export that quietly differs
-            // from the screen is worse than none.
-            downloadCsv(
-              toCsv(columns, visible, csvDelimiter(locale)),
-              `beff-${csvName}-${stamp}.csv`,
-            );
-          }}
-        >
-          {copy.exportCsv}
-        </Button>
-      </div>
-
-      <p
-        role="status"
-        aria-live="polite"
-        className="text-text-muted text-[length:var(--type-ui-size-sm)]"
-      >
-        {announcement === '' ? summary : `${summary}. ${announcement}`}
-      </p>
+            {announcement === '' ? summary : `${summary}. ${announcement}`}
+          </p>
+        }
+      />
 
       {visible.length === 0 ? (
         <p className="text-text-muted px-3 py-6 text-[length:var(--type-ui-size-sm)]">
@@ -194,9 +157,11 @@ export function DataTable<Row>({
       ) : (
         <div className="border-border-default max-h-[24rem] overflow-auto border">
           <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">
-            <caption className="text-text-muted px-3 py-2 text-start">{caption}</caption>
+            <caption className="text-text-muted px-3 pt-3 text-start text-[length:var(--type-ui-size-sm)]">
+              {caption}
+            </caption>
             <thead className="bg-surface-base sticky top-0 z-10">
-              <tr className="border-border-default border-b">
+              <tr className="border-border-strong border-b">
                 {columns.map((column) => {
                   const sortable = column.sortValue !== undefined;
                   const active = sort !== null && sort.key === column.key;
@@ -211,7 +176,7 @@ export function DataTable<Row>({
                       {...(sortable
                         ? { 'aria-sort': active ? sort.direction : ('none' as const) }
                         : {})}
-                      className={`bg-surface-base px-3 py-2 font-medium ${
+                      className={`bg-surface-base text-text-muted px-3 pt-3 pb-2 font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] font-normal tracking-[0.14em] whitespace-nowrap uppercase ${
                         column.align === 'end' ? 'text-end' : 'text-start'
                       }`}
                     >
@@ -222,11 +187,27 @@ export function DataTable<Row>({
                             setLastSortedKey(column.key);
                             setSort((current) => nextSort(current, column.key));
                           }}
-                          className="hover:text-text-default focus-visible:outline-border-strong inline-flex items-center gap-1 focus-visible:outline-2 focus-visible:outline-offset-2"
+                          className={`group focus-visible:outline-border-strong inline-flex items-center gap-1.5 tracking-[0.14em] uppercase focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                            active ? 'text-text-default' : 'hover:text-text-default'
+                          }`}
                         >
                           {column.header}
-                          <span aria-hidden="true" className="text-text-muted">
-                            {active ? (sort.direction === 'ascending' ? '↑' : '↓') : '↕'}
+                          {/*
+                           * The direction when sorted; a hint only on hover or
+                           * keyboard focus otherwise. A permanent glyph on every
+                           * sortable column is four arrows of noise on a
+                           * four-column table, and it says nothing — every
+                           * column is sortable, so marking them all marks none.
+                           */}
+                          <span
+                            aria-hidden="true"
+                            className={
+                              active
+                                ? 'text-text-default'
+                                : 'text-text-muted opacity-0 transition-opacity duration-(--motion-duration-fast) group-hover:opacity-100 group-focus-visible:opacity-100'
+                            }
+                          >
+                            {active && sort.direction === 'descending' ? '↓' : '↑'}
                           </span>
                         </button>
                       ) : (
@@ -241,7 +222,7 @@ export function DataTable<Row>({
               {visible.map((row) => (
                 <tr
                   key={rowKey(row)}
-                  className="border-border-default even:bg-surface-sunken/40 border-b"
+                  className="border-border-default even:bg-surface-sunken/30 border-b last:border-b-0"
                 >
                   {columns.map((column) => {
                     const badge = column.badge?.(row);

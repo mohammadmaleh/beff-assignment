@@ -230,6 +230,49 @@ describe('DataTable filtering', () => {
     expect(screen.getByText('Showing 1 of 3')).toBeInTheDocument();
   });
 
+  it('captions each filter group with the column it acts on', () => {
+    /*
+     * The defect this replaced: the range bounds were labelled `From` and `To`
+     * and nothing else. On a page with five tables those same two words meant
+     * per cent here, cells on throughput, euros on scrap cost and Wh/kg on a
+     * control chart — and a reader looking at the control could not tell which.
+     *
+     * `<fieldset>`/`<legend>` is what fixes it for both audiences at once: the
+     * legend is visible above the pair, and it is prepended to each input's
+     * accessible name, so the control announces "Yield minimum" rather than a
+     * bare "minimum".
+     */
+    renderTable();
+
+    const group = screen.getByRole('group', { name: 'Yield' });
+    expect(within(group).getByLabelText('Minimum')).toBeInTheDocument();
+    expect(within(group).getByLabelText('Maximum')).toBeInTheDocument();
+
+    const dates = screen.getByRole('group', { name: 'Started' });
+    expect(within(dates).getByLabelText('From')).toBeInTheDocument();
+    expect(within(dates).getByLabelText('To')).toBeInTheDocument();
+  });
+
+  it('offers no range group at all when no column declares one', () => {
+    // The three control-chart multiples are 14rem tall. A toolbar drawn
+    // regardless of what the columns support would dwarf the figure it belongs
+    // to, so every group is opt-in.
+    render(
+      <DataTable
+        caption="Yield by batch"
+        columns={[COLUMNS[0] as DataColumn<Batch>]}
+        rows={ROWS}
+        rowKey={(row) => row.code}
+        locale="en"
+        csvName="yield"
+        copy={COPY}
+      />,
+    );
+
+    expect(screen.queryByRole('group', { name: 'Yield' })).toBeNull();
+    expect(screen.getByRole('group', { name: 'Search' })).toBeInTheDocument();
+  });
+
   it('shows an empty state rather than a headed table with no rows', async () => {
     const user = userEvent.setup();
     renderTable();
