@@ -35,8 +35,8 @@ export const en = {
     // there is no longer a system *option*: the page reads the OS preference and
     // follows it until the reader overrides it, which is what "system" meant
     // anyway — it was just asking them to choose the default they already had.
-    themeToLight: 'Switch to light appearance',
-    themeToDark: 'Switch to dark appearance',
+    /** Shaped for `ThemeToggle`'s `labels` prop. */
+    theme: { toLight: 'Switch to light appearance', toDark: 'Switch to dark appearance' },
   },
 
   landing: {

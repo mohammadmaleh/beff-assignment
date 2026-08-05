@@ -27,8 +27,8 @@ export const de: BaseDictionary = {
     primary: 'Hauptnavigation',
     product: 'Produkt',
     technology: 'Technologie',
-    themeToLight: 'Zu heller Darstellung wechseln',
-    themeToDark: 'Zu dunkler Darstellung wechseln',
+    /** Shaped for `ThemeToggle`'s `labels` prop. */
+    theme: { toLight: 'Zu heller Darstellung wechseln', toDark: 'Zu dunkler Darstellung wechseln' },
   },
 
   landing: {

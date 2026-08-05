@@ -2,7 +2,18 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { THEME_STORAGE_KEY } from '@/constants/storage';
+/*
+ * The key is the caller's — that is the whole point of the prop. Using a test
+ * key rather than importing the app's is also what proves the component reads
+ * the one it was given rather than a constant it happens to close over.
+ */
+const STORAGE_KEY = 'test-theme';
+
+const LABELS = { toDark: 'Switch to dark appearance', toLight: 'Switch to light appearance' };
+const LABELS_DE = {
+  toDark: 'Zu dunkler Darstellung wechseln',
+  toLight: 'Zu heller Darstellung wechseln',
+};
 
 import { ThemeToggle } from './ThemeToggle';
 
@@ -62,13 +73,13 @@ describe('ThemeToggle', () => {
 
   it('is a plain button, so it needs no ARIA to be operable', () => {
     stubPrefersDark(false);
-    render(<ThemeToggle locale="en" />);
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
     expect(screen.getByRole('button').tagName).toBe('BUTTON');
   });
 
   it('is named for the action it performs, not for the setting it holds', () => {
     stubPrefersDark(false);
-    render(<ThemeToggle locale="en" />);
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
     // "Appearance" names a preference and leaves the reader to infer the effect.
     // A button announces what pressing it does.
     expect(screen.getByRole('button', { name: /switch to dark/i })).toBeInTheDocument();
@@ -76,24 +87,24 @@ describe('ThemeToggle', () => {
 
   it('adopts the system preference with no choice stored', () => {
     stubPrefersDark(true);
-    render(<ThemeToggle locale="en" />);
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
     // The OS says dark, so the only thing left to offer is light.
     expect(screen.getByRole('button', { name: /switch to light/i })).toBeInTheDocument();
   });
 
   it('does not pin anything until the reader actually chooses', () => {
     stubPrefersDark(true);
-    render(<ThemeToggle locale="en" />);
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
     // Reading the system preference must not *write* it. Pinning on load would
     // freeze the visitor into whatever their OS said the first time they came,
     // and the page would stop following them ever after.
-    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull();
     expect(document.documentElement).not.toHaveAttribute('data-theme');
   });
 
   it('keeps following the system while nothing is pinned', () => {
     const setPrefersDark = stubPrefersDark(false);
-    render(<ThemeToggle locale="en" />);
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
     expect(screen.getByRole('button', { name: /switch to dark/i })).toBeInTheDocument();
 
     setPrefersDark(true);
@@ -105,18 +116,18 @@ describe('ThemeToggle', () => {
 
   it('pins the opposite theme and remembers it', async () => {
     stubPrefersDark(false);
-    render(<ThemeToggle locale="en" />);
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
 
     await userEvent.click(screen.getByRole('button'));
 
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
-    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe('dark');
     expect(screen.getByRole('button', { name: /switch to light/i })).toBeInTheDocument();
   });
 
   it('stops following the system once a choice is pinned', async () => {
     const setPrefersDark = stubPrefersDark(false);
-    render(<ThemeToggle locale="en" />);
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
 
     await userEvent.click(screen.getByRole('button'));
     setPrefersDark(true);
@@ -129,32 +140,32 @@ describe('ThemeToggle', () => {
 
   it('reads the pinned choice after mount, over the system preference', () => {
     stubPrefersDark(true);
-    window.localStorage.setItem(THEME_STORAGE_KEY, 'light');
-    render(<ThemeToggle locale="en" />);
+    window.localStorage.setItem(STORAGE_KEY, 'light');
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
     expect(screen.getByRole('button', { name: /switch to dark/i })).toBeInTheDocument();
   });
 
   it('toggles back, and back again', async () => {
     stubPrefersDark(false);
-    render(<ThemeToggle locale="en" />);
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
 
     await userEvent.click(screen.getByRole('button'));
-    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe('dark');
 
     await userEvent.click(screen.getByRole('button'));
-    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe('light');
     expect(document.documentElement).toHaveAttribute('data-theme', 'light');
   });
 
-  it('is named in German in the German locale', () => {
+  it('is named in whatever language the caller hands it', () => {
     stubPrefersDark(false);
-    render(<ThemeToggle locale="de" />);
+    render(<ThemeToggle labels={LABELS_DE} storageKey={STORAGE_KEY} />);
     expect(screen.getByRole('button', { name: /dunkler darstellung/i })).toBeInTheDocument();
   });
 
   it('carries no visible label text, only the icon and its accessible name', () => {
     stubPrefersDark(false);
-    render(<ThemeToggle locale="en" />);
+    render(<ThemeToggle labels={LABELS} storageKey={STORAGE_KEY} />);
     // The header is four items wide at 320px. "Appearance" plus a select ate a
     // third of it to say something the icon says in 20 pixels.
     expect(screen.getByRole('button').textContent).toBe('');

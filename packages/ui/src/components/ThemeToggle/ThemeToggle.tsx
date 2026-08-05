@@ -2,12 +2,28 @@
 
 import { useEffect, useState } from 'react';
 
-import { DARK_SCHEME_QUERY } from '@beff/ui/media';
-
-import { THEME_STORAGE_KEY } from '@/constants/storage';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { cx } from '../../lib/cx/index';
+import { DARK_SCHEME_QUERY } from '../../lib/media/index';
 
 type Theme = 'light' | 'dark';
+
+export interface ThemeToggleProps {
+  /**
+   * The button's accessible name in each direction — and it is the *whole* of
+   * its accessible content, because the glyph is `aria-hidden`. Required, and
+   * phrased as the **action** ("Switch to dark appearance"), so a screen-reader
+   * user hears what pressing it does rather than a setting whose effect they
+   * have to infer.
+   */
+  labels: { toDark: string; toLight: string };
+  /**
+   * Where the choice is persisted, shared with the blocking script that applies
+   * it before first paint. The two are halves of one contract and never see
+   * each other, which is why the key is passed rather than assumed.
+   */
+  storageKey: string;
+  className?: string;
+}
 
 /**
  * A two-state theme control.
@@ -28,9 +44,7 @@ type Theme = 'light' | 'dark';
  * button's name is its entire accessible content, which is why that name is a
  * required, translated string rather than anything assembled from literals.
  */
-export function ThemeToggle({ locale }: { locale: Locale }) {
-  const t = getDictionary(locale);
-
+export function ThemeToggle({ labels, storageKey, className }: ThemeToggleProps) {
   // "light" is the server's guess, and it has to be *a* guess: the markup is
   // static, and no amount of care lets it know the reader's OS. The effect
   // corrects it before paint matters, and `ThemeScript` has already applied any
@@ -39,7 +53,7 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
   const [pinned, setPinned] = useState(false);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    const stored = window.localStorage.getItem(storageKey);
     if (stored === 'light' || stored === 'dark') {
       setTheme(stored);
       setPinned(true);
@@ -59,14 +73,14 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
     return () => {
       query.removeEventListener('change', follow);
     };
-  }, [pinned]);
+  }, [pinned, storageKey]);
 
   const next: Theme = theme === 'dark' ? 'light' : 'dark';
 
   const choose = (): void => {
     setTheme(next);
     setPinned(true);
-    window.localStorage.setItem(THEME_STORAGE_KEY, next);
+    window.localStorage.setItem(storageKey, next);
     document.documentElement.setAttribute('data-theme', next);
   };
 
@@ -74,8 +88,11 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
     <button
       type="button"
       onClick={choose}
-      aria-label={next === 'dark' ? t.nav.themeToDark : t.nav.themeToLight}
-      className="border-border-default text-text-muted hover:border-border-strong hover:text-text-default hover:bg-surface-raised rounded-control inline-flex size-9 items-center justify-center border transition-colors duration-150"
+      aria-label={next === 'dark' ? labels.toDark : labels.toLight}
+      className={cx(
+        'border-border-default text-text-muted hover:border-border-strong hover:text-text-default hover:bg-surface-raised rounded-control inline-flex size-9 items-center justify-center border transition-colors duration-150',
+        className,
+      )}
     >
       {next === 'dark' ? <MoonGlyph /> : <SunGlyph />}
     </button>

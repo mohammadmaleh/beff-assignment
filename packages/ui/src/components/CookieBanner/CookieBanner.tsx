@@ -1,15 +1,9 @@
 'use client';
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
-import { Button } from '@beff/ui/button';
-import { Lede } from '@beff/ui/lede';
-
-import { getDictionary, type Locale } from '@/lib/i18n';
-import { surfacePath } from '@/lib/navigation';
-
-import { CONSENT_STORAGE_KEY } from '@/constants/storage';
+import { Button } from '../Button/index';
+import { Lede } from '../Lede/index';
 
 export interface CookieConsent {
   analytics: boolean;
@@ -18,7 +12,56 @@ export interface CookieConsent {
   decidedAt: string;
 }
 
-const POLICY_VERSION = '2026-07-31';
+/**
+ * Every string the banner shows. All required, none defaulted — the rule this
+ * library arrived at after `SpecBand` composed its readout from English
+ * literals and the German landing page announced the product's signature
+ * element entirely in English. A component library cannot know the page's
+ * language, so a default *is* a guess, and it ships.
+ *
+ * It matters more here than anywhere else in the package: consent obtained
+ * through text the user could not read is not consent.
+ */
+export interface CookieBannerCopy {
+  title: string;
+  body: string;
+  necessaryLabel: string;
+  necessaryNote: string;
+  analyticsLabel: string;
+  analyticsNote: string;
+  accept: string;
+  reject: string;
+  save: string;
+}
+
+export interface CookieBannerProps {
+  copy: CookieBannerCopy;
+  /**
+   * The version of the policy text this banner is asking about.
+   *
+   * Owned by the app, because the *text* is. Stored with the decision, and a
+   * change to it re-opens the banner: consent to an old text is not consent to
+   * a new one, and treating it as such is the failure that makes a consent
+   * record worthless as evidence.
+   */
+  policyVersion: string;
+  /**
+   * The link to the full policy, supplied whole.
+   *
+   * A `ReactNode` rather than an `href`, so this package needs no router and no
+   * framework. The app passes its own `<Link>` and keeps client-side
+   * navigation; a design system that imported `next/link` for one legal link
+   * would be a Next-only design system.
+   */
+  privacyLink: ReactNode;
+  /** Where the decision is persisted. Namespaced by the app, since the origin is shared. */
+  storageKey: string;
+  /**
+   * A decision recorded, for a caller that wants to act on it — load analytics,
+   * write an audit row. Fired only on a fresh decision, never on replay.
+   */
+  onDecide?: (consent: CookieConsent) => void;
+}
 
 /**
  * ## Consent, done the way the law actually requires
@@ -38,13 +81,18 @@ const POLICY_VERSION = '2026-07-31';
  * Rendered only after mount. Server-rendering it would put a consent panel in
  * the static HTML of a page whose reader may have decided months ago.
  */
-export function CookieBanner({ locale }: { locale: Locale }) {
-  const t = getDictionary(locale);
+export function CookieBanner({
+  copy,
+  policyVersion,
+  privacyLink,
+  storageKey,
+  onDecide,
+}: CookieBannerProps) {
   const [decided, setDecided] = useState(true);
   const [analytics, setAnalytics] = useState(false);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(CONSENT_STORAGE_KEY);
+    const stored = window.localStorage.getItem(storageKey);
     if (stored === null) {
       setDecided(false);
       return;
@@ -53,20 +101,21 @@ export function CookieBanner({ locale }: { locale: Locale }) {
       const parsed = JSON.parse(stored) as CookieConsent;
       // A new policy version invalidates the old consent — the user agreed to a
       // different text.
-      setDecided(parsed.policyVersion === POLICY_VERSION);
+      setDecided(parsed.policyVersion === policyVersion);
     } catch {
       setDecided(false);
     }
-  }, []);
+  }, [storageKey, policyVersion]);
 
   const decide = (allowAnalytics: boolean): void => {
     const consent: CookieConsent = {
       analytics: allowAnalytics,
-      policyVersion: POLICY_VERSION,
+      policyVersion,
       decidedAt: new Date().toISOString(),
     };
-    window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(consent));
+    window.localStorage.setItem(storageKey, JSON.stringify(consent));
     setDecided(true);
+    onDecide?.(consent);
   };
 
   if (decided) return null;
@@ -76,14 +125,14 @@ export function CookieBanner({ locale }: { locale: Locale }) {
       // A region, not a modal. It does not trap focus and it does not block the
       // page — a banner that holds the content hostage until you consent is
       // itself a form of pressure.
-      aria-label={t.cookies.title}
+      aria-label={copy.title}
       className="border-border-default bg-surface-raised fixed inset-x-0 bottom-0 z-50 border-t"
     >
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-6 py-5">
         <div>
-          <h2 className="font-medium">{t.cookies.title}</h2>
+          <h2 className="font-medium">{copy.title}</h2>
           <Lede size="sm" className="mt-1">
-            {t.cookies.body}
+            {copy.body}
           </Lede>
         </div>
 
@@ -110,11 +159,11 @@ export function CookieBanner({ locale }: { locale: Locale }) {
                 className="mt-1"
               />
               <label htmlFor="cookie-necessary" className="font-medium">
-                {t.cookies.necessaryLabel}
+                {copy.necessaryLabel}
               </label>
             </div>
             <p id="cookie-necessary-note" className="text-text-muted ms-7">
-              {t.cookies.necessaryNote}
+              {copy.necessaryNote}
             </p>
           </li>
           <li className="text-[length:var(--type-ui-size-sm)]">
@@ -131,11 +180,11 @@ export function CookieBanner({ locale }: { locale: Locale }) {
                 className="mt-1"
               />
               <label htmlFor="cookie-analytics" className="font-medium">
-                {t.cookies.analyticsLabel}
+                {copy.analyticsLabel}
               </label>
             </div>
             <p id="cookie-analytics-note" className="text-text-muted ms-7">
-              {t.cookies.analyticsNote}
+              {copy.analyticsNote}
             </p>
           </li>
         </ul>
@@ -152,7 +201,7 @@ export function CookieBanner({ locale }: { locale: Locale }) {
               decide(false);
             }}
           >
-            {t.cookies.reject}
+            {copy.reject}
           </Button>
           <Button
             variant="secondary"
@@ -160,7 +209,7 @@ export function CookieBanner({ locale }: { locale: Locale }) {
               decide(analytics);
             }}
           >
-            {t.cookies.save}
+            {copy.save}
           </Button>
           <Button
             variant="secondary"
@@ -168,14 +217,9 @@ export function CookieBanner({ locale }: { locale: Locale }) {
               decide(true);
             }}
           >
-            {t.cookies.accept}
+            {copy.accept}
           </Button>
-          <Link
-            href={surfacePath('privacy', locale)}
-            className="text-[length:var(--type-ui-size-sm)] underline underline-offset-4"
-          >
-            {t.cookies.moreInfo}
-          </Link>
+          {privacyLink}
         </div>
       </div>
     </section>

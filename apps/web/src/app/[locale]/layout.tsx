@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { Providers } from '@/components/Providers';
-import { ThemeScript } from '@/components/ThemeScript';
+import { THEME_STORAGE_KEY } from '@/constants/storage';
+import { ThemeScript } from '@beff/ui/theme-script';
 import { DEFAULT_LOCALE, getDictionary, isLocale, LOCALES, type Locale } from '@/lib/i18n';
 
 import '../globals.css';
@@ -84,7 +85,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <ThemeScript />
+        <ThemeScript storageKey={THEME_STORAGE_KEY} />
       </head>
       <body>
         {/* First focusable element on the page, per WCAG 2.4.1. */}

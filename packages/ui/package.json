@@ -10,6 +10,7 @@
     "./button": "./src/components/Button/index.ts",
     "./chart": "./src/lib/chart/index.ts",
     "./chart-figure": "./src/components/ChartFigure/index.ts",
+    "./cookie-banner": "./src/components/CookieBanner/index.ts",
     "./cx": "./src/lib/cx/index.ts",
     "./data-state": "./src/components/DataState/index.ts",
     "./data-table": "./src/components/DataTable/index.ts",
@@ -23,6 +24,8 @@
     "./metric": "./src/components/Metric/index.ts",
     "./spec-band": "./src/components/SpecBand/index.ts",
     "./text-field": "./src/components/TextField/index.ts",
+    "./theme-script": "./src/components/ThemeScript/index.ts",
+    "./theme-toggle": "./src/components/ThemeToggle/index.ts",
     "./visually-hidden": "./src/components/VisuallyHidden/index.ts"
   },
   "scripts": {

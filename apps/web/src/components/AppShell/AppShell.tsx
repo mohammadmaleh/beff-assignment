@@ -5,9 +5,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 
 import { Button } from '@beff/ui/button';
+import { ThemeToggle } from '@beff/ui/theme-toggle';
 
 import { BrandMark } from '@/components/BrandMark';
-import { ThemeToggle } from '@/components/ThemeToggle';
+
+import { THEME_STORAGE_KEY } from '@/constants/storage';
 import { useAuth } from '@/lib/auth';
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { primaryNav, surfacePath, type SurfaceKey } from '@/lib/navigation';
@@ -116,7 +118,7 @@ export function AppShell({
             </nav>
 
             <div className="ms-auto flex items-center gap-4">
-              <ThemeToggle locale={locale} />
+              <ThemeToggle labels={t.nav.theme} storageKey={THEME_STORAGE_KEY} />
               {/* Decorative: the grouping is already in the markup. */}
               <span aria-hidden="true" className="bg-border-default hidden h-5 w-px sm:block" />
               <Button

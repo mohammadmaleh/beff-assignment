@@ -1,8 +1,11 @@
 import Link from 'next/link';
 
+import { ThemeToggle } from '@beff/ui/theme-toggle';
+
 import { BrandMark } from '@/components/BrandMark';
 import { SiteNav } from '@/components/SiteNav';
-import { ThemeToggle } from '@/components/ThemeToggle';
+
+import { THEME_STORAGE_KEY } from '@/constants/storage';
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { surfacePath } from '@/lib/navigation';
 
@@ -52,7 +55,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
          * and nav together as one unit at every size.
          */}
         <div className="ms-auto flex items-center gap-4">
-          <ThemeToggle locale={locale} />
+          <ThemeToggle labels={t.nav.theme} storageKey={THEME_STORAGE_KEY} />
 
           {/* Decorative: the grouping it expresses is already in the markup. */}
           <span aria-hidden="true" className="bg-border-default hidden h-5 w-px sm:block" />

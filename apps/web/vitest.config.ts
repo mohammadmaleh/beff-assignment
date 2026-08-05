@@ -72,13 +72,20 @@ export default defineConfig({
       // whose charts have always sat near 90% because their ECharts option
       // builders are only partly reachable in jsdom.
       //
+      // Moved again when `CookieBanner`, `ThemeToggle` and `ThemeScript`
+      // followed the chart layer into `@beff/ui` — three more well-covered
+      // units out of this denominator, 356 tests here becoming 324 here and
+      // 307 there. Same arithmetic, same conclusion: 94.66 -> 94.06 statements
+      // with no test deleted and several added, while `packages/ui` went
+      // 98.63 -> 99.14.
+      //
       // Each is set a little under the measured value. Raise them when real
       // coverage rises; never lower one to make a red run green.
       thresholds: {
-        statements: 94,
+        statements: 93,
         branches: 90,
-        functions: 89,
-        lines: 95,
+        functions: 88,
+        lines: 94,
       },
     },
   },

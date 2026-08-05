@@ -35,12 +35,13 @@ export default defineConfig({
       // Raised when the chart layer moved in from `apps/web`: `lib/chart`,
       // `ChartFigure`, `DataTable` and `EChart` arrived with their own suites,
       // and `useChartTokens` — which had only ever been covered as a side
-      // effect of mounting a chart — gained a direct one. Measured 98.63 /
-      // 94.84 / 100 / 99.6.
+      // effect of mounting a chart — gained a direct one. Raised again when
+      // `CookieBanner`, `ThemeToggle` and `ThemeScript` arrived with their
+      // suites. Measured 99.14 / 96.55 / 100 / 99.67.
       thresholds: {
-        statements: 98,
-        branches: 94,
-        functions: 99,
+        statements: 99,
+        branches: 96,
+        functions: 100,
         lines: 99,
       },
     },

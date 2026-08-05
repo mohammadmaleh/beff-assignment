@@ -5,9 +5,12 @@ import { Display } from '@beff/ui/display';
 import { Lede } from '@beff/ui/lede';
 import { SpecBand } from '@beff/ui/spec-band';
 
+import { CONSENT_STORAGE_KEY } from '@/constants/storage';
+import { PRIVACY_POLICY_VERSION } from '@/constants/privacy';
+
 import { ChainMarker } from '@/components/ChainMarker';
 import { CompanyFilm } from '@/components/CompanyFilm';
-import { CookieBanner } from '@/components/CookieBanner';
+import { CookieBanner } from '@beff/ui/cookie-banner';
 import { CostOfPosition } from '@/components/CostOfPosition';
 import { LandingHero } from '@/components/LandingHero';
 import { ProductPanel } from '@/components/ProductPanel';
@@ -169,7 +172,24 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
       </main>
 
       <SiteFooter locale={locale} />
-      <CookieBanner locale={locale} />
+      <CookieBanner
+        copy={t.cookies}
+        policyVersion={PRIVACY_POLICY_VERSION}
+        storageKey={CONSENT_STORAGE_KEY}
+        /*
+         * The link is handed over whole rather than as an href, so `@beff/ui`
+         * needs no router: this keeps Next's client-side navigation on a link
+         * that sits inside a framework-agnostic component.
+         */
+        privacyLink={
+          <Link
+            href={surfacePath('privacy', locale)}
+            className="text-[length:var(--type-ui-size-sm)] underline underline-offset-4"
+          >
+            {t.cookies.moreInfo}
+          </Link>
+        }
+      />
     </>
   );
 }
