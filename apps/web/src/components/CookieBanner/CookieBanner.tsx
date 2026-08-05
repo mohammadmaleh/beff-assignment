@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@beff/ui/button';
+import { Lede } from '@beff/ui/lede';
 
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { surfacePath } from '@/lib/navigation';
 
-export const CONSENT_STORAGE_KEY = 'beff-cookie-consent';
+import { CONSENT_STORAGE_KEY } from '@/constants/storage';
 
 export interface CookieConsent {
   analytics: boolean;
@@ -81,9 +82,9 @@ export function CookieBanner({ locale }: { locale: Locale }) {
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-6 py-5">
         <div>
           <h2 className="font-medium">{t.cookies.title}</h2>
-          <p className="text-text-muted mt-1 max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
+          <Lede size="sm" className="mt-1">
             {t.cookies.body}
-          </p>
+          </Lede>
         </div>
 
         {/*

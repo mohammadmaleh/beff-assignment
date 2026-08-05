@@ -31,11 +31,17 @@ export default defineConfig({
       // Set just under where the suite already sits, so an ordinary refactor
       // does not trip it and deleting a test does. Raise these when the real
       // number rises — a floor left far below reality gates nothing.
+      //
+      // Raised when the chart layer moved in from `apps/web`: `lib/chart`,
+      // `ChartFigure`, `DataTable` and `EChart` arrived with their own suites,
+      // and `useChartTokens` — which had only ever been covered as a side
+      // effect of mounting a chart — gained a direct one. Measured 98.63 /
+      // 94.84 / 100 / 99.6.
       thresholds: {
-        statements: 95,
-        branches: 90,
-        functions: 95,
-        lines: 95,
+        statements: 98,
+        branches: 94,
+        functions: 99,
+        lines: 99,
       },
     },
   },

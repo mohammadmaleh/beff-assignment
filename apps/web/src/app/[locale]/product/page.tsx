@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
+import { Display } from '@beff/ui/display';
+import { Eyebrow } from '@beff/ui/eyebrow';
+import { Lede } from '@beff/ui/lede';
 import { SpecBand } from '@beff/ui/spec-band';
 
 import { SiteFooter } from '@/components/SiteFooter';
@@ -45,26 +48,20 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
 
       <main id="main">
         <section className="mx-auto max-w-6xl px-6 pt-16 pb-20">
-          <p className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase">
-            {c.eyebrow}
-          </p>
-          <h1 className="mt-6 max-w-4xl font-(family-name:--type-family-display) text-[length:var(--type-ui-size-3xl)] leading-[1.05] text-balance [font-stretch:125%]">
+          <Eyebrow>{c.eyebrow}</Eyebrow>
+          <Display as="h1" size="3xl" balance className="mt-6 max-w-4xl">
             {c.title}
-          </h1>
-          <p className="text-text-muted mt-6 max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-            {c.lede}
-          </p>
+          </Display>
+          <Lede className="mt-6">{c.lede}</Lede>
         </section>
 
         <section className="calibration-ground border-border-default border-t">
           <div className="mx-auto max-w-6xl px-6 py-20 lg:py-24">
             <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-              <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+              <Display as="h2" balance>
                 {c.measuresTitle}
-              </h2>
-              <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                {c.measuresBody}
-              </p>
+              </Display>
+              <Lede>{c.measuresBody}</Lede>
             </div>
 
             <ul className="mt-14 flex flex-col gap-12">
@@ -82,9 +79,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
                     target={measurement.target}
                     unit={measurement.unit}
                   />
-                  <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
-                    {measurement.note}
-                  </p>
+                  <Lede size="sm">{measurement.note}</Lede>
                 </li>
               ))}
             </ul>
@@ -93,21 +88,21 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
 
         <section className="mx-auto max-w-6xl px-6 py-20">
           <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-            <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+            <Display as="h2" balance>
               {c.readingTitle}
-            </h2>
+            </Display>
             <div className="flex flex-col gap-6">
-              <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                {c.readingBody}
-              </p>
+              <Lede>{c.readingBody}</Lede>
               <ul className="flex flex-col gap-4">
                 {c.readingPoints.map((point) => (
-                  <li
+                  <Lede
+                    as="li"
                     key={point}
-                    className="border-border-default text-text-muted max-w-[var(--type-prose-measure)] border-t pt-4 text-[length:var(--type-ui-size-sm)]"
+                    size="sm"
+                    className="border-border-default border-t pt-4"
                   >
                     {point}
-                  </li>
+                  </Lede>
                 ))}
               </ul>
             </div>
@@ -116,12 +111,10 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
 
         <section className="calibration-ground border-border-default border-t">
           <div className="mx-auto grid max-w-6xl gap-8 px-6 py-20 lg:grid-cols-[2fr_3fr] lg:gap-16 lg:py-24">
-            <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+            <Display as="h2" balance>
               {c.honestTitle}
-            </h2>
-            <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-              {c.honestBody}
-            </p>
+            </Display>
+            <Lede>{c.honestBody}</Lede>
           </div>
         </section>
       </main>

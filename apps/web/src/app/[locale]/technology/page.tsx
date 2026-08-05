@@ -1,3 +1,7 @@
+import { Display } from '@beff/ui/display';
+import { Eyebrow } from '@beff/ui/eyebrow';
+import { Lede } from '@beff/ui/lede';
+
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -44,15 +48,11 @@ export default async function TechnologyPage({ params }: { params: Promise<{ loc
 
       <main id="main">
         <section className="mx-auto max-w-6xl px-6 pt-16 pb-20">
-          <p className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase">
-            {c.eyebrow}
-          </p>
-          <h1 className="mt-6 max-w-4xl font-(family-name:--type-family-display) text-[length:var(--type-ui-size-3xl)] leading-[1.05] text-balance [font-stretch:125%]">
+          <Eyebrow>{c.eyebrow}</Eyebrow>
+          <Display as="h1" size="3xl" balance className="mt-6 max-w-4xl">
             {c.title}
-          </h1>
-          <p className="text-text-muted mt-6 max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-            {c.lede}
-          </p>
+          </Display>
+          <Lede className="mt-6">{c.lede}</Lede>
         </section>
 
         {c.stages.map((stage, index) => (
@@ -67,21 +67,21 @@ export default async function TechnologyPage({ params }: { params: Promise<{ loc
             <div className="mx-auto max-w-6xl px-6 py-20 lg:py-24">
               <ChainMarker step={stage.anchorStep} locale={locale} />
               <div className="mt-10 grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-                <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+                <Display as="h2" balance>
                   {stage.title}
-                </h2>
+                </Display>
                 <div className="flex flex-col gap-6">
-                  <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                    {stage.body}
-                  </p>
+                  <Lede>{stage.body}</Lede>
                   <ul className="flex flex-col gap-4">
                     {stage.detail.map((line) => (
-                      <li
+                      <Lede
+                        as="li"
                         key={line}
-                        className="border-border-default text-text-muted max-w-[var(--type-prose-measure)] border-t pt-4 text-[length:var(--type-ui-size-sm)]"
+                        size="sm"
+                        className="border-border-default border-t pt-4"
                       >
                         {line}
-                      </li>
+                      </Lede>
                     ))}
                   </ul>
                 </div>
@@ -93,38 +93,40 @@ export default async function TechnologyPage({ params }: { params: Promise<{ loc
         <section className="border-border-default border-t">
           <div className="mx-auto max-w-6xl px-6 py-20 lg:py-24">
             <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-              <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+              <Display as="h2" balance>
                 {c.builtTitle}
-              </h2>
+              </Display>
               <div className="flex flex-col gap-6">
-                <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                  {c.builtBody}
-                </p>
+                <Lede>{c.builtBody}</Lede>
                 <ul className="flex flex-col gap-4">
                   {c.builtPoints.map((point) => (
-                    <li
+                    <Lede
+                      as="li"
                       key={point}
-                      className="border-border-default text-text-muted max-w-[var(--type-prose-measure)] border-t pt-4 text-[length:var(--type-ui-size-sm)]"
+                      size="sm"
+                      className="border-border-default border-t pt-4"
                     >
                       {point}
-                    </li>
+                    </Lede>
                   ))}
                 </ul>
               </div>
             </div>
 
             <div className="mt-16 grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-              <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+              <Display as="h2" balance>
                 {c.notBuiltTitle}
-              </h2>
+              </Display>
               <ul className="flex flex-col gap-4">
                 {c.notBuiltPoints.map((point) => (
-                  <li
+                  <Lede
+                    as="li"
                     key={point}
-                    className="border-border-default text-text-muted max-w-[var(--type-prose-measure)] border-t pt-4 text-[length:var(--type-ui-size-sm)]"
+                    size="sm"
+                    className="border-border-default border-t pt-4"
                   >
                     {point}
-                  </li>
+                  </Lede>
                 ))}
               </ul>
             </div>

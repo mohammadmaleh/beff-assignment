@@ -2,7 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { CONSENT_STORAGE_KEY, CookieBanner, type CookieConsent } from './CookieBanner';
+import { CONSENT_STORAGE_KEY } from '@/constants/storage';
+
+import { CookieBanner, type CookieConsent } from './CookieBanner';
 
 /**
  * The version the component currently ships. Deliberately duplicated rather

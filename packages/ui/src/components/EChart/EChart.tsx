@@ -2,14 +2,14 @@
 
 import { useEffect, useRef } from 'react';
 
-import { echarts, type EChartsOption } from '@/lib/chart/echarts';
+import { echarts, type EChartsOption } from '../../lib/chart/index';
 
 /**
  * Mounts one ECharts instance into a div and keeps it alive correctly.
  *
  * ## This element is `aria-hidden`, and that is the design
  *
- * `ScrapChart` established the inversion this app uses for every chart: the
+ * The apps built on this system invert the usual arrangement: the
  * drawing is a fast visual index, and the `<table>` beside it is the
  * authoritative rendering. A chart built that way cannot drift out of sync with
  * its own description, because there is only one set of numbers and the table

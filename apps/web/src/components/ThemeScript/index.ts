@@ -1,1 +1,1 @@
-export { ThemeScript, THEME_STORAGE_KEY } from './ThemeScript';
+export { ThemeScript } from './ThemeScript';

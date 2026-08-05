@@ -7,9 +7,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert } from '@beff/ui/alert';
 import { Button } from '@beff/ui/button';
 import { DataState } from '@beff/ui/data-state';
+import { Display } from '@beff/ui/display';
 import { Field } from '@beff/ui/field';
 import { TextField } from '@beff/ui/text-field';
 
+import { ONBOARDING_ROUTES } from '@/constants/api';
+import { QUERY_KEYS } from '@/constants/queryKeys';
 import { authFetch } from '@/lib/auth';
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { surfacePath } from '@/lib/navigation';
@@ -42,8 +45,8 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
   const queryClient = useQueryClient();
 
   const { data, status } = useQuery({
-    queryKey: ['onboarding'],
-    queryFn: () => authFetch<OnboardingProgress>('/onboarding'),
+    queryKey: QUERY_KEYS.onboarding,
+    queryFn: () => authFetch<OnboardingProgress>(ONBOARDING_ROUTES.progress),
     // Always refetched on mount: the whole point is that another tab or an
     // earlier session may have moved this forward.
     staleTime: 0,
@@ -72,14 +75,14 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
 
   const save = useMutation({
     mutationFn: (next: { current_step: Step; answers: OnboardingAnswers }) =>
-      authFetch<OnboardingProgress>('/onboarding', { method: 'PUT', body: next }),
+      authFetch<OnboardingProgress>(ONBOARDING_ROUTES.progress, { method: 'PUT', body: next }),
     onSuccess: (saved) => {
-      queryClient.setQueryData(['onboarding'], saved);
+      queryClient.setQueryData(QUERY_KEYS.onboarding, saved);
     },
   });
 
   const complete = useMutation({
-    mutationFn: () => authFetch<OnboardingProgress>('/onboarding/complete', { method: 'POST' }),
+    mutationFn: () => authFetch<OnboardingProgress>(ONBOARDING_ROUTES.complete, { method: 'POST' }),
     onSuccess: () => {
       router.push(surfacePath('dashboard', locale));
     },
@@ -145,13 +148,9 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
             </div>
           ) : null}
 
-          <h1
-            ref={headingRef}
-            tabIndex={-1}
-            className="mt-8 font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]"
-          >
+          <Display as="h1" className="mt-8" ref={headingRef} tabIndex={-1}>
             {copy[step].title}
-          </h1>
+          </Display>
           <p className="text-text-muted mt-2">{copy[step].body}</p>
 
           <div className="mt-10 flex flex-col gap-6">

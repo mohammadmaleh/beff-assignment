@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { chartFormatters } from '@/lib/chart';
+import { formatters } from '@/lib/format';
 
 import { throughputTooltip } from './ThroughputChart';
 
@@ -29,7 +29,7 @@ describe('throughputTooltip', () => {
   it('shows all three counts, not just the hovered segment', () => {
     // A stacked bar answers "how much of this run was lost" only if the whole
     // run is visible. One segment's count makes the reader do the arithmetic.
-    const html = throughputTooltip(point, chartFormatters('en'), copy);
+    const html = throughputTooltip(point, formatters('en'), copy);
 
     expect(html).toContain('Passed end-of-line: 812');
     expect(html).toContain('Scrapped: 328');
@@ -41,12 +41,12 @@ describe('throughputTooltip', () => {
   });
 
   it('names the batch in bold', () => {
-    expect(throughputTooltip(point, chartFormatters('en'), copy)).toMatch(
+    expect(throughputTooltip(point, formatters('en'), copy)).toMatch(
       /^<strong>B-2026-041<\/strong>/,
     );
   });
 
   it('groups thousands in the reader’s locale', () => {
-    expect(throughputTooltip(point, chartFormatters('de'), copy)).toContain('1.140');
+    expect(throughputTooltip(point, formatters('de'), copy)).toContain('1.140');
   });
 });

@@ -1,3 +1,4 @@
+import { AUTH_ROUTES } from '@/constants/api';
 import { apiUrl, problemFieldErrors, type FieldErrors } from '@/lib/api';
 
 /**
@@ -83,7 +84,7 @@ interface SessionPayload {
  */
 export async function refresh(): Promise<boolean> {
   try {
-    const response = await fetch(apiUrl('/auth/refresh'), {
+    const response = await fetch(apiUrl(AUTH_ROUTES.refresh), {
       method: 'POST',
       credentials: 'include',
     });

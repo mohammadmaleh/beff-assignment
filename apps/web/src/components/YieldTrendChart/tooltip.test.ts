@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { chartFormatters } from '@/lib/chart';
+import { formatters } from '@/lib/format';
 
 import { yieldTooltip } from './YieldTrendChart';
 
@@ -25,29 +25,27 @@ describe('yieldTooltip', () => {
   it('names the batch first, in bold', () => {
     // The batch code is the thing an engineer takes away from the hover — it is
     // what they type into the MES to go and look at the run.
-    expect(yieldTooltip(point, chartFormatters('en'), copy)).toMatch(
-      /^<strong>B-2026-041<\/strong>/,
-    );
+    expect(yieldTooltip(point, formatters('en'), copy)).toMatch(/^<strong>B-2026-041<\/strong>/);
   });
 
   it('reports the counts as well as the rate', () => {
     // Not recoverable from the percentage: 71.2% of 1 140 rounds to 811, and
     // the batch passed 812.
-    expect(yieldTooltip(point, chartFormatters('en'), copy)).toContain('812 of 1,140 cells');
+    expect(yieldTooltip(point, formatters('en'), copy)).toContain('812 of 1,140 cells');
   });
 
   it('formats the rate for the reader’s locale', () => {
-    expect(yieldTooltip(point, chartFormatters('en'), copy)).toContain('This line: 71.2%');
+    expect(yieldTooltip(point, formatters('en'), copy)).toContain('This line: 71.2%');
     // A non-breaking space before the sign, which is what German requires and
     // what a template literal cannot produce.
-    expect(yieldTooltip(point, chartFormatters('de'), copy)).toContain('71,2 %');
+    expect(yieldTooltip(point, formatters('de'), copy)).toContain('71,2 %');
   });
 
   it('gives the date in full, where there is room to be unambiguous', () => {
-    expect(yieldTooltip(point, chartFormatters('en'), copy)).toContain('2026');
+    expect(yieldTooltip(point, formatters('en'), copy)).toContain('2026');
   });
 
   it('separates its lines with breaks rather than running them together', () => {
-    expect(yieldTooltip(point, chartFormatters('en'), copy).split('<br>')).toHaveLength(4);
+    expect(yieldTooltip(point, formatters('en'), copy).split('<br>')).toHaveLength(4);
   });
 });

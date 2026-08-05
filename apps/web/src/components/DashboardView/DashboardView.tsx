@@ -3,6 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { DataState } from '@beff/ui/data-state';
+import { Display } from '@beff/ui/display';
+import { Lede } from '@beff/ui/lede';
 import { Metric } from '@beff/ui/metric';
 import { SpecBand } from '@beff/ui/spec-band';
 
@@ -12,9 +14,14 @@ import { ScrapChart } from '@/components/ScrapChart';
 import { ScrapCostChart } from '@/components/ScrapCostChart';
 import { ThroughputChart } from '@/components/ThroughputChart';
 import { YieldTrendChart } from '@/components/YieldTrendChart';
+import { METRICS_ROUTES } from '@/constants/api';
+import { QUERY_KEYS } from '@/constants/queryKeys';
+import { CO2_INTENSITY, PERCENT } from '@/constants/units';
 import { authFetch } from '@/lib/auth';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { formatters } from '@/lib/format';
+import { getDictionary, translate, type Locale } from '@/lib/i18n';
 import {
+  deltaTrend,
   HEADLINE_WINDOWS,
   PROCESS_STEPS,
   yieldWindow,
@@ -56,8 +63,8 @@ export function DashboardView({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
 
   const { data, status } = useQuery({
-    queryKey: ['metrics', 'overview'],
-    queryFn: () => authFetch<MetricsOverview>('/metrics/overview'),
+    queryKey: QUERY_KEYS.metricsOverview,
+    queryFn: () => authFetch<MetricsOverview>(METRICS_ROUTES.overview),
   });
 
   /*
@@ -73,29 +80,16 @@ export function DashboardView({ locale }: { locale: Locale }) {
    * only when their data is there, and the rest of the page is unaffected.
    */
   const trend = useQuery({
-    queryKey: ['metrics', 'trend'],
-    queryFn: () => authFetch<MetricsTrend>('/metrics/trend'),
+    queryKey: QUERY_KEYS.metricsTrend,
+    queryFn: () => authFetch<MetricsTrend>(METRICS_ROUTES.trend),
   });
 
-  const number = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
-  const signed = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-    signDisplay: 'exceptZero',
-  });
-
-  const trendOf = (delta: number): 'up' | 'down' | 'flat' =>
-    delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat';
+  const format = formatters(locale);
 
   return (
     <>
       <section className="mx-auto max-w-6xl px-6 pt-12 pb-10">
-        <h1 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
-          {t.dashboard.title}
-        </h1>
+        <Display as="h1">{t.dashboard.title}</Display>
         <p className="text-text-muted mt-2">
           {t.dashboard.subtitle}
           {data === undefined ? '' : ` — ${data.line_name}`}
@@ -127,15 +121,10 @@ export function DashboardView({ locale }: { locale: Locale }) {
         <section aria-labelledby="trend" className="border-border-default border-t">
           <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
             <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-              <h2
-                id="trend"
-                className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]"
-              >
+              <Display as="h2" balance id="trend">
                 {t.dashboard.charts.trendTitle}
-              </h2>
-              <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                {t.dashboard.charts.trendBody}
-              </p>
+              </Display>
+              <Lede>{t.dashboard.charts.trendBody}</Lede>
             </div>
 
             {/*
@@ -184,15 +173,10 @@ export function DashboardView({ locale }: { locale: Locale }) {
                  * was. Same fix for both.
                  */}
                 <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-                  <h2
-                    id="headline-metrics"
-                    className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]"
-                  >
+                  <Display as="h2" balance id="headline-metrics">
                     {t.dashboard.readingsTitle}
-                  </h2>
-                  <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                    {t.dashboard.readingsBody}
-                  </p>
+                  </Display>
+                  <Lede>{t.dashboard.readingsBody}</Lede>
                 </div>
 
                 <div className="mt-12">
@@ -207,7 +191,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                         label={t.dashboard.metrics.fpy}
                         words={t.a11y.specBand}
                         value={data.first_pass_yield_pct}
-                        unit="%"
+                        unit={PERCENT}
                         {...yieldWindow(data.line_kind)}
                       />
                       {/*
@@ -221,14 +205,14 @@ export function DashboardView({ locale }: { locale: Locale }) {
                        * that colour and glyph are never the only signal.
                        */}
                       <p className="text-text-muted text-[length:var(--type-ui-size-sm)]">
-                        {`${signed.format(data.first_pass_yield_delta_pp)} pp ${t.dashboard.deltaNote}`}
+                        {`${format.percentagePoints(data.first_pass_yield_delta_pp)} ${t.dashboard.deltaNote}`}
                       </p>
                     </div>
                     <SpecBand
                       label={t.dashboard.metrics.retention}
                       words={t.a11y.specBand}
                       value={data.capacity_retention_pct}
-                      unit="%"
+                      unit={PERCENT}
                       {...HEADLINE_WINDOWS.retention}
                     />
                   </div>
@@ -241,10 +225,10 @@ export function DashboardView({ locale }: { locale: Locale }) {
                   <div className="border-border-default mt-12 grid gap-8 border-t pt-8 sm:grid-cols-2 lg:gap-16">
                     <Metric
                       label={t.dashboard.metrics.scrap}
-                      value={number.format(data.scrap_rate_pct)}
-                      unit="%"
-                      delta={`${signed.format(data.scrap_rate_delta_pp)} pp`}
-                      trend={trendOf(data.scrap_rate_delta_pp)}
+                      value={format.decimal(data.scrap_rate_pct)}
+                      unit={PERCENT}
+                      delta={format.percentagePoints(data.scrap_rate_delta_pp)}
+                      trend={deltaTrend(data.scrap_rate_delta_pp)}
                       trendWords={t.a11y.trend}
                       // Falling scrap is good news; the yield band above inverts
                       // this reading for the same underlying movement.
@@ -252,8 +236,8 @@ export function DashboardView({ locale }: { locale: Locale }) {
                     />
                     <Metric
                       label={t.dashboard.metrics.co2}
-                      value={number.format(data.co2_intensity_kg_per_kwh)}
-                      unit="kg CO₂e/kWh"
+                      value={format.decimal(data.co2_intensity_kg_per_kwh)}
+                      unit={CO2_INTENSITY}
                     />
                   </div>
                 </div>
@@ -271,15 +255,10 @@ export function DashboardView({ locale }: { locale: Locale }) {
           >
             <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
               <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-                <h2
-                  id="scrap-breakdown"
-                  className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]"
-                >
+                <Display as="h2" balance id="scrap-breakdown">
                   {t.dashboard.scrapTitle}
-                </h2>
-                <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                  {t.dashboard.scrapBody}
-                </p>
+                </Display>
+                <Lede>{t.dashboard.scrapBody}</Lede>
               </div>
               {/* Full width. The chart is twelve rows against a shared axis and
                   it was previously squeezed into the left column. */}
@@ -304,12 +283,9 @@ export function DashboardView({ locale }: { locale: Locale }) {
 
           <section aria-labelledby="spec-bands" className="border-border-default border-t">
             <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
-              <h2
-                id="spec-bands"
-                className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]"
-              >
+              <Display as="h2" balance id="spec-bands">
                 {t.dashboard.bandsTitle}
-              </h2>
+              </Display>
               {/* Two columns from `lg`, so a plant with six parameters does not
                   produce a metre of scrolling down one side of the screen. */}
               <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-x-16">
@@ -319,10 +295,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                     // The API returns a stable key (`porosity_pct`), never a
                     // display string — the same rule as process steps, and the
                     // only way the German locale can name it in German.
-                    label={
-                      (t.dashboard.parameters as Record<string, string>)[band.parameter] ??
-                      band.parameter
-                    }
+                    label={translate(t.dashboard.parameters, band.parameter)}
                     words={t.a11y.specBand}
                     value={band.value}
                     lowerLimit={band.lower_limit}
@@ -353,10 +326,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                     <ControlChart
                       key={series.parameter}
                       series={series}
-                      label={
-                        (t.dashboard.parameters as Record<string, string>)[series.parameter] ??
-                        series.parameter
-                      }
+                      label={translate(t.dashboard.parameters, series.parameter)}
                       locale={locale}
                     />
                   ))}

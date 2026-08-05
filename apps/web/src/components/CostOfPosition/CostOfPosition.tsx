@@ -1,7 +1,11 @@
 import { cx } from '@beff/ui/cx';
+import { Eyebrow } from '@beff/ui/eyebrow';
+import { Lede } from '@beff/ui/lede';
 
-import { ChartViews } from '@/components/ChartFigure';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { ChartViews } from '@beff/ui/chart-figure';
+import { FIGURE_IDS } from '@/constants/figures';
+import { formatters } from '@/lib/format';
+import { getDictionary, translate, type Locale } from '@/lib/i18n';
 import { committedValueCurve, PROCESS_STEPS } from '@/lib/metrics';
 
 /** Plot geometry. A viewBox rather than pixels, so one drawing serves every width. */
@@ -38,9 +42,8 @@ function y(pct: number): number {
  */
 export function CostOfPosition({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
-  const steps = t.dashboard.steps as Record<string, string>;
-
-  const percent = new Intl.NumberFormat(locale, { style: 'percent' });
+  const steps = t.dashboard.steps;
+  const format = formatters(locale);
 
   // The stepped outline: a flat run across each step at its own height.
   const outline = committedValueCurve
@@ -74,20 +77,17 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
   return (
     <figure className="grid grid-cols-1 items-start gap-6 sm:grid-cols-[1fr_auto]">
       <figcaption className="flex flex-col gap-2">
-        <span
-          id="cost-of-position"
-          className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase"
-        >
+        <Eyebrow as="span" id={FIGURE_IDS.costOfPosition}>
           {t.landing.costFigureLabel}
-        </span>
-        <span className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
+        </Eyebrow>
+        <Lede as="span" size="sm">
           {t.landing.costFigureDescription}
-        </span>
+        </Lede>
       </figcaption>
 
       <ChartViews
-        id="cost-of-position-views"
-        labelledBy="cost-of-position"
+        id={`${FIGURE_IDS.costOfPosition}-views`}
+        labelledBy={FIGURE_IDS.costOfPosition}
         viewChartLabel={t.dashboard.table.viewChart}
         viewTableLabel={t.dashboard.table.viewTable}
         chart={
@@ -166,7 +166,7 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
                   )}
                   style={{ insetInlineStart: `${String(x)}%`, top: `${String(yPct)}%` }}
                 >
-                  {percent.format(pct / 100)} · {steps[step] ?? step}
+                  {format.percentWhole(pct)} · {translate(steps, step)}
                 </p>
               ))}
             </div>
@@ -183,10 +183,10 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
                   </li>
                 ))}
               </ol>
-              <div className="text-text-muted flex justify-between font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase">
+              <Eyebrow as="div" className="flex justify-between">
                 <span>{t.landing.costAxisStart}</span>
                 <span>{t.landing.costAxisEnd}</span>
-              </div>
+              </Eyebrow>
             </div>
           </>
         }
@@ -210,9 +210,9 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
                 {committedValueCurve.map(({ step, pct }) => (
                   <tr key={step} className="border-border-default border-b">
                     <th scope="row" className="py-2 pe-4 text-start font-normal">
-                      {steps[step] ?? step}
+                      {translate(steps, step)}
                     </th>
-                    <td className="py-2 text-end tabular-nums">{percent.format(pct / 100)}</td>
+                    <td className="py-2 text-end tabular-nums">{format.percentWhole(pct)}</td>
                   </tr>
                 ))}
               </tbody>

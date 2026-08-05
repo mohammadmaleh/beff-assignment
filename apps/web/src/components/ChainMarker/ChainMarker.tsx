@@ -1,4 +1,6 @@
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { Eyebrow } from '@beff/ui/eyebrow';
+
+import { getDictionary, translate, type Locale } from '@/lib/i18n';
 import { PROCESS_STEPS, type ProcessStep } from '@/lib/metrics';
 
 export interface ChainMarkerProps {
@@ -26,7 +28,7 @@ export interface ChainMarkerProps {
  */
 export function ChainMarker({ step, locale }: ChainMarkerProps) {
   const t = getDictionary(locale);
-  const steps = t.dashboard.steps as Record<string, string>;
+  const steps = t.dashboard.steps;
   const ordinal = String(PROCESS_STEPS.indexOf(step) + 1).padStart(2, '0');
 
   return (
@@ -34,9 +36,7 @@ export function ChainMarker({ step, locale }: ChainMarkerProps) {
       <span className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tabular-nums">
         {ordinal}
       </span>
-      <span className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase">
-        {steps[step] ?? step}
-      </span>
+      <Eyebrow as="span">{translate(steps, step)}</Eyebrow>
       <span className="bg-border-default h-px flex-1" />
     </div>
   );

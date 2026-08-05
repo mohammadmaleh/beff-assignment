@@ -1,3 +1,7 @@
+import { Display } from '@beff/ui/display';
+import { Eyebrow } from '@beff/ui/eyebrow';
+import { Lede } from '@beff/ui/lede';
+
 import { getDictionary, type Locale } from '@/lib/i18n';
 
 /** The master. Anything larger on screen is an upscale of these pixels. */
@@ -45,21 +49,14 @@ export function CompanyFilm({ locale }: { locale: Locale }) {
   return (
     <section aria-labelledby="company-film" className="border-border-default scroll-mt-8 border-t">
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-24">
-        <p className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase">
-          {t.landing.filmEyebrow}
-        </p>
+        <Eyebrow>{t.landing.filmEyebrow}</Eyebrow>
 
         <div className="mt-10 grid items-start gap-10 lg:grid-cols-[2fr_3fr] lg:gap-16">
           <div className="flex flex-col gap-4">
-            <h2
-              id="company-film"
-              className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]"
-            >
+            <Display as="h2" balance id="company-film">
               {t.landing.filmTitle}
-            </h2>
-            <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-              {t.landing.filmBody}
-            </p>
+            </Display>
+            <Lede>{t.landing.filmBody}</Lede>
           </div>
 
           {/*

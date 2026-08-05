@@ -1,3 +1,5 @@
+import { Display } from '@beff/ui/display';
+
 import type { ReactNode } from 'react';
 
 import { SiteFooter } from '@/components/SiteFooter';
@@ -68,9 +70,7 @@ export function LegalShell({
     <>
       <SiteHeader locale={locale} />
       <main id="main" className="mx-auto max-w-3xl px-6 py-16">
-        <h1 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
-          {title}
-        </h1>
+        <Display as="h1">{title}</Display>
         <p className="text-text-muted mt-4 text-[length:var(--type-ui-size-sm)]">{note}</p>
 
         <div

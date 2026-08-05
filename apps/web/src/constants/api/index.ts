@@ -1,0 +1,7 @@
+export {
+  AUTH_ROUTES,
+  METRICS_ROUTES,
+  ONBOARDING_ROUTES,
+  PRIVACY_ROUTES,
+  WAITLIST_ROUTE,
+} from './routes';

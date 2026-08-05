@@ -2,24 +2,28 @@
 
 import { useMemo } from 'react';
 
-import { ChartFigure } from '@/components/ChartFigure';
-import { DataTable, type DataColumn } from '@/components/DataTable';
-import { EChart } from '@/components/EChart';
 import {
   baseOption,
   categoryAxis,
-  chartFormatters,
   niceBounds,
   referenceLine,
+  seriesTooltip,
+  strong,
+  tooltipHtml,
   useChartTokens,
   useReducedMotion,
   valueAxis,
   type EChartsOption,
-} from '@/lib/chart';
-import { seriesTooltip, strong, tooltipHtml } from '@/lib/chart/tooltip';
+} from '@beff/ui/chart';
+import { ChartFigure } from '@beff/ui/chart-figure';
+import { DataTable, type DataColumn } from '@beff/ui/data-table';
+import { EChart } from '@beff/ui/echart';
+
+import { csvName, FIGURE_IDS } from '@/constants/figures';
+import { formatters } from '@/lib/format';
 import { getDictionary, type Locale } from '@/lib/i18n';
 
-import type { ChartFormatters } from '@/lib/chart';
+import type { Formatters } from '@/lib/format';
 import type { ParameterPoint, ParameterSeries } from '@beff/api-client/types';
 
 /** The copy this chart's tooltip needs, so the builder can be tested alone. */
@@ -43,7 +47,7 @@ export function breaches(value: number, series: ParameterSeries): boolean {
 export function controlTooltip(
   point: ParameterPoint,
   series: ParameterSeries,
-  format: ChartFormatters,
+  format: Formatters,
   copy: ControlTooltipCopy,
 ): string {
   return tooltipHtml([
@@ -104,7 +108,7 @@ export function ControlChart({
   const copy = t.dashboard.charts.control;
   const tokens = useChartTokens();
   const reducedMotion = useReducedMotion();
-  const format = useMemo(() => chartFormatters(locale), [locale]);
+  const format = useMemo(() => formatters(locale), [locale]);
 
   const columns = useMemo<DataColumn<ParameterPoint>[]>(
     () => [
@@ -260,7 +264,7 @@ export function ControlChart({
 
   return (
     <ChartFigure
-      id={`control-${series.parameter}`}
+      id={`${FIGURE_IDS.controlChart}-${series.parameter}`}
       title={label}
       description={
         breached.length === 0
@@ -282,7 +286,7 @@ export function ControlChart({
           rows={series.points}
           rowKey={(point) => point.started_at}
           locale={locale}
-          csvName={series.parameter}
+          csvName={csvName(series.parameter)}
           copy={t.dashboard.table}
         />
       }

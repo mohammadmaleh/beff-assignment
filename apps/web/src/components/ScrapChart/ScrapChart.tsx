@@ -2,10 +2,12 @@
 
 import { useMemo } from 'react';
 
-import { ChartFigure } from '@/components/ChartFigure';
-import { DataTable, type DataColumn } from '@/components/DataTable';
-import { chartFormatters } from '@/lib/chart';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { ChartFigure } from '@beff/ui/chart-figure';
+import { DataTable, type DataColumn } from '@beff/ui/data-table';
+
+import { CSV_NAMES, FIGURE_IDS } from '@/constants/figures';
+import { formatters } from '@/lib/format';
+import { getDictionary, translate, type Locale } from '@/lib/i18n';
 
 export interface ScrapRow {
   process_step: string;
@@ -28,7 +30,7 @@ export interface ScrapRow {
  * `ChartFigure`. It carried its own `<details>` disclosure, its own table markup
  * and its own `Intl.NumberFormat` instances — which is exactly how it came to
  * render `7,8%` in German, where the space before the sign is mandatory and
- * non-breaking. It now uses `chartFormatters` like the other four, and the bars
+ * non-breaking. It now uses the shared `formatters` like the other four, and the bars
  * and the table read the same string from the same formatter.
  *
  * ### Why there is no colour scale
@@ -59,8 +61,8 @@ export function ScrapChart({
   order: readonly string[];
 }) {
   const t = getDictionary(locale);
-  const steps = t.dashboard.steps as Record<string, string>;
-  const format = useMemo(() => chartFormatters(locale), [locale]);
+  const steps = t.dashboard.steps;
+  const format = useMemo(() => formatters(locale), [locale]);
 
   const ordered = useMemo(
     () => [...rows].sort((a, b) => order.indexOf(a.process_step) - order.indexOf(b.process_step)),
@@ -77,9 +79,9 @@ export function ScrapChart({
         key: 'step',
         header: t.dashboard.columnStep,
         rowHeader: true,
-        render: (row) => steps[row.process_step] ?? row.process_step,
-        text: (row) => steps[row.process_step] ?? row.process_step,
-        sortValue: (row) => steps[row.process_step] ?? row.process_step,
+        render: (row) => translate(steps, row.process_step),
+        text: (row) => translate(steps, row.process_step),
+        sortValue: (row) => translate(steps, row.process_step),
       },
       {
         key: 'scrap',
@@ -104,7 +106,7 @@ export function ScrapChart({
 
   return (
     <ChartFigure
-      id="scrap-by-step"
+      id={FIGURE_IDS.scrapByStep}
       title={t.dashboard.scrapChartTitle}
       description={t.dashboard.scrapChartDescription}
       viewChartLabel={t.dashboard.table.viewChart}
@@ -117,7 +119,7 @@ export function ScrapChart({
               className="grid grid-cols-[10rem_1fr_4rem] items-center gap-3"
             >
               <span className="text-text-muted truncate text-[length:var(--type-ui-size-sm)]">
-                {steps[row.process_step] ?? row.process_step}
+                {translate(steps, row.process_step)}
               </span>
               <span className="bg-surface-sunken block h-4">
                 <span
@@ -139,7 +141,7 @@ export function ScrapChart({
           rows={ordered}
           rowKey={(row) => row.process_step}
           locale={locale}
-          csvName="scrap-by-step"
+          csvName={CSV_NAMES.scrapByStep}
           copy={t.dashboard.table}
         />
       }

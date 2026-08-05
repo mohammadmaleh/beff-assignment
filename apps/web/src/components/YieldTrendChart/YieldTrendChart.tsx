@@ -2,25 +2,29 @@
 
 import { useMemo } from 'react';
 
-import { ChartFigure } from '@/components/ChartFigure';
-import { DataTable, type DataColumn } from '@/components/DataTable';
-import { EChart } from '@/components/EChart';
 import {
   baseOption,
   categoryAxis,
-  chartFormatters,
   niceBounds,
   referenceLine,
+  seriesTooltip,
+  strong,
+  tooltipHtml,
   useChartTokens,
   useReducedMotion,
   valueAxis,
   type EChartsOption,
-} from '@/lib/chart';
-import { seriesTooltip, strong, tooltipHtml } from '@/lib/chart/tooltip';
+} from '@beff/ui/chart';
+import { ChartFigure } from '@beff/ui/chart-figure';
+import { DataTable, type DataColumn } from '@beff/ui/data-table';
+import { EChart } from '@beff/ui/echart';
+
+import { CSV_NAMES, FIGURE_IDS } from '@/constants/figures';
+import { formatters } from '@/lib/format';
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { yieldWindow } from '@/lib/metrics';
 
-import type { ChartFormatters } from '@/lib/chart';
+import type { Formatters } from '@/lib/format';
 import type { CohortReference, TrendPoint } from '@beff/api-client/types';
 
 /** The copy this chart's tooltip needs, so the builder can be tested alone. */
@@ -38,7 +42,7 @@ export interface YieldTooltipCopy {
  */
 export function yieldTooltip(
   point: TrendPoint,
-  format: ChartFormatters,
+  format: Formatters,
   copy: YieldTooltipCopy,
 ): string {
   return tooltipHtml([
@@ -98,7 +102,7 @@ export function YieldTrendChart({
   const copy = t.dashboard.charts.yieldTrend;
   const tokens = useChartTokens();
   const reducedMotion = useReducedMotion();
-  const format = useMemo(() => chartFormatters(locale), [locale]);
+  const format = useMemo(() => formatters(locale), [locale]);
 
   const spec = yieldWindow(lineKind);
 
@@ -272,7 +276,7 @@ export function YieldTrendChart({
 
   return (
     <ChartFigure
-      id="yield-trend"
+      id={FIGURE_IDS.yieldTrend}
       title={copy.title}
       description={copy.description.replace('{n}', String(benchmark.sample_size))}
       viewChartLabel={t.dashboard.table.viewChart}
@@ -285,7 +289,7 @@ export function YieldTrendChart({
           rows={points}
           rowKey={(point) => point.batch_code}
           locale={locale}
-          csvName="first-pass-yield"
+          csvName={CSV_NAMES.yieldTrend}
           copy={t.dashboard.table}
         />
       }

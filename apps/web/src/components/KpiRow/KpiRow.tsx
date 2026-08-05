@@ -1,8 +1,10 @@
 'use client';
 
+import { Display } from '@beff/ui/display';
+
 import { useMemo } from 'react';
 
-import { chartFormatters } from '@/lib/chart';
+import { formatters } from '@/lib/format';
 import { getDictionary, type Locale } from '@/lib/i18n';
 
 import type { MetricsTrend } from '@beff/api-client/types';
@@ -38,18 +40,9 @@ import type { MetricsTrend } from '@beff/api-client/types';
 export function KpiRow({ trend, locale }: { trend: MetricsTrend; locale: Locale }) {
   const t = getDictionary(locale);
   const copy = t.dashboard.kpi;
-  const format = useMemo(() => chartFormatters(locale), [locale]);
+  const format = useMemo(() => formatters(locale), [locale]);
 
   const versusCohort = trend.window_first_pass_yield_pct - trend.benchmark.first_pass_yield_p50_pct;
-
-  // Signed and in percentage points, never as a percentage change. "Up 5%" from
-  // 68% is ambiguous between 71.4 and 73, and on a yield figure those are
-  // different weeks.
-  const signed = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-    signDisplay: 'exceptZero',
-  });
 
   const tiles = [
     {
@@ -67,7 +60,7 @@ export function KpiRow({ trend, locale }: { trend: MetricsTrend; locale: Locale 
     {
       key: 'benchmark',
       label: copy.benchmarkLabel,
-      value: `${signed.format(versusCohort)} pp`,
+      value: format.percentagePoints(versusCohort),
       note: copy.benchmarkNote
         .replace('{n}', format.count(trend.benchmark.sample_size))
         .replace('{median}', format.percent(trend.benchmark.first_pass_yield_p50_pct)),
@@ -89,9 +82,9 @@ export function KpiRow({ trend, locale }: { trend: MetricsTrend; locale: Locale 
         <div key={tile.key} className="flex flex-col gap-1">
           <dt className="text-text-muted text-[length:var(--type-ui-size-sm)]">{tile.label}</dt>
           <dd className="m-0 flex flex-col gap-1">
-            <span className="text-text-default font-(family-name:--type-family-display) text-[length:var(--type-ui-size-xl)] [font-stretch:125%] tabular-nums">
+            <Display as="span" size="xl" className="text-text-default tabular-nums">
               {tile.value}
-            </span>
+            </Display>
             <span className="text-text-muted text-[length:var(--type-ui-size-sm)]">
               {tile.note}
             </span>

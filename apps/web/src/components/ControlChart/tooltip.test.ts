@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { chartFormatters } from '@/lib/chart';
+import { formatters } from '@/lib/format';
 
 import { breaches, controlTooltip } from './ControlChart';
 
@@ -44,28 +44,28 @@ describe('controlTooltip', () => {
   const point = { started_at: '2026-07-31T06:00:00Z', value: 238 };
 
   it('states the verdict as a word, not only as a marker colour', () => {
-    expect(controlTooltip(point, series, chartFormatters('en'), copy)).toContain('Out of spec');
+    expect(controlTooltip(point, series, formatters('en'), copy)).toContain('Out of spec');
   });
 
   it('says so when the reading conforms', () => {
-    expect(controlTooltip({ ...point, value: 251 }, series, chartFormatters('en'), copy)).toContain(
+    expect(controlTooltip({ ...point, value: 251 }, series, formatters('en'), copy)).toContain(
       'In spec',
     );
   });
 
   it('shows the value with its unit', () => {
-    expect(controlTooltip(point, series, chartFormatters('en'), copy)).toContain(
+    expect(controlTooltip(point, series, formatters('en'), copy)).toContain(
       '<strong>238.0 Wh/kg</strong>',
     );
   });
 
   it('gives the date in full', () => {
-    expect(controlTooltip(point, series, chartFormatters('en'), copy)).toContain('2026');
+    expect(controlTooltip(point, series, formatters('en'), copy)).toContain('2026');
   });
 
   it('renders the verdict in the reader’s language', () => {
     expect(
-      controlTooltip(point, series, chartFormatters('de'), {
+      controlTooltip(point, series, formatters('de'), {
         inSpec: 'In Spezifikation',
         outOfSpec: 'Außerhalb der Spezifikation',
       }),

@@ -57,15 +57,28 @@ export default defineConfig({
       // floor: it fails on a *regression*, not on the ordinary drift of a
       // refactor that removes a covered line. Raise them when real coverage
       // rises; never lower one to make a red run green.
-      // Raised with the chart layer (`lib/chart`, `ChartFigure`, `EChart` and
-      // the four charts), which landed with its tooltips and option builders
-      // split out as pure functions precisely so they could be covered rather
-      // than only rendered. Measured 96.17 / 89.06 / 92.34 / 96.92.
+      // Lowered when the chart *primitives* moved to `@beff/ui` — `lib/chart`,
+      // `ChartFigure`, `DataTable` and `EChart`, which between them were ~750
+      // near-fully-covered statements. They are still tested, and tested
+      // harder: `packages/ui` went from 93.85% to 98.63% absorbing them, and
+      // `useChartTokens` gained the direct suite it never had. What left this
+      // package is the denominator, not the tests.
+      //
+      // That is the one case where lowering a floor is honest rather than a
+      // red run made green, and the arithmetic is the evidence: the same suite
+      // measured 96.17 / 89.06 / 92.34 / 96.92 across both packages before the
+      // move and 94.66 / 91.19 / 89.29 / 95.11 across this one after it, with
+      // no test deleted and ten added. What remains here is the domain layer,
+      // whose charts have always sat near 90% because their ECharts option
+      // builders are only partly reachable in jsdom.
+      //
+      // Each is set a little under the measured value. Raise them when real
+      // coverage rises; never lower one to make a red run green.
       thresholds: {
-        statements: 95,
-        branches: 88,
-        functions: 91,
-        lines: 96,
+        statements: 94,
+        branches: 90,
+        functions: 89,
+        lines: 95,
       },
     },
   },

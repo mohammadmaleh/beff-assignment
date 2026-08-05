@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { Display } from '@beff/ui/display';
+import { Lede } from '@beff/ui/lede';
 import { SpecBand } from '@beff/ui/spec-band';
 
 import { getDictionary, type Locale } from '@/lib/i18n';
@@ -45,13 +47,11 @@ export function LandingHero({ locale }: { locale: Locale }) {
             {t.landing.eyebrow}
           </p>
 
-          <h1 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-4xl)] leading-[0.98] text-balance [font-stretch:125%]">
+          <Display as="h1" size="4xl" balance>
             {t.landing.headline}
-          </h1>
+          </Display>
 
-          <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-lg)] leading-(--type-prose-leading)">
-            {t.landing.subhead}
-          </p>
+          <Lede size="lg">{t.landing.subhead}</Lede>
 
           <div className="mt-2 flex flex-wrap items-center gap-6">
             <Link
@@ -99,9 +99,7 @@ export function LandingHero({ locale }: { locale: Locale }) {
             unit="%"
             domain={YIELD_DOMAIN}
           />
-          <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
-            {t.landing.heroReadingNote}
-          </p>
+          <Lede size="sm">{t.landing.heroReadingNote}</Lede>
         </div>
       </div>
     </section>

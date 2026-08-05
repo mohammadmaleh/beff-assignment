@@ -1,8 +1,8 @@
-import type { EChartsOption } from '@/lib/chart/echarts';
-import type { ChartTokens } from '@/lib/chart/tokens';
+import type { EChartsOption } from './echarts';
+import type { ChartTokens } from './tokens';
 
 /**
- * The option fragments every chart in this app starts from.
+ * The option fragments every chart in the system starts from.
  *
  * ECharts' defaults are a different design system: 12px sans-serif, a solid
  * grey axis line, a full grid, a dark tooltip with a shadow, and a categorical
@@ -41,7 +41,7 @@ export interface BaseOptionInput {
   reducedMotion: boolean;
 }
 
-/** Grid, axis, text and tooltip defaults shared by every chart here. */
+/** Grid, axis, text and tooltip defaults shared by every chart. */
 export function baseOption({ tokens, reducedMotion }: BaseOptionInput): EChartsOption {
   return {
     animation: !reducedMotion,

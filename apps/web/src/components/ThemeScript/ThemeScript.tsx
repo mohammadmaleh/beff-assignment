@@ -1,4 +1,4 @@
-export const THEME_STORAGE_KEY = 'beff-theme';
+import { THEME_STORAGE_KEY } from '@/constants/storage';
 
 /**
  * Applies the stored theme before first paint.
@@ -12,7 +12,9 @@ export const THEME_STORAGE_KEY = 'beff-theme';
  *
  * `localStorage` rather than a cookie: this is a UI preference, it is never sent
  * to the server, and a cookie would drag it into the consent banner for no
- * reason.
+ * reason. The key is a constant in `constants/storage` because this script and
+ * `ThemeToggle` are the two halves of one contract and never see each other —
+ * this runs before React exists.
  */
 export function ThemeScript() {
   const script = `try{var t=localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t)}}catch(e){}`;

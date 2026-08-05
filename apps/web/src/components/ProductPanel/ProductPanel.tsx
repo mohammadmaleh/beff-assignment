@@ -1,8 +1,13 @@
+import { Display } from '@beff/ui/display';
+import { Eyebrow } from '@beff/ui/eyebrow';
+import { Lede } from '@beff/ui/lede';
 import { Metric } from '@beff/ui/metric';
 import { SpecBand } from '@beff/ui/spec-band';
 
 import { ScrapChart } from '@/components/ScrapChart';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { CO2_INTENSITY, PERCENT } from '@/constants/units';
+import { formatters } from '@/lib/format';
+import { getDictionary, translate, type Locale } from '@/lib/i18n';
 import { PROCESS_STEPS } from '@/lib/metrics';
 
 import { DEMO_LINE } from './demoLine';
@@ -36,15 +41,7 @@ import { DEMO_LINE } from './demoLine';
 export function ProductPanel({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
 
-  const number = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
-  const signed = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-    signDisplay: 'exceptZero',
-  });
+  const format = formatters(locale);
 
   return (
     <section
@@ -60,35 +57,28 @@ export function ProductPanel({ locale }: { locale: Locale }) {
          * second unnamed banner in the landmark rotor next to the site header.
          */}
         <div className="flex flex-col gap-4">
-          <p className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tracking-[0.14em] uppercase">
-            {t.landing.productLineLabel}
-          </p>
-          <h2
-            id="product"
-            className="max-w-3xl font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.1] [font-stretch:125%]"
-          >
+          <Eyebrow>{t.landing.productLineLabel}</Eyebrow>
+          <Display as="h2" className="max-w-3xl leading-[1.1]" id="product">
             {t.landing.productTitle}
-          </h2>
-          <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-            {t.landing.productBody}
-          </p>
+          </Display>
+          <Lede>{t.landing.productBody}</Lede>
         </div>
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <Metric
             label={t.dashboard.metrics.fpy}
-            value={number.format(DEMO_LINE.first_pass_yield_pct)}
-            unit="%"
-            delta={`${signed.format(DEMO_LINE.first_pass_yield_delta_pp)} pp`}
+            value={format.decimal(DEMO_LINE.first_pass_yield_pct)}
+            unit={PERCENT}
+            delta={format.percentagePoints(DEMO_LINE.first_pass_yield_delta_pp)}
             trend="up"
             trendWords={t.a11y.trend}
             intent="positive"
           />
           <Metric
             label={t.dashboard.metrics.scrap}
-            value={number.format(DEMO_LINE.scrap_rate_pct)}
-            unit="%"
-            delta={`${signed.format(DEMO_LINE.scrap_rate_delta_pp)} pp`}
+            value={format.decimal(DEMO_LINE.scrap_rate_pct)}
+            unit={PERCENT}
+            delta={format.percentagePoints(DEMO_LINE.scrap_rate_delta_pp)}
             trend="down"
             trendWords={t.a11y.trend}
             // Scrap falling is good news off the same arrow yield uses for the
@@ -97,36 +87,33 @@ export function ProductPanel({ locale }: { locale: Locale }) {
           />
           <Metric
             label={t.dashboard.metrics.retention}
-            value={number.format(DEMO_LINE.capacity_retention_pct)}
-            unit="%"
+            value={format.decimal(DEMO_LINE.capacity_retention_pct)}
+            unit={PERCENT}
           />
           <Metric
             label={t.dashboard.metrics.co2}
-            value={number.format(DEMO_LINE.co2_intensity_kg_per_kwh)}
-            unit="kg CO₂e/kWh"
+            value={format.decimal(DEMO_LINE.co2_intensity_kg_per_kwh)}
+            unit={CO2_INTENSITY}
           />
         </div>
 
         <div className="grid gap-12 lg:grid-cols-[3fr_2fr] lg:gap-16">
           <div className="flex flex-col gap-6">
-            <h3 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-lg)] [font-stretch:125%]">
+            <Display as="h3" size="lg">
               {t.dashboard.scrapTitle}
-            </h3>
+            </Display>
             <ScrapChart rows={DEMO_LINE.scrap_by_step} locale={locale} order={PROCESS_STEPS} />
           </div>
 
           <div className="flex flex-col gap-6">
-            <h3 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-lg)] [font-stretch:125%]">
+            <Display as="h3" size="lg">
               {t.dashboard.bandsTitle}
-            </h3>
+            </Display>
             <div className="flex flex-col gap-8">
               {DEMO_LINE.spec_bands.map((band) => (
                 <SpecBand
                   key={band.parameter}
-                  label={
-                    (t.dashboard.parameters as Record<string, string>)[band.parameter] ??
-                    band.parameter
-                  }
+                  label={translate(t.dashboard.parameters, band.parameter)}
                   words={t.a11y.specBand}
                   value={band.value}
                   lowerLimit={band.lower_limit}
@@ -139,9 +126,7 @@ export function ProductPanel({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
-          {t.landing.productNote}
-        </p>
+        <Lede size="sm">{t.landing.productNote}</Lede>
       </div>
     </section>
   );

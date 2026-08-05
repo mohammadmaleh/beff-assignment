@@ -1,14 +1,20 @@
 import type { DataColumn } from './types';
-import type { Locale } from '@/lib/i18n';
 
 /**
  * German Excel splits on semicolons, English Excel on commas.
  *
  * Getting this wrong does not produce a subtly wrong file — it produces one
  * column per row, which the user reads as a broken export.
+ *
+ * The rule underneath is not "German": Excel uses a semicolon wherever the
+ * locale's *decimal separator* is a comma, because a comma cannot be both at
+ * once. Asking `Intl` which separator the locale uses states that rule directly
+ * instead of enumerating locales — so `fr` and `es` are already right, and this
+ * component carries no list of the app's locales for the app to keep in step
+ * with.
  */
-export function csvDelimiter(locale: Locale): string {
-  return locale === 'de' ? ';' : ',';
+export function csvDelimiter(locale: string): string {
+  return new Intl.NumberFormat(locale).format(1.1).includes(',') ? ';' : ',';
 }
 
 function escapeCell(value: string, delimiter: string): string {

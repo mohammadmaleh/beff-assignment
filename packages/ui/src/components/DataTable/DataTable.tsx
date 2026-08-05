@@ -7,7 +7,6 @@ import { Toolbar } from './Toolbar';
 import { applyFilters, EMPTY_FILTERS, hasActiveFilter, sortRows } from './model';
 
 import type { DataColumn, DataTableCopy, SortState } from './types';
-import type { Locale } from '@/lib/i18n';
 
 export interface DataTableProps<Row> {
   /** The `<caption>`, which is the table's accessible name. */
@@ -15,9 +14,20 @@ export interface DataTableProps<Row> {
   columns: readonly DataColumn<Row>[];
   rows: readonly Row[];
   rowKey: (row: Row) => string;
-  /** Only used for the CSV delimiter. Cell values arrive already formatted. */
-  locale: Locale;
-  /** Filename stem, e.g. `first-pass-yield`. */
+  /**
+   * A BCP 47 tag, used only for the CSV delimiter — cell values arrive already
+   * formatted. Deliberately a plain string rather than the app's `Locale` union:
+   * a table that only accepts the two locales this product ships is a table the
+   * design system cannot lend to anything else.
+   */
+  locale: string;
+  /**
+   * Filename stem, e.g. `beff-first-pass-yield`. The download appends the day.
+   *
+   * The whole stem, brand included, comes from the caller. It used to be
+   * assembled here as `` `beff-${csvName}` ``, which put a customer's name
+   * inside a component that has no business knowing one.
+   */
   csvName: string;
   copy: DataTableCopy;
 }
@@ -130,10 +140,7 @@ export function DataTable<Row>({
           // `visible`, not `rows`: the export is what the reader is looking at,
           // filters and sort included. An export that quietly differs from the
           // screen is worse than none.
-          downloadCsv(
-            toCsv(columns, visible, csvDelimiter(locale)),
-            `beff-${csvName}-${stamp}.csv`,
-          );
+          downloadCsv(toCsv(columns, visible, csvDelimiter(locale)), `${csvName}-${stamp}.csv`);
         }}
         filtering={filtering}
         rangeColumn={rangeColumn}

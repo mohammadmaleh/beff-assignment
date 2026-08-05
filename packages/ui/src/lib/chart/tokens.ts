@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { DARK_SCHEME_QUERY } from '../media/index';
+
 /**
  * The design tokens a chart is allowed to draw with, resolved at runtime.
  *
@@ -88,8 +90,6 @@ const FALLBACK: ChartTokens = {
   'color-status-danger-fg': '#892218',
 };
 
-const DARK_QUERY = '(prefers-color-scheme: dark)';
-
 /** Resolve every token in one `getComputedStyle` call rather than twenty. */
 export function readChartTokens(element: Element): ChartTokens {
   const computed = getComputedStyle(element);
@@ -125,7 +125,7 @@ export function useChartTokens(): ChartTokens {
     observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
 
     // And the OS-schedule path, which touches no attribute at all.
-    const query = window.matchMedia(DARK_QUERY);
+    const query = window.matchMedia(DARK_SCHEME_QUERY);
     query.addEventListener('change', sync);
 
     return () => {

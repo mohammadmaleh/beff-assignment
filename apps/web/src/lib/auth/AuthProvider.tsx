@@ -3,6 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
+import { AUTH_ROUTES } from '@/constants/api';
+
 import { authFetch, refresh, setAccessToken } from './session';
 
 export interface SessionUser {
@@ -57,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       try {
-        setUser(await authFetch<SessionUser>('/auth/me'));
+        setUser(await authFetch<SessionUser>(AUTH_ROUTES.me));
       } catch {
         setUser(null);
       } finally {
@@ -79,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (email: string, password: string): Promise<void> => {
       start(
-        await authFetch<SessionResponse>('/auth/login', {
+        await authFetch<SessionResponse>(AUTH_ROUTES.login, {
           method: 'POST',
           body: { email, password },
         }),
@@ -91,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(
     async (email: string, password: string, displayName: string): Promise<void> => {
       start(
-        await authFetch<SessionResponse>('/auth/register', {
+        await authFetch<SessionResponse>(AUTH_ROUTES.register, {
           method: 'POST',
           body: { email, password, display_name: displayName },
         }),
@@ -102,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async (): Promise<void> => {
     try {
-      await authFetch<void>('/auth/logout', { method: 'POST', retry: false });
+      await authFetch<void>(AUTH_ROUTES.logout, { method: 'POST', retry: false });
     } catch {
       // Swallowed, not re-thrown. `finally` alone still rejects the promise the
       // caller is holding — so `logout().then(() => router.replace(...))` skips

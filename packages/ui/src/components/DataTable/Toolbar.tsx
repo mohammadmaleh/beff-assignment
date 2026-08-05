@@ -2,7 +2,7 @@
 
 import { useId, type ReactNode } from 'react';
 
-import { Button } from '@beff/ui/button';
+import { Button } from '../Button/index';
 
 import type { DataTableCopy, FilterState } from './types';
 

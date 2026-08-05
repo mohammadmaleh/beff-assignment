@@ -6,10 +6,14 @@ import { useState } from 'react';
 
 import { Alert } from '@beff/ui/alert';
 import { Button } from '@beff/ui/button';
+import { Display } from '@beff/ui/display';
+import { Lede } from '@beff/ui/lede';
 import { TextField } from '@beff/ui/text-field';
 
 import type { ConsentState, ExportJob } from '@beff/api-client/types';
 
+import { PRIVACY_ROUTES } from '@/constants/api';
+import { QUERY_KEYS } from '@/constants/queryKeys';
 import { apiUrl } from '@/lib/api';
 import { authFetch, useAuth } from '@/lib/auth';
 import { getDictionary, type Locale } from '@/lib/i18n';
@@ -34,8 +38,8 @@ export function ProfileView({ locale }: { locale: Locale }) {
   const queryClient = useQueryClient();
 
   const consent = useQuery({
-    queryKey: ['consent'],
-    queryFn: () => authFetch<ConsentState>('/privacy/consent'),
+    queryKey: QUERY_KEYS.consent,
+    queryFn: () => authFetch<ConsentState>(PRIVACY_ROUTES.consent),
   });
 
   const setConsent = useMutation({
@@ -43,15 +47,15 @@ export function ProfileView({ locale }: { locale: Locale }) {
       // POST, never PUT. Consent records are append-only: proving *what* was
       // consented to and *when* is itself an obligation (Art. 7(1)), and an
       // UPDATE destroys the only evidence of the previous state.
-      authFetch<ConsentState>('/privacy/consent', { method: 'POST', body: next }),
+      authFetch<ConsentState>(PRIVACY_ROUTES.consent, { method: 'POST', body: next }),
     onSuccess: (state) => {
-      queryClient.setQueryData(['consent'], state);
+      queryClient.setQueryData(QUERY_KEYS.consent, state);
     },
   });
 
   const exportJob = useQuery({
-    queryKey: ['export'],
-    queryFn: () => authFetch<ExportJob | null>('/privacy/export'),
+    queryKey: QUERY_KEYS.export,
+    queryFn: () => authFetch<ExportJob | null>(PRIVACY_ROUTES.export),
     // Poll only while there is something to wait for. A fixed interval would
     // keep hitting the API forever on a page nobody is watching.
     refetchInterval: (query) => {
@@ -61,9 +65,9 @@ export function ProfileView({ locale }: { locale: Locale }) {
   });
 
   const requestExport = useMutation({
-    mutationFn: () => authFetch<ExportJob>('/privacy/export', { method: 'POST' }),
+    mutationFn: () => authFetch<ExportJob>(PRIVACY_ROUTES.export, { method: 'POST' }),
     onSuccess: (job) => {
-      queryClient.setQueryData(['export'], job);
+      queryClient.setQueryData(QUERY_KEYS.export, job);
     },
   });
 
@@ -71,7 +75,7 @@ export function ProfileView({ locale }: { locale: Locale }) {
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const erase = useMutation({
-    mutationFn: () => authFetch<void>('/privacy/erasure', { method: 'DELETE' }),
+    mutationFn: () => authFetch<void>(PRIVACY_ROUTES.erasure, { method: 'DELETE' }),
     onSuccess: async () => {
       await logout();
       router.replace(surfacePath('landing', locale));
@@ -85,9 +89,7 @@ export function ProfileView({ locale }: { locale: Locale }) {
     // composes itself in full-bleed bands — so each surface sets its own.
     <div className="mx-auto flex max-w-5xl flex-col gap-16 px-6 py-12">
       <div>
-        <h1 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
-          {t.profile.title}
-        </h1>
+        <Display as="h1">{t.profile.title}</Display>
       </div>
 
       <section aria-labelledby="details">
@@ -106,9 +108,9 @@ export function ProfileView({ locale }: { locale: Locale }) {
         <h2 id="consent" className="text-[length:var(--type-ui-size-lg)] font-medium">
           {t.profile.consentTitle}
         </h2>
-        <p className="text-text-muted mt-2 max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
+        <Lede size="sm" className="mt-2">
           {t.profile.consentBody}
-        </p>
+        </Lede>
 
         <ul className="mt-6 flex flex-col gap-3">
           {(
@@ -149,9 +151,9 @@ export function ProfileView({ locale }: { locale: Locale }) {
         <h2 id="export" className="text-[length:var(--type-ui-size-lg)] font-medium">
           {t.profile.exportTitle}
         </h2>
-        <p className="text-text-muted mt-2 max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
+        <Lede size="sm" className="mt-2">
           {t.profile.exportBody}
-        </p>
+        </Lede>
 
         <div className="mt-6 flex flex-col gap-4">
           {job?.status === 'pending' || job?.status === 'running' ? (
@@ -198,9 +200,9 @@ export function ProfileView({ locale }: { locale: Locale }) {
         >
           {t.profile.dangerTitle}
         </h2>
-        <p className="text-text-muted mt-2 max-w-[var(--type-prose-measure)] text-[length:var(--type-ui-size-sm)]">
+        <Lede size="sm" className="mt-2">
           {t.profile.dangerBody}
-        </p>
+        </Lede>
 
         <form
           className="mt-6 flex flex-col gap-4"

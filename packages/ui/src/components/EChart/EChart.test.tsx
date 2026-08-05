@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { EChart } from './EChart';
 
-import type { EChartsOption } from '@/lib/chart';
+import type { EChartsOption } from '../../lib/chart/index';
 
 /**
  * Two things about this component are worth a test, and neither is what it

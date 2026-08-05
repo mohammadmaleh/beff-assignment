@@ -6,6 +6,7 @@ import { Alert } from '@beff/ui/alert';
 import { Button } from '@beff/ui/button';
 import { TextField } from '@beff/ui/text-field';
 
+import { WAITLIST_ROUTE } from '@/constants/api';
 import { apiUrl, problemFieldErrors, type FieldErrors } from '@/lib/api';
 import { textField } from '@/lib/forms';
 import { getDictionary, translateFieldError, type Locale } from '@/lib/i18n';
@@ -32,7 +33,7 @@ export function WaitlistForm({ locale }: { locale: Locale }) {
     const data = new FormData(event.currentTarget);
 
     try {
-      const response = await fetch(apiUrl('/waitlist'), {
+      const response = await fetch(apiUrl(WAITLIST_ROUTE), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept-Language': locale },
         body: JSON.stringify({

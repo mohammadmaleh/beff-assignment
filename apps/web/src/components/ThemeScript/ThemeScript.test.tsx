@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { THEME_STORAGE_KEY, ThemeScript } from './ThemeScript';
+import { THEME_STORAGE_KEY } from '@/constants/storage';
+
+import { ThemeScript } from './ThemeScript';
 
 /**
  * Run the emitted script the way the browser does.

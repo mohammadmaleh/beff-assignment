@@ -1,3 +1,5 @@
+import { Display } from '@beff/ui/display';
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -27,9 +29,7 @@ export default async function RegisterPage({ params }: { params: Promise<{ local
     <>
       <SiteHeader locale={locale} />
       <main id="main" className="mx-auto w-full max-w-md px-6 py-16">
-        <h1 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
-          {t.auth.registerTitle}
-        </h1>
+        <Display as="h1">{t.auth.registerTitle}</Display>
         <p className="text-text-muted mt-2">{t.auth.registerSubtitle}</p>
 
         <div className="mt-10">

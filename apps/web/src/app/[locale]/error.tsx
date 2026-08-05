@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 
 import { Button } from '@beff/ui/button';
+import { Display } from '@beff/ui/display';
+import { Lede } from '@beff/ui/lede';
 
 import { DEFAULT_LOCALE, getDictionary } from '@/lib/i18n';
 
@@ -43,12 +45,8 @@ export default function RouteError({
        * something went wrong rather than finding the page silently different.
        */}
       <div role="alert">
-        <h1 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
-          {t.errors.unexpectedTitle}
-        </h1>
-        <p className="text-text-muted mt-4 max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-          {t.errors.unexpectedBody}
-        </p>
+        <Display as="h1">{t.errors.unexpectedTitle}</Display>
+        <Lede className="mt-4">{t.errors.unexpectedBody}</Lede>
       </div>
 
       <div className="mt-10">

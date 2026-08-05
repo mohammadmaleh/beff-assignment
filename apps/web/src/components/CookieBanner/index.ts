@@ -1,2 +1,2 @@
-export { CookieBanner, CONSENT_STORAGE_KEY } from './CookieBanner';
+export { CookieBanner } from './CookieBanner';
 export type { CookieConsent } from './CookieBanner';

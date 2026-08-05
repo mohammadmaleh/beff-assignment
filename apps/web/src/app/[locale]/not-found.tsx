@@ -1,3 +1,6 @@
+import { Display } from '@beff/ui/display';
+import { Lede } from '@beff/ui/lede';
+
 import Link from 'next/link';
 
 import { SiteFooter } from '@/components/SiteFooter';
@@ -28,12 +31,10 @@ export default function NotFound() {
         <p className="text-text-muted font-(family-name:--type-family-data) text-[length:var(--type-ui-size-sm)] tabular-nums">
           404
         </p>
-        <h1 className="mt-4 font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] [font-stretch:125%]">
+        <Display as="h1" className="mt-4">
           {t.errors.notFoundTitle}
-        </h1>
-        <p className="text-text-muted mt-4 max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-          {t.errors.notFoundBody}
-        </p>
+        </Display>
+        <Lede className="mt-4">{t.errors.notFoundBody}</Lede>
 
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <Link

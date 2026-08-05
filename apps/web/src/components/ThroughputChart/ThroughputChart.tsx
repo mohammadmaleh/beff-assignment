@@ -2,23 +2,27 @@
 
 import { useMemo } from 'react';
 
-import { ChartFigure } from '@/components/ChartFigure';
-import { DataTable, type DataColumn } from '@/components/DataTable';
-import { EChart } from '@/components/EChart';
 import {
   baseOption,
   categoryAxis,
-  chartFormatters,
   niceBounds,
+  seriesTooltip,
+  strong,
+  tooltipHtml,
   useChartTokens,
   useReducedMotion,
   valueAxis,
   type EChartsOption,
-} from '@/lib/chart';
-import { seriesTooltip, strong, tooltipHtml } from '@/lib/chart/tooltip';
+} from '@beff/ui/chart';
+import { ChartFigure } from '@beff/ui/chart-figure';
+import { DataTable, type DataColumn } from '@beff/ui/data-table';
+import { EChart } from '@beff/ui/echart';
+
+import { CSV_NAMES, FIGURE_IDS } from '@/constants/figures';
+import { formatters } from '@/lib/format';
 import { getDictionary, type Locale } from '@/lib/i18n';
 
-import type { ChartFormatters } from '@/lib/chart';
+import type { Formatters } from '@/lib/format';
 import type { TrendPoint } from '@beff/api-client/types';
 
 /** The copy this chart's tooltip needs, so the builder can be tested alone. */
@@ -37,7 +41,7 @@ export interface ThroughputTooltipCopy {
  */
 export function throughputTooltip(
   point: TrendPoint,
-  format: ChartFormatters,
+  format: Formatters,
   copy: ThroughputTooltipCopy,
 ): string {
   return tooltipHtml([
@@ -90,7 +94,7 @@ export function ThroughputChart({
   const copy = t.dashboard.charts.throughput;
   const tokens = useChartTokens();
   const reducedMotion = useReducedMotion();
-  const format = useMemo(() => chartFormatters(locale), [locale]);
+  const format = useMemo(() => formatters(locale), [locale]);
 
   const columns = useMemo<DataColumn<TrendPoint>[]>(
     () => [
@@ -243,7 +247,7 @@ export function ThroughputChart({
 
   return (
     <ChartFigure
-      id="throughput"
+      id={FIGURE_IDS.throughput}
       title={copy.title}
       description={copy.description}
       viewChartLabel={t.dashboard.table.viewChart}
@@ -256,7 +260,7 @@ export function ThroughputChart({
           rows={points}
           rowKey={(point) => point.batch_code}
           locale={locale}
-          csvName="cells-by-batch"
+          csvName={CSV_NAMES.throughput}
           copy={t.dashboard.table}
         />
       }

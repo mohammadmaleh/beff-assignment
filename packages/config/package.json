@@ -5,12 +5,14 @@
   "files": [
     "tsconfig.base.json",
     "tsconfig.nextjs.json",
-    "eslint.config.mjs"
+    "eslint.config.mjs",
+    "vitest"
   ],
   "exports": {
     "./tsconfig.base.json": "./tsconfig.base.json",
     "./tsconfig.nextjs.json": "./tsconfig.nextjs.json",
-    "./eslint": "./eslint.config.mjs"
+    "./eslint": "./eslint.config.mjs",
+    "./vitest-shims": "./vitest/jsdomShims.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

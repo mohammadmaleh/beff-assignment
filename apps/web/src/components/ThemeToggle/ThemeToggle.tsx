@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 
-import { THEME_STORAGE_KEY } from '@/components/ThemeScript';
+import { DARK_SCHEME_QUERY } from '@beff/ui/media';
+
+import { THEME_STORAGE_KEY } from '@/constants/storage';
 import { getDictionary, type Locale } from '@/lib/i18n';
 
 type Theme = 'light' | 'dark';
-
-const DARK_QUERY = '(prefers-color-scheme: dark)';
 
 /**
  * A two-state theme control.
@@ -49,7 +49,7 @@ export function ThemeToggle({ locale }: { locale: Locale }) {
     // Nothing pinned, so the media query is what the reader is actually looking
     // at. Reading it is not the same as writing it: pinning on load would freeze
     // a visitor into whatever their OS said the first time they arrived.
-    const query = window.matchMedia(DARK_QUERY);
+    const query = window.matchMedia(DARK_SCHEME_QUERY);
     setTheme(query.matches ? 'dark' : 'light');
 
     const follow = (event: MediaQueryListEvent): void => {

@@ -2,23 +2,27 @@
 
 import { useMemo } from 'react';
 
-import { ChartFigure } from '@/components/ChartFigure';
-import { DataTable, type DataColumn } from '@/components/DataTable';
-import { EChart } from '@/components/EChart';
 import {
   baseOption,
   categoryAxis,
-  chartFormatters,
+  seriesTooltip,
+  strong,
+  tooltipHtml,
   useChartTokens,
   useReducedMotion,
   valueAxis,
   type EChartsOption,
-} from '@/lib/chart';
-import { seriesTooltip, strong, tooltipHtml } from '@/lib/chart/tooltip';
-import { getDictionary, type Locale } from '@/lib/i18n';
+} from '@beff/ui/chart';
+import { ChartFigure } from '@beff/ui/chart-figure';
+import { DataTable, type DataColumn } from '@beff/ui/data-table';
+import { EChart } from '@beff/ui/echart';
+
+import { CSV_NAMES, FIGURE_IDS } from '@/constants/figures';
+import { formatters } from '@/lib/format';
+import { getDictionary, translate, type Locale } from '@/lib/i18n';
 import { PROCESS_STEPS } from '@/lib/metrics';
 
-import type { ChartFormatters } from '@/lib/chart';
+import type { Formatters } from '@/lib/format';
 import type { ScrapByStep } from '@beff/api-client/types';
 
 /** The copy this chart's tooltip needs, so the builder can be tested alone. */
@@ -36,12 +40,12 @@ export interface ScrapCostTooltipCopy {
  */
 export function scrapCostTooltip(
   row: ScrapByStep,
-  steps: Record<string, string>,
-  format: ChartFormatters,
+  steps: Readonly<Record<string, string>>,
+  format: Formatters,
   copy: ScrapCostTooltipCopy,
 ): string {
   return tooltipHtml([
-    strong(steps[row.process_step] ?? row.process_step),
+    strong(translate(steps, row.process_step)),
     `${copy.seriesName}: ${format.euro(row.committed_value_eur)}`,
     `${copy.columnScrap}: ${format.percent(row.scrap_rate_pct)}`,
   ]);
@@ -81,10 +85,10 @@ export function scrapCostTooltip(
 export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[]; locale: Locale }) {
   const t = getDictionary(locale);
   const copy = t.dashboard.charts.scrapCost;
-  const steps = t.dashboard.steps as Record<string, string>;
+  const steps = t.dashboard.steps;
   const tokens = useChartTokens();
   const reducedMotion = useReducedMotion();
-  const format = useMemo(() => chartFormatters(locale), [locale]);
+  const format = useMemo(() => formatters(locale), [locale]);
 
   const ordered = useMemo(() => {
     // Widened to `readonly string[]` on purpose. `PROCESS_STEPS` is a const
@@ -103,9 +107,9 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
         key: 'step',
         header: copy.columnStep,
         rowHeader: true,
-        render: (row) => steps[row.process_step] ?? row.process_step,
-        text: (row) => steps[row.process_step] ?? row.process_step,
-        sortValue: (row) => steps[row.process_step] ?? row.process_step,
+        render: (row) => translate(steps, row.process_step),
+        text: (row) => translate(steps, row.process_step),
+        sortValue: (row) => translate(steps, row.process_step),
       },
       {
         key: 'scrap',
@@ -149,7 +153,7 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
         // Reversed, because a category axis counts up from the bottom and
         // process order has to read top-to-bottom: mixing first, end-of-line
         // test last.
-        data: [...ordered].reverse().map((row) => steps[row.process_step] ?? row.process_step),
+        data: [...ordered].reverse().map((row) => translate(steps, row.process_step)),
         axisLine: { show: false },
       }),
       series: [
@@ -189,7 +193,7 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
 
   return (
     <ChartFigure
-      id="scrap-cost"
+      id={FIGURE_IDS.scrapCost}
       title={copy.title}
       description={copy.description}
       viewChartLabel={t.dashboard.table.viewChart}
@@ -208,7 +212,7 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
           rows={ordered}
           rowKey={(row) => row.process_step}
           locale={locale}
-          csvName="committed-value-lost"
+          csvName={CSV_NAMES.scrapCost}
           copy={t.dashboard.table}
         />
       }

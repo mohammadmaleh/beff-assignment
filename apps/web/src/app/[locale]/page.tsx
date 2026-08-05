@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { Display } from '@beff/ui/display';
+import { Lede } from '@beff/ui/lede';
 import { SpecBand } from '@beff/ui/spec-band';
 
 import { ChainMarker } from '@/components/ChainMarker';
@@ -62,12 +64,10 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
         <section className="mx-auto max-w-6xl px-6 py-20">
           <ChainMarker step="mixing" locale={locale} />
           <div className="mt-10 grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-            <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+            <Display as="h2" balance>
               {t.landing.problemTitle}
-            </h2>
-            <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-              {t.landing.problemBody}
-            </p>
+            </Display>
+            <Lede>{t.landing.problemBody}</Lede>
           </div>
         </section>
 
@@ -84,12 +84,10 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             <ChainMarker step="coating" locale={locale} />
             <div className="mt-10 flex flex-col gap-10">
               <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-                <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+                <Display as="h2" balance>
                   {t.landing.costTitle}
-                </h2>
-                <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                  {t.landing.costBody}
-                </p>
+                </Display>
+                <Lede>{t.landing.costBody}</Lede>
               </div>
               <CostOfPosition locale={locale} />
             </div>
@@ -102,12 +100,10 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
           <ChainMarker step="eol_test" locale={locale} />
           <div className="mt-10 grid gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
             <div className="flex flex-col gap-4">
-              <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+              <Display as="h2" balance>
                 {t.landing.signatureTitle}
-              </h2>
-              <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                {t.landing.signatureBody}
-              </p>
+              </Display>
+              <Lede>{t.landing.signatureBody}</Lede>
             </div>
 
             {/*
@@ -151,12 +147,10 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
           <div className="mx-auto max-w-6xl px-6 py-20 lg:py-24">
             <div className="grid gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
               <div className="flex flex-col gap-4">
-                <h2 className="font-(family-name:--type-family-display) text-[length:var(--type-ui-size-2xl)] leading-[1.05] text-balance [font-stretch:125%]">
+                <Display as="h2" balance>
                   {t.landing.waitlistTitle}
-                </h2>
-                <p className="text-text-muted max-w-[var(--type-prose-measure)] text-[length:var(--type-prose-size-md)] leading-(--type-prose-leading)">
-                  {t.landing.waitlistBody}
-                </p>
+                </Display>
+                <Lede>{t.landing.waitlistBody}</Lede>
                 <p className="text-text-muted mt-2 text-[length:var(--type-ui-size-sm)]">
                   <Link
                     href={surfacePath('privacy', locale)}
