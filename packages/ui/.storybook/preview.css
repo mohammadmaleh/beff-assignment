@@ -1,0 +1,33 @@
+/*
+ * Exactly what the app loads, in the same order and from the same files.
+ *
+ * `fonts.css` and `base.css` are `@beff/ui`'s own — they moved here from
+ * `apps/web/src/app/globals.css` when Storybook was added, because a component
+ * explorer that approximates the page's base layer is worse than none: it shows
+ * a `Button` with the wrong cursor and a focus ring that is not the one the
+ * contrast gate proved, and reviewers believe it.
+ *
+ * Read as relative paths rather than through the export map. Same files either
+ * way; this makes it obvious they are this package's.
+ */
+@import 'tailwindcss';
+@import '../src/styles/fonts.css';
+@import '@beff/tokens/css';
+@import '../src/styles/base.css';
+
+/*
+ * Explicit, though Tailwind would find `src` by walking up from this file
+ * anyway. The app has to say the same thing about this directory from four
+ * levels away, and a silent difference between the two scans is how a class
+ * ends up styled in one and not the other.
+ */
+@source '../src';
+
+/*
+ * The canvas takes the theme's own surface. Storybook's default is white, which
+ * in the dark theme puts every component on a ground it will never be on and
+ * makes the palette look wrong for a reason that is not the palette.
+ */
+body {
+  padding: 1.5rem;
+}

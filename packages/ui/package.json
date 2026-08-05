@@ -6,6 +6,7 @@
   "//": "One subpath export per component, and deliberately NO root barrel. A root barrel re-exporting forty components means importing one button drags the whole library into the bundle; per-unit barrels cost nothing. Source is exported directly and transpiled by the consumer (`transpilePackages` in next.config), so there is no build step to keep in sync and no dist to go stale.",
   "exports": {
     "./alert": "./src/components/Alert/index.ts",
+    "./base.css": "./src/styles/base.css",
     "./button": "./src/components/Button/index.ts",
     "./chart": "./src/lib/chart/index.ts",
     "./chart-figure": "./src/components/ChartFigure/index.ts",
@@ -16,6 +17,7 @@
     "./echart": "./src/components/EChart/index.ts",
     "./eyebrow": "./src/components/Eyebrow/index.ts",
     "./field": "./src/components/Field/index.ts",
+    "./fonts.css": "./src/styles/fonts.css",
     "./lede": "./src/components/Lede/index.ts",
     "./media": "./src/lib/media/index.ts",
     "./metric": "./src/components/Metric/index.ts",
@@ -28,7 +30,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
-    "clean": "rm -rf node_modules .turbo"
+    "test:storybook": "vitest run src/stories.test.tsx",
+    "storybook": "storybook dev --port 6006 --no-open",
+    "build-storybook": "storybook build",
+    "clean": "rm -rf node_modules .turbo storybook-static"
   },
   "//peerDependencies": "`echarts` is a peer, not a dependency. `echarts/core` keeps its registry of chart types in module state, so the app's `use()` calls and this package's must reach the *same* module instance — two copies at different versions would register into one registry and draw from the other, and the symptom is an empty chart with no error. A peer makes the consumer own the single copy.",
   "peerDependencies": {
@@ -39,7 +44,10 @@
   "devDependencies": {
     "@beff/config": "workspace:*",
     "@beff/tokens": "workspace:*",
-    "echarts": "^6.1.0",
+    "@storybook/addon-a11y": "^10.5.6",
+    "@storybook/addon-docs": "^10.5.6",
+    "@storybook/react-vite": "^10.5.6",
+    "@tailwindcss/vite": "4.3.3",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -47,11 +55,20 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
     "@vitest/coverage-v8": "4.1.10",
+    "echarts": "^6.1.0",
     "eslint": "^9.39.5",
     "jsdom": "^30.0.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "storybook": "^10.5.6",
+    "tailwindcss": "4.3.3",
     "typescript": "^5.9.3",
+    "vite": "^8.2.0",
     "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0"
   }
 }

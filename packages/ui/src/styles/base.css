@@ -1,0 +1,101 @@
+/*
+ * The base layer the components in this package assume.
+ *
+ * ## What belongs here, and what does not
+ *
+ * These four rules are the ones a component is *incomplete* without: a `Button`
+ * with no pointer cursor and no focus ring is not the component this package
+ * ships, it is a near-miss. So they travel with the components rather than with
+ * any one app — which is also what lets Storybook render the real thing instead
+ * of an approximation of it, and the approximation is exactly how a design
+ * system starts disagreeing with the product it describes.
+ *
+ * What stays in `apps/web/src/app/globals.css` is everything an app decides:
+ * the skip link, the brand mark's dark-ground treatment, the calibration
+ * ground, and the `band-draw` keyframes. That last one is a deliberate split
+ * and worth restating — a component that animates on mount animates *everywhere*
+ * it is placed, including twelve at a time on the dashboard. `SpecBand` exposes
+ * `data-part` hooks and the page decides whether to use them.
+ *
+ * Requires `@beff/tokens/css` to have been imported first. It carries the
+ * `@theme inline` block these custom properties come from.
+ */
+
+body {
+  margin: 0;
+  background-color: var(--color-surface-base);
+  color: var(--color-text-default);
+  font-family: var(--type-family-body);
+  font-size: var(--type-ui-size-md);
+  line-height: var(--type-ui-leading);
+  /* Metrics and table figures must not jitter between renders. */
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * One visible focus treatment everywhere, using the token the contrast gate
+ * proves clears 3:1 against both surfaces. Never remove an outline without
+ * replacing it.
+ */
+:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/*
+ * Put the pointer cursor back on buttons.
+ *
+ * Tailwind v3's Preflight carried `button, [role="button"] { cursor: pointer }`.
+ * v4 removed it deliberately, to defer to the user-agent stylesheet — and the
+ * UA default for a button is `cursor: default`, the plain arrow. So upgrading
+ * silently made every button in the app stop signalling that it is clickable,
+ * while links and `<summary>` kept their pointer and looked correct.
+ *
+ * That asymmetry is what makes it hard to spot: the page is full of working
+ * pointers, so the ones that are missing read as a single broken control rather
+ * than as a global regression. Measured before the fix — every `<button>` on the
+ * landing, login and dashboard surfaces computed `default`.
+ *
+ * ## Why `@layer base`, and why the guards as well
+ *
+ * Both are load-bearing, for different reasons.
+ *
+ * Unlayered, this rule would outrank every Tailwind utility, because unlayered
+ * CSS beats layered CSS regardless of specificity — and `disabled:cursor-not-allowed`
+ * on `Button` and `TextField` is a utility. A disabled button would then claim
+ * to be clickable, which is worse than the bug being fixed.
+ *
+ * `@layer base` alone would be enough for those two components. The `:not()`
+ * guards are there for anything that sets its disabled state without reaching
+ * for a Tailwind class, which is the case a future contributor will hit.
+ */
+@layer base {
+  button:not(:disabled):not([aria-disabled='true']),
+  [role='button']:not(:disabled):not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    /*
+     * The delays too, and this is not tidiness.
+     *
+     * Zeroing only the duration collapses each animation to an instant that
+     * still waits out its `animation-delay` first. The hero band is staggered —
+     * the limits at 380ms, the reading at 480ms — so with reduced motion
+     * honoured and delays intact, the measurement a screen reader user is
+     * *told* about was invisible on screen for half a second. Measured, not
+     * theorised: at 120ms after load the tick read `opacity: 0`.
+     *
+     * "Collapses to final state" is only true if the wait collapses as well.
+     */
+    animation-delay: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

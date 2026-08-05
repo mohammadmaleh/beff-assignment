@@ -34,8 +34,17 @@
       "outputs": ["coverage/**"]
     },
     "test:storybook": {
-      "dependsOn": ["build"],
+      // `^build`, never `build`. `packages/ui` deliberately has no build script
+      // — it ships source — and turbo resolves a `dependsOn` across the whole
+      // workspace graph, so a task depending on a build that cannot run breaks
+      // the root commands repo-wide. This one needs `@beff/tokens` built, which
+      // is exactly what the caret says.
+      "dependsOn": ["^build"],
       "outputs": []
+    },
+    "build-storybook": {
+      "dependsOn": ["^build"],
+      "outputs": ["storybook-static/**"]
     },
     "test:e2e": {
       "dependsOn": ["^build"],

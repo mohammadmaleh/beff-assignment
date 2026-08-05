@@ -45,11 +45,28 @@ describe('package exports', () => {
     }
   });
 
-  it('points every subpath at a barrel, never at an implementation file', () => {
+  it('points every module subpath at a barrel, never at an implementation file', () => {
     // Consumers import from the barrel so internal layout can change without
-    // touching call sites.
+    // touching call sites. Stylesheets are exempt and checked below — a CSS
+    // file has no barrel to hide behind, and `@import` cannot resolve one.
     for (const target of Object.values(manifest.exports)) {
+      if (target.endsWith('.css')) continue;
       expect(target).toMatch(/\/index\.ts$/);
+    }
+  });
+
+  it('exports the stylesheets the app and Storybook both load', () => {
+    /*
+     * `base.css` and `fonts.css` live here rather than in `apps/web` because a
+     * `Button` with no focus ring and no pointer cursor is not the component
+     * this package ships — and because Storybook has to render the real thing.
+     * Two copies of that base layer is how a design system starts disagreeing
+     * with the product it documents.
+     */
+    for (const name of ['./base.css', './fonts.css']) {
+      const target = manifest.exports[name];
+      expect(target).toBeDefined();
+      expect(readdirSync(join(ROOT, 'src', 'styles'))).toContain(target!.split('/').pop());
     }
   });
 
@@ -62,5 +79,20 @@ describe('package exports', () => {
   it.each(components)('co-locates a test with %s', (name) => {
     const files = readdirSync(join(componentsDir, name));
     expect(files.some((f) => f.endsWith('.test.tsx') || f.endsWith('.test.ts'))).toBe(true);
+  });
+
+  /*
+   * A story per component, enforced the same way the barrel is.
+   *
+   * A design system whose explorer covers *most* of it is the failure mode
+   * worth guarding against, not a missing Storybook: a reviewer opens it, does
+   * not find a component, and concludes the component does not exist. Asserting
+   * per directory — rather than counting story files — is what makes this a
+   * structural rule instead of a number that stays true while the wrong eleven
+   * components are covered.
+   */
+  it.each(components)('co-locates a story with %s', (name) => {
+    const files = readdirSync(join(componentsDir, name));
+    expect(files.some((f) => f.endsWith('.stories.tsx'))).toBe(true);
   });
 });
