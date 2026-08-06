@@ -1,3 +1,4 @@
+import { buttonClassName } from '@beff/ui/button';
 import { Display } from '@beff/ui/display';
 import { Lede } from '@beff/ui/lede';
 
@@ -39,7 +40,15 @@ export default function NotFound() {
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <Link
             href={surfacePath('landing', locale)}
-            className="bg-brand-default text-text-on-brand rounded-chamfer hover:bg-brand-hover inline-flex items-center px-4 py-2 font-medium"
+            /*
+             * This was the drifted copy: `rounded-chamfer` rather than
+             * `rounded-control` — the band radius on a control, which the
+             * Button's own comment calls a browser default nobody styled — and
+             * no transition, no press, no minimum height. It had been a
+             * visibly different primary button from the header's for as long
+             * as the page existed, which is what a copied class string does.
+             */
+            className={buttonClassName()}
           >
             {t.errors.backHome}
           </Link>

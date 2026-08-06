@@ -38,6 +38,16 @@ export default defineConfig({
       // effect of mounting a chart — gained a direct one. Raised again when
       // `CookieBanner`, `ThemeToggle` and `ThemeScript` arrived with their
       // suites. Measured 99.14 / 96.55 / 100 / 99.67.
+      //
+      // `Reading` and `buttonClassName` moved in from `apps/web` and nudged
+      // this to 99.19 / 96.65 / 100 / 99.77. Left where they are: 0.05pp is
+      // not a rise a floor should chase. `apps/web` was re-measured on the
+      // same change and did not move at all — 799/832 statements before and
+      // after — because what left it was JSX inside an already-covered
+      // `return`, which v8 counts as one statement either way. That is the
+      // unusual case where a move between packages changes one denominator
+      // and not the other, and it is worth writing down: the arithmetic that
+      // normally forces both floors to be re-set did not apply here.
       thresholds: {
         statements: 99,
         branches: 96,

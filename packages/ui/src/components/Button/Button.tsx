@@ -79,6 +79,65 @@ const SIZES: Record<ButtonSize, string> = {
   md: 'text-[length:var(--type-ui-size-md)] px-6 py-2.5 gap-2 min-h-11',
 };
 
+/**
+ * The button's look, without the button.
+ *
+ * ## Why this is exported
+ *
+ * A call to action that *navigates* is a link. It has no `type`, no `disabled`
+ * and no `onClick` contract, and it belongs in a screen reader's link rotor
+ * rather than its button one — so `Button` must not render it, and `<Button
+ * as="a">` would be the same mistake with a nicer spelling.
+ *
+ * That left the app hand-rolling this class string as an anchor in three
+ * places, and they drifted exactly as copied strings do: the 404 page's copy
+ * used `rounded-chamfer`, dropped the transition, the press and the minimum
+ * height, and had been shipping a visibly different primary control from the
+ * header's for as long as it existed.
+ *
+ * ## Why classes rather than a link slot
+ *
+ * `CookieBanner` takes its link as a `ReactNode` because it renders *around*
+ * one. Here the caller renders the link and only needs it dressed, so handing
+ * back the classes is the whole job — and it keeps this package router-free.
+ * Importing `next/link` for one href would make the entire design system
+ * Next-only.
+ */
+export interface ButtonClassNameOptions {
+  /*
+   * `| undefined` on every property, spelled out. `tsconfig.base` sets
+   * `exactOptionalPropertyTypes`, under which `variant?: ButtonVariant` means
+   * "may be absent" and **not** "may be `undefined`" — so `Button` forwarding
+   * its own destructured props here would not typecheck. That distinction is
+   * the whole point of the flag and it is right; an options bag being handed
+   * values that are genuinely `undefined` is the case it is not for.
+   */
+  variant?: ButtonVariant | undefined;
+  size?: ButtonSize | undefined;
+  className?: string | undefined;
+}
+
+export function buttonClassName({
+  variant = 'primary',
+  size = 'md',
+  className,
+}: ButtonClassNameOptions = {}): string {
+  return cx(
+    // `rounded-control`, not `rounded-chamfer`. 2px on a full-width band reads
+    // as machined; the same 2px on a 44px control reads as a browser default
+    // nobody styled.
+    'rounded-control inline-flex items-center justify-center font-[family-name:var(--type-family-body)] font-medium',
+    'transition-[background-color,color,translate,opacity] duration-(--motion-duration-fast) ease-(--motion-easing-standard)',
+    // A dead control does not move. Travel on something that cannot be
+    // activated makes a click that did nothing still feel like it worked.
+    'disabled:active:translate-y-0 aria-disabled:active:translate-y-0',
+    'disabled:cursor-not-allowed disabled:opacity-55 aria-disabled:cursor-not-allowed aria-disabled:opacity-55',
+    VARIANTS[variant],
+    SIZES[size],
+    className,
+  );
+}
+
 export function Button({
   variant = 'primary',
   size = 'md',
@@ -105,20 +164,7 @@ export function Button({
       aria-disabled={inert || undefined}
       aria-busy={loading || undefined}
       onClick={inert ? undefined : onClick}
-      className={cx(
-        // `rounded-control`, not `rounded-chamfer`. 2px on a full-width band
-        // reads as machined; the same 2px on a 44px control reads as a browser
-        // default nobody styled.
-        'rounded-control inline-flex items-center justify-center font-[family-name:var(--type-family-body)] font-medium',
-        'transition-[background-color,color,translate,opacity] duration-(--motion-duration-fast) ease-(--motion-easing-standard)',
-        // A dead control does not move. Travel on something that cannot be
-        // activated makes a click that did nothing still feel like it worked.
-        'disabled:active:translate-y-0 aria-disabled:active:translate-y-0',
-        'disabled:cursor-not-allowed disabled:opacity-55 aria-disabled:cursor-not-allowed aria-disabled:opacity-55',
-        VARIANTS[variant],
-        SIZES[size],
-        className,
-      )}
+      className={buttonClassName({ variant, size, className })}
       {...rest}
     >
       {loading ? (

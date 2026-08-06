@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { buttonClassName } from '@beff/ui/button';
 import { ThemeToggle } from '@beff/ui/theme-toggle';
 
 import { BrandMark } from '@/components/BrandMark';
@@ -77,7 +78,10 @@ export function SiteHeader({ locale }: { locale: Locale }) {
            */}
           <Link
             href={`${surfacePath('landing', locale)}#waitlist`}
-            className="bg-brand-default text-text-on-brand rounded-control hover:bg-brand-hover inline-flex min-h-9 items-center justify-center px-4 py-2 text-[length:var(--type-ui-size-sm)] font-medium transition-[background-color,translate] duration-(--motion-duration-fast) ease-(--motion-easing-standard) active:translate-y-px"
+            // `sm`: the header's control sits in a row of navigation links and
+            // must not out-weigh the wordmark beside it. The hero's copy of
+            // this CTA takes the default size.
+            className={buttonClassName({ size: 'sm' })}
           >
             {t.landing.ctaPrimary}
           </Link>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { buttonClassName } from '@beff/ui/button';
 import { Display } from '@beff/ui/display';
 import { Lede } from '@beff/ui/lede';
 import { VideoPlayer } from '@beff/ui/video-player';
@@ -68,7 +69,10 @@ export function LandingHero({ locale }: { locale: Locale }) {
                * which. Asserted in `screen-reader.spec.ts`.
                */
               href={`${surfacePath('landing', locale)}#waitlist`}
-              className="bg-brand-default text-text-on-brand rounded-control hover:bg-brand-hover inline-flex min-h-12 items-center justify-center gap-2 px-6 py-3 font-medium transition-[background-color,translate] duration-(--motion-duration-fast) ease-(--motion-easing-standard) active:translate-y-px"
+              // The design system's primary control, worn by a link. This was
+              // a hand-copied class string until `buttonClassName` existed, and
+              // it had already drifted from the header's copy of the same CTA.
+              className={buttonClassName()}
             >
               {t.landing.ctaPrimary}
               <span aria-hidden="true">→</span>

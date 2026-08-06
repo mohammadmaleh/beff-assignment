@@ -24,6 +24,7 @@
     "./lede": "./src/components/Lede/index.ts",
     "./media": "./src/lib/media/index.ts",
     "./metric": "./src/components/Metric/index.ts",
+    "./reading": "./src/components/Reading/index.ts",
     "./spec-band": "./src/components/SpecBand/index.ts",
     "./text-field": "./src/components/TextField/index.ts",
     "./theme-script": "./src/components/ThemeScript/index.ts",

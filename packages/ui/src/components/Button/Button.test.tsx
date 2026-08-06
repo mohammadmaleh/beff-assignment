@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Button } from './Button';
+import { Button, buttonClassName } from './Button';
 
 describe('Button', () => {
   it('defaults to type="button" so it cannot submit a form by accident', () => {
@@ -157,6 +157,57 @@ describe('Button', () => {
       // positioning utility it lands beside.
       expect(className).toContain('transition-[background-color,color,translate,opacity]');
       expect(className).not.toContain('box-shadow');
+    });
+  });
+
+  /*
+   * A call-to-action that navigates is a link, and a link is not a button — it
+   * has no `type`, no `disabled`, and it belongs in the link rotor rather than
+   * the button one. So `Button` cannot render it, and before this existed the
+   * app hand-rolled the primary variant as an anchor in three places. They had
+   * already drifted: the 404 page's copy used `rounded-chamfer` (which this
+   * component's own comment calls the wrong radius for a control), and dropped
+   * the transition, the press and the minimum height.
+   *
+   * Exporting the classes rather than accepting a link component is what keeps
+   * `@beff/ui` router-free. A `next/link` import here would make the whole
+   * design system Next-only for the sake of one href.
+   */
+  describe('buttonClassName', () => {
+    it('is the single source of the look, not a copy of it', () => {
+      // The assertion that makes this a seam rather than a second definition:
+      // it fails the moment someone writes a class back into the component.
+      render(
+        <Button variant="secondary" size="sm">
+          Save
+        </Button>,
+      );
+      expect(screen.getByRole('button', { name: 'Save' }).className).toBe(
+        buttonClassName({ variant: 'secondary', size: 'sm' }),
+      );
+    });
+
+    it('dresses a link as the primary control, press and all', () => {
+      render(
+        <a href="/waitlist" className={buttonClassName()}>
+          Request access
+        </a>,
+      );
+      const className = screen.getByRole('link', { name: 'Request access' }).className;
+      expect(className).toContain('bg-brand-default');
+      expect(className).toContain('text-text-on-brand');
+      expect(className).toContain('active:translate-y-px');
+      // The height a touch target needs. The hand-rolled 404 copy had none.
+      expect(className).toContain('min-h-11');
+    });
+
+    it('gives a link the control radius rather than the band chamfer', () => {
+      expect(buttonClassName()).toContain('rounded-control');
+      expect(buttonClassName()).not.toContain('rounded-chamfer');
+    });
+
+    it('appends the caller’s own classes last, so they win', () => {
+      expect(buttonClassName({ className: 'w-full' }).endsWith('w-full')).toBe(true);
     });
   });
 });

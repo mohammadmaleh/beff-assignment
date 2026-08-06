@@ -1,6 +1,6 @@
 'use client';
 
-import { Display } from '@beff/ui/display';
+import { Reading, ReadingList } from '@beff/ui/reading';
 
 import { useMemo } from 'react';
 
@@ -13,7 +13,7 @@ import type { MetricsTrend } from '@beff/api-client/types';
  * Four readings that are facts about the window rather than measurements of the
  * process.
  *
- * ## Why these are not `Metric` or `SpecBand`
+ * ## Why these are `Reading` and not `Metric` or `SpecBand`
  *
  * `SpecBand` is for a measurement against a limit, and `Metric` is for a
  * measurement with a direction of travel. None of these four is either. "€47 200
@@ -22,7 +22,13 @@ import type { MetricsTrend } from '@beff/api-client/types';
  * a band would be the exact mistake the dashboard's own comment warns about:
  * consistent-looking, and a lie about the reading.
  *
- * So they are stated plainly, as a figure and a sentence that says what it is.
+ * So they are stated plainly, as a figure and a sentence that says what it is —
+ * which is `Reading`, the library's third numeric primitive. It lived here as
+ * hand-written markup until this argument made the case that the gap was in the
+ * design system rather than in this file.
+ *
+ * What stays here is the domain: which four readings, the benchmark
+ * arithmetic, and the copy. What left is how a stated figure looks.
  *
  * ## The benchmark tile
  *
@@ -77,20 +83,10 @@ export function KpiRow({ trend, locale }: { trend: MetricsTrend; locale: Locale 
   ];
 
   return (
-    <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+    <ReadingList className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
       {tiles.map((tile) => (
-        <div key={tile.key} className="flex flex-col gap-1">
-          <dt className="text-text-muted text-[length:var(--type-ui-size-sm)]">{tile.label}</dt>
-          <dd className="m-0 flex flex-col gap-1">
-            <Display as="span" size="xl" className="text-text-default tabular-nums">
-              {tile.value}
-            </Display>
-            <span className="text-text-muted text-[length:var(--type-ui-size-sm)]">
-              {tile.note}
-            </span>
-          </dd>
-        </div>
+        <Reading key={tile.key} label={tile.label} value={tile.value} note={tile.note} />
       ))}
-    </dl>
+    </ReadingList>
   );
 }
