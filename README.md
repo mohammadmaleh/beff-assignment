@@ -69,8 +69,7 @@ pnpm test:a11y                             # axe-core, WCAG 2.2 AA, both locales
 
 ## Architecture
 
-Monorepo, two deployables. **The frontend never talks to the database; the backend never
-renders HTML.**
+Monorepo, two deployables.
 
 ```mermaid
 graph TD
@@ -93,7 +92,7 @@ graph TD
 | Frontend | Next.js 16, React 19, TypeScript 5.9, Tailwind 4, React Query, ECharts, next-intl-style typed dictionaries |
 | Design   | Style Dictionary tokens → CSS + typed TS, Storybook 10, Figma variables                                    |
 | Backend  | FastAPI, SQLAlchemy 2 async, Alembic, Pydantic v2, Argon2id                                                |
-| Database | PostgreSQL 16 - application data **and** the job queue. No Redis                                           |
+| Database | PostgreSQL 16 - application data **and** the job queue.                                    |
 | Testing  | pytest + testcontainers, Vitest, Testing Library, Playwright, axe-core                                     |
 | Tooling  | pnpm + Turborepo, uv, ruff, mypy strict, ESLint, GitHub Actions                                            |
 
