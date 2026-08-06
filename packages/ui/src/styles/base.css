@@ -11,11 +11,13 @@
  * system starts disagreeing with the product it describes.
  *
  * What stays in `apps/web/src/app/globals.css` is everything an app decides:
- * the skip link, the brand mark's dark-ground treatment, the calibration
- * ground, and the `band-draw` keyframes. That last one is a deliberate split
- * and worth restating — a component that animates on mount animates *everywhere*
- * it is placed, including twelve at a time on the dashboard. `SpecBand` exposes
- * `data-part` hooks and the page decides whether to use them.
+ * the skip link, the brand mark's dark-ground treatment and the calibration
+ * ground. The hero band's draw-on-mount used to be there too, as keyframes
+ * keyed off `data-part` hooks — the split was deliberate, because a component
+ * that animates on mount animates *everywhere* it is placed. The rule survives;
+ * the mechanism does not. `SpecBand` draws through ECharts now, which owns its
+ * own render loop outside the cascade, so the opt-in is a prop and the default
+ * is off.
  *
  * Requires `@beff/tokens/css` to have been imported first. It carries the
  * `@theme inline` block these custom properties come from.
@@ -87,11 +89,18 @@ body {
      * The delays too, and this is not tidiness.
      *
      * Zeroing only the duration collapses each animation to an instant that
-     * still waits out its `animation-delay` first. The hero band is staggered —
-     * the limits at 380ms, the reading at 480ms — so with reduced motion
-     * honoured and delays intact, the measurement a screen reader user is
-     * *told* about was invisible on screen for half a second. Measured, not
-     * theorised: at 120ms after load the tick read `opacity: 0`.
+     * still waits out its `animation-delay` first. The landing page's hero band
+     * used to be staggered in CSS — the limits at 380ms, the reading at 480ms —
+     * so with reduced motion honoured and delays intact, the measurement a
+     * screen reader user is *told* about was invisible on screen for half a
+     * second. Measured, not theorised: at 120ms after load the tick read
+     * `opacity: 0`.
+     *
+     * That particular animation is gone — the band is an ECharts instance now
+     * and honours the preference through `useReducedMotion` — but the rule
+     * stays, because it is a rule about every staggered sequence this repo will
+     * ever write, and the bug it fixes is invisible to axe, to the contrast gate
+     * and to any screenshot taken after a second.
      *
      * "Collapses to final state" is only true if the wait collapses as well.
      */

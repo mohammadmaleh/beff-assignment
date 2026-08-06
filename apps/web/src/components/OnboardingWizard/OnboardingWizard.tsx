@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Alert } from '@beff/ui/alert';
 import { Button } from '@beff/ui/button';
+import { CountrySelect } from '@beff/ui/country-select';
 import { DataState } from '@beff/ui/data-state';
 import { Display } from '@beff/ui/display';
 import { Field } from '@beff/ui/field';
@@ -14,6 +15,7 @@ import { TextField } from '@beff/ui/text-field';
 import { ONBOARDING_ROUTES } from '@/constants/api';
 import { QUERY_KEYS } from '@/constants/queryKeys';
 import { authFetch } from '@/lib/auth';
+import { getCountries, getCountryName } from '@/lib/countries';
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { surfacePath } from '@/lib/navigation';
 
@@ -105,6 +107,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
   };
 
   const copy = t.onboarding.steps;
+  const countries = getCountries(locale);
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
@@ -188,15 +191,22 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
                   }}
                   required
                 />
-                <TextField
+                {/*
+                 * Was a two-character text box asking for `ISO 3166-1 alpha-2,
+                 * e.g. DE` — in English, on the German page, because the hint
+                 * was a literal in this file. It also asked a process engineer
+                 * to know that Austria is AT and not OE. The stored answer is
+                 * still the alpha-2 code the `plants` CHECK constraint wants;
+                 * only the way it is chosen changed.
+                 */}
+                <CountrySelect
                   label={copy.plant.countryLabel}
-                  value={answers.plant_country ?? ''}
-                  onChange={(event) => {
-                    set('plant_country', event.target.value);
+                  countries={countries}
+                  copy={copy.plant.country}
+                  value={answers.plant_country}
+                  onChange={(code) => {
+                    set('plant_country', code);
                   }}
-                  description="ISO 3166-1 alpha-2, e.g. DE"
-                  autoComplete="country"
-                  maxLength={2}
                   required
                 />
               </>
@@ -279,7 +289,17 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
                   [
                     [copy.role.label, answers.role],
                     [copy.plant.nameLabel, answers.plant_name],
-                    [copy.plant.countryLabel, answers.plant_country],
+                    /*
+                     * The name, not the code. The user picked `Deutschland`;
+                     * echoing `DE` back at them on the confirmation step asks
+                     * them to verify a translation they never made.
+                     */
+                    [
+                      copy.plant.countryLabel,
+                      answers.plant_country === undefined
+                        ? undefined
+                        : getCountryName(answers.plant_country, locale),
+                    ],
                     [copy.lines.nameLabel, answers.line_name],
                     [copy.lines.kindLabel, answers.line_kind],
                     [copy.lines.formatLabel, answers.cell_format],

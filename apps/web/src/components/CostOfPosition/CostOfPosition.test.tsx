@@ -46,8 +46,14 @@ describe('CostOfPosition', () => {
   });
 
   it('hides the drawing from assistive technology', () => {
+    // The drawing is an ECharts instance now, and `EChart` hides its container
+    // rather than the SVG inside it — an exposed ECharts SVG is dozens of loose
+    // `<text>` nodes read in visual order with no structure.
     const { container } = render(<CostOfPosition locale="en" />);
-    expect(container.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+
+    const drawing = container.querySelector('[aria-hidden="true"][style*="block-size"]');
+    expect(drawing).not.toBeNull();
+    expect(drawing?.querySelector('svg')).not.toBeNull();
   });
 
   it('annotates the two steps the copy argues from', () => {

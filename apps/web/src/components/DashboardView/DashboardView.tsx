@@ -2,17 +2,22 @@
 
 import { useQuery } from '@tanstack/react-query';
 
+import type { ReactNode } from 'react';
+
 import { DataState } from '@beff/ui/data-state';
 import { Display } from '@beff/ui/display';
-import { Lede } from '@beff/ui/lede';
+import { InfoHint } from '@beff/ui/info-hint';
 import { Metric } from '@beff/ui/metric';
 import { SpecBand } from '@beff/ui/spec-band';
 
+import { AttentionPanel } from '@/components/AttentionPanel';
 import { ControlChart } from '@/components/ControlChart';
+import { CostTrendChart } from '@/components/CostTrendChart';
 import { KpiRow } from '@/components/KpiRow';
 import { ScrapChart } from '@/components/ScrapChart';
 import { ScrapCostChart } from '@/components/ScrapCostChart';
 import { ThroughputChart } from '@/components/ThroughputChart';
+import { YieldDistributionChart } from '@/components/YieldDistributionChart';
 import { YieldTrendChart } from '@/components/YieldTrendChart';
 import { METRICS_ROUTES } from '@/constants/api';
 import { QUERY_KEYS } from '@/constants/queryKeys';
@@ -30,34 +35,78 @@ import {
 } from '@/lib/metrics';
 
 /**
+ * The measure every band on this surface uses.
+ *
+ * Wider than the marketing pages' `max-w-6xl`, and deliberately so. A landing
+ * page is prose and prose has an optimal measure; a dashboard is instruments,
+ * and an instrument panel constrained to a reading width leaves a third of a
+ * 1920px screen empty while two charts fight over the middle. The padding grows
+ * with the viewport rather than the content floating in a fixed column.
+ */
+const BAND = 'mx-auto w-full max-w-[100rem] px-6 lg:px-10';
+
+/**
+ * A section's title, with its explanation an icon away.
+ *
+ * The `InfoHint` is a **sibling** of the heading, never a child. Inside it, the
+ * button's own accessible name would be concatenated into the heading's, and
+ * every `getByRole('region', { name })` on this page addresses a section by
+ * exactly that heading text.
+ */
+function SectionHeading({
+  id,
+  title,
+  hint,
+  hintLabel,
+}: {
+  id: string;
+  title: string;
+  hint: ReactNode;
+  hintLabel: string;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <Display as="h2" balance id={id}>
+        {title}
+      </Display>
+      <InfoHint label={hintLabel}>{hint}</InfoHint>
+    </div>
+  );
+}
+
+/**
  * The daily surface. A process engineer arrives with one question — where did
- * yield go — so the reading that answers "how bad" comes first and the
- * breakdown that answers "where" comes immediately after.
+ * yield go — so the exceptions come first, the movement second, and the
+ * readings that answer "how bad" immediately after.
  *
  * ## Composition
  *
  * Full-bleed bands with their own inner measure, the same device the landing
  * page uses. Previously this was one column at one width stacked six times,
  * which is precisely the shape that made the old marketing page read as a
- * document — and it left the right-hand 40% of a 1440px screen empty while the
- * charts crowded into the left.
+ * document.
  *
- * Each band pairs a wide display heading against a narrower reading column, so
- * the eye has somewhere to land and the page has tonal rhythm rather than an
- * even grey.
+ * ## Why there are no paragraphs under the headings
+ *
+ * There used to be: a `Lede` beside every `h2`, in a `2fr_3fr` grid, so three
+ * fifths of the widest space on the page was prose. The people who use this
+ * screen every morning know what first-pass yield is — the explanation was
+ * being paid for by the reader who needed it least, and it was competing with
+ * the charts for exactly the width the charts wanted.
+ *
+ * It is all still here, behind `InfoHint`: on hover, on focus, and in the
+ * accessibility tree unconditionally. Nothing was deleted; it stopped being the
+ * default view. What replaced it is more instruments — the distribution and the
+ * cumulative cost curve, both built from fields that were already in the
+ * payload and drawn by nothing.
  *
  * ## Why yield is a band and scrap rate is not
  *
  * The product's whole thesis is that a value alone is meaningless and a value
- * against its band is the answer. The dashboard used to state that thesis and
- * then print its own headline figure as a bare number with an arrow beside it —
- * 71.8% reads as a crisis on a production line and as a good week on a pilot
- * line, and the tile could not tell you which.
- *
- * First-pass yield and capacity retention are drawn against real limits.
- * Scrap rate and CO₂ intensity are not, because they have none — see
- * `lib/metrics/windows.ts`. Banding all four would look consistent and be a lie
- * about two of them.
+ * against its band is the answer. First-pass yield and capacity retention are
+ * drawn against real limits. Scrap rate and CO₂ intensity are not, because they
+ * have none — see `lib/metrics/windows.ts`. Banding all four would look
+ * consistent and be a lie about two of them.
  */
 export function DashboardView({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
@@ -85,56 +134,63 @@ export function DashboardView({ locale }: { locale: Locale }) {
   });
 
   const format = formatters(locale);
+  const hintLabel = (section: string): string =>
+    t.dashboard.sectionHint.replace('{section}', section);
 
   return (
     <>
-      <section className="mx-auto max-w-6xl px-6 pt-12 pb-10">
-        <Display as="h1">{t.dashboard.title}</Display>
-        <p className="text-text-muted mt-2">
-          {t.dashboard.subtitle}
-          {data === undefined ? '' : ` — ${data.line_name}`}
-        </p>
+      <section className={`${BAND} pt-10 pb-8`}>
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <Display as="h1">{t.dashboard.title}</Display>
+          <p className="text-text-muted">
+            {t.dashboard.subtitle}
+            {data === undefined ? '' : ` — ${data.line_name}`}
+          </p>
+        </div>
 
         {/*
-         * Facts about the window rather than measurements of the process — a
-         * total, a count, a position against peers, a batch code. None has a
-         * specification window, so none is banded; see `KpiRow`.
+         * The masthead carries two things side by side: what the window was
+         * worth, and what is currently wrong.
          *
-         * In the masthead rather than under the readings because it is the
-         * cheapest thing on the page to read, and because it gives the charts
-         * immediately below it their frame: what the window cost, and where the
-         * line stands against comparable ones.
+         * They are the two questions a reader has before they have looked at
+         * anything, and neither used to be answerable without scrolling the
+         * whole page. The exceptions panel is the narrower column because it is
+         * a list of sentences; the figures are wider because they are figures.
          */}
-        {trend.data === undefined ? null : (
-          <div className="border-border-default mt-10 border-t pt-8">
-            <KpiRow trend={trend.data} locale={locale} />
+        {data === undefined && trend.data === undefined ? null : (
+          <div className="border-border-default mt-8 grid gap-8 border-t pt-8 xl:grid-cols-[3fr_2fr] xl:gap-16">
+            {trend.data === undefined ? <div /> : <KpiRow trend={trend.data} locale={locale} />}
+            {data === undefined ? null : (
+              <AttentionPanel overview={data} trend={trend.data} locale={locale} />
+            )}
           </div>
         )}
       </section>
 
       {/*
-       * "How it got here" — the two charts that need a series rather than a
+       * "How it got here" — the four charts that need a series rather than a
        * reading. Gated on the trend query alone, so a slow or failed trend
-       * leaves the headline band above intact rather than blanking the page.
+       * leaves the masthead above intact rather than blanking the page.
        */}
       {trend.data === undefined || trend.data.points.length === 0 ? null : (
         <section aria-labelledby="trend" className="border-border-default border-t">
-          <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
-            <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-              <Display as="h2" balance id="trend">
-                {t.dashboard.charts.trendTitle}
-              </Display>
-              <Lede>{t.dashboard.charts.trendBody}</Lede>
-            </div>
+          <div className={`${BAND} py-10 lg:py-14`}>
+            <SectionHeading
+              id="trend"
+              title={t.dashboard.charts.trendTitle}
+              hint={t.dashboard.charts.trendBody}
+              hintLabel={hintLabel(t.dashboard.charts.trendTitle)}
+            />
 
             {/*
-             * Two columns from `lg`, one below it. Both charts share an x-axis
-             * of the same sixty batches, so side by side the reader can carry a
-             * position across from one to the other — which is the whole reason
-             * throughput is a separate chart rather than a second y-axis on the
-             * first.
+             * Two by two from `lg`, one column below it. The top row shares an
+             * x-axis of the same sixty batches, so the reader can carry a
+             * position across from one chart to the other — which is the whole
+             * reason throughput is a separate chart rather than a second y-axis
+             * on the first. The bottom row asks those same batches two
+             * different questions: how they are distributed, and what they cost.
              */}
-            <div className="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-x-16">
+            <div className="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-x-16">
               <YieldTrendChart
                 points={trend.data.points}
                 benchmark={trend.data.benchmark}
@@ -142,153 +198,150 @@ export function DashboardView({ locale }: { locale: Locale }) {
                 locale={locale}
               />
               <ThroughputChart points={trend.data.points} locale={locale} />
+              <YieldDistributionChart
+                points={trend.data.points}
+                benchmark={trend.data.benchmark}
+                lineKind={trend.data.line_kind}
+                locale={locale}
+              />
+              <CostTrendChart points={trend.data.points} locale={locale} />
             </div>
           </div>
         </section>
       )}
 
-      <section className="border-border-default mx-auto max-w-6xl border-t px-6 py-12">
-        <div>
-          <DataState
-            status={status === 'pending' ? 'loading' : status === 'error' ? 'error' : 'ready'}
-            empty={data !== undefined && data.scrap_by_step.length === 0}
-            loadingLabel={t.dashboard.loading}
-            errorTitle={t.dashboard.errorTitle}
-            emptyTitle={t.dashboard.emptyTitle}
-            emptyBody={<p>{t.dashboard.emptyBody}</p>}
-            alertPrefixes={t.a11y.alertPrefixes}
-          >
-            {data === undefined ? null : (
-              <section aria-labelledby="headline-metrics">
-                {/*
-                 * A real heading, not an `sr-only` one.
-                 *
-                 * It used to be visually hidden and to repeat the page title,
-                 * which was defensible while this band opened the page — the h1
-                 * directly above it was the heading. Once the charts moved in
-                 * front, two things broke at once: a screen reader announced
-                 * "Production overview" twice with unrelated content under the
-                 * second, and sighted readers got a bare strip of figures
-                 * wedged between two titled bands with nothing saying what it
-                 * was. Same fix for both.
-                 */}
-                <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-                  <Display as="h2" balance id="headline-metrics">
-                    {t.dashboard.readingsTitle}
-                  </Display>
-                  <Lede>{t.dashboard.readingsBody}</Lede>
+      <section className={`${BAND} border-border-default border-t py-10 lg:py-14`}>
+        <DataState
+          status={status === 'pending' ? 'loading' : status === 'error' ? 'error' : 'ready'}
+          empty={data !== undefined && data.scrap_by_step.length === 0}
+          loadingLabel={t.dashboard.loading}
+          errorTitle={t.dashboard.errorTitle}
+          emptyTitle={t.dashboard.emptyTitle}
+          emptyBody={<p>{t.dashboard.emptyBody}</p>}
+          alertPrefixes={t.a11y.alertPrefixes}
+        >
+          {data === undefined ? null : (
+            <section aria-labelledby="headline-metrics">
+              {/*
+               * A real heading, not an `sr-only` one.
+               *
+               * It used to be visually hidden and to repeat the page title,
+               * which was defensible while this band opened the page — the h1
+               * directly above it was the heading. Once the charts moved in
+               * front, two things broke at once: a screen reader announced
+               * "Production overview" twice with unrelated content under the
+               * second, and sighted readers got a bare strip of figures wedged
+               * between two titled bands with nothing saying what it was.
+               */}
+              <SectionHeading
+                id="headline-metrics"
+                title={t.dashboard.readingsTitle}
+                hint={t.dashboard.readingsBody}
+                hintLabel={hintLabel(t.dashboard.readingsTitle)}
+              />
+
+              {/*
+               * All four readings on one row from `xl`, where there is width
+               * for it. The two with limits keep their bands and the two
+               * without keep their tiles, so the hierarchy still says which
+               * readings carry a verdict — it is stated by the instrument now
+               * rather than by a horizontal rule between two groups.
+               */}
+              <div className="mt-10 grid gap-10 sm:grid-cols-2 xl:grid-cols-4 xl:gap-x-12">
+                <div className="flex flex-col gap-2">
+                  <SpecBand
+                    label={t.dashboard.metrics.fpy}
+                    words={t.a11y.specBand}
+                    value={data.first_pass_yield_pct}
+                    unit={PERCENT}
+                    {...yieldWindow(data.line_kind)}
+                  />
+                  {/*
+                   * The band says where the reading sits; this says which way
+                   * it is moving. Both are real information and the band
+                   * replacing the old tile must not quietly drop one.
+                   *
+                   * Stated as a signed number and a phrase, with no arrow and
+                   * no colour: direction is already in the sign, and an arrow
+                   * here would need its own spoken word to satisfy the rule
+                   * that colour and glyph are never the only signal.
+                   */}
+                  <p className="text-text-muted text-[length:var(--type-ui-size-sm)]">
+                    {`${format.percentagePoints(data.first_pass_yield_delta_pp)} ${t.dashboard.deltaNote}`}
+                  </p>
                 </div>
 
-                <div className="mt-12">
-                  {/*
-                   * The two readings that have limits, at reading scale, against
-                   * their windows — the same treatment the landing hero gives
-                   * first-pass yield, because it is the same measurement.
-                   */}
-                  <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-                    <div className="flex flex-col gap-2">
-                      <SpecBand
-                        label={t.dashboard.metrics.fpy}
-                        words={t.a11y.specBand}
-                        value={data.first_pass_yield_pct}
-                        unit={PERCENT}
-                        {...yieldWindow(data.line_kind)}
-                      />
-                      {/*
-                       * The band says where the reading sits; this says which way
-                       * it is moving. Both are real information and the band
-                       * replacing the old tile must not quietly drop one.
-                       *
-                       * Stated as a signed number and a phrase, with no arrow and
-                       * no colour: direction is already in the sign, and an arrow
-                       * here would need its own spoken word to satisfy the rule
-                       * that colour and glyph are never the only signal.
-                       */}
-                      <p className="text-text-muted text-[length:var(--type-ui-size-sm)]">
-                        {`${format.percentagePoints(data.first_pass_yield_delta_pp)} ${t.dashboard.deltaNote}`}
-                      </p>
-                    </div>
-                    <SpecBand
-                      label={t.dashboard.metrics.retention}
-                      words={t.a11y.specBand}
-                      value={data.capacity_retention_pct}
-                      unit={PERCENT}
-                      {...HEADLINE_WINDOWS.retention}
-                    />
-                  </div>
+                <SpecBand
+                  label={t.dashboard.metrics.retention}
+                  words={t.a11y.specBand}
+                  value={data.capacity_retention_pct}
+                  unit={PERCENT}
+                  {...HEADLINE_WINDOWS.retention}
+                />
 
-                  {/*
-                   * The two that do not. Kept as figures with their movement,
-                   * beneath the banded pair, so the hierarchy says which readings
-                   * carry a verdict and which are context.
-                   */}
-                  <div className="border-border-default mt-12 grid gap-8 border-t pt-8 sm:grid-cols-2 lg:gap-16">
-                    <Metric
-                      label={t.dashboard.metrics.scrap}
-                      value={format.decimal(data.scrap_rate_pct)}
-                      unit={PERCENT}
-                      delta={format.percentagePoints(data.scrap_rate_delta_pp)}
-                      trend={deltaTrend(data.scrap_rate_delta_pp)}
-                      trendWords={t.a11y.trend}
-                      // Falling scrap is good news; the yield band above inverts
-                      // this reading for the same underlying movement.
-                      intent={data.scrap_rate_delta_pp <= 0 ? 'positive' : 'negative'}
-                    />
-                    <Metric
-                      label={t.dashboard.metrics.co2}
-                      value={format.decimal(data.co2_intensity_kg_per_kwh)}
-                      unit={CO2_INTENSITY}
-                    />
-                  </div>
-                </div>
-              </section>
-            )}
-          </DataState>
-        </div>
+                <Metric
+                  label={t.dashboard.metrics.scrap}
+                  value={format.decimal(data.scrap_rate_pct)}
+                  unit={PERCENT}
+                  delta={format.percentagePoints(data.scrap_rate_delta_pp)}
+                  trend={deltaTrend(data.scrap_rate_delta_pp)}
+                  trendWords={t.a11y.trend}
+                  // Falling scrap is good news; the yield band above inverts
+                  // this reading for the same underlying movement.
+                  intent={data.scrap_rate_delta_pp <= 0 ? 'positive' : 'negative'}
+                />
+
+                <Metric
+                  label={t.dashboard.metrics.co2}
+                  value={format.decimal(data.co2_intensity_kg_per_kwh)}
+                  unit={CO2_INTENSITY}
+                />
+              </div>
+            </section>
+          )}
+        </DataState>
       </section>
 
       {data === undefined || data.scrap_by_step.length === 0 ? null : (
         <>
-          <section
-            aria-labelledby="scrap-breakdown"
-            className="calibration-ground border-border-default border-t"
-          >
-            <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
-              <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-                <Display as="h2" balance id="scrap-breakdown">
-                  {t.dashboard.scrapTitle}
-                </Display>
-                <Lede>{t.dashboard.scrapBody}</Lede>
-              </div>
-              {/* Full width. The chart is twelve rows against a shared axis and
-                  it was previously squeezed into the left column. */}
-              <div className="mt-12">
-                <ScrapChart rows={data.scrap_by_step} locale={locale} order={PROCESS_STEPS} />
-              </div>
+          <section aria-labelledby="scrap-breakdown" className="border-border-default border-t">
+            <div className={`${BAND} py-10 lg:py-14`}>
+              <SectionHeading
+                id="scrap-breakdown"
+                title={t.dashboard.scrapTitle}
+                hint={t.dashboard.scrapBody}
+                hintLabel={hintLabel(t.dashboard.scrapTitle)}
+              />
 
               {/*
-               * The same twelve steps, priced.
+               * Side by side from `xl`, and that adjacency is the argument.
                *
-               * `ScrapChart` above plots the rate and its tallest bar is
-               * coating; this plots the euros and its tallest bar is formation.
-               * The two charts disagree, and that disagreement is the product's
-               * entire argument — it was already in the payload, sitting in a
-               * column of a table behind a `<details>` that nobody opens.
+               * `ScrapChart` plots the rate and its tallest bar is coating;
+               * `ScrapCostChart` plots the euros and its tallest bar is
+               * formation. Stacked, a reader had to hold the first shape in
+               * their head while scrolling to the second. Beside each other the
+               * disagreement takes about a second to see — and that
+               * disagreement is the entire product thesis.
                */}
-              <div className="border-border-default mt-16 border-t pt-12">
+              <div className="mt-10 grid gap-12 xl:grid-cols-2 xl:gap-x-16">
+                <ScrapChart rows={data.scrap_by_step} locale={locale} order={PROCESS_STEPS} />
                 <ScrapCostChart rows={data.scrap_by_step} locale={locale} />
               </div>
             </div>
           </section>
 
           <section aria-labelledby="spec-bands" className="border-border-default border-t">
-            <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
-              <Display as="h2" balance id="spec-bands">
-                {t.dashboard.bandsTitle}
-              </Display>
-              {/* Two columns from `lg`, so a plant with six parameters does not
-                  produce a metre of scrolling down one side of the screen. */}
-              <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-x-16">
+            <div className={`${BAND} py-10 lg:py-14`}>
+              <SectionHeading
+                id="spec-bands"
+                title={t.dashboard.bandsTitle}
+                hint={t.dashboard.bandsBody}
+                hintLabel={hintLabel(t.dashboard.bandsTitle)}
+              />
+
+              {/* Three columns from `xl`, so a plant with six parameters does
+                  not produce a metre of scrolling down one side of the screen. */}
+              <div className="mt-10 grid gap-10 lg:grid-cols-2 xl:grid-cols-3 xl:gap-x-12">
                 {data.spec_bands.map((band) => (
                   <SpecBand
                     key={band.parameter}
@@ -321,7 +374,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                * a normalisation that throws away the limits. See `ControlChart`.
                */}
               {trend.data === undefined || trend.data.parameters.length === 0 ? null : (
-                <div className="border-border-default mt-16 grid gap-12 border-t pt-12 lg:grid-cols-3 lg:gap-x-10">
+                <div className="border-border-default mt-14 grid gap-12 border-t pt-10 lg:grid-cols-2 xl:grid-cols-3 xl:gap-x-12">
                   {trend.data.parameters.map((series) => (
                     <ControlChart
                       key={series.parameter}

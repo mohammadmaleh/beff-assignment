@@ -1,2 +1,8 @@
 export { apiUrl } from './client';
-export { problemFieldErrors, type FieldErrors, type Problem } from './problem';
+export {
+  parseProblem,
+  problemFieldErrors,
+  type FieldErrors,
+  type ParsedProblem,
+  type Problem,
+} from './problem';

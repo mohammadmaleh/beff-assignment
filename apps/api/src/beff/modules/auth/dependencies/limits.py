@@ -17,7 +17,14 @@ from beff.core.config import Settings, get_settings
 from beff.core.ratelimit import RateLimit, RateLimiter, get_limiter_session
 from beff.core.security import hash_ip
 
-__all__ = ["LOGIN_LIMIT", "REGISTER_LIMIT", "login_rate_limit", "register_rate_limit"]
+__all__ = [
+    "LOGIN_LIMIT",
+    "REGISTER_LIMIT",
+    "RESEND_VERIFICATION_LIMIT",
+    "login_rate_limit",
+    "register_rate_limit",
+    "resend_verification_rate_limit",
+]
 
 # Ten attempts per fifteen minutes from one origin. A person who has genuinely
 # forgotten which password they used gets several goes; a script gets nowhere.
@@ -25,9 +32,16 @@ __all__ = ["LOGIN_LIMIT", "REGISTER_LIMIT", "login_rate_limit", "register_rate_l
 # the key is an IP hash, and behind CGNAT that is a lot of people.
 LOGIN_LIMIT = RateLimit(limit=10, window_seconds=900)
 
-# Registration is a write that creates rows and sends nothing, so it needs less
-# headroom than login but is still not something to leave open.
+# Registration is a write that creates rows and now also queues one email, so it
+# needs less headroom than login and is not something to leave open.
 REGISTER_LIMIT = RateLimit(limit=5, window_seconds=3600)
+
+# Resending is the one endpoint here that makes *us* send traffic to a third
+# party, which makes it the one an attacker would use to mail-bomb an address
+# they do not own — or to burn a sending reputation that takes weeks to rebuild.
+# Three an hour is generous for a person who did not receive the first, and
+# useless as an amplifier.
+RESEND_VERIFICATION_LIMIT = RateLimit(limit=3, window_seconds=3600)
 
 
 def _origin(request: Request) -> str:
@@ -76,3 +90,24 @@ async def register_rate_limit(
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> None:
     await _check(request, session, settings, bucket="auth.register", limit=REGISTER_LIMIT)
+
+
+async def resend_verification_rate_limit(
+    request: Request,
+    session: Annotated[AsyncSession, Depends(get_limiter_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> None:
+    """Counted per origin, like the others.
+
+    Per *account* would be the tempting key here, since the endpoint is
+    authenticated — but it is the wrong scarce resource. One attacker with one
+    account cannot mail-bomb anybody; one attacker with a thousand accounts can,
+    and per-account counting would wave every one of them through.
+    """
+    await _check(
+        request,
+        session,
+        settings,
+        bucket="auth.resend_verification",
+        limit=RESEND_VERIFICATION_LIMIT,
+    )

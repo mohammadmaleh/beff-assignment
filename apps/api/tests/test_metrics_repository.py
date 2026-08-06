@@ -28,8 +28,10 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from uuid import uuid4
 
 import pytest
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from beff.modules.auth.models import User
@@ -243,3 +245,231 @@ async def test_an_empty_window_is_an_empty_series_not_an_error(db_session: Async
 
     assert await repository.batch_series(line.id, WINDOW_START, NOW) == []
     assert await repository.measurement_series(line.id, WINDOW_START, NOW) == []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The rest of the repository.
+#
+# `batch_series` above is the query with the most ways to be silently wrong, so
+# it got the attention first. The four below were left to the service's unit
+# tests, which use a fake — and a fake answers for none of this: the half-open
+# window, `AVG` over an empty set, the `DISTINCT ON`, or the join that scopes a
+# line to the account that owns it.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+async def test_the_default_line_is_the_first_one_the_account_set_up(
+    db_session: AsyncSession,
+) -> None:
+    line = await make_line(db_session)
+    plant = (await db_session.execute(select(Plant).where(Plant.id == line.plant_id))).scalar_one()
+    second = Line(
+        plant_id=plant.id, name="Serienlinie 2", cell_format="prismatic", is_pilot_line=False
+    )
+    db_session.add(second)
+    await db_session.flush()
+
+    found = await PostgresMetricsRepository(db_session).default_line(plant.user_id)
+
+    assert found is not None
+    assert found.id == line.id
+
+
+async def test_the_default_line_is_never_another_accounts(db_session: AsyncSession) -> None:
+    """`lines` reaches the account through `plants`, so that join *is* the
+    filter. Dropping it opens somebody else's production line as the dashboard's
+    default view — a data leak that looks like a working dashboard."""
+    await make_line(db_session)
+
+    assert await PostgresMetricsRepository(db_session).default_line(uuid4()) is None
+
+
+async def test_batch_totals_sum_the_counts_and_average_the_rates(
+    db_session: AsyncSession,
+) -> None:
+    """Counts add; rates do not.
+
+    Summing `capacity_retention_pct` across two batches produces 176%, which is
+    not a number anything has ever measured — and it renders as a plausible-
+    looking headline rather than as an error.
+    """
+    line = await make_line(db_session)
+    await make_batch(db_session, line, code="B-001", days_ago=20, started=1000, passed=700)
+    await make_batch(db_session, line, code="B-002", days_ago=5, started=500, passed=400)
+
+    totals = await PostgresMetricsRepository(db_session).batch_totals(line.id, WINDOW_START, NOW)
+
+    assert totals.cells_started == 1500
+    assert totals.cells_passed == 1100
+    assert totals.capacity_retention_pct == Decimal("88.40")
+    assert totals.co2_intensity_kg_per_kwh == Decimal("61.20")
+
+
+async def test_the_totals_window_is_half_open(db_session: AsyncSession) -> None:
+    """`start <= started_at < end`, so a batch never lands in both the current
+    period and the one it is compared against.
+
+    A closed interval double-counts on the boundary, which makes a delta of
+    exactly zero look like drift — and a "period over period" figure that moves
+    when nothing happened is worse than no figure at all.
+    """
+    line = await make_line(db_session)
+    repository = PostgresMetricsRepository(db_session)
+    await make_batch(db_session, line, code="ON-START", days_ago=30, started=100, passed=90)
+    await make_batch(db_session, line, code="ON-END", days_ago=0, started=200, passed=180)
+
+    totals = await repository.batch_totals(line.id, WINDOW_START, NOW)
+
+    assert totals.cells_started == 100, "the start boundary is included, the end is not"
+
+
+async def test_totals_over_an_empty_window_are_zero_not_null(
+    db_session: AsyncSession,
+) -> None:
+    """`COALESCE` on the sums, and `None` on the averages.
+
+    Zero cells started is a fact — the line did not run — so the count is 0. An
+    *average* over no rows is not zero, it is unknown, and reporting 0% capacity
+    retention for a quiet week would be alarming and false.
+    """
+    line = await make_line(db_session)
+
+    totals = await PostgresMetricsRepository(db_session).batch_totals(line.id, WINDOW_START, NOW)
+
+    assert totals.cells_started == 0
+    assert totals.cells_passed == 0
+    assert totals.capacity_retention_pct is None
+    assert totals.co2_intensity_kg_per_kwh is None
+
+
+async def test_scrap_by_step_groups_and_totals_both_columns(db_session: AsyncSession) -> None:
+    """Cells and euros, per step, in one pass.
+
+    Both are summed because the dashboard makes an economic argument, not only a
+    quality one: the step that loses the most cells and the step that loses the
+    most value are usually not the same step, and that difference is the point.
+    """
+    line = await make_line(db_session)
+    first = await make_batch(db_session, line, code="B-001", days_ago=20)
+    second = await make_batch(db_session, line, code="B-002", days_ago=5)
+    for batch in (first, second):
+        db_session.add(
+            ScrapEvent(
+                batch_id=batch.id,
+                process_step="coating",
+                cells_scrapped=30,
+                committed_value_eur=Decimal("102.00"),
+            )
+        )
+    db_session.add(
+        ScrapEvent(
+            batch_id=second.id,
+            process_step="formation",
+            cells_scrapped=10,
+            committed_value_eur=Decimal("148.00"),
+        )
+    )
+    await db_session.flush()
+
+    totals = {
+        row.process_step: row
+        for row in await PostgresMetricsRepository(db_session).scrap_by_step(
+            line.id, WINDOW_START, NOW
+        )
+    }
+
+    assert totals["coating"].cells_scrapped == 60
+    assert totals["coating"].committed_value_eur == Decimal("204.00")
+    assert totals["formation"].cells_scrapped == 10
+    assert totals["formation"].committed_value_eur == Decimal("148.00")
+
+
+async def test_scrap_by_step_respects_the_window_and_the_line(
+    db_session: AsyncSession,
+) -> None:
+    """The filter is on `batches`, which `scrap_events` only reaches by join."""
+    line = await make_line(db_session)
+    stale = await make_batch(db_session, line, code="OLD", days_ago=120)
+    db_session.add(
+        ScrapEvent(
+            batch_id=stale.id,
+            process_step="coating",
+            cells_scrapped=999,
+            committed_value_eur=Decimal("1.00"),
+        )
+    )
+    await db_session.flush()
+
+    assert (
+        await PostgresMetricsRepository(db_session).scrap_by_step(line.id, WINDOW_START, NOW) == []
+    )
+
+
+async def test_latest_measurements_is_the_newest_reading_per_parameter(
+    db_session: AsyncSession,
+) -> None:
+    """`DISTINCT ON` ordered by the *batch's* time, not the row's.
+
+    The spec bands show one number per parameter, and it has to be the most
+    recent one. Order the `DISTINCT ON` the other way and every band shows the
+    oldest reading on the line — which is stable, plausible, and two months out
+    of date.
+    """
+    line = await make_line(db_session)
+    old = await make_batch(db_session, line, code="B-001", days_ago=40)
+    new = await make_batch(db_session, line, code="B-002", days_ago=1)
+    for batch, value in ((old, Decimal("30.0")), (new, Decimal("32.4"))):
+        db_session.add(
+            ProcessMeasurement(
+                batch_id=batch.id,
+                parameter="porosity_pct",
+                value=value,
+                lower_limit=Decimal("30.0"),
+                upper_limit=Decimal("35.0"),
+                target_value=Decimal("32.5"),
+                unit="%",
+            )
+        )
+    await db_session.flush()
+
+    readings = await PostgresMetricsRepository(db_session).latest_measurements(line.id)
+
+    assert [r.value for r in readings] == [Decimal("32.4")]
+
+
+async def test_latest_measurements_covers_every_parameter_once(
+    db_session: AsyncSession,
+) -> None:
+    line = await make_line(db_session)
+    batch = await make_batch(db_session, line, code="B-001", days_ago=1)
+    for parameter, value, unit in (
+        ("porosity_pct", Decimal("32.4"), "%"),
+        ("areal_loading_mg_cm2", Decimal("21.8"), "mg/cm²"),
+    ):
+        db_session.add(
+            ProcessMeasurement(
+                batch_id=batch.id,
+                parameter=parameter,
+                value=value,
+                lower_limit=Decimal("1.0"),
+                upper_limit=Decimal("99.0"),
+                target_value=value,
+                unit=unit,
+            )
+        )
+    await db_session.flush()
+
+    readings = await PostgresMetricsRepository(db_session).latest_measurements(line.id)
+
+    assert sorted(r.parameter for r in readings) == [
+        "areal_loading_mg_cm2",
+        "porosity_pct",
+    ]
+
+
+async def test_a_line_with_no_readings_has_no_measurements(db_session: AsyncSession) -> None:
+    """An empty series, not an error — a line that was just created is a normal
+    state, and the dashboard has an empty state for it."""
+    line = await make_line(db_session)
+
+    assert await PostgresMetricsRepository(db_session).latest_measurements(line.id) == []

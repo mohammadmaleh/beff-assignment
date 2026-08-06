@@ -109,4 +109,25 @@ describe('referenceLine', () => {
 
     expect(limit.lineStyle.width).toBeGreaterThan(line.lineStyle.width);
   });
+
+  it('reads against the x axis when asked, for a distribution', () => {
+    // A histogram measures the same limits as the trend beside it and draws
+    // them at right angles. `yAxis: 40` on a category axis of bins is not a
+    // vertical line in the wrong place — it is a horizontal line at count 40,
+    // which on a chart whose tallest bar is 12 is off the plot entirely.
+    const vertical = referenceLine(tokens, { value: 3.5, label: 'Lower limit', axis: 'x' });
+
+    expect(vertical).toHaveProperty('xAxis', 3.5);
+    expect(vertical).not.toHaveProperty('yAxis');
+    // `insideEndTop` on a vertical rule puts the label on the plot's own top
+    // edge, where it collides with the axis.
+    expect(vertical.label.position).toBe('end');
+  });
+
+  it('keeps the dashed neutral whichever axis it is read against', () => {
+    const vertical = referenceLine(tokens, { value: 3.5, label: 'Lower limit', axis: 'x' });
+
+    expect(vertical.lineStyle.type).toBe('dashed');
+    expect(vertical.lineStyle.color).toBe(tokens['color-border-default']);
+  });
 });

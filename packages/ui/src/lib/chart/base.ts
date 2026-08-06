@@ -139,10 +139,27 @@ export function valueAxis<E extends Record<string, unknown>>(
  */
 export function referenceLine(
   tokens: ChartTokens,
-  { value, label, strong = false }: { value: number; label: string; strong?: boolean },
+  {
+    value,
+    label,
+    strong = false,
+    axis = 'y',
+  }: {
+    value: number;
+    label: string;
+    strong?: boolean;
+    /**
+     * Which axis the value is read against — `y` for a horizontal rule across a
+     * trend, `x` for a vertical one down a distribution.
+     *
+     * A histogram measures the same limits as the trend beside it and has to
+     * draw them at right angles, and a chart that reimplements the dashed
+     * neutral locally is a chart whose limits stop matching everyone else's.
+     */
+    axis?: 'x' | 'y';
+  },
 ) {
-  return {
-    yAxis: value,
+  const shared = {
     lineStyle: {
       color: strong ? tokens['color-band-limit'] : tokens['color-border-default'],
       type: 'dashed' as const,
@@ -150,10 +167,14 @@ export function referenceLine(
     },
     label: {
       formatter: label,
-      position: 'insideEndTop' as const,
+      // A vertical rule has no "inside end" worth the name — the label would
+      // sit on the plot's own top edge. It goes above the line instead.
+      position: axis === 'x' ? ('end' as const) : ('insideEndTop' as const),
       color: tokens['color-text-muted'],
       fontFamily: FONT_FAMILY,
       fontSize: 11,
     },
   };
+
+  return axis === 'x' ? { xAxis: value, ...shared } : { yAxis: value, ...shared };
 }

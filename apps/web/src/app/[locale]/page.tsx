@@ -3,14 +3,11 @@ import { notFound } from 'next/navigation';
 
 import { Display } from '@beff/ui/display';
 import { Lede } from '@beff/ui/lede';
-import { SpecBand } from '@beff/ui/spec-band';
 
-import { CONSENT_STORAGE_KEY } from '@/constants/storage';
 import { PRIVACY_POLICY_VERSION } from '@/constants/privacy';
+import { CONSENT_STORAGE_KEY } from '@/constants/storage';
 
 import { ChainMarker } from '@/components/ChainMarker';
-import { CompanyFilm } from '@/components/CompanyFilm';
-import { CookieBanner } from '@beff/ui/cookie-banner';
 import { CostOfPosition } from '@/components/CostOfPosition';
 import { LandingHero } from '@/components/LandingHero';
 import { ProductPanel } from '@/components/ProductPanel';
@@ -19,6 +16,8 @@ import { SiteHeader } from '@/components/SiteHeader';
 import { WaitlistForm } from '@/components/WaitlistForm';
 import { getDictionary, isLocale } from '@/lib/i18n';
 import { surfacePath } from '@/lib/navigation';
+import { CookieBanner } from '@beff/ui/cookie-banner';
+import { SpecBand } from '@beff/ui/spec-band';
 
 /**
  * The landing surface. Statically generated — the whole page, including the
@@ -34,14 +33,18 @@ import { surfacePath } from '@/lib/navigation';
  * every section boundary sits at a real process step, and the ordinals come from
  * `PROCESS_STEPS` rather than from a designer's sense of rhythm.
  *
+ *     —               the hero: the company, on film       ← who is asking
  *     01  mixing          the data exists, scattered
  *     02  coating         where value is already committed  ← the argument
  *     10  formation       the product, on real figures      ← the proof
  *     12  end-of-line     the tolerance band
- *         —               the company, on film              ← who is asking
  *         —               the ask
  *
- * The last two bands carry no ordinal on purpose. They are not process steps,
+ * The film moved into the hero on request, which is why "who is asking" is now
+ * answered before the argument rather than after it. It is not duplicated
+ * further down — one page, one copy of a 71-second film.
+ *
+ * The unnumbered bands carry no ordinal on purpose. They are not process steps,
  * and borrowing a number for them would be exactly the decoration the ordinals
  * exist to avoid — the markers mean "this is position N in a real sequence", or
  * they mean nothing.
@@ -124,7 +127,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                 target={32.5}
                 unit="%"
               />
-              <SpecBand
+              {/* <SpecBand
                 label={t.landing.signatureExampleLabel}
                 words={t.a11y.specBand}
                 value={36.8}
@@ -132,16 +135,17 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                 upperLimit={35}
                 target={32.5}
                 unit="%"
-              />
+              /> */}
             </div>
           </div>
         </section>
 
         {/*
-         * The argument is finished by here. What is left before the ask is
-         * "who are you", which is the one question a company film answers.
+         * The film used to sit here — the argument is finished by this point,
+         * and "who are you" is the one question left before the ask. It is in
+         * the hero now, so this slot is empty rather than showing the same 71
+         * seconds twice on one page. `/about` still carries its own copy.
          */}
-        <CompanyFilm locale={locale} />
 
         <section
           id="waitlist"

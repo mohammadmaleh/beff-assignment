@@ -54,7 +54,8 @@ export type SurfaceKey =
   | 'register'
   | 'onboarding'
   | 'dashboard'
-  | 'profile';
+  | 'profile'
+  | 'verifyEmail';
 
 export const SURFACES: Readonly<Record<SurfaceKey, Surface>> = {
   landing: { key: 'landing', segments: [], requiresAuth: false, inPrimaryNav: false },
@@ -116,6 +117,17 @@ export const SURFACES: Readonly<Record<SurfaceKey, Surface>> = {
     inPrimaryNav: true,
   },
   profile: { key: 'profile', segments: ['profile'], requiresAuth: true, inPrimaryNav: true },
+  /*
+   * Reached from a mail client, which very likely carries no session — so
+   * `requiresAuth` is false and the token in the query string is the whole
+   * credential. Never in a nav: the page is meaningless without a link.
+   */
+  verifyEmail: {
+    key: 'verifyEmail',
+    segments: ['verify-email'],
+    requiresAuth: false,
+    inPrimaryNav: false,
+  },
 };
 
 /** Build the href for a surface in a locale. Never hand-write one of these. */

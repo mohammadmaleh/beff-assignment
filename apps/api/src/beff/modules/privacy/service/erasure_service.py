@@ -37,6 +37,19 @@ class ErasureService:
 
         await self._repository.delete_export_jobs(user_id)
 
+        # Before the account row is scrubbed, because both of these are keyed to
+        # it. Verification tokens go first of the two and for a reason beyond
+        # minimisation: an unconsumed one is a live credential for an address
+        # that soft delete is about to free for re-registration, so leaving it
+        # would let an old link act on somebody's new account.
+        await self._repository.delete_verification_tokens(user_id)
+
+        # Every delivery row holds the recipient address in the clear. There is
+        # no accountability basis for keeping them the way there is for consent
+        # records — nobody has to prove what we emailed someone — so these are
+        # deleted rather than pseudonymised.
+        await self._repository.delete_email_deliveries(user_id)
+
         # Kept, deliberately. Consent records are held on a different legal
         # basis from everything else here — Art. 6(1)(c), the accountability
         # obligation in Art. 7(1) — so erasing them would destroy the proof that

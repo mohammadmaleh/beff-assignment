@@ -7,19 +7,25 @@ render an EN or DE message without parsing English prose.
 from beff.modules.auth.errors.errors import (
     AccessTokenInvalidError,
     EmailAlreadyRegisteredError,
+    EmailAlreadyVerifiedError,
     InvalidCredentialsError,
     RefreshTokenExpiredError,
     RefreshTokenInvalidError,
     RefreshTokenMissingError,
     RefreshTokenReusedError,
+    VerificationTokenExpiredError,
+    VerificationTokenInvalidError,
 )
 
 __all__ = [
     "AccessTokenInvalidError",
     "EmailAlreadyRegisteredError",
+    "EmailAlreadyVerifiedError",
     "InvalidCredentialsError",
     "RefreshTokenExpiredError",
     "RefreshTokenInvalidError",
     "RefreshTokenMissingError",
     "RefreshTokenReusedError",
+    "VerificationTokenExpiredError",
+    "VerificationTokenInvalidError",
 ]

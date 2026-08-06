@@ -117,63 +117,26 @@
 }
 
 /*
- * ## The one orchestrated moment
+ * ## The one orchestrated moment, which is no longer here
  *
- * The design brief allows exactly one: an instrument taking a reading. The
- * in-spec window draws outward from its centre, the limit marks appear, then the
- * reading settles onto its position. Nothing else on the page animates.
+ * The design brief allows exactly one: an instrument taking a reading. That is
+ * still the rule, and `LandingHero` is still the only place it happens — but it
+ * moved out of this stylesheet when `SpecBand` became an ECharts instance.
  *
- * The keyframes live here, in the app, rather than in `packages/ui` — a
- * component that animates on mount animates everywhere it is placed, including
- * twelve at a time on the dashboard. `SpecBand` exposes `data-part` hooks and
- * the page decides.
+ * The reason is worth keeping, because it is not obvious and it will come up
+ * again for any chart on this page: an ECharts instance owns its own DOM subtree
+ * and its own render loop. It draws by writing attributes on SVG nodes it
+ * created, on its own schedule. A CSS animation targeting those nodes is not
+ * merely ignored — it composes with a value the library rewrites on the next
+ * frame, so the mark ends up wherever the race left it. The cascade cannot
+ * orchestrate a canvas it does not own.
  *
- * `scale` and `opacity`, never `transform`. The parts already carry Tailwind
- * translate utilities that compile into `transform`, and animating that property
- * would cancel their positioning. `scale` is an independent transform property,
- * so the two compose instead of fighting — and it is still compositor-driven.
- *
- * `both` fill mode is what makes the reduced-motion block below a *collapse to
- * final state* rather than a flicker: at 0.01ms the animation lands on its `to`
- * frame immediately.
+ * So the opt-in is a prop, `<SpecBand animate />`, and the animation is
+ * ECharts' own. The rule it protects is unchanged and now enforced in
+ * TypeScript rather than by a selector: `packages/ui` never animates on mount,
+ * because four bands sit in one dashboard panel, and the page decides. The
+ * reduced-motion override moved with it, into `bandOption`. The global `@media
+ * (prefers-reduced-motion: reduce)` block in `@beff/ui`'s `base.css` still
+ * governs everything this app draws itself — which is now everything except the
+ * charts, and they read the preference through `useReducedMotion` instead.
  */
-@keyframes band-draw-range {
-  from {
-    scale: 0 1;
-  }
-  to {
-    scale: 1 1;
-  }
-}
-
-@keyframes band-draw-mark {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes band-settle {
-  from {
-    opacity: 0;
-    scale: 1.6;
-  }
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
-[data-band-draw] [data-part='range'] {
-  animation: band-draw-range 420ms var(--motion-easing-enter) both;
-}
-
-[data-band-draw] [data-part='limit'] {
-  animation: band-draw-mark 160ms var(--motion-easing-standard) 380ms both;
-}
-
-[data-band-draw] [data-part='tick'] {
-  animation: band-settle 260ms var(--motion-easing-standard) 480ms both;
-}

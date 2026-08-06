@@ -2,37 +2,41 @@ import Link from 'next/link';
 
 import { Display } from '@beff/ui/display';
 import { Lede } from '@beff/ui/lede';
-import { SpecBand } from '@beff/ui/spec-band';
+import { VideoPlayer } from '@beff/ui/video-player';
 
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { surfacePath } from '@/lib/navigation';
 
-/**
- * The plotted domain for the hero reading.
- *
- * A production line specifies 85–97 per cent first-pass yield (CONTEXT.md), so
- * 60 to 100 is the axis it would be judged on: wide enough that the reading and
- * the specification window are both legible in proportion, and wide enough that
- * an out-of-spec reading stays on the track rather than clamped to the edge — the
- * component's default padding would put it there.
- */
-const YIELD_DOMAIN = [60, 100] as const;
+/** The film's master. Anything larger on screen is an upscale of these pixels. */
+const FILM = { width: 640, height: 360 } as const;
 
 /**
  * ## The hero
  *
- * The design brief's first instruction: the signature element at full scale,
- * showing one honest reading — not a screenshot of a product, and not a headline
- * with two buttons and empty space where the argument should be.
+ * A headline, the argument beneath it, and the company film beside it.
  *
- * The reading is a production line at 78.4 per cent against a specification of
- * 85 to 97. It is out of spec, and the band says so three ways: by position, by
- * becoming a filled diamond instead of a hairline, and in words. The first thing
- * the page does is demonstrate the thing the product does.
+ * ### What used to be here
  *
- * `data-band-draw` opts this one band into the page's single orchestrated
- * moment — the range draws, the limits appear, the reading settles. See
- * `globals.css`; under `prefers-reduced-motion` it collapses to final state.
+ * The tolerance band, at hero scale, showing one out-of-spec reading. The design
+ * brief asked for the signature element first, and the band demonstrated the
+ * product rather than describing it. It was replaced on request.
+ *
+ * The band has not left the page — the signature section further down still
+ * shows the same instrument twice, in spec and past its upper limit — so the
+ * page still makes the argument, just after the film rather than before it.
+ *
+ * ### The trade this makes, stated
+ *
+ * The master is **640×360**. The hero column is wider than that on any desktop
+ * viewport, so the film is being upscaled roughly 2× at exactly the moment the
+ * page makes its first claim. `max-w-[640px]` caps it, which keeps it sharp and
+ * leaves the column wider than the video — the alternative is a soft image as
+ * the first thing a visitor sees. A larger master is the real fix.
+ *
+ * It also does not autoplay, so the hero's right-hand column is a poster frame
+ * until someone presses play. That is deliberate: 71 seconds of unasked audio
+ * would be the page's largest contentful paint and a `prefers-reduced-motion`
+ * failure in one move.
  */
 export function LandingHero({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
@@ -84,20 +88,14 @@ export function LandingHero({ locale }: { locale: Locale }) {
          * rather than hugging the reading, so the column reads as a panel the
          * instrument sits in instead of a block floating in the middle of it.
          */}
-        <div
-          data-band-draw
-          className="border-border-default flex flex-col justify-center gap-6 border-y py-8 lg:py-10"
-        >
-          <SpecBand
-            scale="hero"
-            label={t.landing.heroReadingLabel}
-            words={t.a11y.specBand}
-            value={78.4}
-            lowerLimit={85}
-            upperLimit={97}
-            target={92}
-            unit="%"
-            domain={YIELD_DOMAIN}
+        <div className="border-border-default flex flex-col justify-center gap-6 border-y py-8 lg:py-10">
+          <VideoPlayer
+            src="/media/beff-intro.mp4"
+            poster="/media/beff-intro-poster.png"
+            label={t.landing.filmLabel}
+            width={FILM.width}
+            height={FILM.height}
+            className="max-w-[640px]"
           />
           <Lede size="sm">{t.landing.heroReadingNote}</Lede>
         </div>

@@ -21,6 +21,9 @@ dependencies = [
     "python-multipart>=0.0.20",
     "orjson>=3.11.0",
     "structlog>=25.0.0",
+    # SMTP over asyncio. No vendor SDK: every transactional provider speaks
+    # SMTP, so changing provider is four environment variables and no code.
+    "aiosmtplib>=4.0.0",
 ]
 
 [dependency-groups]
@@ -132,7 +135,22 @@ branch = true
 omit = ["*/migrations/*", "*/test_*.py"]
 
 [tool.coverage.report]
-fail_under = 85
+# Set just under where the suite actually sits, which is the point of a floor:
+# it fails on a *regression*, not on the ordinary drift of a refactor that
+# removes a covered line.
+#
+# Was 85 while the measured number was 89, which is a readout rather than a
+# gate — and the four points of slack were hiding something. Every Postgres
+# repository sat at 39-45% because it was only ever covered through an
+# in-memory fake, and inside that gap were two bugs that made `DELETE
+# /privacy/me` impossible to execute against a real database: an `UPDATE` the
+# `consent_records` append-only trigger rejects, and a `revoked_reason` value
+# missing from its own CHECK constraint. Both were invisible to 481 green
+# tests. Integration suites for the privacy, auth, onboarding, metrics and
+# outbox repositories took the measured number to 96.56%.
+#
+# Raise this when real coverage rises; never lower it to make a red run green.
+fail_under = 95
 show_missing = true
 exclude_lines = [
     "pragma: no cover",

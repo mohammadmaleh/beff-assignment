@@ -53,13 +53,27 @@ describe('globals.css', () => {
 
   it('leaves to the app only what the app decides', async () => {
     const css = await read('globals.css');
-    // The skip link, the brand mark's dark treatment, the calibration ground
-    // and the band keyframes. That last is the deliberate one: a component that
-    // animates on mount animates everywhere it is placed, twelve at a time on
-    // the dashboard, so `SpecBand` exposes `data-part` hooks and the page
-    // decides whether to use them.
-    expect(css).toContain('@keyframes band-draw-range');
+    // The skip link, the brand mark's dark treatment and the calibration ground.
     expect(css).toContain('.skip-link');
+    expect(css).toContain('.calibration-ground');
+  });
+
+  it('no longer tries to animate a chart from the stylesheet', async () => {
+    /*
+     * The hero band's draw-on-mount was keyframes here, keyed off `data-part`
+     * attributes the component exposed. `SpecBand` draws through ECharts now,
+     * which creates its own SVG nodes and rewrites their attributes on its own
+     * schedule — a CSS animation targeting them does not fail, it races, and
+     * the mark lands wherever the race left it.
+     *
+     * Left behind, those rules would match nothing and cost nothing, which is
+     * exactly why they would survive: dead CSS is invisible. Asserted gone so
+     * the next reader does not find them and conclude the animation still lives
+     * here.
+     */
+    const css = await read('globals.css');
+    expect(css).not.toMatch(/@keyframes band-/);
+    expect(css).not.toContain("[data-part='");
   });
 });
 

@@ -21,13 +21,15 @@ from sqlalchemy import Connection, text
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
+from beff.core.email.model import EMAIL_DELIVERY_STATUSES
 from beff.db.base import utcnow
 from beff.db.registry import target_metadata
-from beff.modules.auth.models import RefreshToken, User
+from beff.modules.auth.models import REVOKED_REASONS, USER_ROLES, RefreshToken, User
 from beff.modules.metrics.models import PARAMETERS, PROCESS_STEPS
 from beff.modules.onboarding.models import CELL_FORMATS, ONBOARDING_STEPS
 from beff.modules.privacy.models import (
     CONSENT_PURPOSES,
+    DSAR_KINDS,
     EXPORT_JOB_STATUSES,
     ConsentRecord,
 )
@@ -72,6 +74,8 @@ async def test_upgrade_head_then_downgrade_base_runs_clean(
             "batches",
             "consent_records",
             "dsar_requests",
+            "email_deliveries",
+            "email_verification_tokens",
             "export_jobs",
             "lines",
             "onboarding_progress",
@@ -255,6 +259,16 @@ async def test_no_postgresql_enum_types_exist(db_engine: AsyncEngine) -> None:
         ("lines", "cell_format", CELL_FORMATS),
         ("scrap_events", "process_step", PROCESS_STEPS),
         ("process_measurements", "parameter", PARAMETERS),
+        # Added after an erasure shipped writing `account_erased` into a
+        # column whose CHECK listed only `logout` and `reuse_detected`. The
+        # gate below was already here and would have caught it on the day —
+        # it simply was not pointed at this constraint, which is the other
+        # way a gate fails. Every TEXT + CHECK column whose values live in a
+        # Python constant is now listed.
+        ("refresh_tokens", "revoked_reason", REVOKED_REASONS),
+        ("users", "role", USER_ROLES),
+        ("email_deliveries", "status", EMAIL_DELIVERY_STATUSES),
+        ("dsar_requests", "kind", DSAR_KINDS),
     ],
 )
 async def test_each_check_constraint_accepts_exactly_the_values_the_code_uses(

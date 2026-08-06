@@ -13,6 +13,14 @@ export interface SessionUser {
   display_name: string;
   role: string;
   created_at: string;
+  /**
+   * `null` until the address is confirmed.
+   *
+   * A timestamp rather than a boolean because that is what the API returns, and
+   * because the profile screen shows the date. `email_verified_at !== null` is
+   * the boolean, spelled where it is read.
+   */
+  email_verified_at: string | null;
 }
 
 interface SessionResponse {

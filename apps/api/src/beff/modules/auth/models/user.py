@@ -6,10 +6,11 @@ be enumerable (ADR-0010).
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Final
 from uuid import UUID
 
-from sqlalchemy import CheckConstraint, Index, Text, Uuid, text
+from sqlalchemy import CheckConstraint, DateTime, Index, Text, Uuid, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from beff.core.ids import uuid7
@@ -68,6 +69,23 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     # TEXT + CHECK, never a PostgreSQL ENUM: adding a value to a PG enum cannot
     # run inside a transaction before PG 12 and still cannot be removed at all.
     role: Mapped[str] = mapped_column(Text(), nullable=False, server_default=text("'member'"))
+
+    # A timestamp, not a boolean. "Verified" is an event with a date — needed to
+    # answer when an address was confirmed, and needed again if the policy for
+    # what an unverified account may do ever changes and existing accounts have
+    # to be graded by how long they have been confirmed. A boolean throws that
+    # away and cannot be recovered.
+    #
+    # NULL means unverified, which is the correct default for every row that
+    # existed before this column did: the migration cannot claim an address was
+    # confirmed when nobody ever asked.
+    email_verified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    @property
+    def is_email_verified(self) -> bool:
+        return self.email_verified_at is not None
 
     def __repr__(self) -> str:  # pragma: no cover - debugging aid
         return f"<User id={self.id!s} role={self.role!r}>"

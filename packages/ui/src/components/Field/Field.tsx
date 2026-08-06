@@ -3,6 +3,15 @@ import { useId, type ReactNode } from 'react';
 /** The wiring a control needs in order to be described and validated correctly. */
 export interface FieldControlProps {
   id: string;
+  /**
+   * The `<label>`'s own id.
+   *
+   * A plain input needs nothing but `htmlFor`. A composite control does: an
+   * ARIA listbox or grid inside the field is a second named thing, and without
+   * this it either goes unnamed or invents a name of its own — which is how a
+   * rotor ends up listing "Land" and, next to it, something anonymous.
+   */
+  labelId: string;
   'aria-describedby': string | undefined;
   'aria-invalid': true | undefined;
   required: boolean | undefined;
@@ -31,6 +40,7 @@ export interface FieldProps {
  */
 export function Field({ label, description, error, required, children }: FieldProps) {
   const id = useId();
+  const labelId = `${id}-label`;
   const descriptionId = `${id}-description`;
   const errorId = `${id}-error`;
 
@@ -42,7 +52,7 @@ export function Field({ label, description, error, required, children }: FieldPr
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-[length:var(--type-ui-size-sm)] font-medium">
+      <label id={labelId} htmlFor={id} className="text-[length:var(--type-ui-size-sm)] font-medium">
         {label}
         {required ? (
           <span className="text-text-muted ms-1" aria-hidden="true">
@@ -59,6 +69,7 @@ export function Field({ label, description, error, required, children }: FieldPr
 
       {children({
         id,
+        labelId,
         'aria-describedby': describedBy || undefined,
         'aria-invalid': error ? true : undefined,
         required: required || undefined,

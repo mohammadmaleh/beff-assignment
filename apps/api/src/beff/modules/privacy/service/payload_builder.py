@@ -19,6 +19,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from beff.core.email.model import EmailDelivery
 from beff.db.base import utcnow
 from beff.modules.auth.models import User
 from beff.modules.onboarding.models import Line, OnboardingProgress, Plant
@@ -71,6 +72,18 @@ class PostgresExportBuilder:
             .all()
         )
 
+        deliveries = (
+            (
+                await self._session.execute(
+                    select(EmailDelivery)
+                    .where(EmailDelivery.user_id == user_id)
+                    .order_by(EmailDelivery.queued_at)
+                )
+            )
+            .scalars()
+            .all()
+        )
+
         progress = (
             await self._session.execute(
                 select(OnboardingProgress).where(OnboardingProgress.user_id == user_id)
@@ -107,9 +120,30 @@ class PostgresExportBuilder:
                 "display_name": user.display_name,
                 "role": user.role,
                 "created_at": _json_safe(user.created_at),
+                "email_verified_at": _json_safe(user.email_verified_at),
                 # `password_hash` is deliberately absent. See the module
                 # docstring; there is a test that fails if it appears.
             },
+            # What we sent them, and when. Personal data we hold about the
+            # subject under Art. 15(1) — and the part of it they are least
+            # likely to be able to reconstruct themselves, since a message that
+            # never arrived leaves no trace on their side.
+            #
+            # The bodies are excluded: they are our copy for the subject's own
+            # mail, and a verification body contains a link that, while spent,
+            # is still a credential shape nobody needs re-published into an
+            # export file. Subject and status answer the question that gets
+            # asked, which is "did you email me and did it work".
+            "email_deliveries": [
+                {
+                    "purpose": delivery.purpose,
+                    "subject": delivery.subject,
+                    "status": delivery.status,
+                    "queued_at": _json_safe(delivery.queued_at),
+                    "completed_at": _json_safe(delivery.completed_at),
+                }
+                for delivery in deliveries
+            ],
             "consent_records": [
                 {
                     "purpose": record.purpose,

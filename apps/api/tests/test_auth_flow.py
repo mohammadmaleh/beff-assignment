@@ -18,18 +18,22 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from beff.core.config import Settings
+from beff.core.email import InMemoryEmailOutbox
 from beff.main import create_app
 from beff.modules.auth.dependencies import (
     get_auth_service,
+    get_verification_service,
     login_rate_limit,
     register_rate_limit,
+    resend_verification_rate_limit,
 )
 from beff.modules.auth.repository import (
+    InMemoryEmailVerificationTokenRepository,
     InMemoryRefreshTokenRepository,
     InMemoryUserRepository,
 )
 from beff.modules.auth.router.cookies import REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH
-from beff.modules.auth.service import AuthService, RefreshTokenService
+from beff.modules.auth.service import AuthService, EmailVerificationService, RefreshTokenService
 
 PASSWORD = "correct horse battery staple"
 EMAIL = "ada@beff.example"
@@ -52,14 +56,35 @@ def users() -> InMemoryUserRepository:
 
 
 @pytest.fixture
+def verification_tokens() -> InMemoryEmailVerificationTokenRepository:
+    return InMemoryEmailVerificationTokenRepository()
+
+
+@pytest.fixture
+def outbox() -> InMemoryEmailOutbox:
+    return InMemoryEmailOutbox()
+
+
+@pytest.fixture
 async def api(
-    users: InMemoryUserRepository, tokens: InMemoryRefreshTokenRepository
+    users: InMemoryUserRepository,
+    tokens: InMemoryRefreshTokenRepository,
+    verification_tokens: InMemoryEmailVerificationTokenRepository,
+    outbox: InMemoryEmailOutbox,
 ) -> AsyncIterator[AsyncClient]:
     """The real app, with only the repositories swapped.
 
     Overriding `get_auth_service` rather than the session means every router,
     dependency, error handler and cookie behaviour under test is the shipped
     one. Only the storage is a fake.
+
+    **Every** service a route under test depends on has to be overridden, not
+    just the obvious one. `register` gained `get_verification_service`, and
+    because this fixture only replaced `get_auth_service`, the new dependency
+    went on constructing a real PostgreSQL session against a deliberately
+    unusable URL — which failed as an event-loop error rather than anything
+    resembling "you forgot an override". This repo has hit that exact shape once
+    before, with a rate limiter.
     """
     settings = Settings(
         database_url="postgresql+asyncpg://unused/unused",
@@ -80,14 +105,25 @@ async def api(
             access_token_ttl_seconds=settings.access_token_ttl_seconds,
         )
 
+    def override_verification() -> EmailVerificationService:
+        return EmailVerificationService(
+            users,
+            verification_tokens,
+            outbox,
+            base_url="http://test",
+            ttl_seconds=settings.email_verification_ttl_seconds,
+        )
+
     app = create_app()
     app.dependency_overrides[get_auth_service] = override
+    app.dependency_overrides[get_verification_service] = override_verification
     # Login and register carry rate limiters that need a real session. They are
     # covered against a live database in `test_rate_limit.py`, including that the
     # routes enforce them; leaving them live here would mean these tests silently
     # start 429ing the day someone adds an eleventh login case.
     app.dependency_overrides[login_rate_limit] = lambda: None
     app.dependency_overrides[register_rate_limit] = lambda: None
+    app.dependency_overrides[resend_verification_rate_limit] = lambda: None
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -327,3 +363,215 @@ async def test_logging_out_twice_is_not_an_error(api: AsyncClient) -> None:
 
 async def test_logging_out_without_ever_signing_in_is_not_an_error(api: AsyncClient) -> None:
     assert (await api.post("/api/v1/auth/logout")).status_code == 204
+
+
+# ── Email verification ───────────────────────────────────────────────────────
+
+
+def _link_token(outbox: InMemoryEmailOutbox) -> str:
+    """The token as a reader would get it: out of the message body.
+
+    Deliberately not read from the token table. What is under test is that
+    somebody who receives the email can finish the flow with what is actually in
+    it — a test that reached into storage would pass against a message carrying
+    the wrong link entirely.
+    """
+    body = outbox.deliveries[-1].body_text
+    start = body.index("token=") + len("token=")
+    end = min(
+        (found for found in (body.find(c, start) for c in ("\n", " ")) if found != -1),
+        default=len(body),
+    )
+    return body[start:end]
+
+
+async def test_registration_queues_a_confirmation_email(
+    api: AsyncClient, outbox: InMemoryEmailOutbox
+) -> None:
+    await api.post("/api/v1/auth/register", json=REGISTRATION)
+
+    assert len(outbox.deliveries) == 1
+    assert outbox.deliveries[0].recipient == EMAIL
+    assert outbox.deliveries[0].purpose == "email_verification"
+    # Queued, not sent. The worker sends it, and the API cannot honestly claim
+    # delivery at the moment it answers.
+    assert outbox.deliveries[0].status == "pending"
+
+
+async def test_a_new_account_is_not_verified(api: AsyncClient) -> None:
+    """Registration signs you in immediately and confirms nothing.
+
+    The two are separate acts on purpose: making the account wait on an email
+    would gate the product behind a system that is allowed to be slow.
+    """
+    response = await api.post("/api/v1/auth/register", json=REGISTRATION)
+
+    assert response.json()["user"]["email_verified_at"] is None
+
+
+async def test_the_email_language_follows_an_explicit_locale(
+    api: AsyncClient, outbox: InMemoryEmailOutbox
+) -> None:
+    await api.post("/api/v1/auth/register", json={**REGISTRATION, "locale": "de"})
+
+    assert outbox.deliveries[0].subject == "Bestätigen Sie Ihre E-Mail-Adresse"
+
+
+async def test_the_email_language_falls_back_to_accept_language(
+    api: AsyncClient, outbox: InMemoryEmailOutbox
+) -> None:
+    """A caller that sends no locale still gets the right language.
+
+    This is the path a `curl`, a mobile client, or a frontend that forgets the
+    field takes — and the alternative to negotiating is silently mailing English
+    to a German speaker.
+    """
+    await api.post(
+        "/api/v1/auth/register",
+        json=REGISTRATION,
+        headers={"accept-language": "de-DE,de;q=0.9,en;q=0.4"},
+    )
+
+    assert outbox.deliveries[0].subject == "Bestätigen Sie Ihre E-Mail-Adresse"
+
+
+async def test_following_the_link_confirms_the_address(
+    api: AsyncClient, outbox: InMemoryEmailOutbox
+) -> None:
+    session = (await api.post("/api/v1/auth/register", json=REGISTRATION)).json()
+
+    response = await api.post("/api/v1/auth/verify-email", json={"token": _link_token(outbox)})
+
+    assert response.status_code == 200
+    assert response.json()["verified"] is True
+    assert response.json()["user"]["email_verified_at"] is not None
+
+    me = await api.get(
+        "/api/v1/auth/me",
+        headers={"authorization": f"Bearer {session['access_token']}"},
+    )
+    assert me.json()["email_verified_at"] is not None
+
+
+async def test_confirming_needs_no_session(api: AsyncClient, outbox: InMemoryEmailOutbox) -> None:
+    """The link is followed from a mail client, which may be on another device.
+
+    Requiring a bearer token here would make the commonest path — read the mail
+    on a phone, registered on a laptop — the one that fails.
+    """
+    await api.post("/api/v1/auth/register", json=REGISTRATION)
+    token = _link_token(outbox)
+    api.cookies.clear()
+
+    response = await api.post("/api/v1/auth/verify-email", json={"token": token})
+
+    assert response.status_code == 200
+
+
+async def test_confirming_never_hands_back_a_session(
+    api: AsyncClient, outbox: InMemoryEmailOutbox
+) -> None:
+    """A link that arrives by email and produces a session is a login bypass.
+
+    Anyone with read access to the inbox — including a forwarding rule nobody
+    remembers — would get one.
+    """
+    await api.post("/api/v1/auth/register", json=REGISTRATION)
+    token = _link_token(outbox)
+    api.cookies.clear()
+
+    response = await api.post("/api/v1/auth/verify-email", json={"token": token})
+
+    assert "access_token" not in response.text
+    assert REFRESH_COOKIE_NAME not in response.cookies
+
+
+async def test_a_link_cannot_be_used_twice(api: AsyncClient, outbox: InMemoryEmailOutbox) -> None:
+    await api.post("/api/v1/auth/register", json=REGISTRATION)
+    token = _link_token(outbox)
+
+    assert (await api.post("/api/v1/auth/verify-email", json={"token": token})).status_code == 200
+
+    second = await api.post("/api/v1/auth/verify-email", json={"token": token})
+    assert second.status_code == 422
+    assert second.json()["code"] == "auth.verification_token_invalid"
+
+
+async def test_an_unknown_token_is_a_problem_document(api: AsyncClient) -> None:
+    response = await api.post("/api/v1/auth/verify-email", json={"token": "not-a-real-token-value"})
+
+    assert response.status_code == 422
+    assert response.headers["content-type"].startswith("application/problem+json")
+    assert response.json()["code"] == "auth.verification_token_invalid"
+
+
+async def test_resending_needs_a_session(api: AsyncClient) -> None:
+    """Anonymous resend would be an oracle *and* an amplifier: it would report
+    whether an address is registered, and point our sending reputation at it."""
+    response = await api.post("/api/v1/auth/verify-email/resend", json={})
+
+    assert response.status_code == 401
+
+
+async def test_resending_takes_no_address(api: AsyncClient) -> None:
+    """`extra="forbid"` is the guard. Accepting an address would let any account
+    holder mail any address a message that genuinely comes from us."""
+    session = (await api.post("/api/v1/auth/register", json=REGISTRATION)).json()
+
+    response = await api.post(
+        "/api/v1/auth/verify-email/resend",
+        json={"email": "someone-else@example.test"},
+        headers={"authorization": f"Bearer {session['access_token']}"},
+    )
+
+    assert response.status_code == 422
+
+
+async def test_resending_after_the_first_was_sent_queues_another(
+    api: AsyncClient, outbox: InMemoryEmailOutbox
+) -> None:
+    session = (await api.post("/api/v1/auth/register", json=REGISTRATION)).json()
+    outbox.deliveries[0].status = "sent"
+
+    response = await api.post(
+        "/api/v1/auth/verify-email/resend",
+        json={"locale": "en"},
+        headers={"authorization": f"Bearer {session['access_token']}"},
+    )
+
+    assert response.status_code == 202
+    assert response.json() == {"queued": True, "recipient": EMAIL}
+    assert len(outbox.deliveries) == 2
+
+
+async def test_resending_while_one_is_still_queued_does_not_duplicate(
+    api: AsyncClient, outbox: InMemoryEmailOutbox
+) -> None:
+    """A new token would kill the link in the message already on its way out, so
+    a double-click would post a dead link to the user's inbox."""
+    session = (await api.post("/api/v1/auth/register", json=REGISTRATION)).json()
+
+    response = await api.post(
+        "/api/v1/auth/verify-email/resend",
+        json={},
+        headers={"authorization": f"Bearer {session['access_token']}"},
+    )
+
+    assert response.status_code == 202
+    assert len(outbox.deliveries) == 1
+
+
+async def test_resending_to_a_confirmed_address_is_a_conflict(
+    api: AsyncClient, outbox: InMemoryEmailOutbox
+) -> None:
+    session = (await api.post("/api/v1/auth/register", json=REGISTRATION)).json()
+    await api.post("/api/v1/auth/verify-email", json={"token": _link_token(outbox)})
+
+    response = await api.post(
+        "/api/v1/auth/verify-email/resend",
+        json={},
+        headers={"authorization": f"Bearer {session['access_token']}"},
+    )
+
+    assert response.status_code == 409
+    assert response.json()["code"] == "auth.email_already_verified"

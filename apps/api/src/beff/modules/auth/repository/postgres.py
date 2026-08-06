@@ -6,12 +6,16 @@ from datetime import datetime
 from typing import Any, cast
 from uuid import UUID
 
-from sqlalchemy import CursorResult, select, update
+from sqlalchemy import CursorResult, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from beff.modules.auth.models import RefreshToken, User
+from beff.modules.auth.models import EmailVerificationToken, RefreshToken, User
 
-__all__ = ["PostgresRefreshTokenRepository", "PostgresUserRepository"]
+__all__ = [
+    "PostgresEmailVerificationTokenRepository",
+    "PostgresRefreshTokenRepository",
+    "PostgresUserRepository",
+]
 
 
 class PostgresUserRepository:
@@ -38,6 +42,18 @@ class PostgresUserRepository:
         # be populated before the caller can use them, but the transaction
         # belongs to the request.
         await self._session.flush()
+        return user
+
+    async def mark_email_verified(self, user: User, *, at: datetime) -> User:
+        """Stamp `email_verified_at` unless it is already set.
+
+        The guard is not defensive coding: following the link twice is normal —
+        mail clients prefetch, and people double-click — and without it the
+        second visit would rewrite the moment the address was confirmed.
+        """
+        if user.email_verified_at is None:
+            user.email_verified_at = at
+            await self._session.flush()
         return user
 
 
@@ -87,3 +103,50 @@ class PostgresRefreshTokenRepository:
             .order_by(RefreshToken.issued_at, RefreshToken.id)
         )
         return list(result.scalars())
+
+
+class PostgresEmailVerificationTokenRepository:
+    """Satisfies `EmailVerificationTokenRepository` structurally."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def add(self, token: EmailVerificationToken) -> EmailVerificationToken:
+        self._session.add(token)
+        await self._session.flush()
+        return token
+
+    async def get_by_hash(self, token_hash: str) -> EmailVerificationToken | None:
+        result = await self._session.execute(
+            select(EmailVerificationToken).where(EmailVerificationToken.token_hash == token_hash)
+        )
+        return result.scalar_one_or_none()
+
+    async def consume(self, token: EmailVerificationToken, *, at: datetime) -> None:
+        token.consumed_at = at
+        await self._session.flush()
+
+    async def invalidate_outstanding(self, user_id: UUID, *, at: datetime) -> int:
+        """Consume every live token for this user in one UPDATE.
+
+        `consumed_at IS NULL` in the predicate makes it idempotent: two resends
+        racing do not overwrite each other's timestamps, and the count is what
+        the second one honestly reports.
+        """
+        result = await self._session.execute(
+            update(EmailVerificationToken)
+            .where(
+                EmailVerificationToken.user_id == user_id,
+                EmailVerificationToken.consumed_at.is_(None),
+            )
+            .values(consumed_at=at)
+        )
+        await self._session.flush()
+        return cast("CursorResult[Any]", result).rowcount
+
+    async def delete_for_user(self, user_id: UUID) -> int:
+        result = await self._session.execute(
+            delete(EmailVerificationToken).where(EmailVerificationToken.user_id == user_id)
+        )
+        await self._session.flush()
+        return cast("CursorResult[Any]", result).rowcount

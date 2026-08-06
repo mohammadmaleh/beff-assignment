@@ -8,6 +8,7 @@ import { Button } from '@beff/ui/button';
 import { ThemeToggle } from '@beff/ui/theme-toggle';
 
 import { BrandMark } from '@/components/BrandMark';
+import { UnverifiedBanner } from '@/components/UnverifiedBanner';
 
 import { THEME_STORAGE_KEY } from '@/constants/storage';
 import { useAuth } from '@/lib/auth';
@@ -69,6 +70,7 @@ export function AppShell({
     login: t.nav.logIn,
     register: t.nav.getStarted,
     onboarding: t.onboarding.title,
+    verifyEmail: t.verifyEmail.pageTitle,
   };
 
   return (
@@ -82,7 +84,14 @@ export function AppShell({
          * signs in should not feel they have left the site they signed in to.
          */
         <header className="border-border-default border-b">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-4 px-6 py-4">
+          {/*
+           * The same measure the dashboard's bands use — `max-w-[100rem]`, not
+           * the marketing `6xl`. A header on a narrower measure than the
+           * content under it puts the wordmark and the nav in from the edge
+           * while the first chart starts at it, and the page reads as two
+           * layouts stacked rather than one.
+           */}
+          <div className="mx-auto flex w-full max-w-[100rem] flex-wrap items-center gap-x-8 gap-y-4 px-6 py-4 lg:px-10">
             <Link
               href={surfacePath('dashboard', locale)}
               className="inline-flex items-center rounded-xs"
@@ -136,6 +145,15 @@ export function AppShell({
           </div>
         </header>
       )}
+
+      {/*
+       * Between the header and the content, on every authenticated surface, and
+       * renders nothing once the address is confirmed. Above `main` rather than
+       * inside it so it does not sit in the middle of a page's own heading
+       * outline — and outside `bare`, because the onboarding wizard is the one
+       * flow where a second thing to do would compete with the first.
+       */}
+      {bare ? null : <UnverifiedBanner locale={locale} />}
 
       {/*
        * No width and no padding here. The dashboard composes itself in

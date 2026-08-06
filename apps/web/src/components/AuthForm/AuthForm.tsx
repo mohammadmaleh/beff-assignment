@@ -9,10 +9,26 @@ import { TextField } from '@beff/ui/text-field';
 
 import { ApiError, useAuth } from '@/lib/auth';
 import { textField } from '@/lib/forms';
-import { getDictionary, translateFieldError, type Locale } from '@/lib/i18n';
+import { getDictionary, translateApiError, translateFieldError, type Locale } from '@/lib/i18n';
 import { surfacePath } from '@/lib/navigation';
 
 type Mode = 'login' | 'register';
+
+/**
+ * The code to render a message from, filling in the one gap the API leaves.
+ *
+ * A 401 from either auth route is a credential mismatch and nothing else, but
+ * the response deliberately carries no problem document on some paths — so the
+ * status is the only evidence there is. The substitution is safe *here*, on a
+ * form whose only 401 is a failed sign-in, and it stays here rather than in the
+ * shared translator, where it would be wrong for every authenticated surface.
+ *
+ * `auth.invalid_credentials` still says only that the pair did not match. Which
+ * of the two was wrong is what turns a login form into an account-enumeration
+ * oracle, and neither this code nor the API's ever names it.
+ */
+const formErrorCode = (error: ApiError): string | null =>
+  error.code ?? (error.status === 401 ? 'auth.invalid_credentials' : null);
 
 /**
  * Login and registration are the same form with one extra field, so they are
@@ -54,13 +70,12 @@ export function AuthForm({ mode, locale }: { mode: Mode; locale: Locale }) {
         if (Object.keys(error.fields).length > 0) {
           setFieldErrors(error.fields);
         } else {
-          // 401 on login is a credential mismatch, and it must not say *which*
-          // of the two was wrong — that turns the form into an account
-          // enumeration oracle.
-          setFormError(error.status === 401 ? t.auth.invalidCredentials : t.auth.genericFailure);
+          setFormError(translateApiError(locale, formErrorCode(error)));
         }
       } else {
-        setFormError(t.auth.genericFailure);
+        // No response at all — DNS, offline, a CORS rejection. There is nothing
+        // to identify, so it gets the fallback rather than a guess.
+        setFormError(translateApiError(locale, null));
       }
       setSubmitting(false);
     }

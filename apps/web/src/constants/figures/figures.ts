@@ -20,6 +20,8 @@
 
 export const FIGURE_IDS = {
   yieldTrend: 'yield-trend',
+  yieldDistribution: 'yield-distribution',
+  costTrend: 'cost-trend',
   throughput: 'throughput',
   scrapByStep: 'scrap-by-step',
   scrapCost: 'scrap-cost',
@@ -35,6 +37,8 @@ export const csvName = (stem: string): string => `${CSV_PREFIX}-${stem}`;
 
 export const CSV_NAMES = {
   yieldTrend: csvName('first-pass-yield'),
+  yieldDistribution: csvName('first-pass-yield-distribution'),
+  costTrend: csvName('committed-value-lost-cumulative'),
   throughput: csvName('cells-by-batch'),
   scrapByStep: csvName('scrap-by-step'),
   scrapCost: csvName('committed-value-lost'),

@@ -16,6 +16,10 @@ export const AUTH_ROUTES = {
   me: '/auth/me',
   refresh: '/auth/refresh',
   register: '/auth/register',
+  /** Redeems the link from the confirmation email. Needs no session. */
+  verifyEmail: '/auth/verify-email',
+  /** Queues another confirmation email for the signed-in caller's own address. */
+  resendVerification: '/auth/verify-email/resend',
 } as const;
 
 export const METRICS_ROUTES = {

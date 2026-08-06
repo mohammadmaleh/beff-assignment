@@ -37,3 +37,17 @@ export const getDictionary = (locale: Locale): Dictionary => DICTIONARIES[locale
  */
 export const translateFieldError = (locale: Locale, code: string): string =>
   DICTIONARIES[locale].fieldErrors[code] ?? DICTIONARIES[locale].fieldErrors.unknown ?? code;
+
+/**
+ * The same, for the failure of a whole request rather than of one field.
+ *
+ * `null` — a failure that never reached the API, so it carried no problem
+ * document — lands on the same fallback as a code this build has not seen. In
+ * both cases the honest thing to say is that something broke on our side; what
+ * must not happen is a specific, confident sentence about a failure we did not
+ * actually identify.
+ */
+export const translateApiError = (locale: Locale, code: string | null): string => {
+  const { byCode, unknownFailure } = DICTIONARIES[locale].apiErrors;
+  return (code === null ? undefined : byCode[code]) ?? unknownFailure;
+};

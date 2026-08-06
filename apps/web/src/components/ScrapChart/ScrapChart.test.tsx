@@ -2,7 +2,9 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
-import { ScrapChart } from './ScrapChart';
+import { formatters } from '@/lib/format';
+
+import { ScrapChart, scrapTooltip } from './ScrapChart';
 
 /**
  * `ScrapChart` set the inversion the whole chart layer is built on — the bars
@@ -48,11 +50,13 @@ describe('ScrapChart', () => {
   });
 
   it('hides the bars from assistive technology', () => {
-    // The bars are decoration over the table, not content. Left exposed they
-    // are a list of loose text nodes read in visual order with no structure.
+    // The bars are decoration over the table, not content. Left exposed, an
+    // ECharts SVG is dozens of loose `<text>` nodes — axis ticks, bar labels —
+    // read in visual order with no structure: "7.8% 2.4% Coating Formation".
     const { container } = renderChart();
 
-    expect(container.querySelector('ul[aria-hidden="true"]')).not.toBeNull();
+    const drawing = container.querySelector('[aria-hidden="true"][style*="block-size"]');
+    expect(drawing).not.toBeNull();
   });
 
   it('offers the table as a named view rather than a disclosure', async () => {
@@ -105,14 +109,20 @@ describe('ScrapChart', () => {
   });
 
   it('renders the same figure in the bars as in the table', async () => {
-    // One formatter for both. Two would be two chances for the drawing and the
-    // authoritative rendering to disagree about the same number.
+    /*
+     * One formatter for both. Two would be two chances for the drawing and the
+     * authoritative rendering to disagree about the same number — which is not
+     * hypothetical here: this component shipped `7,8%` in German from its own
+     * `Intl.NumberFormat` while the table beside it read `7,8 %`.
+     *
+     * The bar's direct label is real `<text>` under the SVG renderer, so it can
+     * be read back. Scoped to the drawing, because after `openTable` the same
+     * string is legitimately on screen twice.
+     */
     const { container } = renderChart();
 
-    // `>` matters: the bar itself is a span nested inside a span, so an
-    // unscoped `span:last-child` matches that empty inner bar first.
-    const barLabel = container.querySelector('ul[aria-hidden="true"] li > span:last-child');
-    expect(barLabel?.textContent).toBe('7.8%');
+    const drawing = container.querySelector('[aria-hidden="true"][style*="block-size"]');
+    expect(drawing?.textContent).toContain('7.8%');
 
     await openTable();
     expect(within(screen.getByRole('table')).getByText('7.8%')).toBeInTheDocument();
@@ -166,5 +176,60 @@ describe('ScrapChart', () => {
 
   it('renders an empty breakdown without throwing', () => {
     expect(() => render(<ScrapChart rows={[]} locale="en" order={order} />)).not.toThrow();
+  });
+});
+
+describe('scrapTooltip', () => {
+  /*
+   * A formatter handed to ECharts only ever runs on hover, which means it never
+   * runs under test — mounting the chart proves nothing about it, and in jsdom
+   * the instance lays out at 0×0 so there is no hover to simulate either. That
+   * is why the content is a pure function and this is a unit: otherwise the one
+   * string in this component assembled by hand is also the only one with no
+   * coverage at all.
+   */
+  const steps = { coating: 'Coating' };
+  const copy = { columnScrap: 'Scrap rate', columnCost: 'Committed value lost' };
+
+  it('carries the rate and the money together, so the two can be compared', () => {
+    // The whole point of the pairing: this chart plots the rate and the one
+    // below it plots the cost, and coating leads on one while formation leads
+    // on the other. A reader must get both figures for a step from one hover.
+    const html = scrapTooltip(
+      { process_step: 'coating', scrap_rate_pct: 7.8, committed_value_eur: 4100 },
+      steps,
+      formatters('en'),
+      copy,
+    );
+
+    expect(html).toContain('<strong>Coating</strong>');
+    expect(html).toContain('Scrap rate: 7.8%');
+    expect(html).toContain('Committed value lost: €4,100');
+  });
+
+  it('formats for the reader’s locale, not the chart’s', () => {
+    // The regression this component already shipped once, in the place it is
+    // hardest to see: German needs a non-breaking space before the per-cent
+    // sign, and a tooltip is never in a screenshot.
+    const html = scrapTooltip(
+      { process_step: 'coating', scrap_rate_pct: 7.8, committed_value_eur: 4100 },
+      { coating: 'Beschichten' },
+      formatters('de'),
+      { columnScrap: 'Ausschussquote', columnCost: 'Verlorene Wertschöpfung' },
+    );
+
+    expect(html).toContain('Ausschussquote: 7,8 %');
+    expect(html).toContain('4.100 €');
+  });
+
+  it('names a step the frontend has not been taught rather than dropping it', () => {
+    const html = scrapTooltip(
+      { process_step: 'laser_notching', scrap_rate_pct: 1, committed_value_eur: 10 },
+      steps,
+      formatters('en'),
+      copy,
+    );
+
+    expect(html).toContain('<strong>laser_notching</strong>');
   });
 });

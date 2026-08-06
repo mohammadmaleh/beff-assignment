@@ -1,9 +1,16 @@
 /**
  * RFC 9457 Problem Details, as the API renders them.
  *
- * The `errors` array is the machine-readable part: a stable `code` per field,
- * never an English sentence. That is what lets the German locale show German
- * validation messages without the backend knowing which language is on screen.
+ * Two members carry the machine-readable part, and neither is prose:
+ *
+ * * `code` — the top-level, namespaced identifier for *this* failure:
+ *   `auth.email_already_registered`, `rate_limit_exceeded`. It is the whole
+ *   reason the API never has to know which language is on screen.
+ * * `errors` — a stable `code` per field, for the failures that belong next to
+ *   an input rather than in a banner.
+ *
+ * The English `title` and `detail` are for a developer reading a log. Nothing
+ * in this app renders them, because they arrive in one language.
  */
 export interface Problem {
   type?: string;
@@ -11,36 +18,51 @@ export interface Problem {
   status?: number;
   detail?: string;
   instance?: string;
+  code?: string;
   errors?: readonly { field?: string; code?: string; detail?: string }[];
 }
 
 /** Field name → the error code the server returned for it. */
 export type FieldErrors = Record<string, string>;
 
+/** Everything a caller can act on, extracted from a failed response. */
+export interface ParsedProblem {
+  /** The API's own code, or `null` when the failure never reached the API. */
+  code: string | null;
+  fields: FieldErrors;
+}
+
 const PROBLEM_TYPE = 'application/problem+json';
 
+const EMPTY: ParsedProblem = { code: null, fields: {} };
+
 /**
- * Pull the per-field codes out of a failed response.
+ * Read the code and the per-field codes out of a failed response.
  *
- * Returns an empty object for anything that is not a problem document — a 502
- * from a proxy, an HTML error page, a truncated body. Those are failures of the
- * request, not of the user's input, and telling someone to check their email
- * address sends them hunting for a mistake they did not make.
+ * Everything that is not a problem document — a 502 from a proxy, an HTML error
+ * page, a body truncated mid-flight — parses to no code and no fields. That is
+ * not a gap to fill with a guess: those are failures of the *request*, and
+ * telling someone to check their email address sends them hunting for a mistake
+ * they did not make.
  */
-export const problemFieldErrors = async (response: Response): Promise<FieldErrors> => {
-  if (!response.headers.get('content-type')?.includes(PROBLEM_TYPE)) return {};
+export const parseProblem = async (response: Response): Promise<ParsedProblem> => {
+  if (!response.headers.get('content-type')?.includes(PROBLEM_TYPE)) return EMPTY;
 
   let problem: Problem;
   try {
     problem = (await response.json()) as Problem;
   } catch {
-    return {};
+    return EMPTY;
   }
 
-  const errors: FieldErrors = {};
+  const fields: FieldErrors = {};
   for (const entry of problem.errors ?? []) {
     if (entry.field === undefined) continue;
-    errors[entry.field] = entry.code ?? entry.detail ?? 'unknown';
+    fields[entry.field] = entry.code ?? entry.detail ?? 'unknown';
   }
-  return errors;
+  return { code: problem.code ?? null, fields };
 };
+
+/** The field-only view, for callers with no banner to put a code in. */
+export const problemFieldErrors = async (response: Response): Promise<FieldErrors> =>
+  (await parseProblem(response)).fields;

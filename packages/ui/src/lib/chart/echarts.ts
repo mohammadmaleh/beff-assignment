@@ -28,6 +28,7 @@ import {
   LegendComponent,
   MarkAreaComponent,
   MarkLineComponent,
+  MarkPointComponent,
   TooltipComponent,
 } from 'echarts/components';
 import * as echarts from 'echarts/core';
@@ -46,6 +47,10 @@ echarts.use([
   // squiggle with no verdict in it.
   MarkLineComponent,
   MarkAreaComponent,
+  // `SpecBand`'s out-of-spec reading. The band is drawn entirely from marks
+  // rather than from a series — see `band.ts` — and the diamond is the one part
+  // of it that is a point rather than a line.
+  MarkPointComponent,
   DatasetComponent,
   SVGRenderer,
 ]);

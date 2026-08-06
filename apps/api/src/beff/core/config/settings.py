@@ -71,6 +71,50 @@ class Settings(BaseSettings):
     # human-readable documentation.
     problem_base_uri: str = "https://beff.example/problems"
 
+    # ── Email ────────────────────────────────────────────────────────────────
+    #
+    # SMTP rather than a vendor SDK. Every provider speaks it, so switching one
+    # for another is four environment variables and no code — and the console
+    # sender below means `docker compose up` needs none of them.
+    #
+    # An empty `smtp_host` is not a misconfiguration to guess around: it means
+    # "no transport", and the delivery worker prints the message instead of
+    # sending it. That is the difference between a local stack that works and
+    # one where registration fails on a connection refused.
+    smtp_host: str = ""
+    smtp_port: int = Field(default=587, gt=0, le=65535)
+    smtp_username: str = ""
+    smtp_password: str = ""
+
+    # STARTTLS on 587, implicit TLS on 465. Both are on by default because the
+    # credentials above cross the wire in the clear otherwise, and a provider
+    # that needs neither is the exception, not the default worth optimising for.
+    smtp_starttls: bool = True
+    smtp_ssl: bool = False
+
+    email_from: str = "Beff <no-reply@beff.example>"
+
+    # Absolute base for the link in the message. `NEXT_PUBLIC_SITE_URL` cannot
+    # be reused: Next inlines it at *build* time, so it does not exist in this
+    # process at all.
+    app_base_url: str = "http://localhost:3000"
+
+    # Twenty-four hours. Long enough to survive a message sitting unread
+    # overnight, short enough that a link forwarded or left in a mailbox is not
+    # a standing credential.
+    email_verification_ttl_seconds: int = Field(default=60 * 60 * 24, gt=0)
+
+    @property
+    def email_transport_configured(self) -> bool:
+        """Whether a real SMTP transport is available.
+
+        Read at startup to warn, not to refuse. Refusing would mean a
+        deployment that has everything else right cannot boot because mail is
+        not wired yet — and mail is the one feature here the app is designed to
+        survive the absence of.
+        """
+        return bool(self.smtp_host.strip())
+
     @property
     def cors_origin_list(self) -> list[str]:
         """`CORS_ORIGINS` split into the list Starlette's middleware expects."""

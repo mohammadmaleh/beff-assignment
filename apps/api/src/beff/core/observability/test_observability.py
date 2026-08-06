@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from uuid import UUID
 
 from httpx import ASGITransport, AsyncClient
 
@@ -76,14 +77,27 @@ async def test_two_requests_get_different_ids() -> None:
 
 
 async def test_generated_ids_sort_chronologically() -> None:
-    """UUIDv7, not uuid4 — so a log sorted by request id is also sorted by time."""
+    """UUIDv7, not uuid4 — so a log sorted by request id is also sorted by time.
+
+    Asserted on the **timestamp prefix**, not on the whole id. `uuid7` documents
+    that ordering holds across milliseconds and not within one — inside a single
+    millisecond two ids differ only in their random bits — and five in-process
+    requests to `/healthz` land in the same millisecond most of the time. The
+    stricter assertion was therefore testing `secrets.randbits`, and failed
+    roughly one run in six for a generator that was behaving exactly as
+    specified.
+    """
     app = create_app()
     transport = ASGITransport(app=app)
 
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         ids = [(await client.get("/healthz")).headers[REQUEST_ID_HEADER] for _ in range(5)]
 
-    assert ids == sorted(ids)
+    # The leading 48 bits are unix_ts_ms. Non-decreasing is the real guarantee,
+    # and it is the one that makes a log sorted by id readable in time order.
+    milliseconds = [UUID(value).int >> 80 for value in ids]
+
+    assert milliseconds == sorted(milliseconds)
 
 
 async def test_an_error_response_still_carries_an_id() -> None:

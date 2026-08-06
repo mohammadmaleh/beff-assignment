@@ -11,6 +11,7 @@
     "./chart": "./src/lib/chart/index.ts",
     "./chart-figure": "./src/components/ChartFigure/index.ts",
     "./cookie-banner": "./src/components/CookieBanner/index.ts",
+    "./country-select": "./src/components/CountrySelect/index.ts",
     "./cx": "./src/lib/cx/index.ts",
     "./data-state": "./src/components/DataState/index.ts",
     "./data-table": "./src/components/DataTable/index.ts",
@@ -19,6 +20,7 @@
     "./eyebrow": "./src/components/Eyebrow/index.ts",
     "./field": "./src/components/Field/index.ts",
     "./fonts.css": "./src/styles/fonts.css",
+    "./info-hint": "./src/components/InfoHint/index.ts",
     "./lede": "./src/components/Lede/index.ts",
     "./media": "./src/lib/media/index.ts",
     "./metric": "./src/components/Metric/index.ts",
@@ -26,6 +28,7 @@
     "./text-field": "./src/components/TextField/index.ts",
     "./theme-script": "./src/components/ThemeScript/index.ts",
     "./theme-toggle": "./src/components/ThemeToggle/index.ts",
+    "./video-player": "./src/components/VideoPlayer/index.ts",
     "./visually-hidden": "./src/components/VisuallyHidden/index.ts"
   },
   "scripts": {
@@ -72,6 +75,8 @@
   "dependencies": {
     "@fontsource-variable/archivo": "5.3.0",
     "@fontsource/ibm-plex-mono": "5.3.0",
-    "@fontsource/ibm-plex-sans": "5.3.0"
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "downshift": "^9.4.0",
+    "flag-icons": "^7.5.0"
   }
 }

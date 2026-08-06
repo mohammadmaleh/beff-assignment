@@ -122,19 +122,40 @@ class InMemoryErasureRepository:
         self.soft_deleted: list[UUID] = []
         self.revoked: list[UUID] = []
         self.exports_deleted: list[UUID] = []
+        self.verification_tokens_deleted: list[UUID] = []
+        self.email_deliveries_deleted: list[UUID] = []
         self.consent_pseudonymised: list[UUID] = []
+        # The order calls arrived in. The erasure service's whole contract is a
+        # sequence — sessions die before exports, exports before the account row
+        # — and a test that only checks each list is non-empty would pass
+        # against any order at all.
+        self.calls: list[str] = []
 
     async def soft_delete_user(self, user_id: UUID, *, at: datetime) -> None:
         self.soft_deleted.append(user_id)
+        self.calls.append("soft_delete_user")
 
     async def revoke_all_token_families(self, user_id: UUID, *, at: datetime) -> int:
         self.revoked.append(user_id)
+        self.calls.append("revoke_all_token_families")
         return 1
 
     async def delete_export_jobs(self, user_id: UUID) -> int:
         self.exports_deleted.append(user_id)
+        self.calls.append("delete_export_jobs")
+        return 1
+
+    async def delete_verification_tokens(self, user_id: UUID) -> int:
+        self.verification_tokens_deleted.append(user_id)
+        self.calls.append("delete_verification_tokens")
+        return 1
+
+    async def delete_email_deliveries(self, user_id: UUID) -> int:
+        self.email_deliveries_deleted.append(user_id)
+        self.calls.append("delete_email_deliveries")
         return 1
 
     async def pseudonymise_consent(self, user_id: UUID) -> int:
         self.consent_pseudonymised.append(user_id)
+        self.calls.append("pseudonymise_consent")
         return 1

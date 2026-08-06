@@ -16,12 +16,14 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * screenshot and the contrast gate. Hence the rule the whole library now
  * follows: every perceivable string is a required prop with no default.
  *
- * ## Animation is not here
+ * ## Animation is off unless asked for
  *
- * The `band-draw` keyframes live in the consuming app, not in this package. A
- * component that animates on mount animates *everywhere* it is placed —
- * including twelve at a time on the dashboard. `SpecBand` exposes `data-part`
- * hooks and the page decides.
+ * A component that animates on mount animates *everywhere* it is placed —
+ * including four at a time in one dashboard panel. So `animate` defaults to
+ * false and the page opts in; only the landing hero does. It used to be
+ * keyframes in the consuming app keyed off `data-part` attributes, which stopped
+ * working when the band became an ECharts instance: a render loop the library
+ * owns is outside the cascade's reach entirely.
  */
 const WORDS = {
   inSpec: 'in spec',

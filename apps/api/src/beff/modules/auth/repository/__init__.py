@@ -7,18 +7,27 @@ just a class with the right methods, and mypy checks that it stays that way.
 """
 
 from beff.modules.auth.repository.fakes import (
+    InMemoryEmailVerificationTokenRepository,
     InMemoryRefreshTokenRepository,
     InMemoryUserRepository,
 )
 from beff.modules.auth.repository.postgres import (
+    PostgresEmailVerificationTokenRepository,
     PostgresRefreshTokenRepository,
     PostgresUserRepository,
 )
-from beff.modules.auth.repository.protocols import RefreshTokenRepository, UserRepository
+from beff.modules.auth.repository.protocols import (
+    EmailVerificationTokenRepository,
+    RefreshTokenRepository,
+    UserRepository,
+)
 
 __all__ = [
+    "EmailVerificationTokenRepository",
+    "InMemoryEmailVerificationTokenRepository",
     "InMemoryRefreshTokenRepository",
     "InMemoryUserRepository",
+    "PostgresEmailVerificationTokenRepository",
     "PostgresRefreshTokenRepository",
     "PostgresUserRepository",
     "RefreshTokenRepository",

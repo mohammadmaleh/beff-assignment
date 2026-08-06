@@ -12,10 +12,14 @@
  * could not draw a chart that looked like this one without copying six files.
  */
 
+export { bandOption, HERO_BAND, STANDARD_BAND } from './band';
+export type { BandGeometry, BandOptionInput } from './band';
 export { baseOption, categoryAxis, referenceLine, valueAxis } from './base';
 export type { BaseOptionInput } from './base';
 export { echarts } from './echarts';
 export type { EChartsOption } from './echarts';
+export { binPosition, histogram } from './histogram';
+export type { Bin, HistogramOptions } from './histogram';
 export { niceBounds } from './scale';
 export type { Bounds, BoundsOptions } from './scale';
 export { useReducedMotion } from './motion';

@@ -1,11 +1,24 @@
+'use client';
+
+import { useMemo } from 'react';
+
+import {
+  bandOption,
+  HERO_BAND,
+  STANDARD_BAND,
+  useChartTokens,
+  useReducedMotion,
+  type EChartsOption,
+} from '../../lib/chart/index';
 import { cx } from '../../lib/cx/index';
+import { EChart } from '../EChart/index';
 
 /**
  * The words the text readout is built from.
  *
  * Required, with no English default. The readout is the *only* form of this
- * component a screen reader can perceive — the bar itself is `aria-hidden` —
- * so a default in the wrong language is not a cosmetic slip, it is the entire
+ * component a screen reader can perceive — the drawing is `aria-hidden` — so a
+ * default in the wrong language is not a cosmetic slip, it is the entire
  * accessible content of the signature element in a language the reader may not
  * have. This is precisely the bug the screen-reader pass found on `/de`.
  */
@@ -47,6 +60,19 @@ export interface SpecBandProps {
    * two copies drift.
    */
   scale?: 'default' | 'hero';
+  /**
+   * Draw the band on mount, once.
+   *
+   * Off by default, and the default is the design. A component that animates on
+   * mount animates in every context it is ever placed in, including four at a
+   * time on a dashboard; the landing page opts in for the one orchestrated
+   * moment the design brief allows. `prefers-reduced-motion` overrides it.
+   *
+   * This replaces the `data-part` attributes the hand-drawn band exposed for the
+   * app's stylesheet to key off. An ECharts instance runs its own render loop
+   * and is outside the cascade entirely, so the opt-in has to be a prop.
+   */
+  animate?: boolean;
   className?: string;
 }
 
@@ -59,22 +85,24 @@ export interface SpecBandProps {
  * point — the product's most-repeated visual belongs to the domain's own
  * vernacular rather than to generic SaaS.
  *
+ * ### The drawing is ECharts, the readout is not
+ *
+ * The band itself is an ECharts instance built by `bandOption`, so it is drawn
+ * by the same layer as every other figure in the product and inherits its
+ * tokens, its theme-change handling and its reduced-motion rule. Everything a
+ * reader is *told* — the label, the reading, the domain's ends, the verdict —
+ * stays as page HTML with real type tokens. That split is deliberate: an
+ * ECharts `<text>` node cannot wear `--type-ui-size-readout`, and the readout
+ * at hero scale is 56px of the app's own data typeface.
+ *
  * ### Accessibility
  *
- * The bar is `aria-hidden` and the whole component is described by a text
- * readout that states the value, the window and the verdict in words. A screen
- * reader user gets the *conclusion* ("out of spec, above the upper limit"),
- * not a description of a drawing. Out-of-spec is signalled three ways —
- * position, a filled diamond instead of a line, and the word itself — because
- * colour is never the only signal here.
- *
- * ### Motion
- *
- * The parts of the drawing carry `data-part` attributes so a *page* can animate
- * the band drawing itself — the one orchestrated moment the design brief allows.
- * The keyframes deliberately live in the consuming app rather than here: a
- * component library that animates on mount animates in every context it is ever
- * placed in, including twelve at a time on a dashboard.
+ * The drawing is `aria-hidden` and the component is described by a text readout
+ * that states the value, the window and the verdict in words. A screen reader
+ * user gets the *conclusion* ("out of spec, above the upper limit"), not a
+ * description of a drawing. Out-of-spec is signalled three ways — position, a
+ * filled diamond instead of a line, and the word itself — because colour is
+ * never the only signal here.
  */
 export function SpecBand({
   label,
@@ -87,15 +115,17 @@ export function SpecBand({
   domain,
   precision = 1,
   scale = 'default',
+  animate = false,
   className,
 }: SpecBandProps) {
-  const pad = (upperLimit - lowerLimit) / 2;
-  const [min, max] = domain ?? [lowerLimit - pad, upperLimit + pad];
-  const span = max - min || 1;
+  const tokens = useChartTokens();
+  const reducedMotion = useReducedMotion();
 
-  // Clamped so a wild reading pins to the edge instead of drawing outside the
-  // viewport; the text readout still carries the true number.
-  const pct = (n: number): number => Math.min(100, Math.max(0, ((n - min) / span) * 100));
+  const bounds = useMemo<readonly [number, number]>(() => {
+    if (domain !== undefined) return domain;
+    const pad = (upperLimit - lowerLimit) / 2;
+    return [lowerLimit - pad, upperLimit + pad];
+  }, [domain, lowerLimit, upperLimit]);
 
   const inSpec = value >= lowerLimit && value <= upperLimit;
   const verdict = inSpec ? words.inSpec : value > upperLimit ? words.aboveUpper : words.belowLower;
@@ -103,6 +133,30 @@ export function SpecBand({
   const fmt = (n: number): string => n.toFixed(precision);
   const suffix = unit ? ` ${unit}` : '';
   const hero = scale === 'hero';
+
+  const option = useMemo<EChartsOption>(
+    () =>
+      bandOption({
+        value,
+        lowerLimit,
+        upperLimit,
+        target,
+        domain: bounds,
+        inSpec,
+        geometry: hero ? HERO_BAND : STANDARD_BAND,
+        tokens,
+        reducedMotion,
+        animate,
+      }),
+    /*
+     * `bounds` is memoised above rather than derived inline, so this list can
+     * depend on it by identity. Derived inline it would be a fresh array every
+     * render, the memo would never hit, and every render would rebuild the
+     * option — which for ECharts is a full `setOption`. With `animate` on, that
+     * is the band redrawing itself continuously.
+     */
+    [value, lowerLimit, upperLimit, target, bounds, inSpec, hero, tokens, reducedMotion, animate],
+  );
 
   return (
     <figure className={cx('flex flex-col', hero ? 'gap-3' : 'gap-2', className)}>
@@ -148,86 +202,19 @@ export function SpecBand({
         </span>
       </figcaption>
 
-      <div aria-hidden="true" className={cx('relative', hero ? 'h-8' : 'h-6')}>
-        {/* Track — the plotted domain. */}
-        <div
-          className={cx(
-            'bg-band-track absolute inset-x-0 top-1/2 -translate-y-1/2',
-            hero ? 'h-2.5' : 'h-1.5',
-          )}
-        />
-
-        {/* The in-spec window. */}
-        <div
-          data-part="range"
-          className={cx(
-            'bg-band-range absolute top-1/2 origin-center -translate-y-1/2',
-            hero ? 'h-2.5' : 'h-1.5',
-          )}
-          style={{
-            insetInlineStart: `${String(pct(lowerLimit))}%`,
-            inlineSize: `${String(pct(upperLimit) - pct(lowerLimit))}%`,
-          }}
-        />
-
-        {/* Limit marks — the calibration ticks that give the band its character. */}
-        {[lowerLimit, upperLimit].map((limit) => (
-          <div
-            key={limit}
-            data-part="limit"
-            className={cx(
-              'bg-band-limit absolute top-1/2 w-px -translate-y-1/2',
-              hero ? 'h-6' : 'h-4',
-            )}
-            style={{ insetInlineStart: `${String(pct(limit))}%` }}
-          />
-        ))}
-
-        {target === undefined ? null : (
-          <div
-            data-part="limit"
-            className={cx(
-              'bg-band-limit absolute top-1/2 w-px -translate-y-1/2 opacity-60',
-              hero ? 'h-4' : 'h-3',
-            )}
-            style={{ insetInlineStart: `${String(pct(target))}%` }}
-          />
-        )}
-
-        {/*
-         * The reading. In spec it is a hairline like the limit marks; out of
-         * spec it becomes a filled diamond — a shape change, so the state
-         * survives greyscale printing and every form of colour blindness.
-         */}
-        {inSpec ? (
-          <div
-            data-part="tick"
-            className={cx(
-              'bg-band-tick absolute top-1/2 -translate-x-1/2 -translate-y-1/2',
-              hero ? 'h-8 w-[3px]' : 'h-6 w-0.5',
-            )}
-            style={{ insetInlineStart: `${String(pct(value))}%` }}
-          />
-        ) : (
-          <div
-            data-part="tick"
-            className={cx(
-              'bg-status-danger-fg absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-45',
-              hero ? 'size-4' : 'size-3',
-            )}
-            style={{ insetInlineStart: `${String(pct(value))}%` }}
-          />
-        )}
-      </div>
+      <EChart option={option} height={hero ? '2rem' : '1.5rem'} />
 
       {/*
-       * The plotted domain, labelled only at hero scale. On a dashboard twelve
-       * of these stack and the numbers become noise; standing alone, an
-       * unlabelled axis asks the reader to take the drawing on trust.
+       * The plotted domain, labelled only at hero scale. On a dashboard four of
+       * these stack and the numbers become noise; standing alone, an unlabelled
+       * axis asks the reader to take the drawing on trust.
        *
-       * Only the two ends. The specification window is already drawn as the
-       * filled segment and stated in words below — printing it here as well
-       * would put the same figures on screen three times.
+       * Set as page HTML rather than as the chart's own axis labels, for the
+       * same reason the readout is: these wear `--type-ui-size-xs` and the app's
+       * data typeface, which an ECharts axis label cannot. Only the two ends —
+       * the specification window is already drawn as the filled segment and
+       * stated in words below, and printing it here as well would put the same
+       * figures on screen three times.
        */}
       {hero ? (
         <div
@@ -235,11 +222,11 @@ export function SpecBand({
           className="text-text-muted flex items-baseline justify-between gap-4 font-(family-name:--type-family-data) text-[length:var(--type-ui-size-xs)] tabular-nums"
         >
           <span>
-            {fmt(min)}
+            {fmt(bounds[0])}
             {suffix}
           </span>
           <span>
-            {fmt(max)}
+            {fmt(bounds[1])}
             {suffix}
           </span>
         </div>

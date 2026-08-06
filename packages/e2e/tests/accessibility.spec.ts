@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 /**
  * The automated half of the accessibility gate.
@@ -107,47 +107,74 @@ test('the inverted product panel has no contrast violations @a11y', async ({ pag
   expect(results.violations).toEqual([]);
 });
 
-test('the hero band draws itself, once @a11y', async ({ page }) => {
-  // The design brief allows exactly one orchestrated moment. If the keyframes
-  // stop applying, nothing breaks and nothing fails — the page just quietly
-  // loses the thing it was designed around, which is why this is asserted.
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
+/** The signature section's first band, serialised. Equal strings, equal geometry. */
+async function bandGeometry(page: Page): Promise<string | null> {
+  return page.evaluate(() => {
+    const svg = document.querySelector('figure svg');
+    return svg === null ? null : svg.innerHTML;
+  });
+}
+
+test('the landing page still draws the tolerance band @a11y', async ({ page }) => {
+  /*
+   * The band used to be the hero, at full scale, and this pair of tests measured
+   * it there. The film replaced it in the hero on request — the band did not
+   * leave the page, it moved down into the signature section, which shows the
+   * same instrument twice: one reading in spec and one past its upper limit.
+   *
+   * So this asserts what survived the move. Not "the hero has a chart", which is
+   * no longer true, and not the mid-flight animation, which was never honestly
+   * assertable once the drawing became an ECharts instance: the animation
+   * belongs to a render loop the library schedules, so any sample time is a race
+   * this suite would lose intermittently on a loaded CI box. The animation
+   * opt-in is gated where it is exact and cannot flake — `SpecBand`'s test
+   * asserts it reaches the option's `animation`.
+   */
   await page.goto('/en');
 
-  const midDraw = await page.evaluate(() => {
-    const range = document.querySelector('[data-band-draw] [data-part="range"]');
-    return range === null ? null : getComputedStyle(range).scale;
-  });
-
-  // Mid-flight: partially drawn along x, untouched along y.
-  expect(midDraw).toMatch(/^0\.\d+ 1$/);
+  const bands = page.locator('figure svg');
+  await expect(bands.first()).toBeAttached();
+  // The marks: track, window, two limits, the target, the reading.
+  expect(await bands.first().locator('path').count()).toBeGreaterThan(3);
 });
 
-test('reduced motion collapses the band to its final state, delays included @a11y', async ({
-  page,
-}) => {
+test('reduced motion shows the band at its final state immediately @a11y', async ({ page }) => {
   /*
-   * The regression test for a real defect. The global reduced-motion block
-   * zeroed `animation-duration` but not `animation-delay`, so each part still
-   * waited out its stagger before appearing instantly — the hero's measurement
-   * was invisible for 480ms for exactly the people who asked for less motion.
+   * The regression test for a real defect, carried across two rewrites now
+   * because the defect is about the reader and not about where the band sits.
+   * The global reduced-motion block zeroed `animation-duration` but not
+   * `animation-delay`, so each part waited out its stagger before appearing
+   * instantly — the measurement was invisible for 480ms for exactly the people
+   * who asked for less motion.
    *
-   * Measured at 120ms after load, which is inside every delay in the sequence.
+   * ECharts is outside the cascade, so that block cannot help it at all now;
+   * `useReducedMotion` reads the preference and `bandOption` switches the
+   * animation off entirely. Which makes the assertion sharper than it was: with
+   * no animation there is nothing to interpolate, so the geometry at 120ms —
+   * inside every delay the old sequence had — must already equal the geometry
+   * once everything has settled.
+   *
+   * Breaking this deliberately is what caught the band rendering entirely
+   * dashed: ECharts draws `markLine` dashed unless told otherwise, and the SVG
+   * this dumps on failure is the only place that was visible.
    */
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/en');
+
+  /*
+   * `attached`, not the default `visible`. The band's series is a host for the
+   * marks and nothing else — one point, `lineStyle: { width: 0 }` — so the first
+   * path ECharts emits is a zero-width stroke, which Playwright correctly
+   * reports as not visible and then waits 30s for. What is being waited on here
+   * is that the chart has rendered at all, and attachment is exactly that.
+   */
+  await page.locator('figure svg path').first().waitFor({ state: 'attached' });
   await page.waitForTimeout(120);
+  const early = await bandGeometry(page);
 
-  const state = await page.evaluate(() =>
-    ['range', 'limit', 'tick'].map((part) => {
-      const node = document.querySelector(`[data-band-draw] [data-part="${part}"]`);
-      return { part, opacity: node === null ? null : getComputedStyle(node).opacity };
-    }),
-  );
+  await page.waitForTimeout(1200);
+  const settled = await bandGeometry(page);
 
-  expect(state).toEqual([
-    { part: 'range', opacity: '1' },
-    { part: 'limit', opacity: '1' },
-    { part: 'tick', opacity: '1' },
-  ]);
+  expect(early).not.toBeNull();
+  expect(early).toBe(settled);
 });

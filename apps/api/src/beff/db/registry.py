@@ -13,9 +13,10 @@ from __future__ import annotations
 
 from sqlalchemy import MetaData
 
+from beff.core.email.model import EmailDelivery
 from beff.core.ratelimit.model import RateLimitCounter
 from beff.db.base import Base
-from beff.modules.auth.models import RefreshToken, User
+from beff.modules.auth.models import EmailVerificationToken, RefreshToken, User
 from beff.modules.metrics.models import Batch, ProcessMeasurement, ScrapEvent
 from beff.modules.onboarding.models import Line, OnboardingProgress, Plant
 from beff.modules.privacy.models import ConsentRecord, DsarRequest, ExportJob
@@ -25,6 +26,8 @@ __all__ = [
     "Batch",
     "ConsentRecord",
     "DsarRequest",
+    "EmailDelivery",
+    "EmailVerificationToken",
     "ExportJob",
     "Line",
     "OnboardingProgress",

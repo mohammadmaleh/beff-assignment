@@ -194,7 +194,11 @@ describe('DashboardView', () => {
     renderWithProviders(<DashboardView locale="en" />);
 
     await screen.findByText('Where the scrap happened');
-    const rendered = screen.getAllByText(/Coating|Formation/);
+    // Scoped to the breakdown. The exceptions panel at the top of the page
+    // names the most expensive step — formation — in its own first sentence,
+    // and an unscoped query reads that as the first bar of this chart.
+    const scrap = screen.getByRole('region', { name: 'Where the scrap happened' });
+    const rendered = within(scrap).getAllByText(/Coating|Formation/);
     expect(rendered[0]).toHaveTextContent('Coating');
   });
 
@@ -229,9 +233,10 @@ describe('DashboardView', () => {
 
     await screen.findByText('How it got here');
 
-    // Scrap rate, scrap cost, yield trend, throughput, and one control chart.
+    // Scrap rate, scrap cost, yield trend, throughput, yield distribution,
+    // cumulative cost, and one control chart.
     const tabs = screen.getAllByRole('tab', { name: 'Table' });
-    expect(tabs).toHaveLength(5);
+    expect(tabs).toHaveLength(7);
 
     /*
      * Counting tabs is not the assertion this test is named for.
@@ -264,9 +269,22 @@ describe('DashboardView', () => {
     // contention `vitest.config.ts` documents. It failed exactly once, only
     // when run alongside another chart file, which is the shape of a flake
     // rather than a regression.
-    expect(await screen.findByText('€34,764', {}, { timeout: 5000 })).toBeInTheDocument();
-    expect(screen.getByText('+3.7 pp')).toBeInTheDocument();
-    expect(screen.getByText(/Median of 34 pilot lines/)).toBeInTheDocument();
+    await screen.findByText(/Median of 34 pilot lines/, {}, { timeout: 5000 });
+
+    /*
+     * Scoped to the masthead.
+     *
+     * The window's total is €34 764, and the cumulative cost curve's table
+     * necessarily ends on the same figure — that is the two views agreeing, not
+     * a duplicate. An unscoped `findByText` fails on it with `Found multiple`,
+     * which reads as a regression and is the charts being correct.
+     */
+    const masthead = screen
+      .getByRole('heading', { name: 'Production overview' })
+      .closest('section') as HTMLElement;
+
+    expect(within(masthead).getByText('€34,764')).toBeInTheDocument();
+    expect(within(masthead).getByText('+3.7 pp')).toBeInTheDocument();
   });
 
   it('draws the trend charts from the trend query, not the overview', async () => {
@@ -284,10 +302,10 @@ describe('DashboardView', () => {
     }
 
     // A batch code that appears only in the trend payload, so this assertion
-    // cannot pass on the overview's data. Twice: the yield chart and the
-    // throughput chart plot the same batches, which is exactly why they sit
-    // side by side.
-    expect(screen.getAllByRole('rowheader', { name: 'B-2026-002' })).toHaveLength(2);
+    // cannot pass on the overview's data. Three times: the yield chart, the
+    // throughput chart and the cumulative cost curve all plot the same batches,
+    // which is exactly why they sit in one band.
+    expect(screen.getAllByRole('rowheader', { name: 'B-2026-002' })).toHaveLength(3);
   });
 
   it('keeps the headline figures when only the trend fails', async () => {
@@ -319,6 +337,78 @@ describe('DashboardView', () => {
     // hue, so a reader who cannot see the colour still gets the answer.
     const readouts = await screen.findAllByText(/— (in spec|out of spec)/);
     expect(readouts).toHaveLength(3);
+  });
+
+  it('keeps every section explanation out of the page and inside an info control', async () => {
+    /*
+     * The change this layout rests on: the prose still exists, and it is not
+     * printed. Asserted both ways round, because either half alone blesses the
+     * wrong thing — deleting the copy would pass a "no paragraph" check, and
+     * leaving the paragraph in place would pass a "the text exists" check.
+     */
+    mockFetch(OVERVIEW);
+    renderWithProviders(<DashboardView locale="en" />);
+
+    await screen.findByText('Where the scrap happened');
+
+    const trigger = screen.getByRole('button', {
+      name: 'About: Where the scrap happened',
+    });
+    const hint = document.getElementById(trigger.getAttribute('aria-describedby') as string);
+
+    expect(hint).toHaveTextContent(/A cell lost at formation has absorbed every upstream cost/);
+    // Off screen until asked for — and still in the accessibility tree, which
+    // is the whole reason it is `sr-only` rather than unmounted.
+    expect(hint).toHaveClass('sr-only');
+
+    await userEvent.hover(trigger);
+    expect(hint).not.toHaveClass('sr-only');
+  });
+
+  it('gathers what is out of spec instead of making the reader scan for it', async () => {
+    // Porosity at 32.4 in a 30–35 window is fine, so the panel must not invent
+    // an exception; the money is stated regardless, because the most expensive
+    // step is worth knowing on a good day too.
+    mockFetch({
+      ...OVERVIEW,
+      spec_bands: [{ ...OVERVIEW.spec_bands[0], value: 36.8 }],
+    });
+    renderWithProviders(<DashboardView locale="en" />);
+
+    const panel = await screen.findByRole('region', { name: 'Needs attention' });
+
+    expect(within(panel).getByText('Out of spec')).toBeInTheDocument();
+    expect(
+      within(panel).getByText(/Electrode porosity after calendering is at 36\.8/),
+    ).toBeInTheDocument();
+    expect(within(panel).getByText(/Formation accounts for €27,247/)).toBeInTheDocument();
+  });
+
+  it('says so plainly when nothing is out of spec', async () => {
+    // An empty exceptions list is indistinguishable from a panel that failed to
+    // load. The fixture's readings are all inside their windows.
+    mockFetch(OVERVIEW);
+    renderWithProviders(<DashboardView locale="en" />);
+
+    const panel = await screen.findByRole('region', { name: 'Needs attention' });
+
+    expect(within(panel).getByText(/Every reading is inside the window/)).toBeInTheDocument();
+    expect(within(panel).queryByText('Out of spec')).not.toBeInTheDocument();
+  });
+
+  it('asks the batches the two questions the trend line cannot', async () => {
+    // The distribution answers "how repeatable", the cumulative curve answers
+    // "what has it cost so far" — neither is recoverable from a trend line, and
+    // both are built from fields that were already in the payload.
+    mockFetch(OVERVIEW);
+    renderWithProviders(<DashboardView locale="en" />);
+
+    expect(
+      await screen.findByRole('heading', { name: 'How often the line hits each level' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'What the window has cost, as it accumulated' }),
+    ).toBeInTheDocument();
   });
 
   it('shows a readable error rather than an empty dashboard', async () => {

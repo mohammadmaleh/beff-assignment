@@ -1,5 +1,5 @@
 import { AUTH_ROUTES } from '@/constants/api';
-import { apiUrl, problemFieldErrors, type FieldErrors } from '@/lib/api';
+import { apiUrl, parseProblem, type FieldErrors } from '@/lib/api';
 
 /**
  * The access token lives in a module variable, never in `localStorage`.
@@ -22,12 +22,22 @@ export const getAccessToken = (): string | null => accessToken;
 export class ApiError extends Error {
   readonly status: number;
   readonly fields: FieldErrors;
+  /**
+   * The API's stable code, or `null` if the failure carried no problem document.
+   *
+   * A status code is a category — 409 is "you contradicted current state" — and
+   * a category is not a sentence anyone can act on. `code` is the specific
+   * failure, and it is the only thing on this class that a message should be
+   * chosen from.
+   */
+  readonly code: string | null;
 
-  constructor(status: number, fields: FieldErrors = {}) {
-    super(`Request failed with status ${String(status)}`);
+  constructor(status: number, fields: FieldErrors = {}, code: string | null = null) {
+    super(`Request failed with status ${String(status)}${code === null ? '' : ` (${code})`}`);
     this.name = 'ApiError';
     this.status = status;
     this.fields = fields;
+    this.code = code;
   }
 }
 
@@ -65,7 +75,8 @@ export async function authFetch<T>(path: string, options: Options = {}): Promise
   }
 
   if (!response.ok) {
-    throw new ApiError(response.status, await problemFieldErrors(response));
+    const problem = await parseProblem(response);
+    throw new ApiError(response.status, problem.fields, problem.code);
   }
 
   if (response.status === 204) return undefined as T;

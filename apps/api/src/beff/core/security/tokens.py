@@ -30,11 +30,18 @@ __all__ = [
     "decode_access_token",
     "encode_access_token",
     "generate_refresh_token",
+    "generate_verification_token",
+    "hash_opaque_token",
     "hash_refresh_token",
 ]
 
 # 48 bytes -> 64 url-safe characters.
 _REFRESH_TOKEN_BYTES = 48
+
+# 32 bytes -> 43 url-safe characters. Smaller than the refresh token because
+# this one is pasted into a URL that a person may have to read off a screen, and
+# 256 bits is already far beyond guessable for a credential that lives a day.
+_VERIFICATION_TOKEN_BYTES = 32
 
 # Pinned so a token minted for one purpose cannot be replayed as another if more
 # token kinds are added later.
@@ -59,9 +66,25 @@ def generate_refresh_token() -> str:
     return secrets.token_urlsafe(_REFRESH_TOKEN_BYTES)
 
 
+def generate_verification_token() -> str:
+    """A fresh opaque email-verification token. Shown to nobody but its owner."""
+    return secrets.token_urlsafe(_VERIFICATION_TOKEN_BYTES)
+
+
+def hash_opaque_token(token: str) -> str:
+    """The 64-character hex SHA-256 of an opaque token — what the database stores.
+
+    SHA-256 and not Argon2, for the same reason `hash_refresh_token` uses it:
+    these tokens are 256+ bits of `secrets` output, so there is no dictionary to
+    mount and no cost factor worth paying on a value that is verified on a hot
+    path. Argon2 protects *low-entropy* secrets; this is not one.
+    """
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
 def hash_refresh_token(token: str) -> str:
     """The 64-character hex SHA-256 of a refresh token — what the database stores."""
-    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+    return hash_opaque_token(token)
 
 
 def encode_access_token(

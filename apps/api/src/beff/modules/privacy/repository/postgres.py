@@ -9,7 +9,13 @@ from uuid import UUID
 from sqlalchemy import CursorResult, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from beff.modules.auth.models import RefreshToken, User
+from beff.core.email.model import EmailDelivery
+from beff.modules.auth.models import (
+    REVOKED_BY_ERASURE,
+    EmailVerificationToken,
+    RefreshToken,
+    User,
+)
 from beff.modules.privacy.models import ConsentRecord, ExportJob
 
 __all__ = [
@@ -160,7 +166,7 @@ class PostgresErasureRepository:
         result = await self._session.execute(
             update(RefreshToken)
             .where(RefreshToken.user_id == user_id, RefreshToken.revoked_at.is_(None))
-            .values(revoked_at=at, revoked_reason="account_erased")
+            .values(revoked_at=at, revoked_reason=REVOKED_BY_ERASURE)
         )
         await self._session.flush()
         return _rowcount(result)
@@ -169,6 +175,28 @@ class PostgresErasureRepository:
         """Hard delete. An export is a complete copy of everything being erased;
         keeping it would make the erasure cosmetic."""
         result = await self._session.execute(delete(ExportJob).where(ExportJob.user_id == user_id))
+        await self._session.flush()
+        return _rowcount(result)
+
+    async def delete_email_deliveries(self, user_id: UUID) -> int:
+        """Hard delete. Every row carries the recipient address in the clear,
+        and there is no basis for keeping it once the account is gone."""
+        result = await self._session.execute(
+            delete(EmailDelivery).where(EmailDelivery.user_id == user_id)
+        )
+        await self._session.flush()
+        return _rowcount(result)
+
+    async def delete_verification_tokens(self, user_id: UUID) -> int:
+        """Hard delete.
+
+        Not only data minimisation: an unconsumed token is a live credential
+        for an address that is about to be freed for re-registration. Leaving
+        one behind would let an old link act on a new account.
+        """
+        result = await self._session.execute(
+            delete(EmailVerificationToken).where(EmailVerificationToken.user_id == user_id)
+        )
         await self._session.flush()
         return _rowcount(result)
 

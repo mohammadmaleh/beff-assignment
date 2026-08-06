@@ -1,6 +1,7 @@
 import { Display } from '@beff/ui/display';
 import { Eyebrow } from '@beff/ui/eyebrow';
 import { Lede } from '@beff/ui/lede';
+import { VideoPlayer } from '@beff/ui/video-player';
 
 import { getDictionary, type Locale } from '@/lib/i18n';
 
@@ -59,32 +60,14 @@ export function CompanyFilm({ locale }: { locale: Locale }) {
             <Lede>{t.landing.filmBody}</Lede>
           </div>
 
-          {/*
-           * `border` and not a card: the page has no boxed containers, and the
-           * hairline frame is the same one the product panel uses.
-           */}
-          {/*
-           * `media-has-caption` is right, and this is a knowing exception, not
-           * an oversight — see the class comment and the "Not done, and not
-           * claimed" section of the README. Suppressed inline, at the one call
-           * site, so it stays visible in review: turning the rule off in
-           * `eslint.config.mjs` would silence the next uncaptioned video too,
-           * and nobody would ever see it happen.
-           *
-           * Delete this line the moment a `.vtt` exists.
-           */}
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- no transcript shipped with the film; tracked in README */}
-          <video
-            controls
-            preload="metadata"
+          <VideoPlayer
+            src="/media/beff-intro.mp4"
             poster="/media/beff-intro-poster.png"
+            label={t.landing.filmLabel}
             width={INTRINSIC.width}
             height={INTRINSIC.height}
-            aria-label={t.landing.filmLabel}
-            className="border-border-default h-auto w-full max-w-[640px] border"
-          >
-            <source src="/media/beff-intro.mp4" type="video/mp4" />
-          </video>
+            className="max-w-[640px]"
+          />
         </div>
       </div>
     </section>

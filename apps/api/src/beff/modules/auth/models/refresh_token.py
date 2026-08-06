@@ -26,12 +26,21 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from beff.db.base import Base, sql_value_list
 
-__all__ = ["REVOKED_REASONS", "RefreshToken"]
+__all__ = ["REVOKED_BY_ERASURE", "REVOKED_REASONS", "RefreshToken"]
 
 # Why a token stopped being usable. `reuse_detected` is the interesting one: it
 # marks every token in a family that was revoked because a spent token from that
 # family was presented again.
-REVOKED_REASONS: Final = ("logout", "reuse_detected")
+#
+# `account_erased` is not a variant of `logout`: nobody signed out, and the
+# distinction is the audit trail for an Art. 17 request. It was missing here
+# while `PostgresErasureRepository` wrote it anyway, so every erasure died on
+# this constraint — see `tests/test_privacy_repository.py`. The literal now
+# lives in one place, which is what puts it inside
+# `test_each_check_constraint_accepts_exactly_the_values_the_code_uses`.
+REVOKED_REASONS: Final = ("logout", "reuse_detected", "account_erased")
+
+REVOKED_BY_ERASURE: Final = "account_erased"
 
 TOKEN_HASH_LENGTH: Final = 64  # SHA-256, hex-encoded.
 

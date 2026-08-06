@@ -20,8 +20,27 @@ export const deApp: typeof enApp = {
     toRegister: 'Jetzt anlegen',
     toLogin: 'Anmelden',
     failedTitle: 'Das hat nicht geklappt',
-    invalidCredentials: 'E-Mail-Adresse und Passwort passen zu keinem Konto.',
-    genericFailure: 'Auf unserer Seite ist etwas schiefgegangen. Bitte versuchen Sie es erneut.',
+  },
+
+  apiErrors: {
+    unknownFailure: 'Auf unserer Seite ist etwas schiefgegangen. Bitte versuchen Sie es erneut.',
+
+    byCode: {
+      'auth.invalid_credentials': 'E-Mail-Adresse und Passwort passen zu keinem Konto.',
+      'auth.email_already_registered':
+        'Für diese E-Mail-Adresse besteht bereits ein Konto. Melden Sie sich an oder verwenden Sie eine andere Adresse.',
+      'auth.email_already_verified': 'Diese Adresse wurde bereits bestätigt.',
+      'auth.refresh_token_expired': 'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.',
+      'auth.refresh_token_reused':
+        'Sie wurden zu Ihrer Sicherheit abgemeldet, weil eine abgelaufene Sitzung erneut verwendet wurde. Bitte melden Sie sich erneut an.',
+      'auth.verification_token_expired':
+        'Dieser Bestätigungslink ist abgelaufen. Fordern Sie einen neuen an.',
+      'auth.verification_token_invalid':
+        'Dieser Bestätigungslink ist ungültig oder wurde bereits verwendet.',
+      rate_limit_exceeded:
+        'Zu viele Versuche. Bitte warten Sie einen Moment, bevor Sie es erneut versuchen.',
+      validation_error: 'Bitte prüfen Sie Ihre Eingaben.',
+    },
   },
 
   onboarding: {
@@ -49,6 +68,13 @@ export const deApp: typeof enApp = {
         body: 'Zunächst ein Werk. Weitere lassen sich später ergänzen.',
         nameLabel: 'Name des Werks',
         countryLabel: 'Land',
+        country: {
+          placeholder: 'Land suchen',
+          noResults: 'Kein passendes Land gefunden',
+          toggleLabel: 'Länderliste anzeigen',
+          resultsAnnouncement: '{count} Länder verfügbar',
+          selectionAnnouncement: '{country} ausgewählt',
+        },
       },
       lines: {
         title: 'Welche Linie?',
@@ -94,6 +120,8 @@ export const deApp: typeof enApp = {
     readingsTitle: 'Wo die Linie heute steht',
     readingsBody:
       'Die aktuellen Werte für den Zeitraum oben, jeder gegen die Grenze, an der er gemessen wird. Die Diagramme zeigen die Bewegung; diese Werte zeigen, wo sie geendet hat.',
+    /** Benennt das Symbol, das die Erläuterung öffnet. `{section}` ist die Überschrift. */
+    sectionHint: 'Erläuterung: {section}',
     scrapTitle: 'Wo der Ausschuss entstanden ist',
     scrapBody:
       'Nach Prozessschritt geordnet. Eine in der Formierung verlorene Zelle hat alle vorgelagerten Kosten aufgenommen — späte Verluste sind die teuren.',
@@ -139,6 +167,32 @@ export const deApp: typeof enApp = {
       sortCleared: 'Sortierung aufgehoben, zurück zur Reihenfolge nach {column}',
     },
     bandsTitle: 'Prozessparameter gegen Spezifikation',
+    bandsBody:
+      'Jeder Parameter gegen das Fenster, an dem der Prozess gemessen wird, und darunter derselbe Parameter im Zeitverlauf. Das Band sagt „außerhalb der Spezifikation“; das Diagramm darunter sagt „und driftet seit sechs Wochen“ — der Unterschied zwischen einem Symptom und einer Diagnose.',
+
+    /*
+     * Der Abschnitt mit den Ausnahmen am Kopf der Seite.
+     *
+     * Die `label`-Zeichenketten sind das Signal jenseits der Farbe. Jede Zeile
+     * ist nach Schweregrad eingefärbt *und* trägt das Wort — wer die beiden
+     * Farbtöne nicht unterscheiden kann oder auf einen Ausdruck schaut, braucht
+     * das Urteil trotzdem.
+     */
+    attention: {
+      title: 'Erfordert Aufmerksamkeit',
+      hint: 'Alles auf dieser Seite, was derzeit außerhalb seines Fensters liegt, an einer Stelle gesammelt. Werte innerhalb der Spezifikation erscheinen hier nicht; der teuerste Prozessschritt immer — denn das Geld bleibt auch an einem guten Tag das Geld.',
+      outOfSpec: 'Außerhalb der Spezifikation',
+      belowPeers: 'Unter der Vergleichsgruppe',
+      largestLoss: 'Größter Verlust',
+      inSpec: 'In Spezifikation',
+      yieldBody:
+        'Die Erstdurchlaufquote liegt bei {value}. Das Fenster reicht von {lower} bis {upper}.',
+      parameterBody: '{parameter} liegt bei {value}. Das Fenster reicht von {lower} bis {upper}.',
+      cohortBody: 'Die Erstdurchlaufquote liegt {gap} unter dem Median vergleichbarer Linien.',
+      costBody:
+        'Auf {step} entfallen {value} der in diesem Zeitraum verlorenen gebundenen Wertschöpfung.',
+      clearBody: 'Jeder Wert liegt innerhalb des Fensters, an dem er gemessen wird.',
+    },
 
     kpi: {
       costLabel: 'Verlorene gebundene Wertschöpfung',
@@ -178,6 +232,41 @@ export const deApp: typeof enApp = {
         columnDate: 'Gestartet',
         columnYield: 'Erstdurchlaufquote',
         columnCells: 'Zellen',
+      },
+
+      /*
+       * Die Verteilung. Ihre Achsenbeschriftungen sind blanke Klassengrenzen,
+       * die Einheit tragen also Beschriftung, Tooltip und Tabelle — eine der
+       * wenigen Stellen in dieser Anwendung, an der eine Zahl ihre Einheit
+       * nicht direkt daneben stehen hat.
+       */
+      yieldDistribution: {
+        title: 'Wie oft die Linie welches Niveau erreicht',
+        description:
+          'Dieselben Chargen, ohne die Zeitachse. Eine enge Häufung unter dem Zielwert ist eine falsche Einstellung; dieselbe Lage über zwanzig Punkte verteilt ist ein Prozess außer Kontrolle — und beides verlangt einen anderen Eingriff.',
+        seriesName: 'Chargen',
+        range: '{from} bis {to}',
+        batches: '{count} Chargen',
+        lowerLimit: 'Untergrenze',
+        upperLimit: 'Obergrenze',
+        cohortMedian: 'Median der Vergleichsgruppe',
+        tableCaption: 'Anzahl der Chargen je Niveau der Erstdurchlaufquote',
+        columnRange: 'Erstdurchlaufquote',
+        columnBatches: 'Chargen',
+        columnShare: 'Anteil am Zeitraum',
+      },
+
+      costTrend: {
+        title: 'Was der Zeitraum gekostet hat, im Verlauf',
+        description:
+          'Die laufende Summe der verlorenen gebundenen Wertschöpfung. Eine kumulierte Linie kann nur steigen — ihre Steigung ist die Nachricht, und eine steiler werdende Kurve zeigt eine Verschlechterung, die eine Monatssumme nicht sichtbar macht.',
+        seriesName: 'Kumulierter Verlust',
+        batchLoss: 'Diese Charge',
+        tableCaption: 'Verlorene gebundene Wertschöpfung je Charge und kumuliert',
+        columnBatch: 'Charge',
+        columnDate: 'Gestartet',
+        columnLost: 'Verlust dieser Charge',
+        columnCumulative: 'Laufende Summe',
       },
 
       throughput: {
@@ -236,6 +325,43 @@ export const deApp: typeof enApp = {
       aging: 'Reifung',
       eol_test: 'Endprüfung',
     },
+  },
+
+  verifyEmail: {
+    pageTitle: 'E-Mail-Adresse bestätigen',
+    checking: 'Ihre Adresse wird bestätigt …',
+
+    successTitle: 'Adresse bestätigt',
+    successBody: 'Das war es — vielen Dank. Hier ist nichts weiter zu tun.',
+    toDashboard: 'Zum Dashboard',
+
+    expiredTitle: 'Dieser Link ist abgelaufen',
+    expiredBody:
+      'Bestätigungslinks sind 24 Stunden gültig. Melden Sie sich an und fordern Sie in Ihrem Profil einen neuen an.',
+
+    invalidTitle: 'Dieser Link ist ungültig',
+    invalidBody:
+      'Möglicherweise wurde er bereits verwendet oder unvollständig kopiert. Melden Sie sich an und fordern Sie einen neuen an.',
+
+    missingTitle: 'Dieser Seite fehlt ein Link',
+    missingBody: 'Bitte öffnen Sie den Link aus der Bestätigungs-E-Mail statt dieser Seite allein.',
+
+    errorTitle: 'Etwas ist schiefgelaufen',
+    errorBody:
+      'Ihre Adresse konnte gerade nicht bestätigt werden. Versuchen Sie den Link in einem Moment erneut.',
+
+    toLogin: 'Anmelden',
+  },
+
+  unverified: {
+    title: 'E-Mail-Adresse bestätigen',
+    body: 'Wir haben einen Link an {email} gesendet. Mit der Bestätigung können wir Sie zu Ihrem Konto erreichen — und Sie kommen wieder hinein, falls Sie Ihr Passwort verlieren.',
+    resend: 'Link erneut senden',
+    resending: 'Wird gesendet …',
+    sent: 'Unterwegs. Die Zustellung kann eine Minute dauern — sehen Sie auch im Spam-Ordner nach.',
+    alreadyVerified: 'Diese Adresse ist bereits bestätigt.',
+    rateLimited: 'Das waren etwas zu viele Versuche. Bitte in einer Stunde erneut versuchen.',
+    failed: 'Der Versand hat gerade nicht geklappt. Bitte versuchen Sie es gleich noch einmal.',
   },
 
   profile: {

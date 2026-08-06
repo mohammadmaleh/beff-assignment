@@ -30,6 +30,14 @@ const submitLogin = async (email = 'ada@beff.example', password = 'a-long-enough
   await userEvent.click(screen.getByRole('button', { name: 'Log in' }));
 };
 
+/** The same, with the one extra field registration asks for. */
+const submitRegister = async (email = 'ada@beff.example', password = 'a-long-enough-password') => {
+  await userEvent.type(screen.getByLabelText(/^Name/), 'Ada Lovelace');
+  await userEvent.type(screen.getByLabelText(/work email/i), email);
+  await userEvent.type(screen.getByLabelText(/^password/i), password);
+  await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
+};
+
 describe('AuthForm', () => {
   beforeEach(() => {
     push.mockClear();
@@ -141,6 +149,49 @@ describe('AuthForm', () => {
       expect(
         screen.queryByText('That email and password do not match an account.'),
       ).not.toBeInTheDocument();
+    });
+
+    it('says the address is taken, rather than blaming the server', async () => {
+      // The API distinguishes this from every other failure with a stable code
+      // and always has. Collapsing it into "something went wrong on our side"
+      // tells someone whose only mistake was already having an account to try
+      // again — which cannot ever work.
+      register.mockRejectedValue(new ApiError(409, {}, 'auth.email_already_registered'));
+      render(<AuthForm mode="register" locale="en" />);
+      await submitRegister();
+
+      expect(await screen.findByText(/already has an account/i)).toBeInTheDocument();
+      expect(screen.queryByText(/something went wrong on our side/i)).not.toBeInTheDocument();
+    });
+
+    it('says it in German for a German reader', async () => {
+      register.mockRejectedValue(new ApiError(409, {}, 'auth.email_already_registered'));
+      render(<AuthForm mode="register" locale="de" />);
+
+      await userEvent.type(screen.getByLabelText(/^Name/), 'Ada Lovelace');
+      await userEvent.type(screen.getByLabelText(/E-Mail/i), 'ada@beff.example');
+      await userEvent.type(screen.getByLabelText(/^Passwort/), 'a-long-enough-password');
+      await userEvent.click(screen.getByRole('button', { name: 'Konto anlegen' }));
+
+      expect(await screen.findByText(/besteht bereits ein Konto/i)).toBeInTheDocument();
+    });
+
+    it('tells a rate-limited caller to wait rather than to try again', async () => {
+      // Both auth routes carry a limiter. "Please try again" is the one piece
+      // of advice guaranteed to make a 429 worse.
+      login.mockRejectedValue(new ApiError(429, {}, 'rate_limit_exceeded'));
+      render(<AuthForm mode="login" locale="en" />);
+      await submitLogin();
+
+      expect(await screen.findByText(/too many attempts/i)).toBeInTheDocument();
+    });
+
+    it('falls back to the generic message for a code this build has never seen', async () => {
+      login.mockRejectedValue(new ApiError(500, {}, 'auth.account_suspended'));
+      render(<AuthForm mode="login" locale="en" />);
+      await submitLogin();
+
+      expect(await screen.findByText(/something went wrong on our side/i)).toBeInTheDocument();
     });
 
     it('treats a thrown network error as a server fault, not as bad input', async () => {

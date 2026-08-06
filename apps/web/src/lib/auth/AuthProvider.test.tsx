@@ -13,6 +13,7 @@ const USER = {
   display_name: 'Ada Lovelace',
   role: 'member',
   created_at: '2026-01-01T00:00:00Z',
+  email_verified_at: '2026-01-01T00:00:00Z',
 };
 
 const SESSION = { access_token: 'access-1', expires_in: 900, user: USER };

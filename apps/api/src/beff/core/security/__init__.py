@@ -16,6 +16,8 @@ from beff.core.security.tokens import (
     decode_access_token,
     encode_access_token,
     generate_refresh_token,
+    generate_verification_token,
+    hash_opaque_token,
     hash_refresh_token,
 )
 
@@ -25,7 +27,9 @@ __all__ = [
     "decode_access_token",
     "encode_access_token",
     "generate_refresh_token",
+    "generate_verification_token",
     "hash_ip",
+    "hash_opaque_token",
     "hash_password",
     "hash_refresh_token",
     "password_needs_rehash",

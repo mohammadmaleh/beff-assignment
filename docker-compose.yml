@@ -67,6 +67,18 @@ services:
       IP_HASH_SALT: ${IP_HASH_SALT:-dev_only_salt}
       CORS_ORIGINS: http://localhost:3000
       ENVIRONMENT: development
+      # Where the confirmation link points. Not NEXT_PUBLIC_SITE_URL: Next
+      # inlines that at build time, so it does not exist in this process.
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
+      # Deliberately empty by default. No SMTP host means the worker logs each
+      # message instead of sending it, so `docker compose up` completes the
+      # registration flow with no mail account — the link is printed in full in
+      # the worker log, which is the only place a local developer can get it.
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-Beff <no-reply@beff.example>}
     ports:
       - '${API_PORT:-8000}:8000'
     volumes:
@@ -78,10 +90,11 @@ services:
       migrate:
         condition: service_completed_successfully
 
-  # Drains the export queue. Polls Postgres with `FOR UPDATE SKIP LOCKED` — no
-  # Redis, no Celery (ADR-0006). Without this service an export requested from
-  # the profile screen stays `pending` forever, which is the failure mode a
-  # reviewer notices last and trusts least.
+  # Drains the export queue *and* the email outbox. Polls Postgres with
+  # `FOR UPDATE SKIP LOCKED` — no Redis, no Celery (ADR-0006). Without this
+  # service an export requested from the profile screen stays `pending` forever
+  # and no confirmation email is ever sent, which is the failure mode a reviewer
+  # notices last and trusts least.
   #
   # Same image as `api`, different command: the worker shares the models, the
   # repositories and the service, and building a second image for one entry
@@ -97,6 +110,14 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev_only_do_not_use_in_production}
       IP_HASH_SALT: ${IP_HASH_SALT:-dev_only_salt}
       ENVIRONMENT: development
+      # The worker is the process that actually sends, so these matter here more
+      # than they do on `api`. Same defaults, same console fallback.
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-Beff <no-reply@beff.example>}
     volumes:
       - ./apps/api/src:/app/src
     # `SKIP LOCKED` means a second replica steps over whatever the first has

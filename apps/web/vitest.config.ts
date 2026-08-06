@@ -81,11 +81,19 @@ export default defineConfig({
       //
       // Each is set a little under the measured value. Raise them when real
       // coverage rises; never lower one to make a red run green.
+      //
+      // Raised when `OnboardingWizard` got the middle of its own flow tested.
+      // Its suite entered at `role` and at `review`, which left every control on
+      // `plant`, `lines` and `units` — and the back button — never rendered:
+      // 64% of the file's functions, in the three steps where the wizard
+      // actually collects anything. A control whose `onChange` has never run is
+      // one nobody has checked is wired to the right key, and that failure is
+      // invisible on screen. Measured 95.73 / 91.69 / 92.48 / 96.37.
       thresholds: {
-        statements: 93,
-        branches: 90,
-        functions: 88,
-        lines: 94,
+        statements: 95,
+        branches: 91,
+        functions: 92,
+        lines: 96,
       },
     },
   },

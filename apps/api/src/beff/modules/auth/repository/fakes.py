@@ -19,9 +19,13 @@ from uuid import UUID
 
 from beff.core.ids import uuid7
 from beff.db.base import utcnow
-from beff.modules.auth.models import RefreshToken, User
+from beff.modules.auth.models import EmailVerificationToken, RefreshToken, User
 
-__all__ = ["InMemoryRefreshTokenRepository", "InMemoryUserRepository"]
+__all__ = [
+    "InMemoryEmailVerificationTokenRepository",
+    "InMemoryRefreshTokenRepository",
+    "InMemoryUserRepository",
+]
 
 
 class InMemoryUserRepository:
@@ -68,6 +72,14 @@ class InMemoryUserRepository:
         self.users.append(user)
         return user
 
+    async def mark_email_verified(self, user: User, *, at: datetime) -> User:
+        # The guard is the production behaviour, not a shortcut. A fake that
+        # overwrote the timestamp would make the "second click keeps the
+        # original" test pass against a repository that does not.
+        if user.email_verified_at is None:
+            user.email_verified_at = at
+        return user
+
 
 class InMemoryRefreshTokenRepository:
     """A `RefreshTokenRepository` backed by a list."""
@@ -99,3 +111,35 @@ class InMemoryRefreshTokenRepository:
             (t for t in self.tokens if t.family_id == family_id),
             key=lambda t: (t.issued_at, t.id),
         )
+
+
+class InMemoryEmailVerificationTokenRepository:
+    """An `EmailVerificationTokenRepository` backed by a list."""
+
+    def __init__(self) -> None:
+        self.tokens: list[EmailVerificationToken] = []
+        self._ids = count(1)
+
+    async def add(self, token: EmailVerificationToken) -> EmailVerificationToken:
+        # The identity column is the database's, so the fake owes it to the
+        # caller — the same debt the user fake pays for `created_at`.
+        token.id = next(self._ids)
+        self.tokens.append(token)
+        return token
+
+    async def get_by_hash(self, token_hash: str) -> EmailVerificationToken | None:
+        return next((t for t in self.tokens if t.token_hash == token_hash), None)
+
+    async def consume(self, token: EmailVerificationToken, *, at: datetime) -> None:
+        token.consumed_at = at
+
+    async def invalidate_outstanding(self, user_id: UUID, *, at: datetime) -> int:
+        live = [t for t in self.tokens if t.user_id == user_id and t.consumed_at is None]
+        for token in live:
+            token.consumed_at = at
+        return len(live)
+
+    async def delete_for_user(self, user_id: UUID) -> int:
+        before = len(self.tokens)
+        self.tokens = [t for t in self.tokens if t.user_id != user_id]
+        return before - len(self.tokens)

@@ -14,16 +14,25 @@ from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from beff.core.config import Settings, get_settings
+from beff.core.email import PostgresEmailOutbox
 from beff.db import get_session
 from beff.modules.auth.errors import AccessTokenInvalidError
 from beff.modules.auth.models import User
 from beff.modules.auth.repository import (
+    PostgresEmailVerificationTokenRepository,
     PostgresRefreshTokenRepository,
     PostgresUserRepository,
 )
-from beff.modules.auth.service import AuthService, RefreshTokenService
+from beff.modules.auth.service import AuthService, EmailVerificationService, RefreshTokenService
 
-__all__ = ["CurrentUser", "Service", "get_auth_service", "get_current_user"]
+__all__ = [
+    "CurrentUser",
+    "Service",
+    "VerificationService",
+    "get_auth_service",
+    "get_current_user",
+    "get_verification_service",
+]
 
 BEARER_PREFIX = "Bearer "
 
@@ -47,6 +56,28 @@ def get_auth_service(
 
 
 Service = Annotated[AuthService, Depends(get_auth_service)]
+
+
+def get_verification_service(
+    session: Annotated[AsyncSession, Depends(get_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> EmailVerificationService:
+    """Assemble an `EmailVerificationService` for this request.
+
+    It takes the *request's* session, which is what makes the outbox
+    transactional: the queued message and the account it is about commit
+    together or not at all.
+    """
+    return EmailVerificationService(
+        PostgresUserRepository(session),
+        PostgresEmailVerificationTokenRepository(session),
+        PostgresEmailOutbox(session),
+        base_url=settings.app_base_url,
+        ttl_seconds=settings.email_verification_ttl_seconds,
+    )
+
+
+VerificationService = Annotated[EmailVerificationService, Depends(get_verification_service)]
 
 
 async def get_current_user(request: Request, service: Service) -> User:
