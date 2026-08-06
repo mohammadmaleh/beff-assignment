@@ -153,7 +153,7 @@ export function CountrySelect({
       {...(error === undefined ? {} : { error })}
       {...(required === undefined ? {} : { required })}
     >
-      {(control) => (
+      {(control, meta) => (
         <div className="relative">
           <div
             className={cx(
@@ -173,7 +173,7 @@ export function CountrySelect({
                  * is not a weaker name, it is silently no name at all, with the
                  * `<label for>` underneath it happening to save the day.
                  */
-                'aria-labelledby': control.labelId,
+                'aria-labelledby': meta.labelId,
                 'aria-describedby': control['aria-describedby'],
                 'aria-invalid': control['aria-invalid'],
                 required: control.required,
@@ -222,7 +222,7 @@ export function CountrySelect({
            */}
           <ul
             {...getMenuProps({
-              'aria-labelledby': control.labelId,
+              'aria-labelledby': meta.labelId,
               className: cx(
                 'border-border-default bg-surface-raised rounded-chamfer absolute inset-x-0 z-20 mt-1 max-h-64 overflow-y-auto border py-1 shadow-lg',
                 isOpen ? null : 'hidden',

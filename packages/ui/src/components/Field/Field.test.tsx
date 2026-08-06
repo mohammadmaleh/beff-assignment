@@ -61,4 +61,25 @@ describe('Field', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('A plant with that name already exists.');
     expect(screen.getByLabelText('Plant name')).toHaveAttribute('aria-invalid', 'true');
   });
+
+  it('hands the control only props a DOM element accepts', () => {
+    // Every consumer spreads this object onto an `<input>` or a `<select>`, so
+    // anything in it that is not a DOM attribute is a React warning in the
+    // browser console on a page nobody is testing at the time. The label's id
+    // is what a composite control needs, and it arrives as a second argument
+    // for exactly that reason.
+    renderField();
+    expect(screen.getByRole('textbox')).not.toHaveAttribute('labelid');
+  });
+
+  it('gives the render prop the label id separately, pointing at the real label', () => {
+    render(
+      <Field label="Country">
+        {(control, meta) => <input {...control} data-label-id={meta.labelId} />}
+      </Field>,
+    );
+    const labelId = screen.getByRole('textbox').getAttribute('data-label-id');
+    expect(labelId).not.toBeNull();
+    expect(document.getElementById(labelId!)).toHaveTextContent('Country');
+  });
 });

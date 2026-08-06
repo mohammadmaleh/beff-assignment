@@ -1,8 +1,22 @@
 import { useId, type ReactNode } from 'react';
 
-/** The wiring a control needs in order to be described and validated correctly. */
+/**
+ * The wiring a control needs in order to be described and validated correctly.
+ *
+ * Every key here is a real DOM attribute, because every consumer spreads this
+ * object straight onto an `<input>` or a `<select>`. Anything else belongs in
+ * {@link FieldMeta} — React passes an unknown prop through to the element and
+ * warns, on a page no unit test is watching at the time.
+ */
 export interface FieldControlProps {
   id: string;
+  'aria-describedby': string | undefined;
+  'aria-invalid': true | undefined;
+  required: boolean | undefined;
+}
+
+/** What a composite control needs and a plain one can ignore. */
+export interface FieldMeta {
   /**
    * The `<label>`'s own id.
    *
@@ -12,9 +26,6 @@ export interface FieldControlProps {
    * rotor ends up listing "Land" and, next to it, something anonymous.
    */
   labelId: string;
-  'aria-describedby': string | undefined;
-  'aria-invalid': true | undefined;
-  required: boolean | undefined;
 }
 
 export interface FieldProps {
@@ -28,7 +39,7 @@ export interface FieldProps {
    */
   error?: string;
   required?: boolean;
-  children: (props: FieldControlProps) => ReactNode;
+  children: (props: FieldControlProps, meta: FieldMeta) => ReactNode;
 }
 
 /**
@@ -67,13 +78,15 @@ export function Field({ label, description, error, required, children }: FieldPr
         </p>
       ) : null}
 
-      {children({
-        id,
-        labelId,
-        'aria-describedby': describedBy || undefined,
-        'aria-invalid': error ? true : undefined,
-        required: required || undefined,
-      })}
+      {children(
+        {
+          id,
+          'aria-describedby': describedBy || undefined,
+          'aria-invalid': error ? true : undefined,
+          required: required || undefined,
+        },
+        { labelId },
+      )}
 
       {/*
        * Colour is never the only signal — the message carries a glyph and, being
