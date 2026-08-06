@@ -18,7 +18,7 @@
   "devDependencies": {
     "@beff/config": "workspace:*",
     "@types/node": "^26.1.2",
-    "eslint": "^9.39.5",
+    "eslint": "^10.8.0",
     "typescript": "^5.9.3"
   }
 }
