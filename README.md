@@ -6,14 +6,13 @@ what it costs in scrap, and what it means for CO₂ per kWh.
 Built as a technical take-home for Beff GmbH (Stuttgart). Not an official Beff product -
 the domain is modelled on the problem space the company works in.
 
-|               |                                                                                        |
-| ------------- | -------------------------------------------------------------------------------------- |
-| **Live app**  | <https://beff-eta.vercel.app>                                                          |
-| **API docs**  | <https://http--beff-api--ygq2pkp2lvtn.code.run/docs>                                   |
-| **Sign in**   | `demo@beff.example` / `beff-demo-password`                                             |
-| **Figma**     | [Beff - Design System & Product](https://www.figma.com/design/NmFvnuLBYD0FF9RvSVzl5Q/) |
-| **Repo**      | <https://github.com/mohammadmaleh/beff-assignment>                                     |
-| **Deep dive** | [`documents/`](documents/README.md) - tech choices, decisions in full, design brief    |
+|              |                                                                                                                                                                 |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Live app** | <https://beff-eta.vercel.app>                                                                                                                                   |
+| **API docs** | <https://http--beff-api--ygq2pkp2lvtn.code.run/docs>                                                                                                            |
+| **Sign in**  | `demo@beff.example` / `beff-demo-password`                                                                                                                      |
+| **Figma**    | [Beff - Design System & Product](https://www.figma.com/design/NmFvnuLBYD0FF9RvSVzl5Q/Beff-%E2%80%94-Design-System---Product?node-id=3-131&t=jhr51EMcotCPc5tk-1) |
+| **Repo**     | <https://github.com/mohammadmaleh/beff-assignment>                                                                                                              |
 
 The demo account has onboarding complete and sixty batches behind it, so the dashboard is
 populated on first load. One process parameter is deliberately **out of spec** - a
@@ -121,7 +120,3 @@ apps/api              FastAPI backend           packages/tokens       design tok
 - Waiting list for signed-out visitors
 - German and English, with `de.ts` typed against the English dictionary so a missing
   translation is a build error
-
-
-
-
