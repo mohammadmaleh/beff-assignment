@@ -80,6 +80,25 @@
         "title": "ConsentStateResponse",
         "type": "object"
       },
+      "EmailVerificationResponse": {
+        "description": "The outcome of redeeming a link.\n\nCarries the user, so the profile screen can update without a second round\ntrip — and so a caller who was already signed in when they followed the link\nsees the new state immediately rather than after the next refresh.",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserResponse"
+          },
+          "verified": {
+            "description": "Always `true`; a failure is a problem response, not this.",
+            "title": "Verified",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "verified",
+          "user"
+        ],
+        "title": "EmailVerificationResponse",
+        "type": "object"
+      },
       "ExportJobResponse": {
         "properties": {
           "completed_at": {
@@ -482,6 +501,22 @@
             "title": "Email",
             "type": "string"
           },
+          "locale": {
+            "anyOf": [
+              {
+                "enum": [
+                  "en",
+                  "de"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Language for the confirmation email. Negotiated from Accept-Language if omitted.",
+            "title": "Locale"
+          },
           "password": {
             "maxLength": 128,
             "minLength": 12,
@@ -495,6 +530,51 @@
           "display_name"
         ],
         "title": "RegisterRequest",
+        "type": "object"
+      },
+      "ResendVerificationRequest": {
+        "additionalProperties": false,
+        "description": "Ask for another confirmation link.\n\nNo email field: the address is the authenticated caller's own. Taking one\nfrom the body would make this an oracle that reports, to anyone with any\naccount, whether a *given* address is registered and unconfirmed.",
+        "properties": {
+          "locale": {
+            "anyOf": [
+              {
+                "enum": [
+                  "en",
+                  "de"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Language for the confirmation email. Negotiated from Accept-Language if omitted.",
+            "title": "Locale"
+          }
+        },
+        "title": "ResendVerificationRequest",
+        "type": "object"
+      },
+      "ResendVerificationResponse": {
+        "description": "Acknowledgement that a message is queued.\n\nNot \"sent\". The outbox is drained by a worker, so the API cannot honestly\nclaim delivery at the moment it answers — and a client that shows \"sent\"\nagainst a queue that later dead-letters has told the user something false.",
+        "properties": {
+          "queued": {
+            "description": "Always `true`; the message is on the queue, not yet sent.",
+            "title": "Queued",
+            "type": "boolean"
+          },
+          "recipient": {
+            "description": "The address it will go to — the caller's own.",
+            "title": "Recipient",
+            "type": "string"
+          }
+        },
+        "required": [
+          "queued",
+          "recipient"
+        ],
+        "title": "ResendVerificationResponse",
         "type": "object"
       },
       "SaveProgressRequest": {
@@ -692,6 +772,18 @@
             "title": "Email",
             "type": "string"
           },
+          "email_verified_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Verified At"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
@@ -750,6 +842,23 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "VerifyEmailRequest": {
+        "additionalProperties": false,
+        "description": "Redeem a confirmation link.\n\nA POST with the token in the body, not a GET with it in the path. Three\nreasons, and the third is the one that decides it: a GET is retried by\nproxies and prefetched by mail clients, tokens in a URL end up in server\nlogs and `Referer` headers, and a GET that changes state is wrong anyway.\nThe page reads the token out of the query string and posts it.",
+        "properties": {
+          "token": {
+            "maxLength": 200,
+            "minLength": 20,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "VerifyEmailRequest",
         "type": "object"
       },
       "WaitlistEntryResponse": {
@@ -957,7 +1066,7 @@
     },
     "/api/v1/auth/register": {
       "post": {
-        "description": "Create the account and return a session in one round trip.\n\nRegistering then making the user log in is a second chance to lose them for\nno security gain — the credentials were just verified by being chosen.",
+        "description": "Create the account and return a session in one round trip.\n\nRegistering then making the user log in is a second chance to lose them for\nno security gain — the credentials were just verified by being chosen.\n\nThe confirmation email is *queued*, not sent, in this same transaction. Two\nconsequences worth being explicit about: a registration that rolls back\ncannot leave a verification mail on its way to an account that does not\nexist, and a mail provider being down cannot fail a signup. The account is\nusable immediately; confirming the address is a separate, later act.",
         "operationId": "register_api_v1_auth_register_post",
         "requestBody": {
           "content": {
@@ -998,6 +1107,92 @@
           }
         },
         "summary": "Register a new account",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/verify-email": {
+      "post": {
+        "description": "Stamp the address as confirmed.\n\nUnauthenticated on purpose. The link is followed from a mail client, which\nmay not be on the device that registered and will not carry the session\ncookie — requiring auth here would mean the most common path (read mail on a\nphone, registered on a laptop) is the one that fails. The token *is* the\ncredential, and it is single-use and short-lived precisely so it can be.\n\nNote what this does not do: it does not sign the caller in. A link that\narrives by email and produces a session is a login bypass — anyone with read\naccess to the inbox, including a forwarding rule nobody remembers, would get\none.",
+        "operationId": "verify_email_api_v1_auth_verify_email_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailVerificationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "The link is unknown, already used, or expired."
+          }
+        },
+        "summary": "Confirm an email address",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/verify-email/resend": {
+      "post": {
+        "description": "Queue a fresh link for the caller's own address.\n\nAuthenticated, and takes no address. An endpoint that accepted one would\ntell any account holder whether a *given* address is registered and\nunconfirmed, and would let them point our sending reputation at it.\n\n202, not 200: the message goes on the outbox and a worker sends it, so at\nthe moment this answers nothing has been delivered and claiming otherwise\nwould be a lie the client repeats to the user.",
+        "operationId": "resend_verification_api_v1_auth_verify_email_resend_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendVerificationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResendVerificationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Missing, malformed or expired access token."
+          },
+          "409": {
+            "description": "That address is already confirmed."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Three resends per hour per origin."
+          }
+        },
+        "summary": "Send another confirmation email",
         "tags": [
           "auth"
         ]

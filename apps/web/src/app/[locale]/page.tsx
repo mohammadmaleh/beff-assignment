@@ -127,7 +127,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                 target={32.5}
                 unit="%"
               />
-              {/* <SpecBand
+              <SpecBand
                 label={t.landing.signatureExampleLabel}
                 words={t.a11y.specBand}
                 value={36.8}
@@ -135,7 +135,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                 upperLimit={35}
                 target={32.5}
                 unit="%"
-              /> */}
+              />
             </div>
           </div>
         </section>

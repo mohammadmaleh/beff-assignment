@@ -46,6 +46,19 @@ export type ConsentStateResponse = {
   marketing: boolean;
 };
 
+/**
+ * The outcome of redeeming a link.
+ *
+ * Carries the user, so the profile screen can update without a second round
+ * trip — and so a caller who was already signed in when they followed the link
+ * sees the new state immediately rather than after the next refresh.
+ */
+export type EmailVerificationResponse = {
+  user: UserResponse;
+  /** Always `true`; a failure is a problem response, not this. */
+  verified: boolean;
+};
+
 export type ExportJobResponse = {
   completed_at: string | null;
   download_path: string | null;
@@ -158,7 +171,35 @@ export type ParameterSeriesResponse = {
 export type RegisterRequest = {
   display_name: string;
   email: string;
+  /** Language for the confirmation email. Negotiated from Accept-Language if omitted. */
+  locale?: "en" | "de" | null;
   password: string;
+};
+
+/**
+ * Ask for another confirmation link.
+ *
+ * No email field: the address is the authenticated caller's own. Taking one
+ * from the body would make this an oracle that reports, to anyone with any
+ * account, whether a *given* address is registered and unconfirmed.
+ */
+export type ResendVerificationRequest = {
+  /** Language for the confirmation email. Negotiated from Accept-Language if omitted. */
+  locale?: "en" | "de" | null;
+};
+
+/**
+ * Acknowledgement that a message is queued.
+ *
+ * Not "sent". The outbox is drained by a worker, so the API cannot honestly
+ * claim delivery at the moment it answers — and a client that shows "sent"
+ * against a queue that later dead-letters has told the user something false.
+ */
+export type ResendVerificationResponse = {
+  /** Always `true`; the message is on the queue, not yet sent. */
+  queued: boolean;
+  /** The address it will go to — the caller's own. */
+  recipient: string;
 };
 
 /**
@@ -219,6 +260,7 @@ export type UserResponse = {
   created_at: string;
   display_name: string;
   email: string;
+  email_verified_at?: string | null;
   id: string;
   role: string;
 };
@@ -229,6 +271,19 @@ export type ValidationError = {
   loc: (string | number)[];
   msg: string;
   type: string;
+};
+
+/**
+ * Redeem a confirmation link.
+ *
+ * A POST with the token in the body, not a GET with it in the path. Three
+ * reasons, and the third is the one that decides it: a GET is retried by
+ * proxies and prefetched by mail clients, tokens in a URL end up in server
+ * logs and `Referer` headers, and a GET that changes state is wrong anyway.
+ * The page reads the token out of the query string and posts it.
+ */
+export type VerifyEmailRequest = {
+  token: string;
 };
 
 /**
@@ -251,6 +306,8 @@ export type ApiPathName =
   | "/api/v1/auth/me"
   | "/api/v1/auth/refresh"
   | "/api/v1/auth/register"
+  | "/api/v1/auth/verify-email"
+  | "/api/v1/auth/verify-email/resend"
   | "/api/v1/metrics/overview"
   | "/api/v1/metrics/trend"
   | "/api/v1/onboarding"
@@ -268,6 +325,7 @@ export interface components {
     CohortReferenceResponse: CohortReferenceResponse;
     ConsentRequest: ConsentRequest;
     ConsentStateResponse: ConsentStateResponse;
+    EmailVerificationResponse: EmailVerificationResponse;
     ExportJobResponse: ExportJobResponse;
     HTTPValidationError: HTTPValidationError;
     JoinWaitlistRequest: JoinWaitlistRequest;
@@ -278,6 +336,8 @@ export interface components {
     ParameterPointResponse: ParameterPointResponse;
     ParameterSeriesResponse: ParameterSeriesResponse;
     RegisterRequest: RegisterRequest;
+    ResendVerificationRequest: ResendVerificationRequest;
+    ResendVerificationResponse: ResendVerificationResponse;
     SaveProgressRequest: SaveProgressRequest;
     ScrapByStepResponse: ScrapByStepResponse;
     SessionResponse: SessionResponse;
@@ -285,6 +345,7 @@ export interface components {
     TrendPointResponse: TrendPointResponse;
     UserResponse: UserResponse;
     ValidationError: ValidationError;
+    VerifyEmailRequest: VerifyEmailRequest;
     WaitlistEntryResponse: WaitlistEntryResponse;
   };
 }
