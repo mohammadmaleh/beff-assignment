@@ -19,6 +19,6 @@
     "@beff/config": "workspace:*",
     "@types/node": "^26.1.2",
     "eslint": "^9.39.5",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }
