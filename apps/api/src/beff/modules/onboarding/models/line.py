@@ -1,4 +1,4 @@
-"""The `lines` table — a production line within a plant (CONTEXT.md)."""
+"""The `lines` table - a production line within a plant (CONTEXT.md)."""
 
 from __future__ import annotations
 

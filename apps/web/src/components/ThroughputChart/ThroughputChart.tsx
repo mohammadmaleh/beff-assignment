@@ -61,7 +61,7 @@ export function throughputTooltip(
  * The yield chart already plots the rate, and a rate discards the size of the
  * run it came from. A 42% yield on a 180-cell trial batch and a 42% yield on a
  * 1 400-cell production batch are the same point on that chart and completely
- * different events — the second one is most of a week's output. Plotting the
+ * different events - the second one is most of a week's output. Plotting the
  * counts is what makes batch size visible, and stacking them is what makes the
  * loss legible as a share of the run at the same time.
  *
@@ -70,7 +70,7 @@ export function throughputTooltip(
  *
  * ## Colour, and the encoding that survives without it
  *
- * Two categorical hues from the Okabe-Ito set the token file already ships —
+ * Two categorical hues from the Okabe-Ito set the token file already ships -
  * chosen because they stay distinguishable under the common colour vision
  * deficiencies, which a red/green "good and bad" pair does not.
  *
@@ -143,7 +143,7 @@ export function ThroughputChart({
     return {
       ...base,
       legend: {
-        // Always present with two series — identity must never be colour-alone,
+        // Always present with two series - identity must never be colour-alone,
         // and two stacked segments cannot be direct-labelled without printing a
         // number on every bar.
         show: true,
@@ -154,7 +154,7 @@ export function ThroughputChart({
         itemHeight: 10,
         // Room between the two entries. Without it the swatch of the second
         // sits hard against the last letter of the first, which reads as a
-        // truncated label rather than as two items — and "Passed end-of-line"
+        // truncated label rather than as two items - and "Passed end-of-line"
         // is long enough in English and longer in German.
         itemGap: 20,
         // Text in a text token, never in the series colour it sits beside.
@@ -179,12 +179,12 @@ export function ThroughputChart({
         },
       }),
       yAxis: valueAxis(tokens, {
-        // Anchored at zero — a bar chart whose baseline is not zero misstates
-        // every length on it — and capped just above the tallest run rather
+        // Anchored at zero - a bar chart whose baseline is not zero misstates
+        // every length on it - and capped just above the tallest run rather
         // than wherever the default rounding lands. ECharts chose 1 500 for a
         // 1 300-cell maximum, which is a seventh of the plot showing nothing.
         // No padding above. A line chart needs air so the series does not run
-        // into the frame, but a bar's top *is* its value — rounding up to the
+        // into the frame, but a bar's top *is* its value - rounding up to the
         // next gridline already leaves room, and padding on top of that is what
         // put a 1 400-cell maximum on a 1 600 axis.
         ...niceBounds([0, ...points.map((point) => point.cells_started)], {
@@ -218,7 +218,7 @@ export function ThroughputChart({
           data: points.map((point) => point.cells_passed),
           itemStyle: { color: tokens['color-chart-series-1'] },
           // A 2px gap in the surface colour between the two segments, so the
-          // boundary is a real edge rather than a hue change — the one place a
+          // boundary is a real edge rather than a hue change - the one place a
           // stacked bar is genuinely hard to read without colour.
           barCategoryGap: '30%',
         },

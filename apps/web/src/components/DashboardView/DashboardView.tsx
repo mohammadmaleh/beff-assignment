@@ -75,8 +75,8 @@ function SectionHeading({
 }
 
 /**
- * The daily surface. A process engineer arrives with one question — where did
- * yield go — so the exceptions come first, the movement second, and the
+ * The daily surface. A process engineer arrives with one question - where did
+ * yield go - so the exceptions come first, the movement second, and the
  * readings that answer "how bad" immediately after.
  *
  * ## Composition
@@ -90,13 +90,13 @@ function SectionHeading({
  *
  * There used to be: a `Lede` beside every `h2`, in a `2fr_3fr` grid, so three
  * fifths of the widest space on the page was prose. The people who use this
- * screen every morning know what first-pass yield is — the explanation was
+ * screen every morning know what first-pass yield is - the explanation was
  * being paid for by the reader who needed it least, and it was competing with
  * the charts for exactly the width the charts wanted.
  *
  * It is all still here, behind `InfoHint`: on hover, on focus, and in the
  * accessibility tree unconditionally. Nothing was deleted; it stopped being the
- * default view. What replaced it is more instruments — the distribution and the
+ * default view. What replaced it is more instruments - the distribution and the
  * cumulative cost curve, both built from fields that were already in the
  * payload and drawn by nothing.
  *
@@ -105,7 +105,7 @@ function SectionHeading({
  * The product's whole thesis is that a value alone is meaningless and a value
  * against its band is the answer. First-pass yield and capacity retention are
  * drawn against real limits. Scrap rate and CO₂ intensity are not, because they
- * have none — see `lib/metrics/windows.ts`. Banding all four would look
+ * have none - see `lib/metrics/windows.ts`. Banding all four would look
  * consistent and be a lie about two of them.
  */
 export function DashboardView({ locale }: { locale: Locale }) {
@@ -121,7 +121,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
    *
    * The overview is four numbers and twelve rows; the trend is sixty batches
    * and their measurements. Putting them in one payload would make the headline
-   * — the thing the reader came for — wait on data it does not use. Two queries
+   * - the thing the reader came for - wait on data it does not use. Two queries
    * means the top of the page paints as soon as the small response lands.
    *
    * It has its own status because it has its own failure. A trend that fails
@@ -144,7 +144,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
           <Display as="h1">{t.dashboard.title}</Display>
           <p className="text-text-muted">
             {t.dashboard.subtitle}
-            {data === undefined ? '' : ` — ${data.line_name}`}
+            {data === undefined ? '' : ` - ${data.line_name}`}
           </p>
         </div>
 
@@ -168,7 +168,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
       </section>
 
       {/*
-       * "How it got here" — the four charts that need a series rather than a
+       * "How it got here" - the four charts that need a series rather than a
        * reading. Gated on the trend query alone, so a slow or failed trend
        * leaves the masthead above intact rather than blanking the page.
        */}
@@ -185,7 +185,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
             {/*
              * Two by two from `lg`, one column below it. The top row shares an
              * x-axis of the same sixty batches, so the reader can carry a
-             * position across from one chart to the other — which is the whole
+             * position across from one chart to the other - which is the whole
              * reason throughput is a separate chart rather than a second y-axis
              * on the first. The bottom row asks those same batches two
              * different questions: how they are distributed, and what they cost.
@@ -226,7 +226,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                * A real heading, not an `sr-only` one.
                *
                * It used to be visually hidden and to repeat the page title,
-               * which was defensible while this band opened the page — the h1
+               * which was defensible while this band opened the page - the h1
                * directly above it was the heading. Once the charts moved in
                * front, two things broke at once: a screen reader announced
                * "Production overview" twice with unrelated content under the
@@ -244,7 +244,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                * All four readings on one row from `xl`, where there is width
                * for it. The two with limits keep their bands and the two
                * without keep their tiles, so the hierarchy still says which
-               * readings carry a verdict — it is stated by the instrument now
+               * readings carry a verdict - it is stated by the instrument now
                * rather than by a horizontal rule between two groups.
                */}
               <div className="mt-10 grid gap-10 sm:grid-cols-2 xl:grid-cols-4 xl:gap-x-12">
@@ -320,7 +320,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                * `ScrapCostChart` plots the euros and its tallest bar is
                * formation. Stacked, a reader had to hold the first shape in
                * their head while scrolling to the second. Beside each other the
-               * disagreement takes about a second to see — and that
+               * disagreement takes about a second to see - and that
                * disagreement is the entire product thesis.
                */}
               <div className="mt-10 grid gap-12 xl:grid-cols-2 xl:gap-x-16">
@@ -346,7 +346,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                   <SpecBand
                     key={band.parameter}
                     // The API returns a stable key (`porosity_pct`), never a
-                    // display string — the same rule as process steps, and the
+                    // display string - the same rule as process steps, and the
                     // only way the German locale can name it in German.
                     label={translate(t.dashboard.parameters, band.parameter)}
                     words={t.a11y.specBand}
@@ -365,7 +365,7 @@ export function DashboardView({ locale }: { locale: Locale }) {
                * A band says "out of spec"; a control chart says "and it has
                * been drifting for six weeks", which is the difference between a
                * symptom and a diagnosis. They sit in the same section because
-               * they are two readings of one thing — the band is today, the
+               * they are two readings of one thing - the band is today, the
                * chart is how today happened.
                *
                * Small multiples, one per parameter, each with its own scale.

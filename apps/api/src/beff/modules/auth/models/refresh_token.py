@@ -1,4 +1,4 @@
-"""The `refresh_tokens` table — rotation with family-wide reuse detection.
+"""The `refresh_tokens` table - rotation with family-wide reuse detection.
 
 Never exposed to a client and written on every refresh, so the key is
 `BIGINT GENERATED ALWAYS AS IDENTITY` (ADR-0010). The token the client holds is
@@ -35,7 +35,7 @@ __all__ = ["REVOKED_BY_ERASURE", "REVOKED_REASONS", "RefreshToken"]
 # `account_erased` is not a variant of `logout`: nobody signed out, and the
 # distinction is the audit trail for an Art. 17 request. It was missing here
 # while `PostgresErasureRepository` wrote it anyway, so every erasure died on
-# this constraint — see `tests/test_privacy_repository.py`. The literal now
+# this constraint - see `tests/test_privacy_repository.py`. The literal now
 # lives in one place, which is what puts it inside
 # `test_each_check_constraint_accepts_exactly_the_values_the_code_uses`.
 REVOKED_REASONS: Final = ("logout", "reuse_detected", "account_erased")
@@ -51,7 +51,7 @@ class RefreshToken(Base):
     A *family* is the chain of tokens descending from a single login. Rotation
     issues a new row in the same family and stamps `used_at` on the old one.
     Presenting a row that already has `used_at` means either a benign two-tab
-    race (inside the grace window) or a stolen token — and since the two are
+    race (inside the grace window) or a stolen token - and since the two are
     indistinguishable after the window, the whole family is revoked.
 
     `created_at`/`updated_at` are deliberately absent: `issued_at` is the
@@ -73,7 +73,7 @@ class RefreshToken(Base):
             "revoked_reason IS NULL OR revoked_at IS NOT NULL",
             name="revoked_reason_requires_revoked_at",
         ),
-        # Every foreign key gets an index — PostgreSQL does not create one, and
+        # Every foreign key gets an index - PostgreSQL does not create one, and
         # without it every cascade delete and every "sessions for this user"
         # lookup is a sequential scan.
         Index("ix_refresh_tokens_user_id", "user_id"),

@@ -19,7 +19,7 @@ class ExportBuilder(Protocol):
     """Assembles the document for one data subject.
 
     A protocol rather than a concrete class so the queue mechanics can be tested
-    against a builder that fails on demand — the interesting behaviour is what
+    against a builder that fails on demand - the interesting behaviour is what
     happens on the second attempt, not what the JSON looks like.
     """
 
@@ -30,7 +30,7 @@ class PermanentExportError(Exception):
     """A failure that retrying cannot fix.
 
     Retrying a validation error just burns the attempt budget and delays the
-    dead-letter path. Transient failures — a dropped connection — are the ones
+    dead-letter path. Transient failures - a dropped connection - are the ones
     at-least-once delivery exists for.
     """
 
@@ -54,7 +54,7 @@ class ExportService:
 
         **This is the idempotency boundary.** A user who double-clicks, or whose
         browser retries the POST, must not end up with two workers building the
-        same document — so an unfinished job for that user *is* the response.
+        same document - so an unfinished job for that user *is* the response.
         Art. 15 gives a right to a copy, not to a queue full of duplicates.
         """
         in_flight = await self._jobs.unfinished_for_user(user_id)
@@ -70,7 +70,7 @@ class ExportService:
         """The finished export, for its owner only."""
         job = await self._jobs.get_for_user(job_id, user_id)
         if job is None:
-            # Not "403 not yours" — that would confirm the export exists to
+            # Not "403 not yours" - that would confirm the export exists to
             # anyone who guessed an id.
             raise ExportNotFoundError
         if job.status != "ready" or job.payload is None:

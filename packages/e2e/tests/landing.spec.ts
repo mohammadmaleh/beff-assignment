@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 /**
  * The landing surface in a real browser.
  *
- * These duplicate very little of the unit suite on purpose — what is worth
+ * These duplicate very little of the unit suite on purpose - what is worth
  * checking here is what only a browser can answer: that the statically
  * generated HTML is what actually arrives, that the locale redirect works, and
  * that the page does not reach a third party.
@@ -41,7 +41,7 @@ test('the tolerance band states its verdict in words', async ({ page }) => {
 });
 
 test('nothing is fetched from Google', async ({ page }) => {
-  // LG München I, 3 O 17493/20 — embedding Google Fonts transmits the visitor's
+  // LG München I, 3 O 17493/20 - embedding Google Fonts transmits the visitor's
   // IP and was found to violate GDPR. The token pipeline self-hosts, and this
   // is the check that the built page agrees.
   const thirdParty: string[] = [];
@@ -68,7 +68,7 @@ test('the crawler tags are absolute, which is the only form that counts', async 
   /*
    * Lighthouse scored this 82 on SEO with `canonical` and `hreflang` both
    * present in the markup and both *relative*. Next emits relative hrefs unless
-   * `metadataBase` is set, and a relative canonical is not a weaker canonical —
+   * `metadataBase` is set, and a relative canonical is not a weaker canonical -
    * it is no canonical at all, because both tags are defined as absolute URLs.
    * The declarations looked right and did nothing, which is why this is a test
    * and not a comment.
@@ -81,7 +81,7 @@ test('the crawler tags are absolute, which is the only form that counts', async 
   expect(canonical).toMatch(/^https?:\/\//);
 
   const alternates = [...html.matchAll(/hrefLang="([^"]+)" href="([^"]+)"/gi)];
-  // Both locales plus `x-default` — without the last one a crawler picks for a
+  // Both locales plus `x-default` - without the last one a crawler picks for a
   // reader whose language matches neither, and it tends to pick whichever it
   // indexed first.
   expect(alternates.map(([, lang]) => lang).sort()).toEqual(['de', 'en', 'x-default']);
@@ -90,7 +90,7 @@ test('the crawler tags are absolute, which is the only form that counts', async 
 
 test('the favicon is actually served, not just declared', async ({ page, request }) => {
   // It was declared and 404ing: `app/icon.svg` is a metadata *route*, and a
-  // route needs a layout to render into — this app deliberately has no root
+  // route needs a layout to render into - this app deliberately has no root
   // layout, because the locale has to reach `<html lang>`. The file lives in
   // `public/` now, which is plain static serving with no layout involved.
   const response = await page.goto('/en');

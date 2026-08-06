@@ -1,7 +1,7 @@
 """Inbound payloads.
 
-Validation here is about *shape*. Anything requiring knowledge of stored state —
-"is this email taken" — is a business rule and belongs in the service.
+Validation here is about *shape*. Anything requiring knowledge of stored state -
+"is this email taken" - is a business rule and belongs in the service.
 """
 
 from __future__ import annotations
@@ -65,7 +65,7 @@ class RegisterRequest(BaseModel):
     def normalise_email(cls, value: str) -> str:
         """Lower-case the address so `Ada@X` and `ada@x` are one account.
 
-        Done once, here, rather than at every call site — the partial unique
+        Done once, here, rather than at every call site - the partial unique
         index compares raw bytes and cannot fold case for us.
         """
         return value.lower()

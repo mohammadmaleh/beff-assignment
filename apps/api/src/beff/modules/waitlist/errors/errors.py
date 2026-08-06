@@ -12,8 +12,8 @@ class AlreadyOnWaitlistError(ConflictError):
 
     This does leak that an address is on the list, and unlike the login form
     that is acceptable: a waitlist is a marketing surface, the "account" it
-    reveals confers nothing, and the alternative — silently pretending to add a
-    duplicate — leaves the person unable to tell whether they signed up.
+    reveals confers nothing, and the alternative - silently pretending to add a
+    duplicate - leaves the person unable to tell whether they signed up.
     """
 
     code = "waitlist.already_registered"

@@ -14,7 +14,7 @@ import type { Locale } from '@/lib/i18n';
  * locale this product ships.
  *
  * So percentages go through `style: 'percent'` and are divided by 100 on the
- * way in — the API's convention is 0–100 (`_pct`), and `Intl`'s is 0–1. That
+ * way in - the API's convention is 0–100 (`_pct`), and `Intl`'s is 0–1. That
  * conversion is the entire reason this module exists rather than each caller
  * calling `Intl` itself: it is exactly the sort of thing that gets done
  * correctly in four places and forgotten in the fifth.
@@ -24,7 +24,7 @@ import type { Locale } from '@/lib/i18n';
  * It was named for the four charts that first needed it, and meanwhile the
  * dashboard, the KPI row, the marketing product panel and the cost figure each
  * built their *own* `Intl.NumberFormat` for a signed percentage point or a
- * one-decimal number — six constructions of four formatters, which is six
+ * one-decimal number - six constructions of four formatters, which is six
  * chances for the marketing page to round a figure differently from the
  * dashboard rendering the same one. They all read from here now, and the
  * charts' own `format.axisDate` sits beside them because a chart axis and a
@@ -36,19 +36,19 @@ export interface Formatters {
   /**
    * The same, to whole numbers.
    *
-   * The committed-value curve is a set of round figures by construction — 4%,
-   * 45%, 100% — and a trailing `,0` on every one of them claims a precision the
+   * The committed-value curve is a set of round figures by construction - 4%,
+   * 45%, 100% - and a trailing `,0` on every one of them claims a precision the
    * model does not have.
    */
   percentWhole: (value: number) => string;
-  /** Euros, no cents — a scrap cost of `4 213,67 €` implies a precision nobody has. */
+  /** Euros, no cents - a scrap cost of `4 213,67 €` implies a precision nobody has. */
   euro: (value: number) => string;
   /** Cell counts. Grouped, so `1 240` is legible at a glance. */
   count: (value: number) => string;
   /** A bare decimal, for units the formatter has no notion of (Wh/kg, mg/cm²). */
   decimal: (value: number, fractionDigits?: number) => string;
   /**
-   * A movement in percentage points, signed and suffixed — `+1,4 pp`.
+   * A movement in percentage points, signed and suffixed - `+1,4 pp`.
    *
    * Percentage points, never a percentage change, and the difference is not
    * pedantry: "up 5%" from 68% is ambiguous between 71.4 and 73, and on a yield
@@ -56,7 +56,7 @@ export interface Formatters {
    * period reads `0,0 pp` rather than claiming a rise of nothing.
    */
   percentagePoints: (value: number) => string;
-  /** A short date for an axis tick — day and month, never the year. */
+  /** A short date for an axis tick - day and month, never the year. */
   axisDate: (value: string) => string;
   /** A full date for a tooltip, where there is room to be unambiguous. */
   fullDate: (value: string) => string;

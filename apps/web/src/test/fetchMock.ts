@@ -4,7 +4,7 @@ import { vi, type Mock } from 'vitest';
  * A typed stand-in for `fetch`.
  *
  * `vi.fn()` types its recorded calls as `any`, so reaching into
- * `mock.calls[0][1].method` trips `no-unsafe-member-access` — and that rule is
+ * `mock.calls[0][1].method` trips `no-unsafe-member-access` - and that rule is
  * an error here for the same reason it is everywhere else: an `any` in a test is
  * a test that keeps compiling after the thing it checks changes shape.
  */
@@ -77,7 +77,7 @@ export interface StubResponse {
   status?: number;
   body?: unknown;
   contentType?: string;
-  /** Fail the way a dropped connection does — `fetch` rejects, it does not resolve. */
+  /** Fail the way a dropped connection does - `fetch` rejects, it does not resolve. */
   networkError?: boolean;
 }
 
@@ -89,7 +89,7 @@ export type Stub = StubResponse | (() => StubResponse);
  *
  * `mockFetchJson` covers the common case where every route answers 200 with a
  * body. This is for the cases where the *status* and the *content type* are the
- * thing under test — a 401 that must not be reported as a field error, a
+ * thing under test - a 401 that must not be reported as a field error, a
  * problem document that must be, an HTML error page from a proxy that must not.
  *
  * An unmatched URL answers 404 rather than 200-with-null, so a test whose

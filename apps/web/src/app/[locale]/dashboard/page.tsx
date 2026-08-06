@@ -18,7 +18,7 @@ export async function generateMetadata({
 /**
  * The daily surface.
  *
- * The page shell is a server component and the data is fetched client-side —
+ * The page shell is a server component and the data is fetched client-side -
  * FastAPI owns auth, and the refresh token rotates on every use, so redeeming
  * it during SSR would spend a token on a response the browser might never
  * receive (decision #3).

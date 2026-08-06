@@ -13,7 +13,7 @@ import { marketingNav, surfacePath, type MarketingNavKey } from '@/lib/navigatio
  *
  * Only to read `usePathname`, so the current page can carry `aria-current`.
  * Next prerenders client components, so the links are still in the static HTML
- * — the progressive-enhancement claim is untouched, and `curl` still shows the
+ * - the progressive-enhancement claim is untouched, and `curl` still shows the
  * whole nav.
  *
  * ## `aria-current`, not just a colour
@@ -22,7 +22,7 @@ import { marketingNav, surfacePath, type MarketingNavKey } from '@/lib/navigatio
  * is the reason it read as a row of unrelated links. Marking it with an
  * attribute rather than only a class means a screen reader announces
  * "current page" and the styling is derived from the same fact rather than
- * duplicating it — one source of truth, and it cannot drift.
+ * duplicating it - one source of truth, and it cannot drift.
  *
  * ## Why the links are not underlined by default
  *

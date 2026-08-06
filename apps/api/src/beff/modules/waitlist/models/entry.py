@@ -1,16 +1,16 @@
-"""The `waitlist_entries` table — pre-launch signups from the landing page.
+"""The `waitlist_entries` table - pre-launch signups from the landing page.
 
 A waitlist entry is **not** a user (CONTEXT.md, "Waitlist entry"). There is no
 account, no password and no session; there is a person who asked to be told when
-the product opens. The legal basis is consent — they typed their address into a
-form whose label says what it is for — so the row records which version of that
+the product opens. The legal basis is consent - they typed their address into a
+form whose label says what it is for - so the row records which version of that
 text they saw.
 
 Never exposed by id and written at whatever rate the landing page attracts, so
 `BIGINT GENERATED ALWAYS AS IDENTITY` (ADR-0010).
 
 Note what is *not* here: no IP hash, no country code. Art. 5(1)(c) data
-minimisation — the form submission is itself the record of consent, and an
+minimisation - the form submission is itself the record of consent, and an
 origin hash would be additional personal data collected for no stated purpose.
 The consent log has one because a consent record has to be defensible years
 later against a claim that it was never given; a waitlist signup does not.
@@ -65,7 +65,7 @@ class WaitlistEntry(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
 
-    # Stored already case-folded — the unique index compares raw bytes, so
+    # Stored already case-folded - the unique index compares raw bytes, so
     # `Ada@X` and `ada@x` would otherwise be two entries for one person.
     email: Mapped[str] = mapped_column(Text(), nullable=False)
 

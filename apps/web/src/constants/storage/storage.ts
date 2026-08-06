@@ -3,7 +3,7 @@
  *
  * They are namespaced (`beff-`) because `localStorage` is per *origin*, not per
  * app: anything else served from the same host shares the drawer. And they are
- * constants because each is read in one place and written in another — the
+ * constants because each is read in one place and written in another - the
  * theme is written by `ThemeToggle` and read by a blocking script in `<head>`
  * that has to run before React exists. Two literals that must agree across that
  * boundary is exactly the pair that silently stops agreeing, and the symptom is

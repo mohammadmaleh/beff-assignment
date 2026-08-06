@@ -1,7 +1,7 @@
 """The in-memory outbox, and the debts it owes the database.
 
 `PostgresEmailOutbox` is exercised by the integration tests, which have a real
-`FOR UPDATE SKIP LOCKED` to exercise. What is under test here is the fake — and
+`FOR UPDATE SKIP LOCKED` to exercise. What is under test here is the fake - and
 specifically that it is not more permissive than production, because a fake that
 skips a `server_default` produces a failure only the HTTP tests can see.
 """

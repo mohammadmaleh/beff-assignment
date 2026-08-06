@@ -18,8 +18,8 @@ from beff.db.base import Base, SoftDeleteMixin, TimestampMixin, sql_value_list
 
 __all__ = ["USER_ROLES", "User"]
 
-# Access role, not job title. What the user *does* — process engineer, quality
-# engineer, production manager (CONTEXT.md) — is captured during onboarding and
+# Access role, not job title. What the user *does* - process engineer, quality
+# engineer, production manager (CONTEXT.md) - is captured during onboarding and
 # has no bearing on authorisation, so the two are deliberately separate.
 USER_ROLES: Final = ("member", "admin")
 
@@ -34,7 +34,7 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     `email` carries no table-level UNIQUE constraint. Uniqueness is enforced by
     a *partial* unique index restricted to `deleted_at IS NULL`, so GDPR erasure
     frees the address for re-registration. A plain UNIQUE would make an erased
-    account permanently block its own former owner from signing up again —
+    account permanently block its own former owner from signing up again -
     which is itself a retention of personal data.
     """
 
@@ -61,7 +61,7 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     email: Mapped[str] = mapped_column(Text(), nullable=False)
 
     # Argon2id. The parameters are embedded in the encoded hash, so raising the
-    # cost later needs no schema change — only a rehash on next successful login.
+    # cost later needs no schema change - only a rehash on next successful login.
     password_hash: Mapped[str] = mapped_column(Text(), nullable=False)
 
     display_name: Mapped[str] = mapped_column(Text(), nullable=False)
@@ -70,7 +70,7 @@ class User(Base, TimestampMixin, SoftDeleteMixin):
     # run inside a transaction before PG 12 and still cannot be removed at all.
     role: Mapped[str] = mapped_column(Text(), nullable=False, server_default=text("'member'"))
 
-    # A timestamp, not a boolean. "Verified" is an event with a date — needed to
+    # A timestamp, not a boolean. "Verified" is an event with a date - needed to
     # answer when an address was confirmed, and needed again if the policy for
     # what an unverified account may do ever changes and existing accounts have
     # to be graded by how long they have been confirmed. A boolean throws that

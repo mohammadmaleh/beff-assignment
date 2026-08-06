@@ -1,4 +1,4 @@
-"""`POST /login` — exchange credentials for a session."""
+"""`POST /login` - exchange credentials for a session."""
 
 from __future__ import annotations
 

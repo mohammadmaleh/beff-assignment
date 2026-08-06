@@ -29,7 +29,7 @@ import type {
  * backend rename shows up as a type error *here*, in one file, rather than in
  * twenty components at once.
  *
- * The aliases also translate transport names into app names —
+ * The aliases also translate transport names into app names -
  * `MetricsOverviewResponse` is what the wire calls it; `MetricsOverview` is what
  * the dashboard calls it.
  */

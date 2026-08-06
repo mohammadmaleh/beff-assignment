@@ -7,7 +7,7 @@ import { apiUrl, parseProblem, type FieldErrors } from '@/lib/api';
  * `localStorage` is readable by any script on the origin, so one XSS is one
  * stolen session that survives a page close. In memory, the blast radius of the
  * same bug is the current tab until reload. The refresh token is not here at
- * all — it is an httpOnly cookie the API sets, which JavaScript cannot read by
+ * all - it is an httpOnly cookie the API sets, which JavaScript cannot read by
  * construction.
  */
 let accessToken: string | null = null;
@@ -25,7 +25,7 @@ export class ApiError extends Error {
   /**
    * The API's stable code, or `null` if the failure carried no problem document.
    *
-   * A status code is a category — 409 is "you contradicted current state" — and
+   * A status code is a category - 409 is "you contradicted current state" - and
    * a category is not a sentence anyone can act on. `code` is the specific
    * failure, and it is the only thing on this class that a message should be
    * chosen from.

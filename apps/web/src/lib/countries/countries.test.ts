@@ -30,7 +30,7 @@ describe('getCountries', () => {
   });
 
   it('sorts the way the locale sorts, not the way UTF-16 does', () => {
-    // `Ö` is code unit 0x00D6 — past `Z`. A plain sort files Österreich at the
+    // `Ö` is code unit 0x00D6 - past `Z`. A plain sort files Österreich at the
     // bottom of a German list, which is not where a German reader looks.
     const german = getCountries('de').map((country) => country.name);
     const austria = german.indexOf('Österreich');
@@ -42,7 +42,7 @@ describe('getCountries', () => {
   });
 
   it('returns the same array for the same locale', () => {
-    // 250 entries and one collation pass per render, otherwise — and a new
+    // 250 entries and one collation pass per render, otherwise - and a new
     // array identity would defeat the picker's own memoised filtering.
     expect(getCountries('de')).toBe(getCountries('de'));
     expect(getCountries('de')).not.toBe(getCountries('en'));

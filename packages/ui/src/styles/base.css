@@ -6,14 +6,14 @@
  * These four rules are the ones a component is *incomplete* without: a `Button`
  * with no pointer cursor and no focus ring is not the component this package
  * ships, it is a near-miss. So they travel with the components rather than with
- * any one app — which is also what lets Storybook render the real thing instead
+ * any one app - which is also what lets Storybook render the real thing instead
  * of an approximation of it, and the approximation is exactly how a design
  * system starts disagreeing with the product it describes.
  *
  * What stays in `apps/web/src/app/globals.css` is everything an app decides:
  * the skip link, the brand mark's dark-ground treatment and the calibration
  * ground. The hero band's draw-on-mount used to be there too, as keyframes
- * keyed off `data-part` hooks — the split was deliberate, because a component
+ * keyed off `data-part` hooks - the split was deliberate, because a component
  * that animates on mount animates *everywhere* it is placed. The rule survives;
  * the mechanism does not. `SpecBand` draws through ECharts now, which owns its
  * own render loop outside the cascade, so the opt-in is a prop and the default
@@ -48,14 +48,14 @@ body {
  * Put the pointer cursor back on buttons.
  *
  * Tailwind v3's Preflight carried `button, [role="button"] { cursor: pointer }`.
- * v4 removed it deliberately, to defer to the user-agent stylesheet — and the
+ * v4 removed it deliberately, to defer to the user-agent stylesheet - and the
  * UA default for a button is `cursor: default`, the plain arrow. So upgrading
  * silently made every button in the app stop signalling that it is clickable,
  * while links and `<summary>` kept their pointer and looked correct.
  *
  * That asymmetry is what makes it hard to spot: the page is full of working
  * pointers, so the ones that are missing read as a single broken control rather
- * than as a global regression. Measured before the fix — every `<button>` on the
+ * than as a global regression. Measured before the fix - every `<button>` on the
  * landing, login and dashboard surfaces computed `default`.
  *
  * ## Why `@layer base`, and why the guards as well
@@ -63,7 +63,7 @@ body {
  * Both are load-bearing, for different reasons.
  *
  * Unlayered, this rule would outrank every Tailwind utility, because unlayered
- * CSS beats layered CSS regardless of specificity — and `disabled:cursor-not-allowed`
+ * CSS beats layered CSS regardless of specificity - and `disabled:cursor-not-allowed`
  * on `Button` and `TextField` is a utility. A disabled button would then claim
  * to be clickable, which is worse than the bug being fixed.
  *
@@ -90,14 +90,14 @@ body {
      *
      * Zeroing only the duration collapses each animation to an instant that
      * still waits out its `animation-delay` first. The landing page's hero band
-     * used to be staggered in CSS — the limits at 380ms, the reading at 480ms —
+     * used to be staggered in CSS - the limits at 380ms, the reading at 480ms -
      * so with reduced motion honoured and delays intact, the measurement a
      * screen reader user is *told* about was invisible on screen for half a
      * second. Measured, not theorised: at 120ms after load the tick read
      * `opacity: 0`.
      *
-     * That particular animation is gone — the band is an ECharts instance now
-     * and honours the preference through `useReducedMotion` — but the rule
+     * That particular animation is gone - the band is an ECharts instance now
+     * and honours the preference through `useReducedMotion` - but the rule
      * stays, because it is a rule about every staggered sequence this repo will
      * ever write, and the bug it fixes is invisible to axe, to the contrast gate
      * and to any screenshot taken after a second.

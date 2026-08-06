@@ -21,8 +21,8 @@ export async function generateMetadata({
  * hydration.
  *
  * The body stays German on the English page and is marked `lang="de"`. The §5
- * disclosure is a German legal instrument — translating it produces something
- * that is no longer the disclosure — but an English voice reading German at
+ * disclosure is a German legal instrument - translating it produces something
+ * that is no longer the disclosure - but an English voice reading German at
  * English phonetics is WCAG 3.1.2, so the marking is not optional.
  */
 export default async function ImpressumPage({ params }: { params: Promise<{ locale: string }> }) {

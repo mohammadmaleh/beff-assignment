@@ -10,7 +10,7 @@ import type { EChartsOption } from './echarts';
  * stock answers are all wrong in the same way: a gauge is round and reads as a
  * dial, a stacked bar makes the window look like a quantity that was accumulated
  * rather than a rule, and a boxplot describes a distribution this figure does not
- * have. So the band is drawn out of primitives — a horizontal rule for the track,
+ * have. So the band is drawn out of primitives - a horizontal rule for the track,
  * a second one for the window, verticals for the limits and the reading.
  *
  * All of it is `markLine`, which is what makes that practical: a `markLine` datum
@@ -19,8 +19,8 @@ import type { EChartsOption } from './echarts';
  *
  * ## The coordinate system
  *
- * `x` is the measurement's own unit — porosity per cent, millimetres, whatever the
- * caller passed — pinned to the plotted domain so the axis cannot drift with the
+ * `x` is the measurement's own unit - porosity per cent, millimetres, whatever the
+ * caller passed - pinned to the plotted domain so the axis cannot drift with the
  * data. `y` is a unitless 0–1 with the instrument centred on 0.5, so the geometry
  * below reads as fractions of the graphic's height and one set of numbers serves
  * every size the band is rendered at.
@@ -41,7 +41,7 @@ export interface BandGeometry {
   limit: number;
   /** Height of the target mark, which is deliberately shorter than a limit. */
   target: number;
-  /** Height of the reading. Full-height at both sizes — it is the answer. */
+  /** Height of the reading. Full-height at both sizes - it is the answer. */
   tick: number;
   /** Width of the in-spec reading, in px. */
   tickWidth: number;
@@ -84,7 +84,7 @@ export interface BandOptionInput extends BaseOptionInput {
    *
    * Passed in rather than derived. The component states the same verdict in
    * words in its readout, and a drawing that decided it independently could
-   * disagree with the sentence beside it — on a boundary value, which is exactly
+   * disagree with the sentence beside it - on a boundary value, which is exactly
    * where a reader is looking.
    */
   inSpec: boolean;
@@ -94,7 +94,7 @@ export interface BandOptionInput extends BaseOptionInput {
    *
    * Off by default, and that default is the point. ECharts animates on first
    * draw *and* on every `setOption`, so a band that animated by default would
-   * redraw itself whenever the theme changed — four at a time on the dashboard.
+   * redraw itself whenever the theme changed - four at a time on the dashboard.
    * The landing page opts in for the one orchestrated moment the design brief
    * allows. This replaces the `data-part` CSS hooks the hand-drawn band exposed:
    * an ECharts instance owns its own render loop and is out of the cascade's
@@ -109,20 +109,20 @@ interface MarkStyle {
   /**
    * Always set, never left to default.
    *
-   * ECharts draws `markLine` **dashed** unless told otherwise — it assumes a
+   * ECharts draws `markLine` **dashed** unless told otherwise - it assumes a
    * mark is a threshold. Every part of this instrument is solid: the track, the
    * window, the limits and the reading are all things that *are*, not rules
    * something is judged against, and this app spends `dashed` on exactly that
    * distinction (see `referenceLine`). Left to the default the band renders as
    * a dashed sketch of itself, which no test asserting positions would catch
-   * and no reader would report as a bug — it just looks provisional.
+   * and no reader would report as a bug - it just looks provisional.
    */
   type: 'solid' | 'dashed';
   opacity?: number;
 }
 
 /**
- * Where a mark starts. Styling rides here and nowhere else — ECharts reads
+ * Where a mark starts. Styling rides here and nowhere else - ECharts reads
  * `lineStyle` off the first end of the pair and ignores it on the second, which
  * is why the helpers below take it as a parameter rather than letting each call
  * site choose an end to put it on.
@@ -147,7 +147,7 @@ interface MarkEnd {
  *
  * A tuple rather than an array, and that is load-bearing. `MarkLine2DDataItem`
  * requires exactly two elements, so a plain array widens to something ECharts'
- * own types reject — and the error surfaces on the `series` property, dozens of
+ * own types reject - and the error surfaces on the `series` property, dozens of
  * lines from the helper that produced it.
  */
 type Mark = [MarkStart, MarkEnd];
@@ -188,7 +188,7 @@ export function bandOption({
       type: 'solid',
     }),
     // After the track, always. Both are rules of the same weight on the same
-    // line, so paint order is the only thing that distinguishes them — reversed,
+    // line, so paint order is the only thing that distinguishes them - reversed,
     // the specification window simply is not there.
     horizontal(lowerLimit, upperLimit, {
       color: tokens['color-band-range'],
@@ -213,7 +213,7 @@ export function bandOption({
           }),
         ]),
     // In spec the reading is a hairline like the limit marks. Out of spec it is
-    // a diamond instead — a shape change, so the state survives greyscale and
+    // a diamond instead - a shape change, so the state survives greyscale and
     // every form of colour blindness rather than resting on the red alone.
     ...(inSpec
       ? [
@@ -230,8 +230,8 @@ export function bandOption({
     animation: animate && !reducedMotion,
     animationDuration: 420,
     backgroundColor: 'transparent',
-    // No furniture. Every default ECharts would bring — an axis line, a
-    // gridline, a hover tooltip — is a plot's apparatus arriving uninvited into
+    // No furniture. Every default ECharts would bring - an axis line, a
+    // gridline, a hover tooltip - is a plot's apparatus arriving uninvited into
     // a 24px-tall readout.
     grid: { left: 0, right: 0, top: 0, bottom: 0, containLabel: false },
     tooltip: { show: false },
@@ -242,7 +242,7 @@ export function bandOption({
         type: 'line',
         // One silent, invisible point. `markLine` and `markPoint` are properties
         // of a series, not of the chart, so there has to be a series for them to
-        // hang on — and an empty one is not laid out at all.
+        // hang on - and an empty one is not laid out at all.
         data: [[min, 0.5]],
         symbol: 'none',
         silent: true,

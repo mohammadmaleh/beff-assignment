@@ -1,6 +1,6 @@
 """Unit tests for the in-memory repositories.
 
-The fakes carry the whole unit suite, so they get tested too — an untested fake
+The fakes carry the whole unit suite, so they get tested too - an untested fake
 is a place for a bug to hide behind a hundred passing service tests.
 """
 

@@ -78,7 +78,7 @@ describe('findings', () => {
 
   it('judges yield against the window for the kind of line it is', () => {
     // 71.7% is comfortable on a pilot line and a crisis on a production one.
-    // The same number, two verdicts — the product's whole thesis, applied here.
+    // The same number, two verdicts - the product's whole thesis, applied here.
     expect(kinds(OVERVIEW, TREND)).not.toContain('yield');
     expect(kinds({ ...OVERVIEW, line_kind: 'production' }, TREND)).toContain('yield');
   });

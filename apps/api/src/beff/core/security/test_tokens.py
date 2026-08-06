@@ -123,7 +123,7 @@ def test_an_unsigned_token_is_rejected() -> None:
     """`alg: none` is the oldest JWT attack there is.
 
     Passing an allow-list of exactly one algorithm to `decode` is what closes
-    it — the decoder never consults the token's own header for what to trust.
+    it - the decoder never consults the token's own header for what to trust.
     """
     forged = jwt.encode(
         {

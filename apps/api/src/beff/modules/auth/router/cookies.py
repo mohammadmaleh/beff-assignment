@@ -1,7 +1,7 @@
 """The refresh cookie.
 
 One place decides its name, path and flags, because a cookie set with one set of
-attributes and cleared with another is not cleared at all — the browser treats
+attributes and cleared with another is not cleared at all - the browser treats
 `(name, domain, path)` as the identity, and a mismatched `path` silently leaves
 the old cookie in place.
 """
@@ -23,7 +23,7 @@ REFRESH_COOKIE_NAME = "beff_refresh_token"
 
 # Scoped to the auth endpoints. The cookie is only ever presented to `/refresh`
 # and `/logout`, so sending it on every dashboard request would be pure
-# additional exposure — and a wider CSRF surface — for no benefit.
+# additional exposure - and a wider CSRF surface - for no benefit.
 REFRESH_COOKIE_PATH = "/api/v1/auth"
 
 

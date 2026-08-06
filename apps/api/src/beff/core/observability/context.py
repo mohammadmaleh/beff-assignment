@@ -1,7 +1,7 @@
 """The request id, carried without being passed.
 
 A `ContextVar` rather than a parameter threaded through every signature. The id
-is ambient context — a repository has no business taking it as an argument, and
+is ambient context - a repository has no business taking it as an argument, and
 a codebase where it does is one where the first person in a hurry drops it.
 
 `ContextVar` is the right primitive for async specifically: each task gets its

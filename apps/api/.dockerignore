@@ -1,7 +1,7 @@
 # Patterns here are matched against paths relative to the build context
 # (`apps/api`), and a pattern without `**/` matches ONLY at the top level.
 # `__pycache__/` alone therefore let `migrations/__pycache__` into the migrate
-# image — the root .dockerignore carries both forms for exactly this reason.
+# image - the root .dockerignore carries both forms for exactly this reason.
 .venv/
 __pycache__/
 **/__pycache__/

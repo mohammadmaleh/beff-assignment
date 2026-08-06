@@ -2,7 +2,7 @@
 
 Copy lives here rather than in `core/email` because `core/email` is a transport
 and knows nothing about what is being sent. It lives on the *backend* rather
-than in the web app because nothing in the browser is involved in sending it —
+than in the web app because nothing in the browser is involved in sending it -
 the frontend never sees this text.
 
 Both locales are required. German is a shipped locale, not a fallback, and this
@@ -33,7 +33,7 @@ _COPY: Final[dict[EmailLocale, dict[str, str]]] = {
         "subject": "Confirm your email address",
         "greeting": "Hello {name},",
         "lead": (
-            "Someone — we hope you — created a Beff account with this address. "
+            "Someone - we hope you - created a Beff account with this address. "
             "Confirm it to finish setting up."
         ),
         "cta": "Confirm this address",
@@ -43,13 +43,13 @@ _COPY: Final[dict[EmailLocale, dict[str, str]]] = {
             "If you did not create this account, you can ignore this message. "
             "Nothing was set up in your name."
         ),
-        "signoff": "— Beff",
+        "signoff": "- Beff",
     },
     "de": {
         "subject": "Bestätigen Sie Ihre E-Mail-Adresse",
         "greeting": "Hallo {name},",
         "lead": (
-            "Jemand — hoffentlich Sie — hat mit dieser Adresse ein Beff-Konto erstellt. "
+            "Jemand - hoffentlich Sie - hat mit dieser Adresse ein Beff-Konto erstellt. "
             "Bestätigen Sie die Adresse, um die Einrichtung abzuschließen."
         ),
         "cta": "Diese Adresse bestätigen",
@@ -61,7 +61,7 @@ _COPY: Final[dict[EmailLocale, dict[str, str]]] = {
             "Wenn Sie dieses Konto nicht erstellt haben, können Sie diese Nachricht "
             "ignorieren. In Ihrem Namen wurde nichts eingerichtet."
         ),
-        "signoff": "— Ihr Beff-Team",
+        "signoff": "- Ihr Beff-Team",
     },
 }
 
@@ -70,7 +70,7 @@ def verification_url(*, base_url: str, token: str, locale: EmailLocale) -> str:
     """The link the message carries.
 
     The token goes in the query string, not the path, so the landing route is a
-    single static page rather than a dynamic segment — and `quote` is not
+    single static page rather than a dynamic segment - and `quote` is not
     decoration: the token is URL-safe base64, whose alphabet includes `-` and
     `_` but whose *generator* is not this function's business to assume.
     """
@@ -82,7 +82,7 @@ def _escape(value: str) -> str:
 
     A display name is user-supplied and goes into the HTML part. `html.escape`
     would do, but the quote handling differs between attribute and text context
-    and only text context occurs here — being explicit is cheaper than being
+    and only text context occurs here - being explicit is cheaper than being
     subtly wrong later.
     """
     return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -97,7 +97,7 @@ def render_verification_email(
     locale: EmailLocale,
     ttl_seconds: int,
 ) -> EmailMessage:
-    """Render the message. Pure — no clock, no I/O, no settings object."""
+    """Render the message. Pure - no clock, no I/O, no settings object."""
     copy = _COPY[locale]
     url = verification_url(base_url=base_url, token=token, locale=locale)
     hours = max(1, ttl_seconds // 3600)

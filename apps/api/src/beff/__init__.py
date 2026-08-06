@@ -1,4 +1,4 @@
-"""Beff API — production intelligence for battery cell manufacturing."""
+"""Beff API - production intelligence for battery cell manufacturing."""
 
 __all__ = ["__version__"]
 

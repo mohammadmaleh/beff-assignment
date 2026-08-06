@@ -27,7 +27,7 @@ log = structlog.get_logger(__name__)
 
 
 class PermanentEmailError(Exception):
-    """A failure retrying cannot fix — a malformed address, a rejected sender.
+    """A failure retrying cannot fix - a malformed address, a rejected sender.
 
     Mirrors `PermanentExportError`. Retrying a 550 burns the attempt budget and
     delays the dead-letter path by exactly as long as the backoff; the retries
@@ -66,7 +66,7 @@ class SmtpEmailSender:
     """Delivers over SMTP. Satisfies `EmailSender` structurally.
 
     No vendor SDK. Every transactional provider on offer speaks SMTP, so
-    changing provider is four environment variables and no code — and nothing
+    changing provider is four environment variables and no code - and nothing
     in this file has to be re-tested when that happens.
     """
 
@@ -92,8 +92,8 @@ class SmtpEmailSender:
         self._timeout = timeout
 
     async def send(self, message: EmailMessage) -> None:
-        # Imported here rather than at module scope so that importing the app —
-        # or collecting the unit suite — does not require the dependency to be
+        # Imported here rather than at module scope so that importing the app -
+        # or collecting the unit suite - does not require the dependency to be
         # installed for a transport nothing in that path uses.
         import aiosmtplib
 
@@ -129,7 +129,7 @@ class ConsoleEmailSender:
     """Logs the message instead of sending it. Satisfies `EmailSender`.
 
     What `docker compose up` runs on, and what an unconfigured deployment falls
-    back to. The verification link is printed in full and on purpose — without
+    back to. The verification link is printed in full and on purpose - without
     it, a local stack cannot complete the flow it is running, and the developer
     goes looking for a bug in the token instead of in their SMTP settings.
     """

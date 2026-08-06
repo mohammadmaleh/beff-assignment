@@ -41,7 +41,7 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+asyncpg://beff:beff_dev_password@localhost:5432/beff"
 
-    # Bandit flags the literal, and it is right that it is a credential — this
+    # Bandit flags the literal, and it is right that it is a credential - this
     # default IS the published placeholder. The validator below refuses to start
     # production on it, which is the actual control.
     jwt_secret: str = "dev_only_do_not_use_in_production"  # noqa: S105
@@ -74,7 +74,7 @@ class Settings(BaseSettings):
     # ── Email ────────────────────────────────────────────────────────────────
     #
     # SMTP rather than a vendor SDK. Every provider speaks it, so switching one
-    # for another is four environment variables and no code — and the console
+    # for another is four environment variables and no code - and the console
     # sender below means `docker compose up` needs none of them.
     #
     # An empty `smtp_host` is not a misconfiguration to guess around: it means
@@ -110,7 +110,7 @@ class Settings(BaseSettings):
 
         Read at startup to warn, not to refuse. Refusing would mean a
         deployment that has everything else right cannot boot because mail is
-        not wired yet — and mail is the one feature here the app is designed to
+        not wired yet - and mail is the one feature here the app is designed to
         survive the absence of.
         """
         return bool(self.smtp_host.strip())
@@ -135,21 +135,21 @@ class Settings(BaseSettings):
 
         Northflank, Neon, Render, Railway and Heroku all issue
         `postgres://...` or `postgresql://...`. `create_async_engine` rejects
-        both — without an explicit `+asyncpg` it loads the *sync* driver and
+        both - without an explicit `+asyncpg` it loads the *sync* driver and
         fails at connect time with "The asyncio extension requires an async
         driver", which reads like a dependency problem rather than a URL one.
 
         Doing it here rather than in the deployment is what lets a platform's
         credential injection point straight at `DATABASE_URL`: no secret
         rewritten by hand, and no password routed through a human to add six
-        characters. A URL that already names a driver is left alone — someone
+        characters. A URL that already names a driver is left alone - someone
         who asked for psycopg meant it.
         """
         prefixes = ("postgresql+", "postgres+")
         if not self.database_url.startswith(prefixes):
             for scheme in ("postgresql://", "postgres://"):
                 if self.database_url.startswith(scheme):
-                    # Sliced, not `str.replace` — a generated password is
+                    # Sliced, not `str.replace` - a generated password is
                     # arbitrary bytes and may contain the scheme itself.
                     rest = self.database_url[len(scheme) :]
                     self.database_url = f"postgresql+asyncpg://{rest}"

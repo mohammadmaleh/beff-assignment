@@ -1,8 +1,8 @@
 """In-memory repositories for fast unit tests.
 
 These ship in `src/` rather than in a test tree on purpose. They are part of the
-module's contract — the thing that makes `AuthService` testable without a
-database — and mypy checks them against the same `Protocol` as the PostgreSQL
+module's contract - the thing that makes `AuthService` testable without a
+database - and mypy checks them against the same `Protocol` as the PostgreSQL
 implementations, so a change to the protocol cannot leave the fakes behind.
 
 They are honest about the constraints the database enforces: the partial unique
@@ -122,7 +122,7 @@ class InMemoryEmailVerificationTokenRepository:
 
     async def add(self, token: EmailVerificationToken) -> EmailVerificationToken:
         # The identity column is the database's, so the fake owes it to the
-        # caller — the same debt the user fake pays for `created_at`.
+        # caller - the same debt the user fake pays for `created_at`.
         token.id = next(self._ids)
         self.tokens.append(token)
         return token

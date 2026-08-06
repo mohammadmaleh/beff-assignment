@@ -82,7 +82,7 @@ async def api(
     just the obvious one. `register` gained `get_verification_service`, and
     because this fixture only replaced `get_auth_service`, the new dependency
     went on constructing a real PostgreSQL session against a deliberately
-    unusable URL — which failed as an event-loop error rather than anything
+    unusable URL - which failed as an event-loop error rather than anything
     resembling "you forgot an override". This repo has hit that exact shape once
     before, with a rate limiter.
     """
@@ -306,7 +306,7 @@ async def test_replaying_a_used_refresh_token_revokes_the_whole_family(
     """**The ENG-28 verification.**
 
     Rotation on its own buys nothing: a stolen token still works until it is
-    spent. What makes it worth doing is this — the moment a spent token is
+    spent. What makes it worth doing is this - the moment a spent token is
     presented again, either the thief or the legitimate client is holding a copy
     that should not exist, and there is no way to tell which. The safe response
     is to end the session for both.
@@ -329,7 +329,7 @@ async def test_replaying_a_used_refresh_token_revokes_the_whole_family(
     # security" instead of a generic error.
     assert replay.json()["code"] == "auth.refresh_token_reused"
 
-    # Every token in the family is revoked — including the successor the
+    # Every token in the family is revoked - including the successor the
     # legitimate client is still holding.
     assert tokens.tokens
     assert all(token.revoked_at is not None for token in tokens.tokens)
@@ -373,7 +373,7 @@ def _link_token(outbox: InMemoryEmailOutbox) -> str:
 
     Deliberately not read from the token table. What is under test is that
     somebody who receives the email can finish the flow with what is actually in
-    it — a test that reached into storage would pass against a message carrying
+    it - a test that reached into storage would pass against a message carrying
     the wrong link entirely.
     """
     body = outbox.deliveries[-1].body_text
@@ -423,7 +423,7 @@ async def test_the_email_language_falls_back_to_accept_language(
     """A caller that sends no locale still gets the right language.
 
     This is the path a `curl`, a mobile client, or a frontend that forgets the
-    field takes — and the alternative to negotiating is silently mailing English
+    field takes - and the alternative to negotiating is silently mailing English
     to a German speaker.
     """
     await api.post(
@@ -456,8 +456,8 @@ async def test_following_the_link_confirms_the_address(
 async def test_confirming_needs_no_session(api: AsyncClient, outbox: InMemoryEmailOutbox) -> None:
     """The link is followed from a mail client, which may be on another device.
 
-    Requiring a bearer token here would make the commonest path — read the mail
-    on a phone, registered on a laptop — the one that fails.
+    Requiring a bearer token here would make the commonest path - read the mail
+    on a phone, registered on a laptop - the one that fails.
     """
     await api.post("/api/v1/auth/register", json=REGISTRATION)
     token = _link_token(outbox)
@@ -473,8 +473,8 @@ async def test_confirming_never_hands_back_a_session(
 ) -> None:
     """A link that arrives by email and produces a session is a login bypass.
 
-    Anyone with read access to the inbox — including a forwarding rule nobody
-    remembers — would get one.
+    Anyone with read access to the inbox - including a forwarding rule nobody
+    remembers - would get one.
     """
     await api.post("/api/v1/auth/register", json=REGISTRATION)
     token = _link_token(outbox)

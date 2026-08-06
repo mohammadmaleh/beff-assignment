@@ -168,7 +168,7 @@ async def test_a_token_from_a_revoked_family_is_rejected(
         await service.rotate(issued.token)
 
 
-# ── Reuse detection — the point of ENG-28 ────────────────────────────────────
+# ── Reuse detection - the point of ENG-28 ────────────────────────────────────
 
 
 async def test_replaying_a_spent_token_revokes_the_entire_family(

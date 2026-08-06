@@ -46,13 +46,13 @@ class ErasureService:
 
         # Every delivery row holds the recipient address in the clear. There is
         # no accountability basis for keeping them the way there is for consent
-        # records — nobody has to prove what we emailed someone — so these are
+        # records - nobody has to prove what we emailed someone - so these are
         # deleted rather than pseudonymised.
         await self._repository.delete_email_deliveries(user_id)
 
         # Kept, deliberately. Consent records are held on a different legal
-        # basis from everything else here — Art. 6(1)(c), the accountability
-        # obligation in Art. 7(1) — so erasing them would destroy the proof that
+        # basis from everything else here - Art. 6(1)(c), the accountability
+        # obligation in Art. 7(1) - so erasing them would destroy the proof that
         # the processing which just ended was lawful. What is removed is the
         # ability to link them to a natural person: the IP hash and the country
         # code. Anonymised data leaves GDPR scope; this is the closest the
@@ -61,6 +61,6 @@ class ErasureService:
 
         # Soft delete, so the partial unique index (`WHERE deleted_at IS NULL`)
         # frees the email for re-registration while the row's foreign keys stay
-        # intact. The identifying columns are scrubbed in the same statement —
+        # intact. The identifying columns are scrubbed in the same statement -
         # a `deleted_at` that leaves the email readable is not erasure.
         await self._repository.soft_delete_user(user_id, at=now)

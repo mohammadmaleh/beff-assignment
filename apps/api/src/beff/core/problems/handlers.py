@@ -3,12 +3,12 @@
 Installed on the app in `main.py`. Four handlers cover every way a request can
 fail:
 
-1. `AppError`        — an expected domain outcome, with its own code and status.
-2. `RequestValidationError` — a malformed request body, query or path, rendered
+1. `AppError`        - an expected domain outcome, with its own code and status.
+2. `RequestValidationError` - a malformed request body, query or path, rendered
    with the per-field breakdown the frontend needs for inline errors.
-3. `HTTPException`   — raised by FastAPI itself (404 on an unknown route, 405 on
+3. `HTTPException`   - raised by FastAPI itself (404 on an unknown route, 405 on
    a wrong method) and by any third-party dependency.
-4. `Exception`       — anything left. A bug, rendered without detail.
+4. `Exception`       - anything left. A bug, rendered without detail.
 """
 
 from __future__ import annotations
@@ -54,7 +54,7 @@ def _pointer_and_field(location: tuple[int | str, ...]) -> tuple[str, str]:
     """Turn a Pydantic error location into a JSON Pointer and a dotted path.
 
     Pydantic reports `("body", "email")` or `("body", "lines", 0, "name")`. The
-    leading segment names *where* the value came from — body, query, path — and
+    leading segment names *where* the value came from - body, query, path - and
     is dropped from the pointer, because a pointer is relative to the document
     it points into and the client already knows which document it sent.
     """
@@ -79,7 +79,7 @@ def _field_problems(exc: RequestValidationError) -> list[FieldProblem]:
         FieldProblem(
             pointer=pointer,
             field=field,
-            # Pydantic's own machine code — `missing`, `string_too_short`,
+            # Pydantic's own machine code - `missing`, `string_too_short`,
             # `value_error`. Stable across releases and already granular enough
             # to translate against.
             code=str(error.get("type", "invalid")),

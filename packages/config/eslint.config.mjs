@@ -28,7 +28,7 @@ export default tseslint.config(
     files: ['**/*.{jsx,tsx}'],
     ...jsxA11y.flatConfigs.strict,
     rules: {
-      // Must live in the same config object that registers the plugin — flat
+      // Must live in the same config object that registers the plugin - flat
       // config scopes plugins per-object, so rules declared elsewhere fail with
       // "could not find plugin".
       ...jsxA11y.flatConfigs.strict.rules,
@@ -41,7 +41,7 @@ export default tseslint.config(
   },
   {
     rules: {
-      // Unused args are fine when prefixed — common in event handlers and
+      // Unused args are fine when prefixed - common in event handlers and
       // deliberately-ignored callback params.
       '@typescript-eslint/no-unused-vars': [
         'error',

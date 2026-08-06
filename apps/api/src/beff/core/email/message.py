@@ -2,7 +2,7 @@
 
 A plain value object, deliberately free of any notion of *why* it is being
 sent. The verification mail, and every mail after it, is rendered to this shape
-before it reaches a transport — so the transport has no opinion about the
+before it reaches a transport - so the transport has no opinion about the
 product and the product has no opinion about SMTP.
 """
 

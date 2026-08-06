@@ -115,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authFetch<void>(AUTH_ROUTES.logout, { method: 'POST', retry: false });
     } catch {
       // Swallowed, not re-thrown. `finally` alone still rejects the promise the
-      // caller is holding — so `logout().then(() => router.replace(...))` skips
+      // caller is holding - so `logout().then(() => router.replace(...))` skips
       // its redirect on a 401 or a dropped connection, and the browser logs an
       // unhandled rejection, for a call that *did* what the caller asked. The
       // server-side revoke is best-effort by design; there is nothing a caller

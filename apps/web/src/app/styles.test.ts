@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 /*
  * Deliberately NOT `new URL(name, import.meta.url)`. Vite rewrites that form
  * into asset resolution at transform time, and the template-literal variant
- * resolved to this test's own source — so every toContain matched its own
+ * resolved to this test's own source - so every toContain matched its own
  * assertion literals and passed. A test that reads itself is worse than no
  * test. Vitest runs from the package root, so cwd is apps/web.
  */
@@ -13,7 +13,7 @@ const read = (name: string): Promise<string> =>
   readFile(join(process.cwd(), 'src', 'app', name), 'utf8');
 
 /*
- * The faces and the base layer live in `@beff/ui` — a `Button` with no focus
+ * The faces and the base layer live in `@beff/ui` - a `Button` with no focus
  * ring and no pointer cursor is not the component that package ships, so those
  * rules travel with the components and Storybook renders the real thing.
  * Read from the package, not through the export map: this is a file assertion,
@@ -63,7 +63,7 @@ describe('globals.css', () => {
      * The hero band's draw-on-mount was keyframes here, keyed off `data-part`
      * attributes the component exposed. `SpecBand` draws through ECharts now,
      * which creates its own SVG nodes and rewrites their attributes on its own
-     * schedule — a CSS animation targeting them does not fail, it races, and
+     * schedule - a CSS animation targeting them does not fail, it races, and
      * the mark lands wherever the race left it.
      *
      * Left behind, those rules would match nothing and cost nothing, which is
@@ -93,7 +93,7 @@ describe('base.css', () => {
   it('restores the pointer cursor Tailwind v4 dropped, inside a layer', async () => {
     const css = await readUi('base.css');
     // Unlayered, the rule outranks every Tailwind utility regardless of
-    // specificity — including `disabled:cursor-not-allowed`, which would leave
+    // specificity - including `disabled:cursor-not-allowed`, which would leave
     // a disabled button claiming to be clickable. Worse than the bug it fixes.
     expect(css).toMatch(/@layer base \{[^}]*cursor: pointer/s);
   });
@@ -101,7 +101,7 @@ describe('base.css', () => {
   it('zeroes animation *delay* as well as duration under reduced motion', async () => {
     const css = await readUi('base.css');
     // Duration alone collapses each animation to an instant that still waits
-    // out its delay first — so the hero band's reading sat at opacity 0 for
+    // out its delay first - so the hero band's reading sat at opacity 0 for
     // 480ms for exactly the readers who asked for less motion.
     expect(css).toContain('animation-delay: 0s !important');
   });
@@ -133,7 +133,7 @@ describe('globals.css layout rules', () => {
 describe('fonts.css', () => {
   it('never reaches Google for a typeface', async () => {
     const css = await readUi('fonts.css');
-    // LG München I, 3 O 17493/20 — embedding Google Fonts transmits the
+    // LG München I, 3 O 17493/20 - embedding Google Fonts transmits the
     // visitor's IP and was found to violate GDPR.
     expect(css).not.toContain('fonts.googleapis.com');
     expect(css).not.toContain('fonts.gstatic.com');
@@ -157,7 +157,7 @@ describe('fonts.css', () => {
     );
     expect(plex.length).toBeGreaterThan(0);
     // A bare weight entry point (`400.css`) pulls Cyrillic and Greek @font-face
-    // rules in too. Asserting the filename is what actually prevents that —
+    // rules in too. Asserting the filename is what actually prevents that -
     // the previous version grepped fonts.css for the word "cyrillic", which
     // would never appear whether the subsets shipped or not.
     for (const entry of plex) {

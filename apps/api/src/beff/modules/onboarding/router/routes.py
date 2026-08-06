@@ -1,6 +1,6 @@
 """The onboarding HTTP surface.
 
-Three endpoints, small enough to stay in one file — unlike auth, they share a
+Three endpoints, small enough to stay in one file - unlike auth, they share a
 single response model and differ only in verb.
 """
 
@@ -45,7 +45,7 @@ async def save_progress(
     """Persist the position and the answers after every step.
 
     This is what makes the wizard resumable across devices and across a browser
-    crash — the server, not the client, owns where the user is.
+    crash - the server, not the client, owns where the user is.
     """
     progress = await service.save(
         user.id,

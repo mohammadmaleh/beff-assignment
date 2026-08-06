@@ -1,7 +1,7 @@
 """Unit tests for the window arithmetic.
 
 The counting itself is one SQL statement and is covered against a real database
-in `tests/test_rate_limit.py` — a fake that reimplemented `ON CONFLICT DO UPDATE`
+in `tests/test_rate_limit.py` - a fake that reimplemented `ON CONFLICT DO UPDATE`
 would only be testing the fake. What is worth testing without a database is how
 `now` maps onto a window, because that is where the off-by-one lives.
 """
@@ -38,7 +38,7 @@ def test_the_next_second_starts_a_new_window() -> None:
 
 def test_the_window_is_timezone_aware_and_utc() -> None:
     """A naive datetime here would compare against a TIMESTAMPTZ column and
-    raise — or worse, be silently interpreted as local time."""
+    raise - or worse, be silently interpreted as local time."""
     start = HOUR.window_start(datetime(2026, 7, 31, 14, 37, tzinfo=UTC))
 
     assert start.tzinfo is UTC

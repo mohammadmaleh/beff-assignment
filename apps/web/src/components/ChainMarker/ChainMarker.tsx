@@ -22,7 +22,7 @@ export interface ChainMarkerProps {
  * ordinal is derived from `PROCESS_STEPS` rather than written by hand, so it
  * cannot disagree with the order the rest of the product uses.
  *
- * The name is read from the dashboard's own step dictionary — the same strings
+ * The name is read from the dashboard's own step dictionary - the same strings
  * the authenticated app labels its chart with, so the marketing page and the
  * product cannot describe the same step differently.
  */

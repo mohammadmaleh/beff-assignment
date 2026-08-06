@@ -3,8 +3,8 @@
  *
  * ## Why these live here and not in the API
  *
- * The API already returns spec bands for *process parameters* — porosity, areal
- * loading — because those limits are per-line process settings. The windows
+ * The API already returns spec bands for *process parameters* - porosity, areal
+ * loading - because those limits are per-line process settings. The windows
  * below are different in kind: they are properties of the domain rather than of
  * a customer's line, and they come straight from `CONTEXT.md`. A pilot line runs
  * 40–80% first-pass yield and a production line 85–97; that is true of every
@@ -18,7 +18,7 @@
  * The design brief allows the spec band **only where a real measurement meets a
  * real limit**. First-pass yield has one, and capacity retention has one (~80%
  * at 1000 cycles is the common automotive end-of-life threshold). Total scrap
- * rate does not — it is the inverse of yield, and no plant specifies it
+ * rate does not - it is the inverse of yield, and no plant specifies it
  * separately. CO₂ intensity has a *typical range* of 40–120 kg CO₂e/kWh, which
  * is a description of the industry, not a limit this line is held to.
  *

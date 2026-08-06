@@ -17,7 +17,7 @@ export async function generateMetadata({
   return {
     title: getDictionary(locale).verifyEmail.pageTitle,
     // The URL carries a single-use credential. Keeping it out of an index is
-    // the least of it — `noindex` also stops the page being crawled and its
+    // the least of it - `noindex` also stops the page being crawled and its
     // token spent by a bot that found the link somewhere it should not be.
     robots: { index: false, follow: false },
   };
@@ -34,7 +34,7 @@ export default async function VerifyEmailPage({ params }: { params: Promise<{ lo
       <main id="main">
         {/*
          * `useSearchParams` needs a Suspense boundary or the whole route opts
-         * out of static generation — and the fallback is the same live region
+         * out of static generation - and the fallback is the same live region
          * the view itself shows while it works, so the two are indistinguishable
          * to a reader.
          */}

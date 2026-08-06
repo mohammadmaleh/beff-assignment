@@ -18,11 +18,11 @@ import type { MetricsTrend } from '@beff/api-client/types';
  * `SpecBand` is for a measurement against a limit, and `Metric` is for a
  * measurement with a direction of travel. None of these four is either. "€47 200
  * of committed value lost" has no specification window and no meaningful
- * previous-period arrow — it scales with how much the line ran. Dressing it in
+ * previous-period arrow - it scales with how much the line ran. Dressing it in
  * a band would be the exact mistake the dashboard's own comment warns about:
  * consistent-looking, and a lie about the reading.
  *
- * So they are stated plainly, as a figure and a sentence that says what it is —
+ * So they are stated plainly, as a figure and a sentence that says what it is -
  * which is `Reading`, the library's third numeric primitive. It lived here as
  * hand-written markup until this argument made the case that the gap was in the
  * design system rather than in this file.
@@ -34,13 +34,13 @@ import type { MetricsTrend } from '@beff/api-client/types';
  *
  * This is the one that reflects what Beff actually sells. The Virtual Factory
  * Platform's proposition is a proprietary database of comparable lines, and the
- * question it answers is not "am I in spec" but "am I good" — a pilot line at
+ * question it answers is not "am I in spec" but "am I good" - a pilot line at
  * 71.8% is comfortably inside its 40-80% window and still below the median of
  * its peer group, and those two facts lead to different decisions.
  *
  * The tile states the sample size in its own sentence. A benchmark rendered
  * without its n reads as a measurement of something; with it, it reads as what
- * it is — a reference. See `benchmark/cohort.py` for why the figures are
+ * it is - a reference. See `benchmark/cohort.py` for why the figures are
  * constants at pre-launch and what has to change for them not to be.
  */
 export function KpiRow({ trend, locale }: { trend: MetricsTrend; locale: Locale }) {
@@ -74,10 +74,10 @@ export function KpiRow({ trend, locale }: { trend: MetricsTrend; locale: Locale 
     {
       key: 'worst',
       label: copy.worstLabel,
-      // `??` rather than `||` — an empty window returns null, and the em dash
+      // `??` rather than `||` - an empty window returns null, and the em dash
       // is a deliberate "nothing to show" rather than a blank cell that reads
       // as a rendering failure.
-      value: trend.worst_batch_code ?? '—',
+      value: trend.worst_batch_code ?? '-',
       note: copy.worstNote.replace('{count}', format.count(trend.points.length)),
     },
   ];

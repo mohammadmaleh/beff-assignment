@@ -11,8 +11,8 @@ export type Pair = {
 
 /**
  * Pairs are named and stated deliberately. A cross-product of every colour
- * against every other produces meaningless combinations — chart series against
- * a status background, say — and a wall of green nobody reads.
+ * against every other produces meaningless combinations - chart series against
+ * a status background, say - and a wall of green nobody reads.
  */
 export const pairs: readonly Pair[] = [
   {
@@ -88,7 +88,7 @@ export const pairs: readonly Pair[] = [
   })),
   // `border-strong` is the hover edge on the icon-only theme control, whose
   // boundary *is* present and therefore owes 3:1 under 1.4.11. Buttons no
-  // longer draw one at all — a boundary that does not exist has nothing to
+  // longer draw one at all - a boundary that does not exist has nothing to
   // meet, which is what makes borderless controls permissible rather than a
   // shortcut around this gate.
   ...(['base', 'raised', 'sunken'] as const).map((s): Pair => ({
@@ -121,7 +121,7 @@ export const pairs: readonly Pair[] = [
   // documented CVD exceptions in `cvd.test.ts`.
   //
   // So the placement is constrained instead of the palette. M2-pre settled "no
-  // cards anywhere", which means a chart has no raised card to sit on — this
+  // cards anywhere", which means a chart has no raised card to sit on - this
   // token makes that structural fact enforceable rather than assumed. A chart
   // component consumes `color-chart-surface`; putting a chart somewhere else
   // now requires changing a token, and the token is asserted here.
@@ -141,7 +141,7 @@ export const pairs: readonly Pair[] = [
   { name: 'band range on track', fg: 'color-band-range', bg: 'color-band-track', threshold: 3 },
   { name: 'band tick on range', fg: 'color-band-tick', bg: 'color-band-range', threshold: 3 },
   { name: 'band tick on track', fg: 'color-band-tick', bg: 'color-band-track', threshold: 3 },
-  // The limit marks say where out-of-spec begins — the most semantically
+  // The limit marks say where out-of-spec begins - the most semantically
   // load-bearing graphic in the band, and previously the only one untested.
   { name: 'band limit on track', fg: 'color-band-limit', bg: 'color-band-track', threshold: 3 },
 ];

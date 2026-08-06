@@ -108,7 +108,7 @@ class PostgresExportRepository:
         `attempts` is incremented here rather than on failure. A worker
         SIGKILLed between claiming and failing never writes "that attempt
         failed", so counting on the way in is the only count that survives a
-        crash — and it is what makes the dead-letter ceiling meaningful.
+        crash - and it is what makes the dead-letter ceiling meaningful.
         """
         result = await self._session.execute(
             select(ExportJob)
@@ -144,7 +144,7 @@ class PostgresErasureRepository:
         Soft rather than hard, because the partial unique index
         (`WHERE deleted_at IS NULL`) is what frees the email address for
         re-registration while keeping the row's foreign keys intact. The
-        personal data on the row is scrubbed in the same statement — a
+        personal data on the row is scrubbed in the same statement - a
         `deleted_at` that leaves the email and name readable is not erasure.
         """
         await self._session.execute(
@@ -204,7 +204,7 @@ class PostgresErasureRepository:
         """Keep the records, drop what identifies the person.
 
         Consent records are retained on a different legal basis from everything
-        else here — Art. 6(1)(c), the accountability obligation in Art. 7(1) —
+        else here - Art. 6(1)(c), the accountability obligation in Art. 7(1) -
         so they survive erasure. What must not survive is the ability to link
         them back to a natural person, which is the `ip_hash` and the
         `country_code`. The `user_id` stays because the row is meaningless

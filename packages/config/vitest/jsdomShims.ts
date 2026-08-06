@@ -1,7 +1,7 @@
 /**
  * The jsdom gaps every suite in this repo has to fill.
  *
- * These are not per-app conveniences — they are all cases where jsdom does not
+ * These are not per-app conveniences - they are all cases where jsdom does not
  * implement a browser API at all, so the *same* stub is correct in both suites.
  * They lived in `apps/web` while it was the only suite mounting a chart. The
  * chart layer now ships from `packages/ui`, so a copy in each package would be
@@ -15,7 +15,7 @@
  * Restore a working `localStorage`.
  *
  * Node 25 defines `localStorage` on `globalThis` by default. In vitest's jsdom
- * environment `window === globalThis`, so Node's definition shadows jsdom's —
+ * environment `window === globalThis`, so Node's definition shadows jsdom's -
  * and Node's is inert unless the process was started with `--localstorage-file`,
  * which makes every call fail with "localStorage.clear is not a function".
  *
@@ -25,7 +25,7 @@
  * help, because here they are the same object.
  *
  * This installs a plain in-memory `Storage` when the ambient one cannot store
- * anything. It is not a general polyfill — it exists so the tests exercise the
+ * anything. It is not a general polyfill - it exists so the tests exercise the
  * same code path the browser will.
  */
 function installStorage(name: 'localStorage' | 'sessionStorage'): void {
@@ -67,8 +67,8 @@ installStorage('sessionStorage');
 /**
  * Install a `matchMedia` that is merely absent rather than broken.
  *
- * jsdom has never implemented `window.matchMedia` — it is one of its documented
- * omissions, not a version gap — so any component that resolves the user's
+ * jsdom has never implemented `window.matchMedia` - it is one of its documented
+ * omissions, not a version gap - so any component that resolves the user's
  * colour-scheme preference throws `matchMedia is not a function` under test
  * while working everywhere else. Same shape as the `localStorage` trap above:
  * the failure names a method, so it reads like a typo in the component.
@@ -115,7 +115,7 @@ installMatchMedia();
  * Install a `ResizeObserver` that exists but never fires.
  *
  * jsdom does not implement it, for the honest reason that it does not do
- * layout — there is no box to observe, so every element measures 0×0 and a
+ * layout - there is no box to observe, so every element measures 0×0 and a
  * faithful implementation would have nothing to report anyway.
  *
  * Absent, it is `ResizeObserver is not defined` thrown from inside an effect,
@@ -148,7 +148,7 @@ installResizeObserver();
  * Give ECharts something to measure text with.
  *
  * The SVG renderer draws no canvas, but ECharts still calls
- * `getContext('2d').measureText(…)` to lay out axis labels and legends — text
+ * `getContext('2d').measureText(…)` to lay out axis labels and legends - text
  * metrics are the one thing SVG cannot supply synchronously. jsdom does not
  * implement `getContext` without the native `canvas` package, so every chart
  * mounted in a test prints eleven "Not implemented" lines through jsdom's

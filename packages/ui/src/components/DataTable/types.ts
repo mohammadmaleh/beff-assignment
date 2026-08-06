@@ -11,7 +11,7 @@ export interface SortState {
 
 /**
  * Every filter input's raw value. Strings, not numbers or dates, because an
- * empty input means *unbounded* and `0` is a legitimate bound — `number | null`
+ * empty input means *unbounded* and `0` is a legitimate bound - `number | null`
  * would make the component responsible for telling those apart on every render.
  */
 export interface FilterState {
@@ -27,7 +27,7 @@ export interface FilterState {
 export interface DataColumn<Row> {
   /** Stable id. Sort-state key and CSV header key. Never displayed. */
   key: string;
-  /** Translated header text. Required — no default. */
+  /** Translated header text. Required - no default. */
   header: string;
   align?: 'start' | 'end';
   /** The first column of each table, rendered as `<th scope="row">`. */
@@ -38,7 +38,7 @@ export interface DataColumn<Row> {
   /**
    * Plain text of the same cell, for search matching and CSV.
    *
-   * Separate from `render` so both read what the user *sees* — `88.3 %`, not
+   * Separate from `render` so both read what the user *sees* - `88.3 %`, not
    * `88.3248275862069`. Full `NUMERIC` precision has reached a payload in this
    * project once already; the export must not reintroduce it.
    */
@@ -48,8 +48,8 @@ export interface DataColumn<Row> {
    * Comparable value. Absent → the column is not sortable.
    *
    * Return a `number` wherever the value is numeric. Sorting the rendered
-   * string puts `100` before `9`, and puts `1 400` — with the locale's thin
-   * space — nowhere sensible at all.
+   * string puts `100` before `9`, and puts `1 400` - with the locale's thin
+   * space - nowhere sensible at all.
    */
   sortValue?: (row: Row) => number | string;
   /** At most one per table. Its presence is what draws the min/max inputs. */
@@ -61,7 +61,7 @@ export interface DataColumn<Row> {
 }
 
 /**
- * Every string the table can show. All required, none defaulted — the same rule
+ * Every string the table can show. All required, none defaulted - the same rule
  * `SpecBand` established after the German landing page announced the product's
  * signature element entirely in English.
  */

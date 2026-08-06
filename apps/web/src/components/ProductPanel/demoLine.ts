@@ -11,7 +11,7 @@ const CELLS_STARTED = 600;
  * of quietly showing a marketing page built on a payload the product no longer
  * sends. The type is generated from the OpenAPI document, so that check is real.
  *
- * The numbers are the seeded demo account's, not decoration — 71.7 per cent
+ * The numbers are the seeded demo account's, not decoration - 71.7 per cent
  * first-pass yield on a pilot line sits inside the 40–80 per cent CONTEXT.md
  * gives for one, scrap concentrates at coating and formation the way it does on
  * a real line, and energy density is deliberately out of spec because a

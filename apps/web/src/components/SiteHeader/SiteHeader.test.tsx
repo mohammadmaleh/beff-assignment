@@ -31,7 +31,7 @@ describe('SiteHeader', () => {
   it('points the access request at an anchor that exists from every page', () => {
     render(<SiteHeader locale="en" />);
     // A bare `#waitlist` works on the landing page and silently does nothing on
-    // the Impressum — and the header is on every page. The absolute path
+    // the Impressum - and the header is on every page. The absolute path
     // navigates first, then scrolls.
     expect(screen.getByRole('link', { name: 'Request access' })).toHaveAttribute(
       'href',
@@ -42,7 +42,7 @@ describe('SiteHeader', () => {
   it('names its navigation, so three landmarks are not all called "navigation"', () => {
     render(<SiteHeader locale="en" />);
     // The footer carries two more. Unlabelled, the rotor lists three
-    // indistinguishable entries — the defect the duplicate banner was.
+    // indistinguishable entries - the defect the duplicate banner was.
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
   });
 
@@ -59,8 +59,8 @@ describe('SiteHeader', () => {
     render(<SiteHeader locale="de" />);
 
     expect(screen.getByRole('link', { name: 'Anmelden' })).toHaveAttribute('href', '/de/login');
-    // The theme control's accessible name is its *entire* accessible content —
-    // the glyph is aria-hidden — so an English name here would announce the
+    // The theme control's accessible name is its *entire* accessible content -
+    // the glyph is aria-hidden - so an English name here would announce the
     // header's only icon button in the wrong language inside a lang="de"
     // document. Exactly the defect the SpecBand readout had.
     expect(screen.getByRole('button', { name: /dunkler darstellung/i })).toBeInTheDocument();

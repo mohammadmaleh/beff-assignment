@@ -13,7 +13,7 @@ export interface CookieConsent {
 }
 
 /**
- * Every string the banner shows. All required, none defaulted — the rule this
+ * Every string the banner shows. All required, none defaulted - the rule this
  * library arrived at after `SpecBand` composed its readout from English
  * literals and the German landing page announced the product's signature
  * element entirely in English. A component library cannot know the page's
@@ -57,7 +57,7 @@ export interface CookieBannerProps {
   /** Where the decision is persisted. Namespaced by the app, since the origin is shared. */
   storageKey: string;
   /**
-   * A decision recorded, for a caller that wants to act on it — load analytics,
+   * A decision recorded, for a caller that wants to act on it - load analytics,
    * write an audit row. Fired only on a fresh decision, never on replay.
    */
   onDecide?: (consent: CookieConsent) => void;
@@ -69,7 +69,7 @@ export interface CookieBannerProps {
  * - **Nothing is pre-checked.** Consent must be a positive act (Art. 4(11)
  *   GDPR; Planet49, C-673/17). A pre-ticked box is not consent, and it is the
  *   single most common failure on German sites.
- * - **Reject is as prominent as Accept** — same size, same weight, same visual
+ * - **Reject is as prominent as Accept** - same size, same weight, same visual
  *   treatment. A greyed-out "reject" makes the choice unfree, which makes the
  *   consent invalid.
  * - **Strictly necessary cookies are not offered as a choice**, because they
@@ -99,7 +99,7 @@ export function CookieBanner({
     }
     try {
       const parsed = JSON.parse(stored) as CookieConsent;
-      // A new policy version invalidates the old consent — the user agreed to a
+      // A new policy version invalidates the old consent - the user agreed to a
       // different text.
       setDecided(parsed.policyVersion === policyVersion);
     } catch {
@@ -123,7 +123,7 @@ export function CookieBanner({
   return (
     <section
       // A region, not a modal. It does not trap focus and it does not block the
-      // page — a banner that holds the content hostage until you consent is
+      // page - a banner that holds the content hostage until you consent is
       // itself a form of pressure.
       aria-label={copy.title}
       className="border-border-default bg-surface-raised fixed inset-x-0 bottom-0 z-50 border-t"

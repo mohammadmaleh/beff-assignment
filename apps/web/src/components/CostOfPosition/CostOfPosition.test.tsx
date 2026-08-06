@@ -9,7 +9,7 @@ import { CostOfPosition } from './CostOfPosition';
 describe('CostOfPosition', () => {
   it('carries every step in the table, in process order', async () => {
     // The table is the authoritative rendering and the drawing is an index into
-    // it — same inversion as ScrapChart, so the two cannot disagree.
+    // it - same inversion as ScrapChart, so the two cannot disagree.
     render(<CostOfPosition locale="en" />);
     await userEvent.click(screen.getByRole('tab', { name: 'Table' }));
 
@@ -24,7 +24,7 @@ describe('CostOfPosition', () => {
      * This figure sits directly below `ProductPanel`'s scrap chart on the
      * landing page. While that one had a Chart/Table switch and this one kept a
      * grey `<details>` line, the same page offered the same affordance in two
-     * different shapes — which reads as an oversight, because it was one.
+     * different shapes - which reads as an oversight, because it was one.
      */
     render(<CostOfPosition locale="en" />);
 
@@ -47,7 +47,7 @@ describe('CostOfPosition', () => {
 
   it('hides the drawing from assistive technology', () => {
     // The drawing is an ECharts instance now, and `EChart` hides its container
-    // rather than the SVG inside it — an exposed ECharts SVG is dozens of loose
+    // rather than the SVG inside it - an exposed ECharts SVG is dozens of loose
     // `<text>` nodes read in visual order with no structure.
     const { container } = render(<CostOfPosition locale="en" />);
 
@@ -76,7 +76,7 @@ describe('CostOfPosition', () => {
   it('is German on the German page, formatting included', async () => {
     const { container } = render(<CostOfPosition locale="de" />);
 
-    // The tab itself is translated — the switch is copy like any other, and an
+    // The tab itself is translated - the switch is copy like any other, and an
     // English default here would ship silently onto the German page.
     await userEvent.click(screen.getByRole('tab', { name: 'Tabelle' }));
 

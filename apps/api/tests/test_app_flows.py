@@ -5,7 +5,7 @@ envelope on each module's own errors, ownership scoping, and the fact that
 every authenticated route actually rejects an anonymous caller.
 
 They run against in-memory repositories rather than PostgreSQL, for the same
-reason `test_auth_flow.py` does — persistence is covered by `test_migrations.py`,
+reason `test_auth_flow.py` does - persistence is covered by `test_migrations.py`,
 and binding the fastest tests in the suite to Docker buys no extra signal.
 """
 
@@ -90,7 +90,7 @@ class Fixtures:
 
 
 class Builder:
-    """A stand-in export builder — the document's contents are tested elsewhere."""
+    """A stand-in export builder - the document's contents are tested elsewhere."""
 
     async def build(self, user_id: object) -> dict[str, object]:
         return {"subject": {"id": str(user_id)}}
@@ -135,7 +135,7 @@ async def api(fx: Fixtures) -> AsyncIterator[AsyncClient]:
 async def anon(fx: Fixtures) -> AsyncIterator[AsyncClient]:
     """No `get_current_user` override, so authentication is really enforced.
 
-    Storage is still overridden — the point of this client is to reach the auth
+    Storage is still overridden - the point of this client is to reach the auth
     dependency, and a route that got past it would otherwise fail on a database
     connection instead of on the assertion, which reads as a pass for the wrong
     reason.
@@ -171,8 +171,8 @@ async def test_every_private_route_rejects_an_anonymous_caller(
 ) -> None:
     """The one test that would catch a route added without its dependency.
 
-    A missing `CurrentUser` is invisible in a unit test — the service is called
-    with whatever the test passes it — and it is the single highest-consequence
+    A missing `CurrentUser` is invisible in a unit test - the service is called
+    with whatever the test passes it - and it is the single highest-consequence
     mistake in the whole API.
     """
     response = await anon.request(method, path, json={})
@@ -183,7 +183,7 @@ async def test_every_private_route_rejects_an_anonymous_caller(
 
 async def test_the_waitlist_is_deliberately_public(anon: AsyncClient) -> None:
     """It is the landing page's only endpoint, so it cannot require a session.
-    That also makes it the app's one anonymous write — see the rate-limit note
+    That also makes it the app's one anonymous write - see the rate-limit note
     on the route."""
     response = await anon.post(
         "/api/v1/waitlist", json={"email": "ada@beff.example", "company": "Beff GmbH"}
@@ -350,7 +350,7 @@ async def test_nothing_is_consented_to_by_default(api: AsyncClient) -> None:
 
 
 async def test_granting_and_withdrawing_both_append(api: AsyncClient, fx: Fixtures) -> None:
-    """Withdrawal is the same endpoint with `granted: false` — Art. 7(3) wants it
+    """Withdrawal is the same endpoint with `granted: false` - Art. 7(3) wants it
     as easy as giving."""
     await api.post("/api/v1/privacy/consent", json={"purpose": "analytics", "granted": True})
     body = (

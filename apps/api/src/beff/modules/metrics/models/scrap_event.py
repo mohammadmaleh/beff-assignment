@@ -1,4 +1,4 @@
-"""The `scrap_events` table — where a batch lost cells, and what it cost."""
+"""The `scrap_events` table - where a batch lost cells, and what it cost."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ __all__ = ["PROCESS_STEPS", "ScrapEvent"]
 
 # Ordered. The order is economic, not alphabetical: scrap discovered at
 # `formation` has absorbed every upstream cost, which is why the dashboard never
-# sorts this breakdown by magnitude. Keys are exactly CONTEXT.md's — prose
+# sorts this breakdown by magnitude. Keys are exactly CONTEXT.md's - prose
 # variants like `dieCut` are a bug.
 PROCESS_STEPS: Final = (
     "mixing",

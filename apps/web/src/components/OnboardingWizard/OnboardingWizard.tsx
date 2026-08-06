@@ -35,7 +35,7 @@ const SELECT_CLASS = 'border-border-default bg-surface-base rounded-chamfer bord
  *
  * Progress is persisted server-side after every step, not held in component
  * state and not in `sessionStorage`. The ENG-30 verification is "interrupt
- * mid-wizard, reload, resume at the same step" — and an engineer being
+ * mid-wizard, reload, resume at the same step" - and an engineer being
  * interrupted mid-task is the normal case on a factory floor, not an edge one.
  *
  * The consequence is that the **server owns which step you are on**. This
@@ -101,7 +101,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
     setStep(next);
     save.mutate({ current_step: next, answers });
     // Focus moves to the new step's heading. Without it focus stays on a button
-    // that no longer exists, and a screen reader announces nothing at all —
+    // that no longer exists, and a screen reader announces nothing at all -
     // the user is left on a page that silently changed underneath them.
     requestAnimationFrame(() => headingRef.current?.focus());
   };
@@ -114,7 +114,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
       <DataState
         status={status === 'pending' ? 'loading' : status === 'error' ? 'error' : 'ready'}
         loadingLabel={t.common.loading}
-        // The wizard has no empty state — the step list is a constant, so a
+        // The wizard has no empty state - the step list is a constant, so a
         // successful load always has something to render. The title is supplied
         // anyway because `DataState` will not let a caller leave a user-facing
         // string to a default, and a default is how the German pages ended up
@@ -169,7 +169,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
                     className={SELECT_CLASS}
                   >
                     <option value="" disabled>
-                      —
+                      -
                     </option>
                     {Object.entries(copy.role.options).map(([value, label]) => (
                       <option key={value} value={value}>
@@ -193,7 +193,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
                 />
                 {/*
                  * Was a two-character text box asking for `ISO 3166-1 alpha-2,
-                 * e.g. DE` — in English, on the German page, because the hint
+                 * e.g. DE` - in English, on the German page, because the hint
                  * was a literal in this file. It also asked a process engineer
                  * to know that Austria is AT and not OE. The stored answer is
                  * still the alpha-2 code the `plants` CHECK constraint wants;
@@ -233,7 +233,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
                       className={SELECT_CLASS}
                     >
                       <option value="" disabled>
-                        —
+                        -
                       </option>
                       <option value="pilot">{copy.lines.kindPilot}</option>
                       <option value="production">{copy.lines.kindProduction}</option>
@@ -251,7 +251,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
                       className={SELECT_CLASS}
                     >
                       <option value="" disabled>
-                        —
+                        -
                       </option>
                       <option value="pouch">{copy.lines.formatPouch}</option>
                       <option value="prismatic">{copy.lines.formatPrismatic}</option>
@@ -274,7 +274,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
                     className={SELECT_CLASS}
                   >
                     <option value="" disabled>
-                      —
+                      -
                     </option>
                     <option value="metric">{copy.units.metric}</option>
                     <option value="imperial">{copy.units.imperial}</option>
@@ -308,7 +308,7 @@ export function OnboardingWizard({ locale }: { locale: Locale }) {
                 ).map(([label, value]) => (
                   <div key={label} className="contents">
                     <dt className="text-text-muted">{label}</dt>
-                    <dd>{value ?? '—'}</dd>
+                    <dd>{value ?? '-'}</dd>
                   </div>
                 ))}
               </dl>

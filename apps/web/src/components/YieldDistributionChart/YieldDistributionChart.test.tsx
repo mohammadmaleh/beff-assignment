@@ -51,7 +51,7 @@ const openTable = async (): Promise<void> => {
 describe('YieldDistributionChart', () => {
   it('accounts for every batch exactly once', async () => {
     // A histogram whose bars do not sum to the sample is a histogram nobody can
-    // reason from, and the failure is silent — one bar short looks like data.
+    // reason from, and the failure is silent - one bar short looks like data.
     render(
       <YieldDistributionChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />,
     );
@@ -174,8 +174,8 @@ describe('YieldDistributionChart', () => {
       <YieldDistributionChart points={[]} benchmark={benchmark} lineKind="pilot" locale="en" />,
     );
 
-    // The figure still exists — the section that mounts it already guards on an
-    // empty trend — but there is no row to invent.
+    // The figure still exists - the section that mounts it already guards on an
+    // empty trend - but there is no row to invent.
     expect(
       screen.getByRole('heading', { name: 'How often the line hits each level' }),
     ).toBeInTheDocument();

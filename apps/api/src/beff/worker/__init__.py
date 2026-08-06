@@ -1,7 +1,7 @@
 """The background worker.
 
 One process, one loop, polling a Postgres table. There is no Redis and no
-Celery — at pre-launch volume a table with `SELECT ... FOR UPDATE SKIP LOCKED`
+Celery - at pre-launch volume a table with `SELECT ... FOR UPDATE SKIP LOCKED`
 already provides persistence, retries, idempotency and a dead-letter path,
 without a second datastore to run, deploy and monitor (ADR-0006).
 """

@@ -11,9 +11,9 @@ import type { ChartTokens } from './tokens';
  * This is the same split the tooltip builders use and for the same reason: an
  * ECharts option is only *interpreted* inside a render loop, so anything checked
  * by mounting is checked at 0×0 in jsdom and proves very little. The option is a
- * pure value, and every rule this component has — the reading is clamped, the
+ * pure value, and every rule this component has - the reading is clamped, the
  * out-of-spec state changes shape and not only colour, the reference marks are
- * never drawn in a series colour — is a property of that value.
+ * never drawn in a series colour - is a property of that value.
  */
 
 /** Distinct sentinels, so a mark drawn with the wrong token is visible here. */
@@ -40,7 +40,7 @@ const TOKENS = {
   'color-status-danger-fg': 'danger',
 } satisfies ChartTokens;
 
-/** Porosity after calendering runs 30–35% — see CONTEXT.md. */
+/** Porosity after calendering runs 30–35% - see CONTEXT.md. */
 const POROSITY = {
   lowerLimit: 30,
   upperLimit: 35,
@@ -77,7 +77,7 @@ describe('bandOption', () => {
   it('plots against the domain it was given, not against the data', () => {
     // The axis has to be the *plotted* domain. Left to ECharts it would scale to
     // the marks, and a band whose axis moved with the reading would draw every
-    // measurement in the middle — which is the one thing a tolerance band must
+    // measurement in the middle - which is the one thing a tolerance band must
     // never do.
     const option = bandOption({ ...POROSITY, value: 32.4, inSpec: true });
 
@@ -100,7 +100,7 @@ describe('bandOption', () => {
   it('paints the window after the track, or the track covers it', () => {
     // Both are horizontal lines at the same y with the same thickness, so the
     // only thing separating them is paint order. Reversed, the band is a plain
-    // grey rule and the specification window is invisible — with no error, and
+    // grey rule and the specification window is invisible - with no error, and
     // nothing in a screenshot to say which of the two greys is on top.
     const option = bandOption({ ...POROSITY, value: 32.4, inSpec: true });
     const colours = marks(option).map(([from]) => from.lineStyle?.color);
@@ -110,7 +110,7 @@ describe('bandOption', () => {
 
   it('draws every part of the instrument solid, never dashed', () => {
     /*
-     * ECharts draws `markLine` **dashed** unless told otherwise — it assumes a
+     * ECharts draws `markLine` **dashed** unless told otherwise - it assumes a
      * mark is a threshold. Nothing in this band is: the track, the window, the
      * limits and the reading are all things that *are*, and this app spends
      * `dashed` on exactly the opposite meaning (see `referenceLine`).
@@ -118,7 +118,7 @@ describe('bandOption', () => {
      * Found by breaking the reduced-motion E2E deliberately and reading the SVG
      * it dumped: every mark carried `stroke-dasharray="40,20"`. Nothing else
      * could have caught it. Every test here asserted positions and colours, and
-     * all of them were right — the band was simply rendering as a dashed sketch
+     * all of them were right - the band was simply rendering as a dashed sketch
      * of itself, which reads as "provisional", not as "broken", so no reader
      * would have reported it either.
      */
@@ -131,7 +131,7 @@ describe('bandOption', () => {
 
   it('marks both limits, and never in a series colour', () => {
     // A limit is a rule the measurement is judged against, not a measurement.
-    // Drawn in a series hue it reads as data — the same rule `referenceLine`
+    // Drawn in a series hue it reads as data - the same rule `referenceLine`
     // encodes for the cartesian charts.
     const option = bandOption({ ...POROSITY, value: 32.4, inSpec: true });
     const limits = marks(option).filter(([from]) => from.lineStyle?.color === 'limit');
@@ -221,7 +221,7 @@ describe('bandOption', () => {
   it('animates only when it is asked to, and never against the reader’s wish', () => {
     /*
      * ECharts animates on first draw *and* on every `setOption`, so a band that
-     * animated by default would redraw itself on every theme change — four at a
+     * animated by default would redraw itself on every theme change - four at a
      * time on the dashboard. The landing page opts in for the one orchestrated
      * moment the design brief allows; `prefers-reduced-motion` overrides it,
      * because a reader who asked for less motion outranks the page's art

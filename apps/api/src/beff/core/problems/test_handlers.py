@@ -1,8 +1,8 @@
 """Unit tests for the handlers that turn every failure into RFC 9457.
 
 The domain errors are covered where they are raised. What is under test here is
-the *other* three doors out of the application — a raw `HTTPException`, a
-Pydantic validation failure, and something nobody planned for — because those
+the *other* three doors out of the application - a raw `HTTPException`, a
+Pydantic validation failure, and something nobody planned for - because those
 are the ones no feature test exercises deliberately and the ones a client still
 has to be able to parse.
 
@@ -82,7 +82,7 @@ async def request(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Raw HTTPException — FastAPI's own 404s and 405s, and anything a library raises
+# Raw HTTPException - FastAPI's own 404s and 405s, and anything a library raises
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -99,7 +99,7 @@ async def test_an_http_exception_leaves_as_a_problem_document() -> None:
 async def test_a_status_with_no_name_still_gets_a_stable_code() -> None:
     """`code` is the translation key, so it can never be absent.
 
-    418 is not in the table; the fallback keeps the contract — a client
+    418 is not in the table; the fallback keeps the contract - a client
     switching on `code` gets *something* to switch on rather than a missing key
     and a crash in the error renderer.
     """
@@ -126,7 +126,7 @@ async def test_a_401_keeps_its_www_authenticate_header() -> None:
     """A 401 without `WWW-Authenticate` is a protocol violation.
 
     FastAPI puts the header on the *exception*, not on a response, so a handler
-    that builds its own response drops it silently — and the client sees an
+    that builds its own response drops it silently - and the client sees an
     authentication challenge that does not say how to authenticate.
     """
     status_code, body, headers = await request(build_app(), "GET", "/guarded")
@@ -140,7 +140,7 @@ async def test_a_non_string_detail_does_not_reach_the_client_verbatim() -> None:
     """`detail` is `Any`, and `title` is a string in the schema.
 
     Passing a dict straight through would produce a document that does not match
-    the OpenAPI the client was generated from — which fails at parse time, far
+    the OpenAPI the client was generated from - which fails at parse time, far
     from here.
     """
     _, body, _ = await request(build_app(), "GET", "/structured-detail")
@@ -186,7 +186,7 @@ async def test_a_nested_field_gets_a_json_pointer_through_the_index() -> None:
 async def test_a_missing_body_points_at_the_document_root() -> None:
     """RFC 6901 spells the root as the empty string.
 
-    Pydantic reports this one as `("body",)` — the whole document is missing, so
+    Pydantic reports this one as `("body",)` - the whole document is missing, so
     there is no field to blame, and stripping the leading segment leaves
     nothing. Inventing a field here would put the message next to an input at
     random.

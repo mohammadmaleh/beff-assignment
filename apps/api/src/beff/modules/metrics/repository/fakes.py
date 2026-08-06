@@ -1,8 +1,8 @@
 """In-memory metrics repository.
 
 Ships beside the PostgreSQL implementation so mypy checks both against the same
-`Protocol`, and so the service's arithmetic — which is where the interesting
-mistakes live — can be tested without a database.
+`Protocol`, and so the service's arithmetic - which is where the interesting
+mistakes live - can be tested without a database.
 """
 
 from __future__ import annotations
@@ -77,7 +77,7 @@ class InMemoryMetricsRepository:
 
         The other fakes hand back a canned list keyed on the window. This one
         applies the window itself, half-open and oldest-first, because those are
-        exactly the two things the SQL does that a test can otherwise not see —
+        exactly the two things the SQL does that a test can otherwise not see -
         a fake that ignores `start` and `end` will happily pass a service that
         asks for the wrong window.
         """

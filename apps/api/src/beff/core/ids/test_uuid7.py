@@ -11,7 +11,7 @@ def test_version_and_variant_are_rfc_9562_compliant() -> None:
     value = uuid7()
 
     assert value.version == 7
-    # RFC 9562 variant 0b10xx — Python exposes this as "specified in RFC 4122".
+    # RFC 9562 variant 0b10xx - Python exposes this as "specified in RFC 4122".
     assert value.variant == "specified in RFC 4122"
 
 

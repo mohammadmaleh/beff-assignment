@@ -32,7 +32,7 @@ export const getDictionary = (locale: Locale): Dictionary => DICTIONARIES[locale
  * Turn a server error code into a sentence in the reader's language.
  *
  * An unrecognised code falls back to a usable message rather than to the raw
- * code or to nothing — a backend that adds a validation rule must not be able
+ * code or to nothing - a backend that adds a validation rule must not be able
  * to produce a field marked invalid with no explanation next to it.
  */
 export const translateFieldError = (locale: Locale, code: string): string =>
@@ -41,8 +41,8 @@ export const translateFieldError = (locale: Locale, code: string): string =>
 /**
  * The same, for the failure of a whole request rather than of one field.
  *
- * `null` — a failure that never reached the API, so it carried no problem
- * document — lands on the same fallback as a code this build has not seen. In
+ * `null` - a failure that never reached the API, so it carried no problem
+ * document - lands on the same fallback as a code this build has not seen. In
  * both cases the honest thing to say is that something broke on our side; what
  * must not happen is a specific, confident sentence about a failure we did not
  * actually identify.

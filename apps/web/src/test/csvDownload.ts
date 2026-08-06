@@ -13,7 +13,7 @@ import { vi } from 'vitest';
 export function captureCsvDownload(): {
   /** The exported file's text, BOM already consumed. Throws if nothing was exported. */
   text: () => Promise<string>;
-  /** The raw first bytes, so the BOM can be asserted — see below. */
+  /** The raw first bytes, so the BOM can be asserted - see below. */
   bytes: () => Promise<Uint8Array>;
   restore: () => void;
 } {
@@ -35,7 +35,7 @@ export function captureCsvDownload(): {
   return {
     /*
      * `Blob.text()` decodes via the WHATWG "UTF-8 decode" algorithm, which
-     * strips a leading BOM by spec — in a real browser too, not only here. The
+     * strips a leading BOM by spec - in a real browser too, not only here. The
      * BOM therefore only survives as raw bytes, which is what `bytes()` is for.
      */
     text: () => only().text(),

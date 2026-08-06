@@ -3,14 +3,14 @@
 The model, in one paragraph. A login starts a **family**. Every refresh spends
 the presented token and issues a new one in the same family, so at any moment
 exactly one token in the family is live. Presenting a token that has already
-been spent therefore means the chain forked — and a chain only forks if someone
+been spent therefore means the chain forked - and a chain only forks if someone
 other than the legitimate client has a copy. The response is to revoke the whole
 family, not just the replayed token: the thief may already hold the newest one,
 and revoking only what was presented would leave them holding it.
 
 The cost of that design is a false positive, which ADR-0003 calls out: two
 browser tabs refreshing at the same moment both spend the same token and the
-second one looks exactly like theft. `grace_seconds` is the answer — a replay
+second one looks exactly like theft. `grace_seconds` is the answer - a replay
 arriving within the window is treated as the race it almost certainly is and
 gets a fresh token in the same family; a replay arriving after it is treated as
 theft. The window is short by design; it is the interval during which a stolen
@@ -45,7 +45,7 @@ class IssuedRefreshToken:
     """A newly minted token and its stored row.
 
     `token` is the plaintext, and this is the only place it ever exists outside
-    the client's cookie — the database holds a SHA-256 of it and nothing else.
+    the client's cookie - the database holds a SHA-256 of it and nothing else.
     """
 
     token: str
@@ -71,7 +71,7 @@ class RefreshTokenService:
         self._clock = clock
 
     async def issue(self, user_id: UUID, *, family_id: UUID | None = None) -> IssuedRefreshToken:
-        """Mint a token. Omit `family_id` to start a new family — i.e. a login."""
+        """Mint a token. Omit `family_id` to start a new family - i.e. a login."""
         now = self._clock()
         token = generate_refresh_token()
         record = await self._repository.add(
@@ -88,7 +88,7 @@ class RefreshTokenService:
     async def rotate(self, presented: str) -> IssuedRefreshToken:
         """Spend `presented` and return its successor in the same family.
 
-        Raises `RefreshTokenReusedError` — after revoking the entire family — if
+        Raises `RefreshTokenReusedError` - after revoking the entire family - if
         a spent token is replayed outside the grace window.
         """
         now = self._clock()
@@ -101,7 +101,7 @@ class RefreshTokenService:
                 )
                 raise RefreshTokenReusedError
             # Inside the window: two tabs raced. Issue into the same family
-            # without spending anything again — the token is already spent.
+            # without spending anything again - the token is already spent.
             return await self.issue(record.user_id, family_id=record.family_id)
 
         await self._repository.mark_used(record, at=now)
@@ -111,7 +111,7 @@ class RefreshTokenService:
         """Revoke the whole family a token belongs to. This is what logout does.
 
         Logging out kills the family rather than the single token, because the
-        point of signing out is that the session is over — leaving siblings
+        point of signing out is that the session is over - leaving siblings
         alive would make "log out" mean "log out of this tab".
 
         Unknown tokens are ignored rather than raising: logging out is
@@ -134,7 +134,7 @@ class RefreshTokenService:
 
         if record.revoked_at is not None:
             # The family is already dead. If it died from a detected reuse, say
-            # so — the client must stop retrying and send the user to sign in.
+            # so - the client must stop retrying and send the user to sign in.
             if record.revoked_reason == REVOKED_BY_REUSE:
                 raise RefreshTokenReusedError
             raise RefreshTokenInvalidError

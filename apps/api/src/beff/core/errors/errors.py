@@ -24,7 +24,7 @@ class AppError(Exception):
     """Base class for every expected, client-visible failure.
 
     "Expected" is the operative word. An `AppError` is a defined outcome of a
-    use case — wrong password, email taken — and renders as a specific problem
+    use case - wrong password, email taken - and renders as a specific problem
     type. Anything else escaping a handler is a bug and renders as a generic
     500, deliberately without detail.
     """
@@ -83,7 +83,7 @@ class DomainValidationError(AppError):
     """Well-formed input that a business rule rejects. Maps to 422.
 
     Distinct from a Pydantic `RequestValidationError`, which is about shape.
-    This one is about meaning — the request parsed fine and is still not
+    This one is about meaning - the request parsed fine and is still not
     allowed.
     """
 

@@ -16,7 +16,7 @@ import { echarts, type EChartsOption } from '../../lib/chart/index';
  * is it.
  *
  * So there is no `role="img"` and no generated `aria-label` here. An ECharts
- * SVG contains dozens of `<text>` nodes — axis ticks, labels, the legend — and
+ * SVG contains dozens of `<text>` nodes - axis ticks, labels, the legend - and
  * left exposed a screen reader walks all of them, in visual order, with no
  * structure: "71.8 68 B-2026-004 65.2". Hiding the drawing and exposing the
  * table is not a compromise for accessibility's sake; it is the only version
@@ -56,7 +56,7 @@ export function EChart({
      * The window does not resize when the sidebar collapses, when a `<details>`
      * above the chart opens, or when a German string wraps to a second line and
      * pushes the section wider. All three change this element's box, and a
-     * window listener sees none of them — the chart keeps its old width and
+     * window listener sees none of them - the chart keeps its old width and
      * either overflows its container or leaves a gap.
      */
     const observer = new ResizeObserver(() => {
@@ -72,7 +72,7 @@ export function EChart({
   }, []);
 
   useEffect(() => {
-    // `notMerge` — the option is rebuilt from scratch whenever the data, the
+    // `notMerge` - the option is rebuilt from scratch whenever the data, the
     // locale or the theme changes, so merging would leave the *previous*
     // option's series behind when a chart legitimately has fewer of them.
     instance.current?.setOption(option, { notMerge: true });

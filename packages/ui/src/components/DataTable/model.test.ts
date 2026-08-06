@@ -30,7 +30,7 @@ const COLUMNS: DataColumn<Batch>[] = [
     text: (row) => String(row.cells),
     sortValue: (row) => row.cells,
   },
-  { key: 'note', header: 'Note', render: () => '—', text: () => '—' },
+  { key: 'note', header: 'Note', render: () => '-', text: () => '-' },
 ];
 
 describe('sortRows', () => {
@@ -160,7 +160,7 @@ describe('applyFilters', () => {
 
   it('ignores a range bound that is not a number', () => {
     // `<input type="number">` can hold '' or a partial entry like '-'. Number('-')
-    // is NaN, and every comparison against NaN is false — which would silently
+    // is NaN, and every comparison against NaN is false - which would silently
     // return zero rows and read as a broken table.
     const found = applyFilters(READINGS, READING_COLUMNS, { ...EMPTY_FILTERS, min: '-' });
 

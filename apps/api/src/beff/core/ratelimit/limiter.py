@@ -2,7 +2,7 @@
 
 ## Why a fixed window
 
-A sliding window is more accurate — a fixed window lets a caller send `limit`
+A sliding window is more accurate - a fixed window lets a caller send `limit`
 requests at 11:59:59 and `limit` again at 12:00:00, so the true worst case is
 twice the nominal rate. For an abuse control on a waitlist form that is
 acceptable, and it buys an implementation that is a single atomic statement with
@@ -87,8 +87,8 @@ class RateLimiter:
         # Committed here, immediately, and **before** the limit is enforced.
         #
         # Two reasons, both learned the hard way. Deferring to the session
-        # dependency's teardown does not work: when the handler raises — a 401
-        # on a wrong password, which is precisely what needs counting — the
+        # dependency's teardown does not work: when the handler raises - a 401
+        # on a wrong password, which is precisely what needs counting - the
         # exception is thrown into the dependency generator and its commit never
         # runs. And committing after the `raise` below would lose the very
         # request that crossed the threshold.

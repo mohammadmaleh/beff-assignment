@@ -1,7 +1,7 @@
 """Rate limit counters.
 
-A fixed-window counter table, so the one anonymous write in the API — the
-waitlist form — is not an open door. Postgres rather than Redis for the reason
+A fixed-window counter table, so the one anonymous write in the API - the
+waitlist form - is not an open door. Postgres rather than Redis for the reason
 ADR-0006 already gives: the alternative actually on offer was no limiter at all,
 not a better one.
 

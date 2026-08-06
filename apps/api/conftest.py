@@ -37,7 +37,7 @@ API_ROOT = Path(__file__).parent
 async def client() -> AsyncIterator[AsyncClient]:
     """An HTTP client bound directly to the ASGI app, no network involved.
 
-    Note: `AsyncClient(app=...)` was removed in httpx 0.28 — the shortcut shown
+    Note: `AsyncClient(app=...)` was removed in httpx 0.28 - the shortcut shown
     in most FastAPI tutorials no longer works. `ASGITransport` is the current
     form.
     """
@@ -48,7 +48,7 @@ async def client() -> AsyncIterator[AsyncClient]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Integration fixtures — a real PostgreSQL, started once per session.
+# Integration fixtures - a real PostgreSQL, started once per session.
 #
 # Session-scoped because starting a container costs seconds and isolation comes
 # from recreating the schema per test, not from a fresh container. Nothing below

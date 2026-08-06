@@ -1,7 +1,7 @@
 /**
  * A display name for a key the API returned.
  *
- * The API never sends display strings — it sends stable keys (`porosity_pct`,
+ * The API never sends display strings - it sends stable keys (`porosity_pct`,
  * `die_cutting`), because a display string cannot be translated by the client
  * and a German plant would otherwise read its own process steps in English.
  * Every one of those keys therefore meets the dictionary here.
@@ -11,7 +11,7 @@
  * The pattern was written out at seven call sites as
  * `` (t.dashboard.steps as Record<string, string>)[key] ?? key ``, and the cast
  * is the tell. It exists only because a dictionary literal has a *specific*
- * object type, so indexing it with an arbitrary string is an error — and a cast
+ * object type, so indexing it with an arbitrary string is an error - and a cast
  * written seven times is seven places where the fallback can be dropped and a
  * new process step renders as blank rather than as its key.
  *
@@ -20,8 +20,8 @@
  * type is what does the widening.
  *
  * The fallback is the key itself, deliberately. A step the dictionary has not
- * caught up with should render as `die_cutting` — visibly untranslated, and
- * still identifying the row — rather than as an empty cell that reads as a
+ * caught up with should render as `die_cutting` - visibly untranslated, and
+ * still identifying the row - rather than as an empty cell that reads as a
  * rendering failure.
  */
 export function translate(dictionary: Readonly<Record<string, string>>, key: string): string {

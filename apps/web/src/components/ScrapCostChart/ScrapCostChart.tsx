@@ -63,7 +63,7 @@ export function scrapCostTooltip(
  * has absorbed every upstream cost, so the step that loses the most cells and
  * the step that loses the most money are not the same step.
  *
- * That fact was already in the payload — `committed_value_eur` sat in a column
+ * That fact was already in the payload - `committed_value_eur` sat in a column
  * of a table behind a `<details>`. Nobody reads a collapsed table. Drawn beside
  * the rate it takes about a second to see, which is the difference between the
  * argument being *available* and the argument being *made*.
@@ -78,7 +78,7 @@ export function scrapCostTooltip(
  *
  * ## One series, so no legend
  *
- * A single measure needs no legend — the title names it. The bars carry their
+ * A single measure needs no legend - the title names it. The bars carry their
  * value as a direct label at the end, which is legible in greyscale and is what
  * the accompanying table would otherwise be the only source of.
  */
@@ -92,7 +92,7 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
 
   const ordered = useMemo(() => {
     // Widened to `readonly string[]` on purpose. `PROCESS_STEPS` is a const
-    // tuple, so `indexOf` only accepts one of its twelve literals — but
+    // tuple, so `indexOf` only accepts one of its twelve literals - but
     // `process_step` arrives from the API as a plain string, and a step the
     // frontend does not know about must sort to the front rather than fail to
     // compile. `ScrapChart` takes the order as a `readonly string[]` prop for
@@ -163,7 +163,7 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
           data: [...ordered].reverse().map((row) => row.committed_value_eur),
           itemStyle: {
             color: tokens['color-chart-series-2'],
-            // 4px rounded on the data end only, square against the baseline —
+            // 4px rounded on the data end only, square against the baseline -
             // a bar rounded at the axis end reads as floating away from zero.
             borderRadius: [0, 4, 4, 0],
           },
@@ -182,7 +182,7 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         // Against the reversed list, because that is the order the bars were
-        // handed to ECharts — `dataIndex` counts up the axis, and the axis is
+        // handed to ECharts - `dataIndex` counts up the axis, and the axis is
         // reversed so process order reads top-to-bottom.
         formatter: seriesTooltip([...ordered].reverse(), (row) =>
           scrapCostTooltip(row, steps, format, copy),
@@ -201,7 +201,7 @@ export function ScrapCostChart({ rows, locale }: { rows: readonly ScrapByStep[];
       chart={<EChart option={option} height="24rem" />}
       table={
         /*
-         * `ordered` — process order, the same array the bars are drawn from.
+         * `ordered` - process order, the same array the bars are drawn from.
          * Sorting is offered and never imposed: a cell lost at formation has
          * absorbed every upstream cost, so position carries economic meaning
          * that a default sort by size would quietly destroy.

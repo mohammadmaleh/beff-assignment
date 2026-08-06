@@ -95,7 +95,7 @@ def _stub_both_queues(runner: object, monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 async def test_run_once_commits_once_per_queue(monkeypatch: pytest.MonkeyPatch) -> None:
-    """One session per item, not one per loop — and one *transaction per queue*.
+    """One session per item, not one per loop - and one *transaction per queue*.
 
     The second half is the load-bearing part. A shared session would mean an
     export that raises rolls back the email that succeeded beside it, which is
@@ -156,7 +156,7 @@ async def test_run_once_reports_work_when_only_the_email_queue_had_any(
 # on a signal, that one raised iteration does not kill it, and that the engine is
 # disposed on the way out however the loop ended. All three are only observable
 # by driving the real function, so the collaborators it reaches for at module
-# scope — the engine, the settings, the sender — are what get replaced.
+# scope - the engine, the settings, the sender - are what get replaced.
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -164,7 +164,7 @@ def _stub_worker_environment(runner: object, monkeypatch: pytest.MonkeyPatch) ->
     """Detach `run_forever` from the process: no engine, no config, no transport.
 
     Returns the list `dispose_engine` appends to, so a test can assert the
-    cleanup ran — which is the assertion that would otherwise need a real pool.
+    cleanup ran - which is the assertion that would otherwise need a real pool.
     """
     disposals: list[str] = []
 
@@ -183,8 +183,8 @@ def _capture_signal_handlers(monkeypatch: pytest.MonkeyPatch) -> dict[int, Any]:
     """Hold on to the handlers `run_forever` installs.
 
     Every test below that needs the loop to stop does it by *calling the
-    handler*, which is the same edge SIGTERM arrives on. The alternative —
-    replacing `asyncio.Event` with one the test owns — reaches inside a stdlib
+    handler*, which is the same edge SIGTERM arrives on. The alternative -
+    replacing `asyncio.Event` with one the test owns - reaches inside a stdlib
     module for the duration of the test and proves less: it would exercise the
     loop's stop check while leaving the wiring from signal to event untested,
     which is the half that has somewhere to go wrong.
@@ -200,7 +200,7 @@ async def test_the_loop_polls_until_it_is_asked_to_stop(
     """The stop is cooperative, and it is checked between iterations.
 
     Driven by having `run_once` request the stop itself on its third call, which
-    is the same edge SIGTERM arrives on — the handler only sets an event, and
+    is the same edge SIGTERM arrives on - the handler only sets an event, and
     everything after that is this loop noticing.
     """
     from beff.worker import runner
@@ -301,7 +301,7 @@ async def test_the_engine_is_disposed_even_when_the_loop_raises(
 ) -> None:
     """`CancelledError` is not an `Exception`, so it goes past the guard.
 
-    That is the shutdown path — the task is cancelled — and the `finally` is the
+    That is the shutdown path - the task is cancelled - and the `finally` is the
     only thing that returns the connection pool. Losing it leaks a pool per
     restart, which looks like a database problem rather than a worker one.
     """
@@ -325,7 +325,7 @@ def test_installing_signal_handlers_off_the_main_thread_is_survivable(
 ) -> None:
     """`signal.signal` raises `ValueError` outside the main thread.
 
-    The loop still works there — it just cannot install handlers — so the
+    The loop still works there - it just cannot install handlers - so the
     suppression is deliberate rather than defensive. Without it, running the
     worker inside a thread (which is how a test harness or an embedded runner
     would do it) dies on startup with an error about signals.

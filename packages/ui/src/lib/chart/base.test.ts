@@ -8,7 +8,7 @@ const tokens = readChartTokens(document.documentElement);
 describe('baseOption', () => {
   it('turns animation off entirely for a reader who asked for less motion', () => {
     // Not a shorter animation. ECharts tweens SVG path data, which the project
-    // rule (transform and opacity only) cannot be applied to — so the honest
+    // rule (transform and opacity only) cannot be applied to - so the honest
     // implementation of "reduce" here is "none".
     expect(baseOption({ tokens, reducedMotion: true }).animation).toBe(false);
   });
@@ -52,7 +52,7 @@ describe('axes', () => {
   });
 
   it('draws the gridline solid, never dashed', () => {
-    // Dashed is a *meaningful* line style in this app — every reference line is
+    // Dashed is a *meaningful* line style in this app - every reference line is
     // dashed. A dashed grid would make the background argue with the foreground.
     expect(valueAxis(tokens).splitLine.lineStyle.type).toBe('solid');
   });
@@ -80,7 +80,7 @@ describe('referenceLine', () => {
 
   it('is always dashed', () => {
     // This, with the neutral below, is what lets a reader tell a measurement
-    // from a rule it is judged against — without a legend, and in greyscale.
+    // from a rule it is judged against - without a legend, and in greyscale.
     expect(line.lineStyle.type).toBe('dashed');
   });
 
@@ -113,7 +113,7 @@ describe('referenceLine', () => {
   it('reads against the x axis when asked, for a distribution', () => {
     // A histogram measures the same limits as the trend beside it and draws
     // them at right angles. `yAxis: 40` on a category axis of bins is not a
-    // vertical line in the wrong place — it is a horizontal line at count 40,
+    // vertical line in the wrong place - it is a horizontal line at count 40,
     // which on a chart whose tallest bar is 12 is off the plot entirely.
     const vertical = referenceLine(tokens, { value: 3.5, label: 'Lower limit', axis: 'x' });
 

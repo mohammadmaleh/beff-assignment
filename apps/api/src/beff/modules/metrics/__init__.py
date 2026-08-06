@@ -1,4 +1,4 @@
-"""Metrics — first-pass yield, scrap, capacity retention and CO₂ intensity.
+"""Metrics - first-pass yield, scrap, capacity retention and CO₂ intensity.
 
 Every figure is derived from `batches`, `scrap_events` and
 `process_measurements` at request time. Nothing is stored pre-aggregated,

@@ -39,8 +39,8 @@ describe('HEADLINE_WINDOWS', () => {
 
   it('gives scrap rate and CO₂ no window at all', () => {
     // The design brief is explicit: the band appears only where a real
-    // measurement meets a real limit. Total scrap rate has no specification —
-    // it is the inverse of yield — and CO₂ intensity has a typical range, which
+    // measurement meets a real limit. Total scrap rate has no specification -
+    // it is the inverse of yield - and CO₂ intensity has a typical range, which
     // is not the same thing as a limit. Banding them would spend the signature
     // element on decoration and imply precision nobody agreed to.
     expect(HEADLINE_WINDOWS).not.toHaveProperty('scrap');

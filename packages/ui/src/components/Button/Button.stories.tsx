@@ -3,7 +3,7 @@ import { Button } from './Button';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 /**
- * The project rule is that every component ships **all** of its states —
+ * The project rule is that every component ships **all** of its states -
  * default, hover, focus-visible, active, disabled, loading. Hover and active
  * you get by pointing at it; the rest are stories, because they are the ones
  * nobody thinks to check and the ones that break.
@@ -28,7 +28,7 @@ export const Ghost: Story = { args: { variant: 'ghost' } };
 /**
  * Bordered and text-only rather than a filled red plate. There is no
  * `status-danger-bg` token, and inventing one would mean a colour pair the
- * contrast gate has never solved — which is exactly how a palette nobody chose
+ * contrast gate has never solved - which is exactly how a palette nobody chose
  * gets blessed.
  */
 export const Danger: Story = { args: { variant: 'danger', children: 'Delete account' } };
@@ -47,7 +47,7 @@ export const Disabled: Story = { args: { disabled: true } };
 
 /**
  * `aria-busy`, a spinner that respects `prefers-reduced-motion` via
- * `motion-safe:`, and a visually hidden label — because a spinner alone
+ * `motion-safe:`, and a visually hidden label - because a spinner alone
  * announces nothing, and the click handler is detached so a second press
  * cannot double-submit.
  */

@@ -79,7 +79,7 @@ describe('AppShell', () => {
       expect(screen.queryByText('secret')).not.toBeInTheDocument();
     });
 
-    it('does not redirect while loading — that would bounce a signed-in user on every reload', () => {
+    it('does not redirect while loading - that would bounce a signed-in user on every reload', () => {
       asLoading();
       render(
         <AppShell locale="en">

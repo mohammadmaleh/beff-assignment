@@ -10,7 +10,7 @@ import type { CohortReference, TrendPoint } from '@beff/api-client/types';
 
 /**
  * The drawing is `aria-hidden`, so everything assertable about this component
- * is the table it renders beside it — which is the design, not a limitation:
+ * is the table it renders beside it - which is the design, not a limitation:
  * the table is the authoritative rendering and the drawing is an index into it.
  * A test that could only inspect the SVG would be testing ECharts.
  */
@@ -66,14 +66,14 @@ describe('YieldTrendChart', () => {
 
   it('states the size of the cohort it draws a reference line for', () => {
     // A benchmark rendered without its n reads as a measurement of something.
-    // With it, it reads as what it is — see `benchmark/cohort.py`.
+    // With it, it reads as what it is - see `benchmark/cohort.py`.
     render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
 
     expect(screen.getByText(/34 comparable lines/)).toBeInTheDocument();
   });
 
   it('puts every batch in the table, not just the ones that fit on the axis', async () => {
-    // The axis thins its labels to whatever fits. The table must not — it is
+    // The axis thins its labels to whatever fits. The table must not - it is
     // the authoritative rendering, and a reader using it is using it *because*
     // the drawing dropped something.
     render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
@@ -125,7 +125,7 @@ describe('YieldTrendChart', () => {
 
   it('sorts the batches by yield, which payload order cannot answer', async () => {
     // The chart shows the shape of the series. "Which were the worst runs" is a
-    // different question, and sixty batches arrive chronologically — the one
+    // different question, and sixty batches arrive chronologically - the one
     // order that cannot answer it.
     render(<YieldTrendChart points={points} benchmark={benchmark} lineKind="pilot" locale="en" />);
     await openTable();
@@ -161,7 +161,7 @@ describe('YieldTrendChart', () => {
     /*
      * The export reads each column's `text`, which is the formatted value on
      * screen. This project has already had full NUMERIC precision reach a
-     * payload once — 88.3248275862069 where the instrument measured 88.3 — and
+     * payload once - 88.3248275862069 where the instrument measured 88.3 - and
      * an export is exactly where that would resurface, implying a precision
      * nobody has.
      */

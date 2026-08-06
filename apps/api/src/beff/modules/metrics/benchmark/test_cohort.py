@@ -27,7 +27,7 @@ def test_cohort_percentiles_sit_inside_the_documented_yield_band(kind: str) -> N
 @pytest.mark.parametrize("kind", ["pilot", "production"])
 def test_p90_is_better_than_p50(kind: str) -> None:
     """Stated as percentiles, so a P90 below the median is not a bad benchmark,
-    it is a mislabelled one — and the UI draws them as two ordered lines."""
+    it is a mislabelled one - and the UI draws them as two ordered lines."""
     cohort = COHORTS[kind]
 
     assert cohort.first_pass_yield_p90_pct > cohort.first_pass_yield_p50_pct

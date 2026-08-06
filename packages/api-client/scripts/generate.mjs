@@ -39,7 +39,7 @@ function dumpSchema() {
 }
 
 const BANNER = `/**
- * GENERATED FILE — do not edit.
+ * GENERATED FILE - do not edit.
  *
  * Produced from the API's own OpenAPI document by
  * \`pnpm --filter @beff/api-client generate\`. CI runs \`check:drift\`, so both

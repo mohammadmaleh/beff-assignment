@@ -1,4 +1,4 @@
-"""`POST /verify-email` — redeem a confirmation link."""
+"""`POST /verify-email` - redeem a confirmation link."""
 
 from __future__ import annotations
 
@@ -29,12 +29,12 @@ async def verify_email(
 
     Unauthenticated on purpose. The link is followed from a mail client, which
     may not be on the device that registered and will not carry the session
-    cookie — requiring auth here would mean the most common path (read mail on a
+    cookie - requiring auth here would mean the most common path (read mail on a
     phone, registered on a laptop) is the one that fails. The token *is* the
     credential, and it is single-use and short-lived precisely so it can be.
 
     Note what this does not do: it does not sign the caller in. A link that
-    arrives by email and produces a session is a login bypass — anyone with read
+    arrives by email and produces a session is a login bypass - anyone with read
     access to the inbox, including a forwarding rule nobody remembers, would get
     one.
     """

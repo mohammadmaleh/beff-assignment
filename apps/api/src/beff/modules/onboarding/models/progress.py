@@ -1,4 +1,4 @@
-"""The `onboarding_progress` table — resumable wizard state, one row per user."""
+"""The `onboarding_progress` table - resumable wizard state, one row per user."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ class OnboardingProgress(Base, TimestampMixin):
     (ADR-0010). The row is found by `user_id`, which is unique.
 
     Answers are JSONB rather than columns because the wizard's question set is
-    the least settled thing in the product — every added question would
+    the least settled thing in the product - every added question would
     otherwise be a migration. Once a value is load-bearing for a query (plant
     name, line count) it gets promoted to a real table, which is exactly what
     `plants` and `lines` are.

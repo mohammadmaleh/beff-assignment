@@ -18,7 +18,7 @@ import type { Meta } from '@storybook/react-vite';
  * ## Why portable stories rather than the Storybook test runner
  *
  * `composeStories` applies the meta's args, the decorators and the parameters
- * and hands back plain React components — the same objects Storybook renders,
+ * and hands back plain React components - the same objects Storybook renders,
  * executed here in the jsdom environment the rest of this suite already uses.
  * The alternative, `@storybook/test-runner`, needs a Storybook server and a
  * browser per run; it would catch more (real layout, real CSS) at a cost this
@@ -27,7 +27,7 @@ import type { Meta } from '@storybook/react-vite';
  *
  * ## What it actually catches
  *
- * A story that throws — the ordinary decay of a component explorer, where a
+ * A story that throws - the ordinary decay of a component explorer, where a
  * prop is renamed and the eleventh story keeps a shape nobody rendered since.
  * It is a smoke test and is worth being precise about that: it does not assert
  * that anything *looks* right. The per-component suites next to each story file
@@ -47,7 +47,7 @@ describe('stories', () => {
     /*
      * The gate that stops this file quietly measuring nothing.
      *
-     * `import.meta.glob` matching zero files is not an error — it is an empty
+     * `import.meta.glob` matching zero files is not an error - it is an empty
      * object, and every `it.each` below then runs zero times and the suite
      * passes. Naming the expected count means deleting a story file fails here
      * rather than reporting success for tests that did not run.
@@ -63,7 +63,7 @@ describe('stories', () => {
     const composed = composeStories(module as Parameters<typeof composeStories>[0]);
     /*
      * `composeStories` types each entry as `AnnotatedStoryFn`, which takes
-     * `(args, context)` and so is not a valid JSX component type — but it is
+     * `(args, context)` and so is not a valid JSX component type - but it is
      * callable with neither, because compose has already bound the meta's args
      * and the decorators. The cast says that, rather than working around it by
      * passing arguments the composed story does not want.

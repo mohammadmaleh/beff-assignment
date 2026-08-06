@@ -7,8 +7,8 @@ import type { Preview } from '@storybook/react-vite';
 /**
  * The theme is a toolbar control rather than a per-story decision.
  *
- * This palette is solved twice — every pair in it is asserted against WCAG in
- * both themes by the contrast gate in `packages/tokens` — and the dark theme is
+ * This palette is solved twice - every pair in it is asserted against WCAG in
+ * both themes by the contrast gate in `packages/tokens` - and the dark theme is
  * not a filter over the light one. A component explorer that only ever shows
  * one of them documents half the system, and it is the half nobody reports bugs
  * against because they cannot see it.
@@ -33,7 +33,7 @@ const preview: Preview = {
     controls: { matchers: { color: /(background|color)$/i, date: /Date$/i } },
     a11y: {
       // Report, do not fail the render. A story whose *point* is an
-      // intermediate state should still be inspectable — the gate that blocks
+      // intermediate state should still be inspectable - the gate that blocks
       // merges is `packages/e2e`, which walks the real accessibility tree.
       test: 'todo',
     },

@@ -1,4 +1,4 @@
-"""Cohort reference figures — what a comparable line achieves.
+"""Cohort reference figures - what a comparable line achieves.
 
 ## Why this exists
 
@@ -15,14 +15,14 @@ smallest honest version of that.
 ## Why the numbers are constants and not a query
 
 **These are reference figures, not live cohort data.** A real cohort is computed
-from other customers' production data, which at pre-launch does not exist — there
+from other customers' production data, which at pre-launch does not exist - there
 is one seeded line. Deriving a "cohort" from a single line would produce a
 benchmark that is always exactly equal to the reading it is compared against,
 which is worse than no benchmark: it looks like information.
 
 So the percentiles below are stated ranges from `CONTEXT.md`, positioned within
 the band rather than measured. `sample_size` is carried in the payload for the
-same reason — the UI states how many lines are behind the figure, and a reviewer
+same reason - the UI states how many lines are behind the figure, and a reviewer
 can see it is a reference and not a claim.
 
 When real cohort data exists this module becomes a repository query and the
@@ -79,7 +79,7 @@ COHORTS: Final[dict[str, CohortReference]] = {
 def cohort_for(line_kind: str) -> CohortReference:
     """The cohort a line should be compared against.
 
-    Unknown kinds fall back to `production`, the harder cohort — the same
+    Unknown kinds fall back to `production`, the harder cohort - the same
     direction `yieldWindow` falls back in, and for the same reason. Comparing an
     unrecognised line against the pilot cohort would flatter it; comparing it
     against production produces a false alarm instead of a missed one.

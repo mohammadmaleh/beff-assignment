@@ -37,8 +37,8 @@ describe('cumulative', () => {
   });
 
   it('keeps the batches in the order it was given them', () => {
-    // The running total is only meaningful in time order. Sorting the input —
-    // by size, say — would produce a curve that is arithmetically correct and
+    // The running total is only meaningful in time order. Sorting the input -
+    // by size, say - would produce a curve that is arithmetically correct and
     // describes a month that never happened.
     expect(cumulative(points).map((entry) => entry.point.batch_code)).toEqual([
       'B-2026-001',
@@ -83,7 +83,7 @@ describe('CostTrendChart', () => {
     await openTable();
 
     // The first batch's own loss and the running total are necessarily the same
-    // figure, and the row therefore carries it twice — which is the arithmetic
+    // figure, and the row therefore carries it twice - which is the arithmetic
     // being right, not a duplicate. `getAllByText` on purpose.
     const first = screen.getByRole('rowheader', { name: 'B-2026-001' }).closest('tr');
     expect(within(first as HTMLElement).getAllByText('€10,000')).toHaveLength(2);
@@ -154,7 +154,7 @@ describe('CostTrendChart', () => {
 
   it('lets the reader sort by batch, by date and by the running total', async () => {
     /*
-     * Every column is sortable, including the running total — which only ever
+     * Every column is sortable, including the running total - which only ever
      * ascends in batch order, so sorting it is close to meaningless. It stays
      * sortable anyway: a column that refuses to sort looks broken, and a
      * `sortValue` that has never run is a comparator nobody has checked.

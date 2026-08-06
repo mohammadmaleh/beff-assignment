@@ -71,17 +71,17 @@ describe('Reading', () => {
   it('omits the note entirely when there is none, rather than leaving an empty line', () => {
     const { container } = render(
       <ReadingList>
-        <Reading label="Worst batch" value="—" />
+        <Reading label="Worst batch" value="-" />
       </ReadingList>,
     );
-    // `> span` — a bare `span:last-child` matches any span that is last among
+    // `> span` - a bare `span:last-child` matches any span that is last among
     // its own siblings, including one nested inside the figure.
     expect(container.querySelectorAll('dd > span')).toHaveLength(1);
   });
 
   it('says nothing about the language of what it is given', () => {
     // Every perceivable string is a required prop with no default. The library
-    // cannot know the page's locale, so a default would be a guess that ships —
+    // cannot know the page's locale, so a default would be a guess that ships -
     // which is how the German landing page once announced itself in English.
     render(
       <ReadingList>

@@ -33,7 +33,7 @@ export const enApp = {
    *
    * `unknownFailure` is the fallback, and it is deliberately the *only* place a
    * vague sentence lives. Anything the API can distinguish, this file
-   * distinguishes — an error naming the wrong recovery ("try again" to someone
+   * distinguishes - an error naming the wrong recovery ("try again" to someone
    * who already has an account) is worse than one naming none.
    */
   apiErrors: {
@@ -87,7 +87,7 @@ export const enApp = {
         countryLabel: 'Country',
         /*
          * The picker's own strings, including the two that only a screen
-         * reader ever utters. `@beff/ui` refuses to default any of them — it
+         * reader ever utters. `@beff/ui` refuses to default any of them - it
          * cannot know this page's language, so a default would be a guess, and
          * a guess in a live region is invisible to axe and to every screenshot.
          */
@@ -120,7 +120,7 @@ export const enApp = {
       },
       review: {
         title: 'Check this over',
-        body: 'Nothing here is permanent — you can change any of it from your profile afterwards.',
+        body: 'Nothing here is permanent - you can change any of it from your profile afterwards.',
         label: 'Your setup',
       },
     },
@@ -142,14 +142,14 @@ export const enApp = {
     },
     readingsTitle: 'Where the line stands today',
     /*
-     * These `…Body` strings are no longer paragraphs on the page — they are the
+     * These `…Body` strings are no longer paragraphs on the page - they are the
      * content of an `InfoHint` at the end of each heading.
      *
      * The dashboard is read by people who already know what first-pass yield
      * is, and a paragraph under every heading spent the widest, most valuable
      * space on the page on the reader who needed it least. Behind an icon the
      * explanation still exists for the reader arriving for the first time, and
-     * it is still in the accessibility tree at all times — see `InfoHint` for
+     * it is still in the accessibility tree at all times - see `InfoHint` for
      * why it is not mounted on open.
      */
     readingsBody:
@@ -178,7 +178,7 @@ export const enApp = {
      * The data table's own copy. `viewChart` / `viewTable` name the two views
      * of every chart; the rest is the table's toolbar.
      *
-     * Every string is required by the component that shows it — none has a
+     * Every string is required by the component that shows it - none has a
      * default, because a component cannot know the page's language and a
      * default is therefore a guess that ships. `SpecBand` established this
      * after the German landing page announced the product's signature element
@@ -210,7 +210,7 @@ export const enApp = {
      *
      * `label` strings are the non-colour signal. Every row is tinted by
      * severity *and* carries the word, because a reader who cannot separate the
-     * two hues — or is looking at a printout — must still get the verdict.
+     * two hues - or is looking at a printout - must still get the verdict.
      */
     attention: {
       title: 'Needs attention',
@@ -239,7 +239,7 @@ export const enApp = {
 
     /*
      * Chart copy. Every string here is required by the component that shows it
-     * — none has an English default, because `packages/ui` learned the hard way
+     * - none has an English default, because `packages/ui` learned the hard way
      * that a default is a guess and it ships. A chart's drawing is aria-hidden,
      * so its caption is its entire announced identity above the table, and axe
      * is indifferent to which language a well-formed string is in.
@@ -268,7 +268,7 @@ export const enApp = {
 
       /*
        * The distribution. Its axis labels are bare bin edges, so the unit has
-       * to be carried by the caption and by every tooltip and table cell — one
+       * to be carried by the caption and by every tooltip and table cell - one
        * of the few places in this app where a number's unit is not adjacent to
        * it on screen, and the reason `range` is a template rather than a
        * concatenation.
@@ -292,7 +292,7 @@ export const enApp = {
       costTrend: {
         title: 'What the window has cost, as it accumulated',
         description:
-          'The running total of committed value lost. A cumulative line can only rise — its slope is the news, and a curve that steepens is a process getting worse in a way a monthly total cannot show.',
+          'The running total of committed value lost. A cumulative line can only rise - its slope is the news, and a curve that steepens is a process getting worse in a way a monthly total cannot show.',
         seriesName: 'Cumulative value lost',
         batchLoss: 'This batch',
         tableCaption: 'Committed value lost per batch and cumulatively',
@@ -364,7 +364,7 @@ export const enApp = {
    * Email confirmation.
    *
    * Two surfaces: the banner an unconfirmed account carries, and the page the
-   * link in the message lands on. Both have a German twin below — a confirmation
+   * link in the message lands on. Both have a German twin below - a confirmation
    * email written in German that lands on an English page has confirmed the
    * address and lost the reader.
    */
@@ -373,7 +373,7 @@ export const enApp = {
     checking: 'Confirming your address…',
 
     successTitle: 'Address confirmed',
-    successBody: 'That is done — thank you. Nothing else is needed here.',
+    successBody: 'That is done - thank you. Nothing else is needed here.',
     toDashboard: 'Go to your dashboard',
 
     expiredTitle: 'This link has expired',
@@ -398,13 +398,13 @@ export const enApp = {
     title: 'Confirm your email address',
     /*
      * Says what confirming is *for*. "Please confirm your email" with no reason
-     * is the sentence every reader has learned to dismiss — and since nothing
+     * is the sentence every reader has learned to dismiss - and since nothing
      * here is gated on it, a threat would also be a lie.
      */
     body: 'We sent a link to {email}. Confirming it is how we can reach you about your account, and how you get back in if you lose your password.',
     resend: 'Send the link again',
     resending: 'Sending…',
-    sent: 'On its way. It can take a minute to arrive — check your spam folder too.',
+    sent: 'On its way. It can take a minute to arrive - check your spam folder too.',
     alreadyVerified: 'That address is already confirmed.',
     rateLimited: 'That is a few too many. Try again in an hour.',
     failed: 'We could not send it just now. Please try again shortly.',
@@ -415,7 +415,7 @@ export const enApp = {
     detailsTitle: 'Details',
     consentTitle: 'Consent',
     consentBody:
-      'Withdrawing is as easy as giving. Consent records are append-only — we keep the history so we can prove what you agreed to and when, which is itself a legal obligation.',
+      'Withdrawing is as easy as giving. Consent records are append-only - we keep the history so we can prove what you agreed to and when, which is itself a legal obligation.',
     consentAnalytics: 'Analytics cookies',
     consentMarketing: 'Product emails',
     consentSaving: 'Saving your choice…',

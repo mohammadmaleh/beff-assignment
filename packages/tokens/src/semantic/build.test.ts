@@ -24,7 +24,7 @@ describe('build output', () => {
 
   // These are solver outputs, not aesthetic choices: a later WCAG gate is
   // tuned against these exact anchors. A reference resolving to *some* hex
-  // colour isn't enough — it must resolve to *this* hex colour, or a wrong
+  // colour isn't enough - it must resolve to *this* hex colour, or a wrong
   // ramp stop with higher-but-still-passing contrast would pass silently.
   it.each([
     ['light', 'color-surface-base', '#faf8f5'],
@@ -33,7 +33,7 @@ describe('build output', () => {
     // The status trio is solved twice over: for 4.5:1 against its ground *and*
     // for CIEDE2000 separation under deuteranopia and protanopia. The first
     // palette cleared contrast and left success and danger 6.74 apart under
-    // simulation — see `contrast/cvd.test.ts`.
+    // simulation - see `contrast/cvd.test.ts`.
     ['light', 'color-status-success-fg', '#407d64'],
     ['light', 'color-status-warning-fg', '#9d5d03'],
     ['light', 'color-status-danger-fg', '#892218'],
@@ -56,7 +56,7 @@ describe('build output', () => {
     // With no cards in the design, borders do the structural work cards would,
     // so they are load-bearing UI under WCAG 1.4.11. Themed rather than shared:
     // no single hex can clear 3:1 against base, raised AND sunken in both
-    // themes — light-sunken needs luminance <= 0.21, dark-sunken >= 0.23.
+    // themes - light-sunken needs luminance <= 0.21, dark-sunken >= 0.23.
     ['light', 'color-border-default', '#686662'],
     ['dark', 'color-border-default', '#a4a19d'],
   ] as const)('pins %s %s to %s', (theme, name, hex) => {
@@ -88,7 +88,7 @@ describe('themes', () => {
     // space-4 never varies: once in :root, plus its @theme inline alias.
     expect(count('--space-4:')).toBe(2);
     // surface-base varies, so it lands in :root, the media block and the
-    // explicit dark block — one declaration each — plus the alias.
+    // explicit dark block - one declaration each - plus the alias.
     expect(count('--color-surface-base:')).toBe(4);
   });
 
@@ -121,8 +121,8 @@ describe('theming cascade', () => {
     const css = await read('tokens.css');
     // The landing page's inverted product panel is one section rendering in the
     // opposite pole while the page stays light. `:root[data-theme="dark"]`
-    // cannot express that, and the alternative — a second `surface-emphasis`
-    // colour family — would be another set of values to solve against the
+    // cannot express that, and the alternative - a second `surface-emphasis`
+    // colour family - would be another set of values to solve against the
     // contrast gate. Unscoped, the panel reuses the dark theme wholesale and
     // every pair inside it is already asserted.
     //

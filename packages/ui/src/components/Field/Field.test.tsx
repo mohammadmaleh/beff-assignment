@@ -18,7 +18,7 @@ describe('Field', () => {
   });
 
   it('gives two fields on the same page different ids', () => {
-    // `useId` rather than a module counter — a counter is not stable across a
+    // `useId` rather than a module counter - a counter is not stable across a
     // server render and its hydration, and React logs a mismatch.
     render(
       <>
@@ -37,7 +37,7 @@ describe('Field', () => {
   it('keeps the required asterisk out of the accessible name', () => {
     // `required` on the control already announces it; reading "star" as well is
     // noise. The asterisk is `aria-hidden`, which the accessible-name algorithm
-    // honours — note that Testing Library's own `getByLabelText` does *not*,
+    // honours - note that Testing Library's own `getByLabelText` does *not*,
     // because it matches on textContent. `toHaveAccessibleName` runs the real
     // algorithm, so this asserts what a screen reader will actually say.
     renderField({ required: true });

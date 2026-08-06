@@ -10,7 +10,7 @@ export interface DataStateProps {
   /**
    * Every one of these is required and none has a default. The empty and error
    * titles used to fall back to English, which meant a German panel read
-   * correctly right up until the request failed — the one moment the user most
+   * correctly right up until the request failed - the one moment the user most
    * needs to understand what happened.
    */
   emptyTitle: string;
@@ -25,7 +25,7 @@ export interface DataStateProps {
 
 /**
  * Every data surface ships loading, empty, error and partial. Leaving them to
- * each screen is how three of the four quietly go missing — this makes the set
+ * each screen is how three of the four quietly go missing - this makes the set
  * a type error to forget.
  *
  * The skeleton is a live region rather than a silent shimmer: a screen reader
@@ -46,7 +46,7 @@ export function DataState({
     return (
       <div role="status" aria-live="polite" className="flex flex-col gap-2">
         <span className="sr-only">{loadingLabel}</span>
-        {/* Three bars, not a spinner — the shape hints at what is arriving. */}
+        {/* Three bars, not a spinner - the shape hints at what is arriving. */}
         {[0, 1, 2].map((i) => (
           <div
             key={i}
@@ -69,7 +69,7 @@ export function DataState({
 
   if (empty) {
     // Announced, because this replaces the loading live region. A successful
-    // request with no rows is not an error — telling the user it is teaches
+    // request with no rows is not an error - telling the user it is teaches
     // them to distrust every error the app shows.
     return (
       <Alert tone="info" announce title={emptyTitle} prefixes={alertPrefixes}>

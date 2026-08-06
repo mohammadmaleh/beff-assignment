@@ -22,8 +22,8 @@ const FILM = { width: 640, height: 360 } as const;
  * brief asked for the signature element first, and the band demonstrated the
  * product rather than describing it. It was replaced on request.
  *
- * The band has not left the page — the signature section further down still
- * shows the same instrument twice, in spec and past its upper limit — so the
+ * The band has not left the page - the signature section further down still
+ * shows the same instrument twice, in spec and past its upper limit - so the
  * page still makes the argument, just after the film rather than before it.
  *
  * ### The trade this makes, stated
@@ -31,7 +31,7 @@ const FILM = { width: 640, height: 360 } as const;
  * The master is **640×360**. The hero column is wider than that on any desktop
  * viewport, so the film is being upscaled roughly 2× at exactly the moment the
  * page makes its first claim. `max-w-[640px]` caps it, which keeps it sharp and
- * leaves the column wider than the video — the alternative is a soft image as
+ * leaves the column wider than the video - the alternative is a soft image as
  * the first thing a visitor sees. A larger master is the real fix.
  *
  * It also does not autoplay, so the hero's right-hand column is a poster frame
@@ -44,7 +44,7 @@ export function LandingHero({ locale }: { locale: Locale }) {
 
   return (
     <section className="calibration-ground border-border-default border-b">
-      {/* 5:4, not 1:1 — the headline needs the wider column or it sets to four
+      {/* 5:4, not 1:1 - the headline needs the wider column or it sets to four
           lines and shouts; the instrument reads fine at the narrower measure. */}
       <div className="mx-auto grid max-w-6xl items-stretch gap-16 px-6 pt-16 pb-20 lg:grid-cols-[5fr_4fr] lg:gap-20 lg:pt-24 lg:pb-28">
         <div className="flex flex-col items-start gap-6">
@@ -63,7 +63,7 @@ export function LandingHero({ locale }: { locale: Locale }) {
               /*
                * The absolute path, matching the header's button exactly. Both
                * land on the same anchor, but a screen reader's link rotor
-               * compares destinations as written — two entries both named
+               * compares destinations as written - two entries both named
                * "Request access" going to `#waitlist` and `/en#waitlist` read
                * as two different places, and the reader cannot tell which is
                * which. Asserted in `screen-reader.spec.ts`.
@@ -85,7 +85,7 @@ export function LandingHero({ locale }: { locale: Locale }) {
 
         {/*
          * A band between two rules, not a card. The brief's one structural risk
-         * is that nothing in this product is boxed — borders carry what a filled
+         * is that nothing in this product is boxed - borders carry what a filled
          * container would, and the band is the unit of composition.
          *
          * The rules bracket the full height of the hero (`items-stretch` above)

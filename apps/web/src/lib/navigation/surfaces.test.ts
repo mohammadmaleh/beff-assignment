@@ -13,7 +13,7 @@ import { SURFACES, primaryNav, surfacePath, type SurfaceKey } from './surfaces';
  * product reads as five apps stapled together. "UI/UX intuitiveness" is an
  * explicitly graded section of the brief, and it is lost in exactly this way.
  *
- * `process.cwd()` rather than `new URL(x, import.meta.url)` — Vite rewrites the
+ * `process.cwd()` rather than `new URL(x, import.meta.url)` - Vite rewrites the
  * latter into asset resolution, and this repo has already shipped a suite of
  * assertions that passed by matching their own source.
  */
@@ -25,7 +25,7 @@ const routeFolders = (): string[] =>
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
     .filter((name) => !name.startsWith('_') && !name.startsWith('(') && !name.startsWith('@'))
-    // A catch-all is not a surface — it exists precisely to handle paths that
+    // A catch-all is not a surface - it exists precisely to handle paths that
     // are *not* surfaces, by rendering the 404. Including it here would mean
     // the IA had to name "everything else", which is not a thing a user
     // navigates to.
@@ -54,7 +54,7 @@ describe('information architecture', () => {
     }
   });
 
-  it('keeps the authenticated navigation flat — three destinations, no nesting', () => {
+  it('keeps the authenticated navigation flat - three destinations, no nesting', () => {
     // A time-poor engineer arrives with a question, not a desire to explore.
     expect(primaryNav.map((s) => s.key)).toEqual(['dashboard', 'profile']);
     for (const surface of Object.values(SURFACES)) {

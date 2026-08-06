@@ -1,6 +1,6 @@
 """The outbox SQL, against a real PostgreSQL.
 
-`EmailDeliveryService` is unit-tested against `InMemoryEmailOutbox` — the right
+`EmailDeliveryService` is unit-tested against `InMemoryEmailOutbox` - the right
 instrument for retry counting and the dead-letter ceiling, which are arithmetic.
 `PostgresEmailOutbox` is the other half, and every claim it makes is one the fake
 cannot check:
@@ -77,7 +77,7 @@ async def test_enqueue_does_not_commit_the_callers_transaction(db_engine: AsyncE
 
     The message is queued in the same unit of work as the registration it
     belongs to, so a registration that rolls back takes the mail with it.
-    `enqueue` calling `commit` would break that silently — everything still
+    `enqueue` calling `commit` would break that silently - everything still
     works, and a user whose signup failed receives a verification link for an
     account that does not exist.
     """
@@ -100,7 +100,7 @@ async def test_claiming_takes_the_oldest_and_counts_the_attempt(
     """Counted on the way in, as with exports.
 
     A worker SIGKILLed between claiming and sending never writes "that attempt
-    failed", so this is the only count that survives a crash — and it is what
+    failed", so this is the only count that survives a crash - and it is what
     stops a message being retried forever.
     """
     user = await make_user(db_session)
@@ -228,7 +228,7 @@ async def test_pending_for_user_is_scoped_by_purpose_and_by_account(
 
 
 async def test_deleting_a_users_messages_is_idempotent(db_session: AsyncSession) -> None:
-    """Erasure runs this — every row holds an email address in the clear — and
+    """Erasure runs this - every row holds an email address in the clear - and
     an at-least-once job may run it twice."""
     user = await make_user(db_session)
     outbox = PostgresEmailOutbox(db_session)

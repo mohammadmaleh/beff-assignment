@@ -2,7 +2,7 @@
 
 They imitate what the database would fill in and enforce the constraints it
 would enforce. A fake more permissive than production turns green unit tests
-into false confidence — that has already cost this repo once.
+into false confidence - that has already cost this repo once.
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ class InMemoryConsentRepository:
     async def latest_per_purpose(self, user_id: UUID) -> dict[str, ConsentRecord]:
         latest: dict[str, ConsentRecord] = {}
         # Sorted by (recorded_at, id) so records written inside the same
-        # microsecond still resolve deterministically — the identity column is
+        # microsecond still resolve deterministically - the identity column is
         # the tiebreak the real query gets from its index.
         for record in sorted(self.records, key=lambda r: (r.recorded_at, r.id)):
             if record.user_id == user_id:
@@ -56,7 +56,7 @@ class InMemoryExportRepository:
     async def add(self, job: ExportJob) -> ExportJob:
         # Everything the INSERT would have filled in. `attempts` and
         # `max_attempts` are `server_default`s, so an unflushed instance has
-        # `None` for both — and `job.attempts >= job.max_attempts` against a
+        # `None` for both - and `job.attempts >= job.max_attempts` against a
         # `None` is a `TypeError` in the dead-letter path, the one branch that
         # only runs when something has already gone wrong.
         if getattr(job, "id", None) is None:
@@ -126,8 +126,8 @@ class InMemoryErasureRepository:
         self.email_deliveries_deleted: list[UUID] = []
         self.consent_pseudonymised: list[UUID] = []
         # The order calls arrived in. The erasure service's whole contract is a
-        # sequence — sessions die before exports, exports before the account row
-        # — and a test that only checks each list is non-empty would pass
+        # sequence - sessions die before exports, exports before the account row
+        # - and a test that only checks each list is non-empty would pass
         # against any order at all.
         self.calls: list[str] = []
 

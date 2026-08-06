@@ -2,14 +2,14 @@ import type { LegalDocument } from '@/components/LegalShell';
 import type { Locale } from '@/lib/i18n';
 
 /**
- * Nutzungsbedingungen — terms of use.
+ * Nutzungsbedingungen - terms of use.
  *
  * ## Why this document exists at all
  *
  * German law does not require AGB. What creates the need here is that the site
  * has `register` and `login`: the moment someone can open an account, there is a
  * contract about that account, and leaving its terms unwritten means they fall
- * back entirely to the BGB defaults — including ones neither side wants.
+ * back entirely to the BGB defaults - including ones neither side wants.
  *
  * ## The pre-launch shape
  *
@@ -55,7 +55,7 @@ export const TERMS_CONTENT: Record<Locale, LegalDocument> = {
       heading: '4. Acceptable use',
       paragraphs: [
         'Do not attempt to gain unauthorised access, disrupt the service, scrape it at a scale that degrades it for others, or use it to break the law.',
-        'Do not upload data you are not entitled to share — in particular production data belonging to a third party, or personal data you have no basis to process.',
+        'Do not upload data you are not entitled to share - in particular production data belonging to a third party, or personal data you have no basis to process.',
       ],
     },
     {
@@ -94,7 +94,7 @@ export const TERMS_CONTENT: Record<Locale, LegalDocument> = {
       heading: '9. Liability',
       paragraphs: [
         'We are liable without limitation for intent and gross negligence, and for injury to life, body or health.',
-        'For slight negligence we are liable only where a material contractual obligation is breached — one whose fulfilment makes proper performance possible at all and on which you may reasonably rely — and then only for foreseeable damage typical of this kind of contract.',
+        'For slight negligence we are liable only where a material contractual obligation is breached - one whose fulfilment makes proper performance possible at all and on which you may reasonably rely - and then only for foreseeable damage typical of this kind of contract.',
         'Liability under the Produkthaftungsgesetz is unaffected. Any further liability is excluded.',
       ],
     },
@@ -146,7 +146,7 @@ export const TERMS_CONTENT: Record<Locale, LegalDocument> = {
       heading: '4. Zulässige Nutzung',
       paragraphs: [
         'Versuchen Sie nicht, sich unbefugt Zugang zu verschaffen, den Dienst zu stören, ihn in einem Umfang automatisiert abzurufen, der ihn für andere beeinträchtigt, oder ihn zu rechtswidrigen Zwecken zu nutzen.',
-        'Laden Sie keine Daten hoch, zu deren Weitergabe Sie nicht berechtigt sind — insbesondere keine Produktionsdaten Dritter und keine personenbezogenen Daten, für deren Verarbeitung Ihnen die Grundlage fehlt.',
+        'Laden Sie keine Daten hoch, zu deren Weitergabe Sie nicht berechtigt sind - insbesondere keine Produktionsdaten Dritter und keine personenbezogenen Daten, für deren Verarbeitung Ihnen die Grundlage fehlt.',
       ],
     },
     {
@@ -185,7 +185,7 @@ export const TERMS_CONTENT: Record<Locale, LegalDocument> = {
       heading: '9. Haftung',
       paragraphs: [
         'Wir haften unbeschränkt für Vorsatz und grobe Fahrlässigkeit sowie für Schäden aus der Verletzung des Lebens, des Körpers oder der Gesundheit.',
-        'Bei einfacher Fahrlässigkeit haften wir nur bei Verletzung einer wesentlichen Vertragspflicht — einer Pflicht, deren Erfüllung die ordnungsgemäße Durchführung überhaupt erst ermöglicht und auf deren Einhaltung Sie regelmäßig vertrauen dürfen — und dann begrenzt auf den vorhersehbaren, vertragstypischen Schaden.',
+        'Bei einfacher Fahrlässigkeit haften wir nur bei Verletzung einer wesentlichen Vertragspflicht - einer Pflicht, deren Erfüllung die ordnungsgemäße Durchführung überhaupt erst ermöglicht und auf deren Einhaltung Sie regelmäßig vertrauen dürfen - und dann begrenzt auf den vorhersehbaren, vertragstypischen Schaden.',
         'Die Haftung nach dem Produkthaftungsgesetz bleibt unberührt. Eine weitergehende Haftung ist ausgeschlossen.',
       ],
     },

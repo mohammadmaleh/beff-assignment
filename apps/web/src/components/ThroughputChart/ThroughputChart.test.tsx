@@ -154,7 +154,7 @@ describe('ThroughputChart', () => {
 
     const text = await csv.text();
     expect(text).toContain('B-2026-001');
-    // 1200 grouped as '1,200' in English, and the comma is the delimiter — so
+    // 1200 grouped as '1,200' in English, and the comma is the delimiter - so
     // the cell has to arrive quoted or every column after it shifts by one.
     expect(text).toContain('"1,200"');
 

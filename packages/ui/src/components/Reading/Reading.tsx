@@ -34,7 +34,7 @@ export interface ReadingProps {
 }
 
 /**
- * A stated figure — one that has neither a specification window nor a direction
+ * A stated figure - one that has neither a specification window nor a direction
  * of travel.
  *
  * ## Why this is a third primitive and not a variant of the other two
@@ -45,7 +45,7 @@ export interface ReadingProps {
  * cosmetic choice:
  *
  * - "€47 200 of committed value lost" has no specification window, and no
- *   meaningful previous-period arrow — it scales with how much the line ran.
+ *   meaningful previous-period arrow - it scales with how much the line ran.
  * - "2.3 pp below the cohort median" is a *reference*, not a measurement. A
  *   pilot line at 71.8% is comfortably inside a 40–80% window and still behind
  *   its peers, and those two facts lead to different decisions.
@@ -57,7 +57,7 @@ export interface ReadingProps {
  *
  * ## Where the markup came from
  *
- * `apps/web`'s `KpiRow`, which had carried it since the dashboard was built —
+ * `apps/web`'s `KpiRow`, which had carried it since the dashboard was built -
  * along with a doc comment arguing at length why these readings are neither
  * `Metric` nor `SpecBand`. That argument was right and was the case for this
  * component: the only place deciding how a stated figure looks was an app file,

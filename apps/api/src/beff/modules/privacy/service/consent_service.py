@@ -43,7 +43,7 @@ class ConsentService:
     async def state(self, user_id: UUID) -> dict[str, bool]:
         """Current consent per manageable purpose.
 
-        Absent means not granted. Consent is never assumed from silence — that
+        Absent means not granted. Consent is never assumed from silence - that
         is the whole point of Art. 4(11)'s "unambiguous indication".
         """
         latest = await self._records.latest_per_purpose(user_id)
@@ -64,7 +64,7 @@ class ConsentService:
         """Append a grant or a withdrawal, and return the new state.
 
         Withdrawal is the same operation as granting, with `granted=False`. That
-        is not a shortcut — Art. 7(3) requires withdrawal to be as easy as
+        is not a shortcut - Art. 7(3) requires withdrawal to be as easy as
         giving, and a design where withdrawing takes a different code path is a
         design where it quietly becomes harder.
         """

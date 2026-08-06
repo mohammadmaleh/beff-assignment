@@ -68,7 +68,7 @@ describe('matcher', () => {
     // dependency that is invisible from either file alone.
     //
     // In production the browser calls /api/v1/* on THIS origin and a Next
-    // rewrite forwards it to the API host (see lib/rewrites) — that is what
+    // rewrite forwards it to the API host (see lib/rewrites) - that is what
     // lets the SameSite=Lax refresh cookie survive a Vercel/Northflank split.
     // If `api` ever leaves the matcher below, the locale proxy would take
     // /api/v1/auth/refresh first and 307 it to /en/api/v1/auth/refresh, which

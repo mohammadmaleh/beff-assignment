@@ -8,7 +8,7 @@ import type { Decorator, Meta, StoryObj } from '@storybook/react-vite';
  *
  * Named and typed rather than inline: an inline decorator makes `meta`'s
  * inferred type reference storybook's internal `csf` module, which TypeScript
- * cannot name in the declaration it emits (TS2742) — and it reports that
+ * cannot name in the declaration it emits (TS2742) - and it reports that
  * against the meta, not against the decorator responsible.
  */
 const unpinTheme: Decorator = (Story) => {
@@ -22,8 +22,8 @@ const unpinTheme: Decorator = (Story) => {
  * ## Why there is no "system" option
  *
  * Offering one asked the reader to pick a default they already had. The page
- * reads `prefers-color-scheme` and follows it — including when it changes
- * mid-session, which is what an OS on a sunset schedule does — and stops only
+ * reads `prefers-color-scheme` and follows it - including when it changes
+ * mid-session, which is what an OS on a sunset schedule does - and stops only
  * once the reader overrides it. That is exactly what the three-option select
  * did, minus the option explaining it.
  *
@@ -33,7 +33,7 @@ const unpinTheme: Decorator = (Story) => {
  * native button carries keyboard operation, focus and an accessible name with
  * no ARIA at all. The name is the **action** ("Switch to dark appearance"), so
  * a screen-reader user hears what pressing it does rather than a setting whose
- * effect they must infer — and because the glyph is `aria-hidden`, that name is
+ * effect they must infer - and because the glyph is `aria-hidden`, that name is
  * the button's entire accessible content. Hence a required prop with no
  * default.
  *
@@ -41,7 +41,7 @@ const unpinTheme: Decorator = (Story) => {
  *
  * Pressing it writes `data-theme` on `<html>` and pins the choice in
  * `localStorage`, so it **overrides the toolbar's theme control** for the rest
- * of the session. That is the real behaviour, not a story artefact — the whole
+ * of the session. That is the real behaviour, not a story artefact - the whole
  * point is that an explicit choice outranks the ambient one. Reload the frame
  * to hand control back to the toolbar.
  */

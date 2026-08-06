@@ -19,10 +19,10 @@ import { surfacePath } from '@/lib/navigation';
  * the primary action all carried the same emphasis and the bar read as a pile.
  * The hierarchy now goes:
  *
- * 1. **Request access** — solid brand fill. The one action this surface exists
+ * 1. **Request access** - solid brand fill. The one action this surface exists
  *    to produce, and the only filled element in the header.
- * 2. **Navigation** — muted, underlined on hover, with the current page marked.
- * 3. **Log in and theme** — quietest. A returning user knows where sign-in is
+ * 2. **Navigation** - muted, underlined on hover, with the current page marked.
+ * 3. **Log in and theme** - quietest. A returning user knows where sign-in is
  *    and does not need it competing with the pitch; a visitor evaluating the
  *    product must not be pushed toward a door they have no key for.
  *

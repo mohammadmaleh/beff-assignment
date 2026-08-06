@@ -17,7 +17,7 @@ import { EChart } from '../EChart/index';
  * The words the text readout is built from.
  *
  * Required, with no English default. The readout is the *only* form of this
- * component a screen reader can perceive — the drawing is `aria-hidden` — so a
+ * component a screen reader can perceive - the drawing is `aria-hidden` - so a
  * default in the wrong language is not a cosmetic slip, it is the entire
  * accessible content of the signature element in a language the reader may not
  * have. This is precisely the bug the screen-reader pass found on `/de`.
@@ -56,7 +56,7 @@ export interface SpecBandProps {
    * `hero` is the same instrument at presentation size: the label becomes an
    * eyebrow, the reading is set at readout scale, and the plotted domain is
    * labelled at its ends so the axis is readable rather than implied. One
-   * component, two sizes — the signature element must not exist twice, or the
+   * component, two sizes - the signature element must not exist twice, or the
    * two copies drift.
    */
   scale?: 'default' | 'hero';
@@ -82,7 +82,7 @@ export interface SpecBandProps {
  * A tolerance band: the in-spec window, the limits that bound it, the target,
  * and where the measurement actually landed. It is the shape a process engineer
  * already reads on a control chart or a calibration certificate, which is the
- * point — the product's most-repeated visual belongs to the domain's own
+ * point - the product's most-repeated visual belongs to the domain's own
  * vernacular rather than to generic SaaS.
  *
  * ### The drawing is ECharts, the readout is not
@@ -90,7 +90,7 @@ export interface SpecBandProps {
  * The band itself is an ECharts instance built by `bandOption`, so it is drawn
  * by the same layer as every other figure in the product and inherits its
  * tokens, its theme-change handling and its reduced-motion rule. Everything a
- * reader is *told* — the label, the reading, the domain's ends, the verdict —
+ * reader is *told* - the label, the reading, the domain's ends, the verdict -
  * stays as page HTML with real type tokens. That split is deliberate: an
  * ECharts `<text>` node cannot wear `--type-ui-size-readout`, and the readout
  * at hero scale is 56px of the app's own data typeface.
@@ -100,8 +100,8 @@ export interface SpecBandProps {
  * The drawing is `aria-hidden` and the component is described by a text readout
  * that states the value, the window and the verdict in words. A screen reader
  * user gets the *conclusion* ("out of spec, above the upper limit"), not a
- * description of a drawing. Out-of-spec is signalled three ways — position, a
- * filled diamond instead of a line, and the word itself — because colour is
+ * description of a drawing. Out-of-spec is signalled three ways - position, a
+ * filled diamond instead of a line, and the word itself - because colour is
  * never the only signal here.
  */
 export function SpecBand({
@@ -152,7 +152,7 @@ export function SpecBand({
      * `bounds` is memoised above rather than derived inline, so this list can
      * depend on it by identity. Derived inline it would be a fresh array every
      * render, the memo would never hit, and every render would rebuild the
-     * option — which for ECharts is a full `setOption`. With `animate` on, that
+     * option - which for ECharts is a full `setOption`. With `animate` on, that
      * is the band redrawing itself continuously.
      */
     [value, lowerLimit, upperLimit, target, bounds, inSpec, hero, tokens, reducedMotion, animate],
@@ -211,7 +211,7 @@ export function SpecBand({
        *
        * Set as page HTML rather than as the chart's own axis labels, for the
        * same reason the readout is: these wear `--type-ui-size-xs` and the app's
-       * data typeface, which an ECharts axis label cannot. Only the two ends —
+       * data typeface, which an ECharts axis label cannot. Only the two ends -
        * the specification window is already drawn as the filled segment and
        * stated in words below, and printing it here as well would put the same
        * figures on screen three times.
@@ -241,7 +241,7 @@ export function SpecBand({
         )}
       >
         {fmt(value)}
-        {suffix} — {verdict}. {words.specification} {fmt(lowerLimit)}–{fmt(upperLimit)}
+        {suffix} - {verdict}. {words.specification} {fmt(lowerLimit)}–{fmt(upperLimit)}
         {suffix}
         {target === undefined ? '' : `, ${words.target} ${fmt(target)}${suffix}`}.
       </p>

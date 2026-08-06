@@ -5,7 +5,7 @@ import { DEFAULT_LOCALE, LOCALES, isLocale, type Locale } from '@/lib/i18n';
 /**
  * Sends a locale-less URL to a locale.
  *
- * Only `/` and paths with no locale prefix reach here — everything under
+ * Only `/` and paths with no locale prefix reach here - everything under
  * `/en` and `/de` is statically generated and served without touching this.
  * The redirect is 307 rather than 308: which locale a visitor gets is a
  * negotiation, and a permanently-cached redirect would pin the first answer in
@@ -15,12 +15,12 @@ import { DEFAULT_LOCALE, LOCALES, isLocale, type Locale } from '@/lib/i18n';
  *
  * Next 16 deprecated the `middleware` convention and renamed it to `proxy`;
  * the old name still works and warns on every dev boot. The rename is the whole
- * migration — the file name and the exported function name. `config` and its
+ * migration - the file name and the exported function name. `config` and its
  * `matcher` are untouched, and the request and response types keep their
  * `Next…` prefixes, because none of that was renamed.
  *
- * Next's stated reason is that "middleware" reads as Express middleware — an
- * in-process handler chain — when this is a network boundary in front of the
+ * Next's stated reason is that "middleware" reads as Express middleware - an
+ * in-process handler chain - when this is a network boundary in front of the
  * app, running at the edge and possibly in a different region from the server.
  * That distinction matters here specifically: the matcher below has to exclude
  * `/api`, and it is much more obviously a *proxy* concern that it does.

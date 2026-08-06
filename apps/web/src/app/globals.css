@@ -1,5 +1,5 @@
 /*
- * Import order matters. Tailwind first, then the faces, then the tokens — the
+ * Import order matters. Tailwind first, then the faces, then the tokens - the
  * token sheet carries an `@theme inline` block mapping custom properties into
  * Tailwind's namespace, so it must land after Tailwind is in scope.
  *
@@ -14,7 +14,7 @@
 /*
  * After the tokens, because it reads the custom properties their `@theme inline`
  * block defines. Carries the four rules a `@beff/ui` component is incomplete
- * without — body typography, the focus ring, the button cursor Tailwind v4
+ * without - body typography, the focus ring, the button cursor Tailwind v4
  * dropped, and the reduced-motion collapse. They live in the package so
  * Storybook renders the real component rather than a near-miss of it.
  */
@@ -23,7 +23,7 @@
 /*
  * Tailwind v4 discovers sources by walking up from this file, which stops at
  * the app. `@beff/ui` lives outside it and ships source, so its class names are
- * invisible without this — the components render unstyled and nothing errors.
+ * invisible without this - the components render unstyled and nothing errors.
  */
 @source '../../../../packages/ui/src';
 
@@ -51,14 +51,14 @@
  *
  * Every other colour on this page flips because a semantic token flips. A raster
  * logo has its colours baked in, and Beff's navy mark sits at roughly 2:1
- * against Graphite — present, but reading as a smudge rather than as a mark.
+ * against Graphite - present, but reading as a smudge rather than as a mark.
  *
  * `brightness(0) invert(1)` collapses it to a white silhouette: the standard
  * monochrome treatment a brand ships for dark grounds, and the honest one here,
  * because it preserves the mark's *form* rather than inventing a colour nobody
  * at Beff chose. A plain `invert(1)` would turn navy into mustard.
  *
- * Both selectors, matching the token sheet exactly — the media query for readers
+ * Both selectors, matching the token sheet exactly - the media query for readers
  * who never chose, the attribute for readers who did. Getting only the first
  * means the logo breaks for precisely the people who picked dark on purpose.
  */
@@ -79,7 +79,7 @@
  * fades it out cannot also fade the content, and so it stays out of the
  * accessibility tree without needing `aria-hidden` on a wrapper. `z-index: -1`
  * paints it behind the content but still inside the section, which needs the
- * `isolation` — without it the negative index escapes to the page background
+ * `isolation` - without it the negative index escapes to the page background
  * and the grid disappears under `body`.
  */
 .calibration-ground {
@@ -90,7 +90,7 @@
 .calibration-ground::before {
   /*
    * `surface-sunken`, not a translucent border. The border token is solved for
-   * 3:1 as load-bearing UI, so in the dark theme it is *light* — a grid drawn
+   * 3:1 as load-bearing UI, so in the dark theme it is *light* - a grid drawn
    * from it reads subtle on the light ground and busy on the dark one. Sunken is
    * defined as one step away from the base surface in both themes, which is
    * exactly what a background rule wants, and it needs no opacity to get there.
@@ -120,14 +120,14 @@
  * ## The one orchestrated moment, which is no longer here
  *
  * The design brief allows exactly one: an instrument taking a reading. That is
- * still the rule, and `LandingHero` is still the only place it happens — but it
+ * still the rule, and `LandingHero` is still the only place it happens - but it
  * moved out of this stylesheet when `SpecBand` became an ECharts instance.
  *
  * The reason is worth keeping, because it is not obvious and it will come up
  * again for any chart on this page: an ECharts instance owns its own DOM subtree
  * and its own render loop. It draws by writing attributes on SVG nodes it
  * created, on its own schedule. A CSS animation targeting those nodes is not
- * merely ignored — it composes with a value the library rewrites on the next
+ * merely ignored - it composes with a value the library rewrites on the next
  * frame, so the mark ends up wherever the race left it. The cascade cannot
  * orchestrate a canvas it does not own.
  *
@@ -137,6 +137,6 @@
  * because four bands sit in one dashboard panel, and the page decides. The
  * reduced-motion override moved with it, into `bandOption`. The global `@media
  * (prefers-reduced-motion: reduce)` block in `@beff/ui`'s `base.css` still
- * governs everything this app draws itself — which is now everything except the
+ * governs everything this app draws itself - which is now everything except the
  * charts, and they read the preference through `useReducedMotion` instead.
  */

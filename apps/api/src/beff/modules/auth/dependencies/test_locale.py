@@ -24,13 +24,13 @@ def test_a_plain_tag_is_matched() -> None:
 
 def test_a_regional_tag_matches_its_language() -> None:
     """`de-AT` and `de-CH` are German. The subtag says which German, and this
-    product has one — refusing to match would send an Austrian user English."""
+    product has one - refusing to match would send an Austrian user English."""
     assert negotiate_email_locale("de-AT") == "de"
     assert negotiate_email_locale("de-CH,de;q=0.9") == "de"
 
 
 def test_quality_values_decide_the_winner() -> None:
-    """The header is a preference list, not an ordered one — a client can and
+    """The header is a preference list, not an ordered one - a client can and
     does write its favourite second."""
     assert negotiate_email_locale("en;q=0.3, de;q=0.9") == "de"
     assert negotiate_email_locale("de;q=0.2, en;q=0.8") == "en"
@@ -49,7 +49,7 @@ def test_equal_quality_keeps_the_clients_own_order() -> None:
 
 def test_unsupported_languages_are_skipped_rather_than_matched() -> None:
     """Real browsers send long lists. Matching the first entry blindly would
-    return French, which this product does not have copy for — and a `KeyError`
+    return French, which this product does not have copy for - and a `KeyError`
     at render time is a 500 on registration."""
     assert negotiate_email_locale("fr-FR,fr;q=0.9,es;q=0.8") is None
     assert negotiate_email_locale("fr-FR,fr;q=0.9,de;q=0.8") == "de"
@@ -83,7 +83,7 @@ def test_the_header_is_used_when_nothing_was_requested() -> None:
 
 
 def test_english_is_the_last_resort() -> None:
-    """One guess, in one place, where it can be seen — rather than a default
+    """One guess, in one place, where it can be seen - rather than a default
     sitting on a schema field where nobody reads it."""
     assert resolve_email_locale(None, accept_language=None) == FALLBACK_EMAIL_LOCALE
     assert resolve_email_locale(None, accept_language="fr") == FALLBACK_EMAIL_LOCALE

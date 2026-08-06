@@ -29,7 +29,7 @@ depends_on: str | Sequence[str] | None = None
 
 # GDPR Art. 7(1) makes the controller prove consent was given. An `UPDATE` that
 # flips `granted` from true to false destroys that proof, so the table rejects
-# in-place mutation outright — withdrawal is a new row with `granted = false`.
+# in-place mutation outright - withdrawal is a new row with `granted = false`.
 #
 # `DELETE` is deliberately still permitted: an Art. 17 erasure hard-deletes the
 # user and cascades here. Removing a record is not the same as falsifying one,
@@ -84,7 +84,7 @@ def upgrade() -> None:
     )
     # The whole point of ENG-27's verification: uniqueness applies only to live
     # rows, so erasing an account frees its address for re-registration. A plain
-    # UNIQUE would keep the erased email hostage — itself a retention of
+    # UNIQUE would keep the erased email hostage - itself a retention of
     # personal data the user asked to be rid of.
     op.create_index(
         "uq_users_email_active",

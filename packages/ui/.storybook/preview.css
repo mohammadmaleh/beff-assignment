@@ -1,7 +1,7 @@
 /*
  * Exactly what the app loads, in the same order and from the same files.
  *
- * `fonts.css` and `base.css` are `@beff/ui`'s own — they moved here from
+ * `fonts.css` and `base.css` are `@beff/ui`'s own - they moved here from
  * `apps/web/src/app/globals.css` when Storybook was added, because a component
  * explorer that approximates the page's base layer is worse than none: it shows
  * a `Button` with the wrong cursor and a focus ring that is not the one the

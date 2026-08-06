@@ -14,8 +14,8 @@ __all__ = ["ConsentRepository", "ErasureRepository", "ExportRepository"]
 class ConsentRepository(Protocol):
     """Append-only. Note the absence of an `update`.
 
-    That absence is the design. Consent must be provable — what was agreed to,
-    when, and against which policy version (Art. 7(1)) — and an `UPDATE` on a
+    That absence is the design. Consent must be provable - what was agreed to,
+    when, and against which policy version (Art. 7(1)) - and an `UPDATE` on a
     boolean destroys the only evidence of the previous state. The current state
     is derived by reading the latest record per purpose.
     """

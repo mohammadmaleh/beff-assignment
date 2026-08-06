@@ -1,4 +1,4 @@
-"""The privacy HTTP surface — consent, export and erasure."""
+"""The privacy HTTP surface - consent, export and erasure."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ def _client_ip(request: Request) -> str | None:
     """The caller's address, for hashing.
 
     `X-Forwarded-For` is trusted only for its first entry, and only because this
-    app is always deployed behind a proxy that sets it. It is never stored — it
+    app is always deployed behind a proxy that sets it. It is never stored - it
     goes straight into a salted hash.
     """
     forwarded = request.headers.get("x-forwarded-for")
@@ -61,7 +61,7 @@ async def set_consent(
 
     The verb is part of the design: this **appends an event**, it does not edit
     a value. Withdrawal is the same endpoint with `granted: false`, because
-    Art. 7(3) requires withdrawing to be as easy as giving — and a separate
+    Art. 7(3) requires withdrawing to be as easy as giving - and a separate
     endpoint is where "as easy" quietly stops being true.
     """
     state = await service.record(
@@ -81,7 +81,7 @@ async def set_consent(
     summary="The user's most recent export job",
 )
 async def get_export(user: CurrentUser, service: ExportSvc) -> ExportJobResponse | None:
-    """`null` when none has ever been requested — not a 404.
+    """`null` when none has ever been requested - not a 404.
 
     "You have never asked for an export" is a normal state of the profile
     screen, not an error, and modelling it as one would make the client handle a
@@ -111,7 +111,7 @@ async def request_export(user: CurrentUser, service: ExportSvc) -> ExportJobResp
     status_code=status.HTTP_200_OK,
     summary="Download a finished export",
     responses={
-        404: {"description": "No such export — also the answer when it is someone else's."},
+        404: {"description": "No such export - also the answer when it is someone else's."},
         422: {"description": "The export exists but is not ready yet."},
     },
 )

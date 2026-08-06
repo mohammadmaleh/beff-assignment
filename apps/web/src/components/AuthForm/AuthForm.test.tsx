@@ -23,7 +23,7 @@ vi.mock('@/lib/auth', async (importOriginal) => {
   };
 });
 
-/** Fill and submit, the way a user does — the form reads `FormData`, not state. */
+/** Fill and submit, the way a user does - the form reads `FormData`, not state. */
 const submitLogin = async (email = 'ada@beff.example', password = 'a-long-enough-password') => {
   await userEvent.type(screen.getByLabelText(/work email/i), email);
   await userEvent.type(screen.getByLabelText(/^password/i), password);
@@ -155,7 +155,7 @@ describe('AuthForm', () => {
       // The API distinguishes this from every other failure with a stable code
       // and always has. Collapsing it into "something went wrong on our side"
       // tells someone whose only mistake was already having an account to try
-      // again — which cannot ever work.
+      // again - which cannot ever work.
       register.mockRejectedValue(new ApiError(409, {}, 'auth.email_already_registered'));
       render(<AuthForm mode="register" locale="en" />);
       await submitRegister();
@@ -212,13 +212,13 @@ describe('AuthForm', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
 
       const message = await screen.findByRole('alert');
-      expect(message).toHaveTextContent('Choose a longer password — at least 12 characters.');
+      expect(message).toHaveTextContent('Choose a longer password - at least 12 characters.');
       expect(screen.getByLabelText(/^password/i)).toHaveAttribute('aria-invalid', 'true');
       expect(screen.getByLabelText(/work email/i)).not.toHaveAttribute('aria-invalid');
     });
 
     it('renders the server’s error code in the reader’s language', async () => {
-      // The API returns a stable code, never an English sentence — which is the
+      // The API returns a stable code, never an English sentence - which is the
       // whole reason a German user gets a German message from an API that has
       // no idea which locale is on screen.
       login.mockRejectedValue(new ApiError(422, { email: 'invalid_email' }));
@@ -273,7 +273,7 @@ describe('AuthForm', () => {
     // A form with no `method` submits by **GET** to its own URL. The handler
     // that calls `preventDefault` only exists once the bundle has hydrated, so
     // a submit in the window before that navigates to
-    // `/en/login?email=…&password=…` — and the password is then in the address
+    // `/en/login?email=…&password=…` - and the password is then in the address
     // bar, in browser history, in the `Referer` of the next request, and in
     // every access log between here and the origin.
     for (const mode of ['login', 'register'] as const) {

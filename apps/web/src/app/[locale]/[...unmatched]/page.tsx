@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
  * own `not-found.tsx` renders instead of Next's built-in 404.
  *
  * This is needed because a segment `not-found.tsx` only fires on an explicit
- * `notFound()` call from inside that segment — an unmatched URL otherwise falls
+ * `notFound()` call from inside that segment - an unmatched URL otherwise falls
  * through to the *root* not-found, which this app has no layout for. Without
  * this file, `/en/no-such-page` renders an unstyled default page with no header,
  * no footer and no way back.

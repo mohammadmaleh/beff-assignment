@@ -120,7 +120,7 @@ DRIFT_ORIGIN: dict[str, Decimal] = {
     "energy_density_wh_kg": Decimal("251.0"),
 }
 
-# Scatter around the trend, in each parameter's own unit — measurement noise,
+# Scatter around the trend, in each parameter's own unit - measurement noise,
 # which is a different thing from process drift. A series with drift and no
 # noise is a clean diagonal that no instrument has ever produced, and it reads
 # as synthetic to exactly the reviewer this data is meant to convince.
@@ -137,7 +137,7 @@ def _drifted(
     """One reading's worth of history: the trend at `index`, plus noise.
 
     The final batch returns the constant untouched. That is what keeps
-    `test_seed.py`'s assertions about `MEASUREMENTS` meaningful — they pin the
+    `test_seed.py`'s assertions about `MEASUREMENTS` meaningful - they pin the
     values a reviewer sees on the spec bands, and a walk that merely *ended
     near* them would leave those assertions describing a number the dashboard
     does not actually show.
@@ -161,7 +161,7 @@ async def seed(session: AsyncSession, *, seed_value: int = 20260731) -> User:
     """Create or refresh the demo account. Returns the user.
 
     The RNG is seeded, so the dashboard shows the same figures on every machine
-    — a screenshot in the README stays true, and a reviewer comparing two runs
+    - a screenshot in the README stays true, and a reviewer comparing two runs
     is not left wondering whether something changed.
     """
     # Demo data, not a key. A seeded, reproducible generator is the point:
@@ -307,7 +307,7 @@ async def seed(session: AsyncSession, *, seed_value: int = 20260731) -> User:
 
 
 async def main() -> None:  # pragma: no cover - entry point
-    """`python -m beff.seed` — used by compose and by the README's instructions."""
+    """`python -m beff.seed` - used by compose and by the README's instructions."""
     factory = create_session_factory(get_engine())
     async with factory() as session:
         user = await seed(session)

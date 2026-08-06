@@ -21,7 +21,7 @@ class RateLimitCounter(Base):
 
     No `TimestampMixin`. `window_start` *is* the time dimension, and a
     `created_at` next to it would be a second timestamp meaning almost the same
-    thing — the row is written once and incremented, never meaningfully updated.
+    thing - the row is written once and incremented, never meaningfully updated.
     """
 
     __tablename__ = "rate_limit_counters"
@@ -43,7 +43,7 @@ class RateLimitCounter(Base):
 
     bucket: Mapped[str] = mapped_column(Text(), nullable=False)
 
-    # Never a raw IP. The caller hashes before it gets here — an IP is personal
+    # Never a raw IP. The caller hashes before it gets here - an IP is personal
     # data, and a rate-limit table is not a lawful basis for storing one.
     key: Mapped[str] = mapped_column(Text(), nullable=False)
 

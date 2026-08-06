@@ -138,7 +138,7 @@ class AuthService:
     async def authenticate_access_token(self, token: str) -> User:
         """Resolve a bearer token to its live user.
 
-        The database is consulted for the *user*, not the token — the JWT's
+        The database is consulted for the *user*, not the token - the JWT's
         signature already proves the token, and the lookup is what makes an
         erased account stop working before its access token expires.
         """

@@ -1,4 +1,4 @@
-"""The waitlist HTTP surface — one unauthenticated endpoint."""
+"""The waitlist HTTP surface - one unauthenticated endpoint."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ router = APIRouter(prefix="/api/v1/waitlist", tags=["waitlist"])
     },
 )
 async def join(payload: JoinWaitlistRequest, service: Service) -> WaitlistEntryResponse:
-    """Deliberately unauthenticated — this is the landing page's only endpoint.
+    """Deliberately unauthenticated - this is the landing page's only endpoint.
 
     That also makes it the app's one anonymous write, which is why it is the
     only route carrying a rate limit. The limiter counts against a salted hash

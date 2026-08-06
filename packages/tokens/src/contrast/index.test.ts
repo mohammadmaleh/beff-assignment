@@ -11,7 +11,7 @@ describe('contrastRatio', () => {
     expect(contrastRatio('#476F95', '#476F95')).toBeCloseTo(1, 2);
   });
 
-  it('is symmetric — order of arguments does not matter', () => {
+  it('is symmetric - order of arguments does not matter', () => {
     const a = contrastRatio('#1C1A17', '#F4F4F1');
     const b = contrastRatio('#F4F4F1', '#1C1A17');
     expect(a).toBeCloseTo(b, 5);
@@ -41,9 +41,9 @@ describe('hueOf', () => {
 describe('hueSeparation', () => {
   it('measures the short way around the colour wheel', () => {
     // The earlier version of this test used two hues 50 degrees apart and
-    // asserted `<= 180`, which is true by construction — it passed even for a
+    // asserted `<= 180`, which is true by construction - it passed even for a
     // plain abs() with no wrap-around at all. These two straddle 0 degrees.
-    // #b4608a sits at hue 350, #bc5f70 at hue 10 — the naive abs() gives 340.
+    // #b4608a sits at hue 350, #bc5f70 at hue 10 - the naive abs() gives 340.
     expect(hueSeparation('#b4608a', '#bc5f70')).toBeCloseTo(20, 0);
   });
 
@@ -65,7 +65,7 @@ describe('cvdDistance', () => {
   // the coverage gate went in. They matter more than their size suggests: if
   // an unparseable value returned NaN instead of throwing, every `>=` in the
   // contrast and CVD gates would be false-y and the gate would report a
-  // failure it could not explain — or, with a `<=` assertion, pass silently.
+  // failure it could not explain - or, with a `<=` assertion, pass silently.
   it('throws on an unparseable colour rather than returning NaN', () => {
     expect(() => cvdDistance('not-a-colour', '#317952')).toThrow(/not-a-colour/);
   });

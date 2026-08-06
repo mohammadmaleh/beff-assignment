@@ -3,7 +3,7 @@
  *
  * ## Why the id is a constant
  *
- * `ChartFigure` derives four DOM ids from it — the heading, the tablist's
+ * `ChartFigure` derives four DOM ids from it - the heading, the tablist's
  * `aria-labelledby`, and one `id`/`aria-controls` pair per panel. They have to
  * be unique on the page, and the failure when they are not is not a crash: two
  * figures claim the same panel, a screen reader announces the wrong one, and
@@ -12,7 +12,7 @@
  *
  * ## Why the CSV stem is beside it
  *
- * It is the same figure named for a different audience — one names it in the
+ * It is the same figure named for a different audience - one names it in the
  * accessibility tree, the other on a colleague's desktop three weeks later. The
  * brand prefix lives here rather than inside `DataTable`, which has no business
  * knowing whose product it is rendering.
@@ -25,7 +25,7 @@ export const FIGURE_IDS = {
   throughput: 'throughput',
   scrapByStep: 'scrap-by-step',
   scrapCost: 'scrap-cost',
-  /** Suffixed per parameter — porosity, areal loading, energy density. */
+  /** Suffixed per parameter - porosity, areal loading, energy density. */
   controlChart: 'control',
   costOfPosition: 'cost-of-position',
 } as const;

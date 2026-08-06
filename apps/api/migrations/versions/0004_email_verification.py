@@ -5,7 +5,7 @@ tokens, and a general-purpose delivery queue for outbound mail.
 
 `email_verified_at` is nullable with no backfill, deliberately. Every account
 that existed before this migration is unverified, because nobody ever asked its
-owner to confirm anything — stamping them as verified would be recording a fact
+owner to confirm anything - stamping them as verified would be recording a fact
 that did not happen, and it is the one thing this column exists to know.
 
 Revision ID: 0004

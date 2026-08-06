@@ -219,7 +219,7 @@ describe('DataTable filtering', () => {
   });
 
   it('bounds the date range from both ends', async () => {
-    // The `to` side had no test at all — the input's handler and the matching
+    // The `to` side had no test at all - the input's handler and the matching
     // comparison in applyFilters were both carried by the `from` test alone.
     const user = userEvent.setup();
     renderTable();
@@ -235,7 +235,7 @@ describe('DataTable filtering', () => {
      * The defect this replaced: the range bounds were labelled `From` and `To`
      * and nothing else. On a page with five tables those same two words meant
      * per cent here, cells on throughput, euros on scrap cost and Wh/kg on a
-     * control chart — and a reader looking at the control could not tell which.
+     * control chart - and a reader looking at the control could not tell which.
      *
      * `<fieldset>`/`<legend>` is what fixes it for both audiences at once: the
      * legend is visible above the pair, and it is prepended to each input's
@@ -321,13 +321,13 @@ describe('DataTable export', () => {
      * jsdom does implement `URL.createObjectURL`/`revokeObjectURL` here, but not
      * a real anchor navigation, so both are stubbed to observe the call rather
      * than actually download anything. The brief's own draft spread `URL` into a
-     * plain object (`{ ...URL }`) to stub it — that loses the class's
+     * plain object (`{ ...URL }`) to stub it - that loses the class's
      * non-enumerable statics (`canParse`, etc.) and, worse, produces something
      * that is no longer constructable: `new URL(...)` throws `TypeError: URL is
      * not a constructor` once that stub is active. Anything else touching `URL`
      * as a constructor during the test would fail far from this file. Since the
      * methods already exist natively in this jsdom, `vi.spyOn` on the real `URL`
-     * object is both simpler and safe — it leaves the constructor intact.
+     * object is both simpler and safe - it leaves the constructor intact.
      */
     const blobs: Blob[] = [];
     const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockImplementation((obj) => {
@@ -350,7 +350,7 @@ describe('DataTable export', () => {
 
     /*
      * `Blob.text()` decodes via the WHATWG "UTF-8 decode" algorithm, which
-     * strips a leading BOM by spec — in a real browser too, not only here. So
+     * strips a leading BOM by spec - in a real browser too, not only here. So
      * `text.startsWith('\uFEFF')` can never pass; the BOM only survives as raw
      * bytes. Check those directly (`EF BB BF`, UTF-8's BOM encoding), then
      * decode the rest for the content assertions.

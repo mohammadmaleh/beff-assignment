@@ -53,7 +53,7 @@ async def test_upgrade_head_then_downgrade_base_runs_clean(
     """The verification ENG-27 is graded on.
 
     `db_engine` has already run `upgrade head`. Downgrading to base and back up
-    proves the migration is reversible — which it only is because the metadata
+    proves the migration is reversible - which it only is because the metadata
     naming convention gives every index and constraint a name the downgrade can
     reference.
     """
@@ -65,8 +65,8 @@ async def test_upgrade_head_then_downgrade_base_runs_clean(
             text("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename")
         )
         # Pinned as an exact list rather than a subset check, so a table that
-        # appears without anyone meaning it to — a leftover from a hand-edited
-        # migration, a temp table never dropped — fails here. Adding a table is
+        # appears without anyone meaning it to - a leftover from a hand-edited
+        # migration, a temp table never dropped - fails here. Adding a table is
         # supposed to be a two-line change to this list; that is the cost of
         # noticing an unplanned one.
         assert [row[0] for row in tables] == [
@@ -136,7 +136,7 @@ async def test_there_is_exactly_one_migration_head(alembic_config: Config) -> No
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# The partial unique index — ENG-27's headline requirement.
+# The partial unique index - ENG-27's headline requirement.
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -176,7 +176,7 @@ async def test_a_purged_email_can_register_again(db_session: AsyncSession) -> No
 
 
 async def test_many_erased_rows_may_share_one_email(db_session: AsyncSession) -> None:
-    """Register, erase, register, erase — the index must tolerate repetition."""
+    """Register, erase, register, erase - the index must tolerate repetition."""
     for _ in range(3):
         user = _make_user("serial@beff.example")
         db_session.add(user)
@@ -261,7 +261,7 @@ async def test_no_postgresql_enum_types_exist(db_engine: AsyncEngine) -> None:
         ("process_measurements", "parameter", PARAMETERS),
         # Added after an erasure shipped writing `account_erased` into a
         # column whose CHECK listed only `logout` and `reuse_detected`. The
-        # gate below was already here and would have caught it on the day —
+        # gate below was already here and would have caught it on the day -
         # it simply was not pointed at this constraint, which is the other
         # way a gate fails. Every TEXT + CHECK column whose values live in a
         # Python constant is now listed.

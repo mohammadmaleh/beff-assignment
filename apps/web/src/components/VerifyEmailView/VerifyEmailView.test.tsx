@@ -86,7 +86,7 @@ describe('VerifyEmailView', () => {
     /*
      * StrictMode mounts effects twice in development. Without the guard the
      * second run consumes the token the first just spent, and the page reports
-     * an invalid link on a perfectly good one — in development only, which is
+     * an invalid link on a perfectly good one - in development only, which is
      * the worst place to debug it from.
      */
     const spy = mockApi(200, { verified: true });

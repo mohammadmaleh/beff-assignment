@@ -14,7 +14,7 @@ class WaitlistService:
 
     A waitlist entry is **not a user** (CONTEXT.md). It carries no credentials
     and confers no access, which is why it lives in its own module with its own
-    table rather than as a `users` row in some pending state — a half-user is
+    table rather than as a `users` row in some pending state - a half-user is
     the kind of thing that eventually gets a login.
 
     The legal basis is consent (Art. 6(1)(a)), so the policy version travels

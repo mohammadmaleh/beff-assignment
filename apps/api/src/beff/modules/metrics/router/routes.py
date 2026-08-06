@@ -24,7 +24,7 @@ router = APIRouter(prefix="/api/v1/metrics", tags=["metrics"])
         401: {"description": "Missing or invalid access token."},
         422: {
             "description": (
-                "The account has no production line yet — code "
+                "The account has no production line yet - code "
                 "`metrics.no_line_configured`. Send the user back to onboarding."
             )
         },
@@ -56,7 +56,7 @@ async def overview(
         401: {"description": "Missing or invalid access token."},
         422: {
             "description": (
-                "The account has no production line yet — code "
+                "The account has no production line yet - code "
                 "`metrics.no_line_configured`. Send the user back to onboarding."
             )
         },
@@ -71,7 +71,7 @@ async def trend(
     charts and the cohort benchmark.
 
     Scoped to the signed-in user by `user.id`, never by a client-supplied line
-    id — the same rule as `/overview`, and the reason both take the line from
+    id - the same rule as `/overview`, and the reason both take the line from
     the session rather than the query string.
     """
     return MetricsTrendResponse.model_validate(

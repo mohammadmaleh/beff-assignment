@@ -1,4 +1,4 @@
-"""The `email_deliveries` table — a transactional outbox for mail.
+"""The `email_deliveries` table - a transactional outbox for mail.
 
 Sending inside the request would make registration depend on an SMTP round
 trip: slow when the provider is slow, and a failed signup when the provider is
@@ -9,8 +9,8 @@ Same queue as exports, same reasoning (ADR-0006): `SELECT ... FOR UPDATE SKIP
 LOCKED` over a table gives persistence, retries, idempotency and a dead-letter
 path with no second datastore.
 
-Not in a domain module. Mail is infrastructure several modules will want —
-verification today, password reset next — and putting the table under
+Not in a domain module. Mail is infrastructure several modules will want -
+verification today, password reset next - and putting the table under
 `modules/auth` would make the second caller import from the first. Same
 placement, and the same reason, as `rate_limit_counters`.
 """
@@ -67,12 +67,12 @@ class EmailDelivery(Base):
     parameters. Two reasons, and the second is the one that matters: a template
     edited between queueing and sending would otherwise change what a queued
     message says, and the row is the only record of what was actually sent to a
-    person — which is what makes it answerable under Art. 15.
+    person - which is what makes it answerable under Art. 15.
 
     `recipient` is personal data. It is deleted, not pseudonymised, on erasure.
 
     Internal and written on every registration, so the key is
-    `BIGINT GENERATED ALWAYS AS IDENTITY` (ADR-0010) — nothing here is ever
+    `BIGINT GENERATED ALWAYS AS IDENTITY` (ADR-0010) - nothing here is ever
     exposed to a client, so there is no opacity requirement to satisfy.
     """
 
@@ -110,7 +110,7 @@ class EmailDelivery(Base):
 
     # Nullable: a message can outlive its account, and mail will eventually be
     # sent to addresses that have none. `CASCADE` rather than `SET NULL` because
-    # the row holds the recipient address in the clear — an orphaned delivery
+    # the row holds the recipient address in the clear - an orphaned delivery
     # would be personal data with nothing left to justify keeping it.
     user_id: Mapped[UUID | None] = mapped_column(
         Uuid(),
@@ -118,7 +118,7 @@ class EmailDelivery(Base):
         nullable=True,
     )
 
-    # What the message is for. Not a foreign key and not a state — it is how an
+    # What the message is for. Not a foreign key and not a state - it is how an
     # operator answers "did the verification mail go out" without reading
     # subjects, and how a future password-reset flow stays distinguishable here.
     purpose: Mapped[str] = mapped_column(Text(), nullable=False)

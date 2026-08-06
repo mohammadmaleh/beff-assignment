@@ -12,7 +12,7 @@ export default defineConfig({
 
     // Turbo runs this suite and the web app's in parallel, and each fork boots
     // its own jsdom. Unbounded, they oversubscribe the box and vitest fails
-    // with "Timeout waiting for worker to respond" — a starved worker, not a
+    // with "Timeout waiting for worker to respond" - a starved worker, not a
     // failing test. CI runners are two-core, so this is the honest ceiling.
     maxWorkers: 2,
 
@@ -22,7 +22,7 @@ export default defineConfig({
 
       // `include` is what makes this a gate rather than a readout. Vitest 4
       // counts only the files a test actually imported unless you name them,
-      // so an untested component scores *nothing* instead of scoring 0% — and
+      // so an untested component scores *nothing* instead of scoring 0% - and
       // the percentage goes up when you add one. Barrels are excluded because
       // a re-export has no branches and dilutes the denominator.
       include: ['src/**/*.{ts,tsx}'],
@@ -30,20 +30,20 @@ export default defineConfig({
 
       // Set just under where the suite already sits, so an ordinary refactor
       // does not trip it and deleting a test does. Raise these when the real
-      // number rises — a floor left far below reality gates nothing.
+      // number rises - a floor left far below reality gates nothing.
       //
       // Raised when the chart layer moved in from `apps/web`: `lib/chart`,
       // `ChartFigure`, `DataTable` and `EChart` arrived with their own suites,
-      // and `useChartTokens` — which had only ever been covered as a side
-      // effect of mounting a chart — gained a direct one. Raised again when
+      // and `useChartTokens` - which had only ever been covered as a side
+      // effect of mounting a chart - gained a direct one. Raised again when
       // `CookieBanner`, `ThemeToggle` and `ThemeScript` arrived with their
       // suites. Measured 99.14 / 96.55 / 100 / 99.67.
       //
       // `Reading` and `buttonClassName` moved in from `apps/web` and nudged
       // this to 99.19 / 96.65 / 100 / 99.77. Left where they are: 0.05pp is
       // not a rise a floor should chase. `apps/web` was re-measured on the
-      // same change and did not move at all — 799/832 statements before and
-      // after — because what left it was JSX inside an already-covered
+      // same change and did not move at all - 799/832 statements before and
+      // after - because what left it was JSX inside an already-covered
       // `return`, which v8 counts as one statement either way. That is the
       // unusual case where a move between packages changes one denominator
       // and not the other, and it is worth writing down: the arithmetic that

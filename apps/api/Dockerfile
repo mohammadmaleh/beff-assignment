@@ -30,7 +30,7 @@ FROM deps AS dev
 
 # The deps stage runs --no-install-project, so the `beff` package is never
 # installed into the venv. With source arriving at runtime via bind mount,
-# PYTHONPATH is what makes it importable — an editable install cannot work
+# PYTHONPATH is what makes it importable - an editable install cannot work
 # against a directory that does not exist at build time.
 ENV ENVIRONMENT=development \
     PYTHONPATH=/app/src
@@ -41,7 +41,7 @@ CMD ["uv", "run", "--no-sync", "uvicorn", "beff.main:app", \
 
 # ── runtime ─────────────────────────────────────────────────────────────────
 # The real production image. `prod` is a thin alias for it declared LAST in
-# this file — see the note down there for why the ordering is load-bearing.
+# this file - see the note down there for why the ordering is load-bearing.
 FROM base AS runtime
 
 # Runs unprivileged. A container that does not need root should not have it.
@@ -94,7 +94,7 @@ CMD ["sh", "-c", "alembic upgrade head && python -m beff.seed"]
 #
 # `docker build` with no `--target` builds the final stage. `migrate` has to
 # come after `runtime` because it does `FROM runtime`, so if the file simply
-# ended there, every target-less build would produce the migration image —
+# ended there, every target-less build would produce the migration image -
 # whose CMD runs alembic and exits. An API deployed from it would never serve a
 # request.
 #

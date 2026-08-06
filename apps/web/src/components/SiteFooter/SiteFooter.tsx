@@ -7,8 +7,8 @@ import { surfacePath } from '@/lib/navigation';
 /**
  * Impressum and Datenschutzerklärung are linked from every page, not tucked
  * into an "about" section. §5 DDG requires the imprint to be *leicht
- * erkennbar und unmittelbar erreichbar* — easily recognisable and directly
- * reachable — and a German reviewer will check.
+ * erkennbar und unmittelbar erreichbar* - easily recognisable and directly
+ * reachable - and a German reviewer will check.
  */
 export function SiteFooter({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
@@ -43,7 +43,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
         {/*
          * Each nav is labelled, because two unlabelled <nav>s land in the
          * landmark rotor as "navigation, navigation" with nothing to tell them
-         * apart — the same defect the duplicate banner was.
+         * apart - the same defect the duplicate banner was.
          */}
         <nav aria-label={t.footer.legal} className="flex flex-col gap-2">
           <h2 className="text-text-muted text-[length:var(--type-ui-size-xs)] tracking-wide uppercase">
@@ -72,7 +72,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           </h2>
           {/*
            * A real link, not a client-side locale swap. It changes the URL, so
-           * it must be shareable, crawlable and openable in a new tab —
+           * it must be shareable, crawlable and openable in a new tab -
            * `hrefLang` tells a crawler what it will find there.
            */}
           <Link

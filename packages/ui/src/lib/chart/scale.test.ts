@@ -28,7 +28,7 @@ describe('niceBounds', () => {
 
   it('returns the gridline step alongside the bounds', () => {
     // Setting min/max without interval lets ECharts keep the step it would have
-    // chosen and append the forced bound as an extra label — which stacked
+    // chosen and append the forced bound as an extra label - which stacked
     // `1,500` and `1,600` on top of each other. The three have to agree.
     const { min, max, interval } = niceBounds([0, 1300], {
       padRatio: 0.02,
@@ -90,7 +90,7 @@ describe('niceBounds', () => {
   });
 
   it('gives a flat series a plot rather than a single line', () => {
-    // Every reading identical is a real state — a parameter held perfectly.
+    // Every reading identical is a real state - a parameter held perfectly.
     // Rounded naively it produces min === max and an axis of zero height.
     const { min, max } = niceBounds([32.4, 32.4, 32.4], { minPad: 1 });
 

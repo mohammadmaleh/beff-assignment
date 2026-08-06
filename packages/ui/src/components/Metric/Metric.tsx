@@ -19,7 +19,7 @@ type TrendProps =
 export type MetricProps = TrendProps & {
   label: string;
   value: string;
-  /** Rendered alongside the value at a smaller size — `%`, `Wh/kg`, `kg CO₂e/kWh`. */
+  /** Rendered alongside the value at a smaller size - `%`, `Wh/kg`, `kg CO₂e/kWh`. */
   unit?: string;
   /** Signed, pre-formatted delta, e.g. `+1.4 pp`. */
   delta?: string;
@@ -32,7 +32,7 @@ export type MetricProps = TrendProps & {
   className?: string;
 };
 
-const ARROWS: Record<MetricTrend, string> = { up: '▲', down: '▼', flat: '—' };
+const ARROWS: Record<MetricTrend, string> = { up: '▲', down: '▼', flat: '-' };
 
 /**
  * A single figure with its label and movement.

@@ -11,7 +11,7 @@ import { DEFAULT_LOCALE, getDictionary } from '@/lib/i18n';
 /**
  * The route-level error boundary.
  *
- * Must be a client component — React error boundaries are a client concept, and
+ * Must be a client component - React error boundaries are a client concept, and
  * `reset()` re-renders the segment without a full page load, so a transient
  * failure costs the user a click rather than their place in the app.
  *

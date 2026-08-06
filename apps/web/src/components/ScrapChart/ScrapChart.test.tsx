@@ -7,8 +7,8 @@ import { formatters } from '@/lib/format';
 import { ScrapChart, scrapTooltip } from './ScrapChart';
 
 /**
- * `ScrapChart` set the inversion the whole chart layer is built on — the bars
- * are `aria-hidden` and the table is the authoritative rendering — and was then
+ * `ScrapChart` set the inversion the whole chart layer is built on - the bars
+ * are `aria-hidden` and the table is the authoritative rendering - and was then
  * the one chart never moved onto `ChartFigure`. It carried its own `<details>`,
  * its own table markup and its own number formatting, and it had no test file
  * at all. These are its first.
@@ -51,7 +51,7 @@ describe('ScrapChart', () => {
 
   it('hides the bars from assistive technology', () => {
     // The bars are decoration over the table, not content. Left exposed, an
-    // ECharts SVG is dozens of loose `<text>` nodes — axis ticks, bar labels —
+    // ECharts SVG is dozens of loose `<text>` nodes - axis ticks, bar labels -
     // read in visual order with no structure: "7.8% 2.4% Coating Formation".
     const { container } = renderChart();
 
@@ -98,7 +98,7 @@ describe('ScrapChart', () => {
     /*
      * The regression this file was written for. The component built its
      * percentages by concatenating `'%'` onto a formatted number, which renders
-     * `7,8%` in German — where the space before the sign is mandatory and
+     * `7,8%` in German - where the space before the sign is mandatory and
      * non-breaking. Formatting rather than concatenating is the fix, and the
      * assertion has to contain a literal U+00A0 to prove it.
      */
@@ -111,7 +111,7 @@ describe('ScrapChart', () => {
   it('renders the same figure in the bars as in the table', async () => {
     /*
      * One formatter for both. Two would be two chances for the drawing and the
-     * authoritative rendering to disagree about the same number — which is not
+     * authoritative rendering to disagree about the same number - which is not
      * hypothetical here: this component shipped `7,8%` in German from its own
      * `Intl.NumberFormat` while the table beside it read `7,8 %`.
      *
@@ -182,7 +182,7 @@ describe('ScrapChart', () => {
 describe('scrapTooltip', () => {
   /*
    * A formatter handed to ECharts only ever runs on hover, which means it never
-   * runs under test — mounting the chart proves nothing about it, and in jsdom
+   * runs under test - mounting the chart proves nothing about it, and in jsdom
    * the instance lays out at 0×0 so there is no hover to simulate either. That
    * is why the content is a pure function and this is a unit: otherwise the one
    * string in this component assembled by hand is also the only one with no

@@ -15,7 +15,7 @@ describe('VideoPlayer', () => {
   it('carries the accessible name it was given, because it has none of its own', () => {
     // A `<video>` has no intrinsic accessible name. Unlabelled it is announced
     // as "video" and nothing else, so this string is the element's entire
-    // identity — which is why the prop is required with no default.
+    // identity - which is why the prop is required with no default.
     render(<VideoPlayer {...FILM} />);
 
     expect(screen.getByLabelText('Beff company introduction film')).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe('VideoPlayer', () => {
 
   it('reserves its box from the master’s intrinsic size', () => {
     // Without both, the element has no aspect ratio until metadata arrives and
-    // the column reflows around it — a layout shift, and the most expensive one
+    // the column reflows around it - a layout shift, and the most expensive one
     // on the page when this sits in a hero.
     render(<VideoPlayer {...FILM} />);
     const video = screen.getByLabelText(FILM.label);
@@ -73,7 +73,7 @@ describe('VideoPlayer', () => {
      * A video with an audio track and no captions is WCAG 1.2.2 (A) and 1.2.5
      * (AA) unmet, on a product that otherwise targets 2.2 AA. Asserted rather
      * than left implicit so the gap is visible in the suite too, not only in
-     * the README — and so that adding a `.vtt` fails this test and forces the
+     * the README - and so that adding a `.vtt` fails this test and forces the
      * lint suppression in the component to be deleted at the same time.
      */
     const { container } = render(<VideoPlayer {...FILM} />);

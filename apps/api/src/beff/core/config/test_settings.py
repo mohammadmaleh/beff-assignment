@@ -47,14 +47,14 @@ def test_database_url_is_normalised_to_the_async_driver(
 ) -> None:
     """Managed Postgres hands out `postgres://`; SQLAlchemy needs the driver.
 
-    Every provider — Northflank, Neon, Render, Railway, Heroku — issues a URI
+    Every provider - Northflank, Neon, Render, Railway, Heroku - issues a URI
     with a bare `postgres://` or `postgresql://` scheme, and `create_async_engine`
     rejects both: without `+asyncpg` it loads the *sync* psycopg driver and fails
     at connect time with `InvalidRequestError: The asyncio extension requires an
     async driver`.
 
     Normalising here rather than in the deployment means the platform's own
-    credential injection can be wired straight to `DATABASE_URL` — no rewriting a
+    credential injection can be wired straight to `DATABASE_URL` - no rewriting a
     secret by hand, and no password copied through a human to add six characters.
     """
     monkeypatch.setenv("DATABASE_URL", given)

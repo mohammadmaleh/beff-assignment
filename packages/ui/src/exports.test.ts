@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 /**
  * The barrel rule, enforced.
  *
- * The rule is not "no barrels" — it is "no *root* barrel". A per-unit barrel
+ * The rule is not "no barrels" - it is "no *root* barrel". A per-unit barrel
  * behind a subpath export costs nothing; one root barrel re-exporting forty
  * components means importing a button drags the whole library into the bundle,
  * because a side-effectful module anywhere in that graph defeats tree-shaking.
@@ -47,7 +47,7 @@ describe('package exports', () => {
 
   it('points every module subpath at a barrel, never at an implementation file', () => {
     // Consumers import from the barrel so internal layout can change without
-    // touching call sites. Stylesheets are exempt and checked below — a CSS
+    // touching call sites. Stylesheets are exempt and checked below - a CSS
     // file has no barrel to hide behind, and `@import` cannot resolve one.
     for (const target of Object.values(manifest.exports)) {
       if (target.endsWith('.css')) continue;
@@ -59,7 +59,7 @@ describe('package exports', () => {
     /*
      * `base.css` and `fonts.css` live here rather than in `apps/web` because a
      * `Button` with no focus ring and no pointer cursor is not the component
-     * this package ships — and because Storybook has to render the real thing.
+     * this package ships - and because Storybook has to render the real thing.
      * Two copies of that base layer is how a design system starts disagreeing
      * with the product it documents.
      */
@@ -87,7 +87,7 @@ describe('package exports', () => {
    * A design system whose explorer covers *most* of it is the failure mode
    * worth guarding against, not a missing Storybook: a reviewer opens it, does
    * not find a component, and concludes the component does not exist. Asserting
-   * per directory — rather than counting story files — is what makes this a
+   * per directory - rather than counting story files - is what makes this a
    * structural rule instead of a number that stays true while the wrong eleven
    * components are covered.
    */

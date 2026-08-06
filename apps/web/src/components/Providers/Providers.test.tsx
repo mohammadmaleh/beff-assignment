@@ -30,7 +30,7 @@ describe('Providers', () => {
     );
 
     // Reaching this at all means `useAuth` and `useQueryClient` both found a
-    // provider — either missing one throws during render.
+    // provider - either missing one throws during render.
     expect(await screen.findByText('ready')).toBeInTheDocument();
   });
 

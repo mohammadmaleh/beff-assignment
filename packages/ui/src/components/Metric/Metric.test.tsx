@@ -7,7 +7,7 @@ const TREND: MetricTrendWords = { up: 'up', down: 'down', flat: 'unchanged' };
 
 describe('Metric', () => {
   it('renders the figure with its label and unit', () => {
-    // First-pass yield on a pilot line runs 40–80% — see CONTEXT.md.
+    // First-pass yield on a pilot line runs 40–80% - see CONTEXT.md.
     render(<Metric label="First-pass yield" value="72.4" unit="%" />);
     expect(screen.getByText('First-pass yield')).toBeInTheDocument();
     expect(screen.getByText('72.4')).toBeInTheDocument();

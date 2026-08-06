@@ -35,7 +35,7 @@ describe('histogram', () => {
 
   it('reaches a limit that lies outside the data', () => {
     // A specification limit drawn outside the plot is not clipped, it is
-    // invisible — and the chart then stops showing what it is measured against.
+    // invisible - and the chart then stops showing what it is measured against.
     const bins = histogram([70, 75], { include: [40, 80] });
 
     expect(bins[0]?.start).toBeLessThanOrEqual(40);
@@ -57,7 +57,7 @@ describe('histogram', () => {
 
   it('still produces bins when no allowed width can satisfy the ceiling', () => {
     // `maxBins: 0` cannot be met by any width. The honest failure is the
-    // coarsest bin available, not an empty array — a caller that asked for
+    // coarsest bin available, not an empty array - a caller that asked for
     // something impossible should still get a drawable chart.
     expect(histogram([0, 100], { maxBins: 0 }).length).toBeGreaterThan(0);
   });
@@ -92,7 +92,7 @@ describe('binPosition', () => {
   });
 
   it('refuses a zero-width bin rather than dividing by it', () => {
-    // Not reachable from `histogram`, which never emits one — but this is
+    // Not reachable from `histogram`, which never emits one - but this is
     // exported, and `Infinity` as a category index draws a rule somewhere no
     // reader could explain.
     expect(binPosition([{ start: 5, end: 5, count: 1 }], 5)).toBeNull();

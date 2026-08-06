@@ -12,7 +12,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * ## The inversion
  *
  * The drawing is `aria-hidden` and the `<table>` beside it is **not** an
- * alternative bolted on for compliance — it is the authoritative rendering, and
+ * alternative bolted on for compliance - it is the authoritative rendering, and
  * the drawing is a fast visual index into it. A chart built that way cannot
  * drift out of sync with its own description, because there is only one set of
  * numbers and the table is it.
@@ -91,7 +91,7 @@ const COPY: DataTableCopy = {
 
 /**
  * A stand-in for the real drawing. Bars rather than an ECharts canvas so the
- * story stays about the *frame* — and `aria-hidden`, which is the rule this
+ * story stays about the *frame* - and `aria-hidden`, which is the rule this
  * figure is built on.
  */
 function Bars({ rows }: { rows: readonly Step[] }) {
@@ -154,7 +154,7 @@ export const SectionLevel: Story = { args: { headingLevel: 'h2' } };
 
 /**
  * Two on one page, which is the case the `id` prop exists for: `ChartFigure`
- * derives four DOM ids from it — the heading, the tablist's `aria-labelledby`,
+ * derives four DOM ids from it - the heading, the tablist's `aria-labelledby`,
  * and one `id`/`aria-controls` pair per panel. Collide them and two figures
  * claim the same panel: a screen reader announces the wrong one, and every
  * automated check still passes because the markup is well formed.
@@ -174,7 +174,7 @@ export const TwoOnAPage: Story = {
 };
 
 /**
- * `ChartViews` on its own — the switch and the two panels, without the
+ * `ChartViews` on its own - the switch and the two panels, without the
  * `<figure>` and `<figcaption>`.
  *
  * It is separate because two figures need the switch and they caption
@@ -182,7 +182,7 @@ export const TwoOnAPage: Story = {
  * level, the landing page's cost figure wants its uppercase data-font label,
  * which is a deliberate marketing treatment rather than an inconsistency to be
  * normalised away. Sharing the switch and not the caption is what lets both be
- * true — and it means the APG keyboard behaviour is implemented once.
+ * true - and it means the APG keyboard behaviour is implemented once.
  *
  * It returns a fragment, not a wrapper: `<figcaption>` must be the first or last
  * child of `<figure>`, and a wrapper between them breaks the figure's

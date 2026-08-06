@@ -14,7 +14,7 @@ class ConsentStateResponse(BaseModel):
     """Current consent per manageable purpose.
 
     The *state*, derived from the append-only log. The log itself is not exposed
-    — it is evidence held for accountability, not something the profile screen
+    - it is evidence held for accountability, not something the profile screen
     needs to render, and the full history is available through an export.
     """
 

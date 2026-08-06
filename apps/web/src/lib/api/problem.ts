@@ -3,10 +3,10 @@
  *
  * Two members carry the machine-readable part, and neither is prose:
  *
- * * `code` — the top-level, namespaced identifier for *this* failure:
+ * * `code` - the top-level, namespaced identifier for *this* failure:
  *   `auth.email_already_registered`, `rate_limit_exceeded`. It is the whole
  *   reason the API never has to know which language is on screen.
- * * `errors` — a stable `code` per field, for the failures that belong next to
+ * * `errors` - a stable `code` per field, for the failures that belong next to
  *   an input rather than in a banner.
  *
  * The English `title` and `detail` are for a developer reading a log. Nothing
@@ -39,8 +39,8 @@ const EMPTY: ParsedProblem = { code: null, fields: {} };
 /**
  * Read the code and the per-field codes out of a failed response.
  *
- * Everything that is not a problem document — a 502 from a proxy, an HTML error
- * page, a body truncated mid-flight — parses to no code and no fields. That is
+ * Everything that is not a problem document - a 502 from a proxy, an HTML error
+ * page, a body truncated mid-flight - parses to no code and no fields. That is
  * not a gap to fill with a guess: those are failures of the *request*, and
  * telling someone to check their email address sends them hunting for a mistake
  * they did not make.

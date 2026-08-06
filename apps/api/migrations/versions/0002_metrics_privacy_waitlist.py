@@ -179,7 +179,7 @@ def upgrade() -> None:
     #
     # `product_analytics` and `marketing_email` became `analytics` and
     # `marketing` when the profile screen was built, but only in the Python
-    # constants — `0001`'s CHECK constraint still held the old names, so every
+    # constants - `0001`'s CHECK constraint still held the old names, so every
     # `POST /privacy/consent` failed with a constraint violation. The whole
     # consent feature was broken against a real database.
     #
@@ -196,7 +196,7 @@ def upgrade() -> None:
     # length of this rename is deliberate, and a migration is the one
     # sanctioned place to do it: the trigger exists to stop *application*
     # code rewriting evidence, and relabelling a purpose is not rewriting
-    # what was consented to — it is the same purpose under a new identifier.
+    # what was consented to - it is the same purpose under a new identifier.
     # Timestamps, policy version and the granted flag are all untouched.
     op.execute("ALTER TABLE consent_records DISABLE TRIGGER trg_consent_records_append_only")
     op.execute(
@@ -220,7 +220,7 @@ def downgrade() -> None:
     # length of this rename is deliberate, and a migration is the one
     # sanctioned place to do it: the trigger exists to stop *application*
     # code rewriting evidence, and relabelling a purpose is not rewriting
-    # what was consented to — it is the same purpose under a new identifier.
+    # what was consented to - it is the same purpose under a new identifier.
     # Timestamps, policy version and the granted flag are all untouched.
     op.execute("ALTER TABLE consent_records DISABLE TRIGGER trg_consent_records_append_only")
     op.execute(

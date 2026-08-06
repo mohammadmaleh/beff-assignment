@@ -2,7 +2,7 @@
 
 `PostgresExportBuilder` is six queries and a dictionary literal, and the only
 instrument that can check either half is a real database holding a real subject's
-rows. A fake builder — which is what `test_export_service.py` uses, correctly —
+rows. A fake builder - which is what `test_export_service.py` uses, correctly -
 returns whatever the test author typed, so it can prove the queue retries and
 cannot prove the document is right.
 
@@ -157,7 +157,7 @@ async def test_the_export_carries_the_subjects_own_records(db_session: AsyncSess
 
 async def test_the_ip_hash_is_not_exported(db_session: AsyncSession) -> None:
     """It is a pseudonym held for accountability, not information about the
-    subject — and it cannot be reversed for them anyway."""
+    subject - and it cannot be reversed for them anyway."""
     user = await populate(db_session, email="dana@beff.example", plant_name="Werk Süd")
 
     payload = await PostgresExportBuilder(db_session).build(user.id)
@@ -193,8 +193,8 @@ async def test_email_deliveries_report_what_was_sent_but_not_the_body(
 async def test_no_other_subjects_data_reaches_the_document(db_session: AsyncSession) -> None:
     """Art. 15(4). Every section is filtered, including the one that joins.
 
-    `lines` has no `user_id` of its own — it reaches the subject through
-    `plants` — so it is the section where a missing filter is easiest to write
+    `lines` has no `user_id` of its own - it reaches the subject through
+    `plants` - so it is the section where a missing filter is easiest to write
     and hardest to notice.
     """
     user = await populate(db_session, email="dana@beff.example", plant_name="Werk Süd")

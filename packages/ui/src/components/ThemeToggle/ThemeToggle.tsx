@@ -9,7 +9,7 @@ type Theme = 'light' | 'dark';
 
 export interface ThemeToggleProps {
   /**
-   * The button's accessible name in each direction — and it is the *whole* of
+   * The button's accessible name in each direction - and it is the *whole* of
    * its accessible content, because the glyph is `aria-hidden`. Required, and
    * phrased as the **action** ("Switch to dark appearance"), so a screen-reader
    * user hears what pressing it does rather than a setting whose effect they
@@ -30,8 +30,8 @@ export interface ThemeToggleProps {
  *
  * There is no "system" option, because offering one asked the reader to pick a
  * default they already had. The page reads `prefers-color-scheme` and follows it
- * — including when it changes mid-session, which is what an OS on a sunset
- * schedule does — and only stops once the reader overrides it. That is the same
+ * - including when it changes mid-session, which is what an OS on a sunset
+ * schedule does - and only stops once the reader overrides it. That is the same
  * behaviour the three-option select had, minus the option that explained it.
  *
  * A `<button>`, not a `<select>`: two mutually exclusive states with an obvious
@@ -40,7 +40,7 @@ export interface ThemeToggleProps {
  * *action* ("Switch to dark appearance"), so a screen-reader user hears what
  * pressing it does rather than a setting they must infer the effect of.
  *
- * The glyph shows the theme you would move to, and is `aria-hidden` — the
+ * The glyph shows the theme you would move to, and is `aria-hidden` - the
  * button's name is its entire accessible content, which is why that name is a
  * required, translated string rather than anything assembled from literals.
  */
@@ -102,7 +102,7 @@ export function ThemeToggle({ labels, storageKey, className }: ThemeToggleProps)
 /*
  * Drawn rather than pulled from an icon set. Two glyphs do not justify a
  * dependency, and a stroke weight chosen to sit on the same hairline as every
- * rule and border on the page is the whole point — a stock 2px icon reads as
+ * rule and border on the page is the whole point - a stock 2px icon reads as
  * imported, because it is.
  */
 

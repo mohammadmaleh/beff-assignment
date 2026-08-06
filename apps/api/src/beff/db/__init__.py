@@ -30,7 +30,7 @@ __all__ = [
 #
 # `beff.db.registry` imports every domain model, which imports each domain
 # module's `__init__`, which imports that module's router, which depends on
-# `get_session` from this very package — a cycle, and Python fails it with a
+# `get_session` from this very package - a cycle, and Python fails it with a
 # baffling "partially initialized module" error at the *bottom* of the chain.
 #
 # Alembic and the migration tests are the only consumers, and they import

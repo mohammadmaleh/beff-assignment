@@ -112,7 +112,7 @@ class PostgresExportBuilder:
             "format_version": EXPORT_FORMAT_VERSION,
             "generated_at": utcnow().isoformat(),
             # Named so a recipient system knows what it is looking at without
-            # guessing from the shape — Art. 20 says machine-readable, and
+            # guessing from the shape - Art. 20 says machine-readable, and
             # "machine-readable" includes being self-describing.
             "subject": {
                 "id": str(user.id),
@@ -125,7 +125,7 @@ class PostgresExportBuilder:
                 # docstring; there is a test that fails if it appears.
             },
             # What we sent them, and when. Personal data we hold about the
-            # subject under Art. 15(1) — and the part of it they are least
+            # subject under Art. 15(1) - and the part of it they are least
             # likely to be able to reconstruct themselves, since a message that
             # never arrived leaves no trace on their side.
             #

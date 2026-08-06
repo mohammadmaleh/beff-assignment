@@ -103,7 +103,7 @@ describe('OnboardingWizard', () => {
 
   it('moves focus to the new step so a screen reader is told the page changed', async () => {
     // Without this, focus stays on a button that no longer exists and nothing
-    // is announced — the page silently changes underneath the user.
+    // is announced - the page silently changes underneath the user.
     mockApi(progress());
     renderWithProviders(<OnboardingWizard locale="en" />);
 
@@ -138,7 +138,7 @@ describe('OnboardingWizard', () => {
     expect(screen.getByText('Pilotlinie 1')).toBeInTheDocument();
     // The country comes back from the server as `DE` and is read back as a
     // country. Echoing the code would ask the user to confirm a translation
-    // they never made — they picked `Germany` from a list.
+    // they never made - they picked `Germany` from a list.
     expect(screen.getByText('Germany')).toBeInTheDocument();
     expect(screen.queryByText('DE')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Finish setup' })).toBeEnabled();
@@ -184,15 +184,15 @@ describe('OnboardingWizard', () => {
   // The middle of the wizard.
   //
   // The tests above enter at `role` and at `review`, which between them leave
-  // every field on the three steps in between — and the back button — never
+  // every field on the three steps in between - and the back button - never
   // rendered. That is not a coverage detail: `plant`, `lines` and `units` are
   // where the wizard actually collects anything, and a control whose `onChange`
   // has never run is a control nobody has checked is wired to the right key.
   // ───────────────────────────────────────────────────────────────────────────
 
   it('collects the plant and hands both fields to the server under their own keys', async () => {
-    // A field wired to the wrong key is invisible on screen — the value appears
-    // in the input the user typed into either way — and shows up as a plant
+    // A field wired to the wrong key is invisible on screen - the value appears
+    // in the input the user typed into either way - and shows up as a plant
     // named "DE" once the answers reach the API.
     const fetchMock = mockApi(progress({ current_step: 'plant', answers: { role: 'other' } }));
     renderWithProviders(<OnboardingWizard locale="en" />);
@@ -201,7 +201,7 @@ describe('OnboardingWizard', () => {
     /*
      * Picked by name, stored as a code. The country field is a combobox now,
      * not a two-character text box, so this is also the assertion that the
-     * translation happens — `plants.country_code` has a CHECK constraint that
+     * translation happens - `plants.country_code` has a CHECK constraint that
      * `Germany` would fail.
      *
      * `getByRole` rather than `getByLabelText`: the field's label names the
@@ -228,7 +228,7 @@ describe('OnboardingWizard', () => {
   });
 
   it('treats whitespace as an unanswered field', async () => {
-    // `!answers[key]?.trim()` — otherwise a space satisfies the client check and
+    // `!answers[key]?.trim()` - otherwise a space satisfies the client check and
     // the server rejects the step with a `name_not_blank` violation, which
     // reaches the user as a validation error on a field that looks filled in.
     mockApi(progress({ current_step: 'lines', answers: { role: 'other' } }));
@@ -315,7 +315,7 @@ describe('OnboardingWizard', () => {
   it('falls back to the first step when the server names one it does not know', async () => {
     // The server could be ahead of this deployment. Trusting the string would
     // put `STEPS.indexOf` at -1, and the wizard would render a step with no
-    // fields and no way forward — a dead end rather than a degraded experience.
+    // fields and no way forward - a dead end rather than a degraded experience.
     mockApi(progress({ current_step: 'quantum_alignment', answers: {} }));
     renderWithProviders(<OnboardingWizard locale="en" />);
 
@@ -333,7 +333,7 @@ describe('OnboardingWizard', () => {
     renderWithProviders(<OnboardingWizard locale="en" />);
 
     await screen.findByRole('button', { name: 'Finish setup' });
-    expect(screen.getAllByText('—').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('-').length).toBeGreaterThan(0);
   });
 
   it('sends the user to the dashboard once setup is finished', async () => {

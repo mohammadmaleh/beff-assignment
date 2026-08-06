@@ -4,12 +4,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 /**
  * Applies the stored theme **before first paint**, and renders nothing you can
- * see — the story below shows the script tag it emits, because that is the
+ * see - the story below shows the script tag it emits, because that is the
  * whole component.
  *
  * ## Why it has to be a blocking inline script
  *
- * Anything that runs after hydration — a `useEffect`, a client provider —
+ * Anything that runs after hydration - a `useEffect`, a client provider -
  * paints the default theme first, so a reader who chose dark gets a white flash
  * on every navigation. It belongs in `<head>`, above the app.
  *
@@ -21,14 +21,14 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * ## Why `localStorage` and not a cookie
  *
  * It is a UI preference, it is never sent to the server, and a cookie would
- * drag it into the consent banner for no reason — see `CookieBanner`, which is
+ * drag it into the consent banner for no reason - see `CookieBanner`, which is
  * about the things that genuinely need consent.
  *
  * ## Why the key is a prop
  *
  * This script and `ThemeToggle` are two halves of one contract that never see
  * each other: one runs before React exists, the other inside it. The app owns
- * the key — and namespaces it, since `localStorage` is per *origin* rather than
+ * the key - and namespaces it, since `localStorage` is per *origin* rather than
  * per app.
  */
 const meta = {
@@ -63,7 +63,7 @@ export const EmittedScript: Story = {
 /**
  * The key reaches the script body as a **string literal**, so it is quoted with
  * `JSON.stringify` rather than interpolated. A key containing a quote would
- * otherwise close the literal and the script would stop parsing — the one place
+ * otherwise close the literal and the script would stop parsing - the one place
  * in this package where a prop reaches something evaluated as code.
  */
 export const AKeyThatWouldBreakInterpolation: Story = {

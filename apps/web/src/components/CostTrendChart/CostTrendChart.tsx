@@ -70,14 +70,14 @@ export function costTrendTooltip(
  *
  * ## Why cumulative rather than per batch
  *
- * The per-batch figure is already legible from the yield trend — a bad batch is
+ * The per-batch figure is already legible from the yield trend - a bad batch is
  * a dip, and the euros track it. What no other chart on the page shows is the
  * *total*, and the total is the number the conversation upstairs is actually
  * about. `KpiRow` states it as a single figure; this says how the line got
  * there, which is the difference between "we lost €47 200 this month" and "we
  * lost €47 200 and two thirds of it happened in the last week".
  *
- * A rising cumulative line is not news — it can only rise. Its **slope** is the
+ * A rising cumulative line is not news - it can only rise. Its **slope** is the
  * news, and a steepening curve is a process getting worse in a way a monthly
  * total cannot show and a noisy per-batch bar chart buries.
  *
@@ -142,7 +142,7 @@ export function CostTrendChart({
         align: 'end',
         render: (entry) => format.euro(entry.cumulativeEur),
         text: (entry) => format.euro(entry.cumulativeEur),
-        // Sortable, and sorting it is meaningless on purpose-built data — the
+        // Sortable, and sorting it is meaningless on purpose-built data - the
         // running total only ever ascends in batch order. Left sortable anyway
         // because a column that refuses to sort is a column that looks broken.
         sortValue: (entry) => entry.cumulativeEur,
@@ -169,7 +169,7 @@ export function CostTrendChart({
       yAxis: valueAxis(tokens, {
         // Anchored at zero, always. A cumulative total on a truncated axis
         // exaggerates its own slope, which is the one thing this chart is read
-        // for — `clampMin` makes that structural rather than a habit.
+        // for - `clampMin` makes that structural rather than a habit.
         ...niceBounds([0, ...totals], { padRatio: 0.1, clampMin: 0 }),
         axisLabel: {
           color: tokens['color-text-muted'],

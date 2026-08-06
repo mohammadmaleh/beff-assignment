@@ -16,15 +16,15 @@ from beff.modules.waitlist.service import WaitlistService
 
 __all__ = ["Service", "WaitlistRateLimit", "get_waitlist_service", "waitlist_rate_limit"]
 
-# Five signups per hour from one origin. Generous for a person — nobody signs up
-# five times by accident — and low enough that scripted abuse of the app's only
+# Five signups per hour from one origin. Generous for a person - nobody signs up
+# five times by accident - and low enough that scripted abuse of the app's only
 # anonymous write is not worth the effort.
 WAITLIST_LIMIT = RateLimit(limit=5, window_seconds=3600)
 
 
 def get_waitlist_service(
     # The *request* session, not the limiter's. Creating a waitlist entry is
-    # business data and belongs in the request's unit of work — if the handler
+    # business data and belongs in the request's unit of work - if the handler
     # raises afterwards, the row should go with it.
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> WaitlistService:

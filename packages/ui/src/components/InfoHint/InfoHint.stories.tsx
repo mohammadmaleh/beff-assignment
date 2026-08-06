@@ -7,7 +7,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  *
  * A dashboard is read by people who already know what first-pass yield is.
  * Explaining it in prose beside the figure spends the most valuable space on
- * the page on the reader who needs it least — and the explanation still has to
+ * the page on the reader who needs it least - and the explanation still has to
  * exist, because the reader who *is* new arrives once and needs it badly. This
  * puts it a hover away and gives the rest of the width back to the data.
  *

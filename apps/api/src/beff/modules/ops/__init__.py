@@ -1,4 +1,4 @@
-"""Ops module — health and readiness probes.
+"""Ops module - health and readiness probes.
 
 Public API of this module. `main.py` wires `ops_router` and knows nothing about
 the module's internal structure.

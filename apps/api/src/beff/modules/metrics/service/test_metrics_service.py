@@ -3,7 +3,7 @@
 The interesting mistakes in a metrics service are arithmetic or windowing, never
 storage, so these run against the in-memory repository with a pinned clock.
 Without a fixed clock the two window boundaries move between calls and the
-fixtures stop lining up — which is a test-design bug that looks exactly like a
+fixtures stop lining up - which is a test-design bug that looks exactly like a
 service bug.
 """
 
@@ -57,7 +57,7 @@ def service(
 
 
 async def test_an_account_with_no_line_is_not_an_empty_dashboard() -> None:
-    """Zeros would render as a line running 0% yield — alarming and false. The
+    """Zeros would render as a line running 0% yield - alarming and false. The
     client uses this code to send the user back to onboarding instead."""
     metrics = MetricsService(InMemoryMetricsRepository(line=None), clock=lambda: NOW)
 
@@ -116,7 +116,7 @@ async def test_first_pass_yield_is_passes_over_starts() -> None:
 
 async def test_a_line_that_started_nothing_has_no_yield_rather_than_perfect_yield() -> None:
     """Reporting 100% for "no data" is the most misleading default a dashboard
-    can pick — it is indistinguishable from a flawless month."""
+    can pick - it is indistinguishable from a flawless month."""
     metrics, _ = service()
 
     overview = await metrics.overview(USER)
@@ -234,7 +234,7 @@ async def test_an_empty_window_reports_zero_rather_than_none() -> None:
 
 
 async def test_averages_are_rounded_rather_than_carrying_sql_precision() -> None:
-    """`AVG` over `NUMERIC` returns full precision — 88.3248275862069 reached the
+    """`AVG` over `NUMERIC` returns full precision - 88.3248275862069 reached the
     live API before this existed. The frontend would have formatted it down to
     one decimal and looked fine, but the same number goes into the data-table
     alternative and the GDPR export, where it implies a precision the instrument

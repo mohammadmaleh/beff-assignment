@@ -28,7 +28,7 @@ test-results/
 blob-report/
 *-snapshots/__diff_output__/
 
-# Environment — never commit secrets
+# Environment - never commit secrets
 .env
 .env.*
 !.env.example
@@ -45,15 +45,15 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 
-# Claude Code tooling — local only, not part of the deliverable
+# Claude Code tooling - local only, not part of the deliverable
 .claude/
 CLAUDE.md
 
-# Internal working documentation — kept locally, not published.
+# Internal working documentation - kept locally, not published.
 # The graded design-choices content lives inline in README.md instead.
 docs/
 
-# Assignment source and working context — local only
+# Assignment source and working context - local only
 job-description.md
 assignment-description.md
 CONTEXT.md
@@ -70,5 +70,5 @@ packages/e2e/test-results/
 # someone re-adds it.
 .vercel
 
-# SDD scratch — ledger, briefs, review packages. Never committed.
+# SDD scratch - ledger, briefs, review packages. Never committed.
 .superpowers/

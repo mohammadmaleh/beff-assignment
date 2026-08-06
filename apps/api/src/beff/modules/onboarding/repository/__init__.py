@@ -1,7 +1,7 @@
 """Data access for onboarding.
 
 `Protocol` rather than a base class, so the service takes a fake in unit tests
-without inheriting anything — and mypy checks the fakes against the same
+without inheriting anything - and mypy checks the fakes against the same
 protocol as the PostgreSQL implementations, so a protocol change cannot leave
 them behind.
 """

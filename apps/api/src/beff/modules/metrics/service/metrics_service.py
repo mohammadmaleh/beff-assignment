@@ -72,7 +72,7 @@ class TrendPoint:
 
     Carries both the derived rates and the raw counts they came from. That is
     not redundancy: the yield chart plots the rate, the throughput chart plots
-    the counts, and the tooltip shows "812 of 1 140 cells" — which is the form a
+    the counts, and the tooltip shows "812 of 1 140 cells" - which is the form a
     process engineer actually reasons in. Recomputing counts from a rounded
     percentage on the client would give 811.
     """
@@ -115,7 +115,7 @@ class MetricsTrend:
     overview is four numbers and twelve rows and answers "how bad, and where";
     this is sixty batches and their measurements and answers "since when". They
     have different sizes, different natural cache lifetimes, and the overview is
-    what the page needs to render its first useful pixel — putting the series in
+    what the page needs to render its first useful pixel - putting the series in
     front of it would make the headline wait on data it does not use.
     """
 
@@ -137,7 +137,7 @@ class MetricsTrend:
 def _pct(part: int, whole: int) -> float:
     """Percentage, 0-100, defined as zero on an empty denominator.
 
-    A line that started no cells has no yield — not a division by zero, and not
+    A line that started no cells has no yield - not a division by zero, and not
     100%. Reporting 100% for "no data" is the single most misleading default a
     dashboard can pick.
     """
@@ -162,7 +162,7 @@ def _group_parameters(readings: Iterable[MeasurementPoint]) -> list[ParameterSer
 
     The limits are taken from the **newest** reading in the series, not the
     first. They are stored per reading precisely so that changing a spec window
-    does not reclassify history — which means a window spanning a spec change
+    does not reclassify history - which means a window spanning a spec change
     holds two sets. The chart draws one pair of lines, and the pair it must draw
     is the one in force now; using the oldest would report today's in-spec
     readings as failures.
@@ -288,7 +288,7 @@ class MetricsService:
 
         Batch-by-batch rather than day-by-day. The batch is the unit of
         traceability (CONTEXT.md), and it is also the unit an engineer can act
-        on — "B-2026-041 went wrong" is a thing to go and investigate, whereas
+        on - "B-2026-041 went wrong" is a thing to go and investigate, whereas
         "the 14th went wrong" is not, because two batches on one day are two
         independent runs and averaging them hides the variation the chart exists
         to show.
@@ -329,7 +329,7 @@ class MetricsService:
         # Summed from cells, never averaged from the per-batch percentages. A
         # mean of rates weights a 100-cell batch the same as a 1400-cell one,
         # and on this data that is a sixteen-point error in the flattering
-        # direction — see `test_the_totals_are_summed_from_cells_...`.
+        # direction - see `test_the_totals_are_summed_from_cells_...`.
         started = sum(batch.cells_started for batch in batches)
         passed = sum(batch.cells_passed for batch in batches)
 

@@ -98,8 +98,8 @@ const TREND = {
  *
  * Keyed on the full path rather than on `/metrics`: the dashboard now fires
  * `/metrics/overview` and `/metrics/trend` in parallel, and a single `/metrics`
- * handler answers both with the same body. That fails loudly here — the trend
- * payload has no `points` — but the shape of the mistake is the quiet kind, so
+ * handler answers both with the same body. That fails loudly here - the trend
+ * payload has no `points` - but the shape of the mistake is the quiet kind, so
  * it is worth naming: a fragment that matches more than one route makes a test
  * assert against a payload the API would never send.
  */
@@ -112,7 +112,7 @@ const mockFetch = (body: unknown, ok = true, trend: unknown = TREND): void => {
  *
  * It is labelled by its own visible heading, which is what lets an assertion
  * say "the label in the readings band" rather than "the first element with this
- * text" — a distinction that matters now four charts name the same
+ * text" - a distinction that matters now four charts name the same
  * measurements. The heading used to be `sr-only` and to repeat the page title;
  * once the charts moved in front of it that was both a duplicate announcement
  * and an untitled strip on screen.
@@ -140,10 +140,10 @@ describe('DashboardView', () => {
     renderWithProviders(<DashboardView locale="en" />);
 
     // First-pass yield is a spec band now, not a bare tile, so the figure sits
-    // between a status glyph and its unit. Assert the *readout* — the sentence a
-    // screen reader gets — because that is the thing that has to be true.
+    // between a status glyph and its unit. Assert the *readout* - the sentence a
+    // screen reader gets - because that is the thing that has to be true.
     expect(
-      await screen.findByText(/71\.7\s*% — in spec\. Specification 40\.0–80\.0 %/),
+      await screen.findByText(/71\.7\s*% - in spec\. Specification 40\.0–80\.0 %/),
     ).toBeInTheDocument();
     // Scoped to the headline band. "First-pass yield" is also a column heading
     // in the trend chart's table now, and an unscoped query would pass today by
@@ -158,14 +158,14 @@ describe('DashboardView', () => {
 
     // Yield is a band now: the band carries the verdict and this line carries
     // the movement. Direction is in the sign, so the reading needs no arrow and
-    // no status colour — and must not acquire one, or it would be a second
+    // no status colour - and must not acquire one, or it would be a second
     // signal saying something the band already said better.
     const delta = await screen.findByText('+5.4 pp versus the previous period');
     expect(delta.className).not.toMatch(/status-/);
   });
 
   it('reads falling scrap as good news', async () => {
-    // Scrap is not a band — no plant specifies a total scrap rate — so it keeps
+    // Scrap is not a band - no plant specifies a total scrap rate - so it keeps
     // a tile, and the tile's intent is derived from meaning rather than from
     // the sign. Getting this backwards makes a worsening line look improving.
     mockFetch(OVERVIEW);
@@ -181,7 +181,7 @@ describe('DashboardView', () => {
 
     // 71.7% is a good week on a pilot line and a crisis on a production one.
     // The fixture's line is `pilot`, so the reading must be drawn against
-    // 40–80 — the whole reason a bare number with an arrow could not do this.
+    // 40–80 - the whole reason a bare number with an arrow could not do this.
     expect(
       await screen.findByText(/Specification 40\.0–80\.0 %, target 70\.0 %/),
     ).toBeInTheDocument();
@@ -195,7 +195,7 @@ describe('DashboardView', () => {
 
     await screen.findByText('Where the scrap happened');
     // Scoped to the breakdown. The exceptions panel at the top of the page
-    // names the most expensive step — formation — in its own first sentence,
+    // names the most expensive step - formation - in its own first sentence,
     // and an unscoped query reads that as the first bar of this chart.
     const scrap = screen.getByRole('region', { name: 'Where the scrap happened' });
     const rendered = within(scrap).getAllByText(/Coating|Formation/);
@@ -210,12 +210,12 @@ describe('DashboardView', () => {
     const scrap = screen.getByRole('region', { name: 'Where the scrap happened' });
 
     // Scoped: every chart on the page carries its own tablist now, which is
-    // the point — but it means "the table" is ambiguous and this test is about
+    // the point - but it means "the table" is ambiguous and this test is about
     // the scrap breakdown's one specifically.
     await userEvent.click(within(scrap).getAllByRole('tab', { name: 'Table' })[0] as HTMLElement);
 
     // Addressed by its caption, which is the table's accessible name. The
-    // section holds two tables — the rate breakdown and the cost breakdown —
+    // section holds two tables - the rate breakdown and the cost breakdown -
     // and they deliberately share a column heading, so the caption is the only
     // thing that tells them apart.
     expect(
@@ -242,7 +242,7 @@ describe('DashboardView', () => {
      * Counting tabs is not the assertion this test is named for.
      *
      * A `ChartFigure` rendered with `table={undefined}` would have a Table tab,
-     * a Table panel, and nothing inside it — and a count of either would pass
+     * a Table panel, and nothing inside it - and a count of either would pass
      * while the rule the whole chart layer rests on was broken. Each panel is
      * therefore opened by the id its tab controls and asked for a real table.
      */
@@ -261,11 +261,11 @@ describe('DashboardView', () => {
     renderWithProviders(<DashboardView locale="en" />);
 
     // The money, and the benchmark that answers "am I good" rather than "am I
-    // in spec" — which is the question Beff's platform actually exists to
+    // in spec" - which is the question Beff's platform actually exists to
     // answer, and the one a specification window cannot.
     // An explicit timeout, because the charts now mount *before* this row.
     // `findBy` defaults to 1s, and five ECharts instances constructing in jsdom
-    // under `maxWorkers: 2` can eat that on their own — the same environment
+    // under `maxWorkers: 2` can eat that on their own - the same environment
     // contention `vitest.config.ts` documents. It failed exactly once, only
     // when run alongside another chart file, which is the shape of a flake
     // rather than a regression.
@@ -275,7 +275,7 @@ describe('DashboardView', () => {
      * Scoped to the masthead.
      *
      * The window's total is €34 764, and the cumulative cost curve's table
-     * necessarily ends on the same figure — that is the two views agreeing, not
+     * necessarily ends on the same figure - that is the two views agreeing, not
      * a duplicate. An unscoped `findByText` fails on it with `Found multiple`,
      * which reads as a regression and is the charts being correct.
      */
@@ -296,7 +296,7 @@ describe('DashboardView', () => {
     ).toBeInTheDocument();
 
     // Both figures' tables are behind their own Table tab now. Clicked in
-    // sequence — userEvent's pointer state is not safe to drive concurrently.
+    // sequence - userEvent's pointer state is not safe to drive concurrently.
     for (const tab of screen.getAllByRole('tab', { name: 'Table' })) {
       await userEvent.click(tab);
     }
@@ -310,9 +310,9 @@ describe('DashboardView', () => {
 
   it('keeps the headline figures when only the trend fails', async () => {
     // Two queries, two failures. A trend that 500s must not blank the four
-    // readings that already arrived — which is the entire reason it is a second
+    // readings that already arrived - which is the entire reason it is a second
     // request rather than more fields on the first.
-    // A real failure — a 500 — not an unmatched route. React Query leaves
+    // A real failure - a 500 - not an unmatched route. React Query leaves
     // `data` undefined on error, which is the state the component guards on;
     // an unmatched route in `mockFetchJson` resolves 200 with a `null` body,
     // which is a shape the API cannot produce and would test nothing.
@@ -323,7 +323,7 @@ describe('DashboardView', () => {
     renderWithProviders(<DashboardView locale="en" />);
 
     expect(
-      await screen.findByText(/71\.7\s*% — in spec\. Specification 40\.0–80\.0 %/),
+      await screen.findByText(/71\.7\s*% - in spec\. Specification 40\.0–80\.0 %/),
     ).toBeInTheDocument();
     expect(screen.queryByText('How it got here')).not.toBeInTheDocument();
   });
@@ -332,10 +332,10 @@ describe('DashboardView', () => {
     mockFetch(OVERVIEW);
     renderWithProviders(<DashboardView locale="en" />);
 
-    // Three bands now — yield, capacity retention, and the one process
+    // Three bands now - yield, capacity retention, and the one process
     // parameter in the fixture. Each states its verdict in words rather than by
     // hue, so a reader who cannot see the colour still gets the answer.
-    const readouts = await screen.findAllByText(/— (in spec|out of spec)/);
+    const readouts = await screen.findAllByText(/- (in spec|out of spec)/);
     expect(readouts).toHaveLength(3);
   });
 
@@ -343,7 +343,7 @@ describe('DashboardView', () => {
     /*
      * The change this layout rests on: the prose still exists, and it is not
      * printed. Asserted both ways round, because either half alone blesses the
-     * wrong thing — deleting the copy would pass a "no paragraph" check, and
+     * wrong thing - deleting the copy would pass a "no paragraph" check, and
      * leaving the paragraph in place would pass a "the text exists" check.
      */
     mockFetch(OVERVIEW);
@@ -357,7 +357,7 @@ describe('DashboardView', () => {
     const hint = document.getElementById(trigger.getAttribute('aria-describedby') as string);
 
     expect(hint).toHaveTextContent(/A cell lost at formation has absorbed every upstream cost/);
-    // Off screen until asked for — and still in the accessibility tree, which
+    // Off screen until asked for - and still in the accessibility tree, which
     // is the whole reason it is `sr-only` rather than unmounted.
     expect(hint).toHaveClass('sr-only');
 
@@ -398,7 +398,7 @@ describe('DashboardView', () => {
 
   it('asks the batches the two questions the trend line cannot', async () => {
     // The distribution answers "how repeatable", the cumulative curve answers
-    // "what has it cost so far" — neither is recoverable from a trend line, and
+    // "what has it cost so far" - neither is recoverable from a trend line, and
     // both are built from fields that were already in the payload.
     mockFetch(OVERVIEW);
     renderWithProviders(<DashboardView locale="en" />);
@@ -442,8 +442,8 @@ describe('DashboardView', () => {
     expect(
       screen.getByRole('heading', { name: 'Erstdurchlaufquote je Charge' }),
     ).toBeInTheDocument();
-    // Named in three places — the KPI label, the cost chart's heading and its
-    // column heading — which is the point: one German term, used consistently.
+    // Named in three places - the KPI label, the cost chart's heading and its
+    // column heading - which is the point: one German term, used consistently.
     expect(screen.getAllByText('Verlorene gebundene Wertschöpfung').length).toBeGreaterThan(1);
   });
 });

@@ -15,7 +15,7 @@
  *
  * ## Why limits are an input
  *
- * A distribution is drawn to be read against something — a specification
+ * A distribution is drawn to be read against something - a specification
  * window, a cohort median. If the bins stop short of a limit, the limit is
  * drawn outside the plot and silently disappears, and the chart quietly stops
  * showing the thing it exists to show. Passing them in as `include` extends the
@@ -46,7 +46,7 @@ export interface Bin {
 
 export interface HistogramOptions {
   /**
-   * Values the range must reach even though they are not data — a
+   * Values the range must reach even though they are not data - a
    * specification limit, a percentile. They are not counted.
    */
   include?: readonly number[];
@@ -58,7 +58,7 @@ export interface HistogramOptions {
  * Bin values into round-edged buckets that span the data and everything drawn
  * beside it.
  *
- * Returns `[]` for no finite values — an empty histogram is a legitimate state
+ * Returns `[]` for no finite values - an empty histogram is a legitimate state
  * (a window with no batches yet), and the caller can distinguish it from a
  * broken one.
  */
@@ -94,7 +94,7 @@ export function histogram(values: readonly number[], options: HistogramOptions =
       end: binEnd,
       count: finite.filter((value) =>
         // The last bin closes on the right, or the maximum value falls out of
-        // the histogram entirely — off by one bar, silently, always at the end.
+        // the histogram entirely - off by one bar, silently, always at the end.
         last ? value >= binStart && value <= binEnd : value >= binStart && value < binEnd,
       ).length,
     };
@@ -107,7 +107,7 @@ export function histogram(values: readonly number[], options: HistogramOptions =
  * ECharts places a `markLine` on a category axis by index, and a specification
  * limit almost never lands on a bin boundary. Without this the limit snaps to
  * the nearest bar and the chart shows a rule two points from where it actually
- * is — which on a yield window is the difference between in spec and out.
+ * is - which on a yield window is the difference between in spec and out.
  *
  * The offset of `0.5` is because a category tick is drawn at the *centre* of
  * its band.

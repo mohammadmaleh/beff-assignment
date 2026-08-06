@@ -10,9 +10,9 @@ import { ChartViews } from './ChartViews';
  * ## What it guarantees
  *
  * A `<figure>` with a real `<figcaption>`, a drawing that is `aria-hidden`, and
- * a `<table>` that carries the same numbers as a peer view — not a footnote
+ * a `<table>` that carries the same numbers as a peer view - not a footnote
  * disclosed underneath. The table is not an alternative bolted on for
- * compliance — it is the authoritative rendering, and the drawing is a fast
+ * compliance - it is the authoritative rendering, and the drawing is a fast
  * visual index into it. `ScrapChart` set that inversion and this generalises
  * it, so a fifth chart cannot be added without one.
  *
@@ -22,7 +22,7 @@ import { ChartViews } from './ChartViews';
  * demand. It stops being defensible once the table is the authoritative
  * rendering: a grey line of text below a hairline rule said "extra" to
  * everyone who could see it, while the docstring said the opposite. The
- * pre-hydration argument for `<details>` is also void on this surface — the
+ * pre-hydration argument for `<details>` is also void on this surface - the
  * dashboard is client-rendered off React Query, so before JS runs there are no
  * rows to disclose either way. A tablist names both views equally and states
  * which one is showing.
@@ -65,7 +65,7 @@ export function ChartFigure({
     /*
      * A grid rather than a flex header row, because `<figcaption>` must be the
      * first or last child of `<figure>`. Wrapping it with the tablist in a
-     * header `div` is invalid HTML and breaks the figure's accessible name —
+     * header `div` is invalid HTML and breaks the figure's accessible name -
      * the tablist is a sibling, placed beside the caption by the grid.
      */
     <figure className="m-0 grid grid-cols-1 items-start gap-3 sm:grid-cols-[1fr_auto]">

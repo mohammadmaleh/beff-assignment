@@ -1,6 +1,6 @@
 """The problem document itself, and the category-to-status mapping.
 
-Keeping the mapping here — rather than on the exception classes — is what lets a
+Keeping the mapping here - rather than on the exception classes - is what lets a
 service raise `ConflictError` without importing anything HTTP-shaped. The edge
 decides that a conflict is a 409; the domain only says that it is a conflict.
 """
@@ -32,8 +32,8 @@ __all__ = [
     "type_uri_for",
 ]
 
-# RFC 9457 §3. Not `application/json`: a client — or a proxy, or a browser
-# devtools pane — can tell a problem document from a successful payload by the
+# RFC 9457 §3. Not `application/json`: a client - or a proxy, or a browser
+# devtools pane - can tell a problem document from a successful payload by the
 # media type alone.
 PROBLEM_CONTENT_TYPE = "application/problem+json"
 
@@ -54,7 +54,7 @@ _STATUS_BY_CATEGORY: tuple[tuple[type[AppError], int], ...] = (
 def status_for(error: AppError) -> int:
     """The HTTP status for a domain error's category.
 
-    Anything not in the table is a 500 — an `AppError` subclass that forgot to
+    Anything not in the table is a 500 - an `AppError` subclass that forgot to
     pick a category is a programming mistake, not a client error.
     """
     for category, code in _STATUS_BY_CATEGORY:
@@ -114,7 +114,7 @@ class Problem(BaseModel):
     title: str = Field(description="Short, human-readable summary. Stable per type.")
     status: int = Field(description="HTTP status code, repeated for clients that lost it.")
     detail: str = Field(description="Explanation specific to this occurrence.")
-    instance: str = Field(description="URI of the specific occurrence — the request path.")
+    instance: str = Field(description="URI of the specific occurrence - the request path.")
 
     code: str = Field(
         description=(
@@ -137,7 +137,7 @@ def problem_response(problem: Problem) -> JSONResponse:
     """Render a problem document with the correct media type.
 
     `exclude_none` so a non-validation problem does not carry a null `errors`
-    key — RFC 9457 members are optional by absence, not by null.
+    key - RFC 9457 members are optional by absence, not by null.
     """
     return JSONResponse(
         status_code=problem.status,

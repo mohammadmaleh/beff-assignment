@@ -1,10 +1,10 @@
-"""The `consent_records` table — append-only proof of what was consented to.
+"""The `consent_records` table - append-only proof of what was consented to.
 
 GDPR Art. 7(1) puts the burden of proof on the controller: you must be able to
 demonstrate that the data subject consented. A boolean column that gets
 `UPDATE`d to `false` on withdrawal destroys exactly the evidence the article
-asks for. So consent is an event log — granting and withdrawing are both new
-rows — and the migration installs a trigger that rejects `UPDATE` and `DELETE`
+asks for. So consent is an event log - granting and withdrawing are both new
+rows - and the migration installs a trigger that rejects `UPDATE` and `DELETE`
 outright, because a convention nobody can violate is worth more than one in a
 code review checklist.
 """
@@ -49,7 +49,7 @@ CONSENT_PURPOSES: Final = (
 
 # The subset the data subject can turn on and off for themselves. Accepting the
 # terms and the privacy policy are recorded at registration and are not
-# withdrawable in isolation — withdrawing those is erasure, and it has its own
+# withdrawable in isolation - withdrawing those is erasure, and it has its own
 # endpoint. These two are what `GET /privacy/consent` reports on.
 MANAGEABLE_CONSENT_PURPOSES: Final = ("analytics", "marketing")
 
@@ -57,7 +57,7 @@ MANAGEABLE_CONSENT_PURPOSES: Final = ("analytics", "marketing")
 #
 # A constant rather than a setting: it is not environment-specific, it changes
 # only when the published policy changes, and that change belongs in a commit
-# next to the new text — not in an environment variable somebody can set to a
+# next to the new text - not in an environment variable somebody can set to a
 # version that was never published. `MANAGEABLE_CONSENT_PURPOSES` and the German
 # and English policy pages in `apps/web` move together with it.
 CURRENT_POLICY_VERSION: Final = "2026-01-01"
@@ -76,7 +76,7 @@ class ConsentRecord(Base):
     `ip_hash` is a salted SHA-256, never a raw IP: an IP address is personal
     data under GDPR, and the only thing it is needed for here is showing the
     data subject *that* an origin was recorded. `country_code` is deliberately
-    the finest location granularity stored — city-level geolocation would be a
+    the finest location granularity stored - city-level geolocation would be a
     new purpose requiring its own legal basis.
     """
 

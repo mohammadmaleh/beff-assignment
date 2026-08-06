@@ -2,7 +2,7 @@
 
 Note what these do *not* say. `InvalidCredentialsError` covers both "no such
 account" and "wrong password", with one message, because distinguishing them
-hands an attacker a free account-enumeration oracle — and the same reasoning is
+hands an attacker a free account-enumeration oracle - and the same reasoning is
 why the service burns equivalent CPU time on the missing-user path.
 """
 
@@ -84,7 +84,7 @@ class RefreshTokenReusedError(AuthenticationError):
 
     Distinct from `RefreshTokenInvalidError` on purpose. The client cannot
     recover by refreshing and must sign in again, and the frontend should say
-    so — "you were signed out for your security" rather than a generic error.
+    so - "you were signed out for your security" rather than a generic error.
     """
 
     code = "auth.refresh_token_reused"
@@ -106,7 +106,7 @@ class VerificationTokenInvalidError(DomainValidationError):
     One error for three causes, deliberately. Distinguishing "no such token"
     from "already used" tells anyone holding a guessed token whether they got
     close, and there is nothing the legitimate holder of a spent link can do
-    differently on being told which it was — the answer in both cases is to ask
+    differently on being told which it was - the answer in both cases is to ask
     for a new one.
 
     A 422 rather than a 401: the caller is not failing to authenticate, they are
@@ -129,7 +129,7 @@ class VerificationTokenExpiredError(DomainValidationError):
 
     Distinct from invalid, and the distinction is safe to make: expiry is a
     property of a token the holder demonstrably had, so it reveals nothing a
-    guesser could use. It is worth making because the recovery is different —
+    guesser could use. It is worth making because the recovery is different -
     "ask for a new one", not "check the link you followed".
     """
 

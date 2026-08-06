@@ -2,7 +2,7 @@
 
 Separate file from `test_metrics_service.py` because it is a separate question.
 That file asks whether the headline arithmetic and the two comparison windows
-are right; this one asks whether a *series* is right — ordering, the
+are right; this one asks whether a *series* is right - ordering, the
 per-batch derivations, the grouping into control charts, and the totals the KPI
 widgets read.
 
@@ -67,7 +67,7 @@ async def test_an_account_with_no_line_raises_rather_than_returning_an_empty_ser
 
 
 async def test_a_line_with_no_batches_is_an_empty_series_not_an_error() -> None:
-    """A configured line that has produced nothing yet is a real, valid state —
+    """A configured line that has produced nothing yet is a real, valid state -
     it renders the empty state, not the error state."""
     result = await service().trend(USER)
 
@@ -107,7 +107,7 @@ async def test_first_pass_yield_is_computed_per_batch_not_averaged_over_the_wind
 
 
 async def test_scrap_rate_and_yield_sum_to_a_hundred_for_each_batch() -> None:
-    """Every cell that started either passed end-of-line test or was scrapped —
+    """Every cell that started either passed end-of-line test or was scrapped -
     there is no third outcome in the schema. If these two ever fail to sum, one
     of them is being computed against the wrong denominator."""
     result = await service(
@@ -158,7 +158,7 @@ async def test_the_committed_value_lost_totals_across_the_window() -> None:
 
 async def test_the_totals_are_summed_from_cells_not_averaged_from_percentages() -> None:
     """Averaging the two per-batch yields gives 70%. The line actually started
-    1100 cells and passed 590, which is 53.6% — a difference of sixteen points,
+    1100 cells and passed 590, which is 53.6% - a difference of sixteen points,
     and the wrong one is the flattering one."""
     result = await service(
         series=[
@@ -188,7 +188,7 @@ async def test_the_worst_batch_is_named_so_the_engineer_can_go_and_look_at_it() 
 
 
 async def test_there_is_no_best_or_worst_batch_when_there_are_no_batches() -> None:
-    """`None`, not the empty string — the client renders the field only when it
+    """`None`, not the empty string - the client renders the field only when it
     is present, and `""` is a batch code that formats as a blank link."""
     result = await service().trend(USER)
 
@@ -230,7 +230,7 @@ async def test_a_parameter_series_carries_the_limits_it_was_judged_against() -> 
 async def test_the_limits_come_from_the_newest_reading_in_the_series() -> None:
     """Limits are stored per reading, so a window that spans a spec change holds
     two. The chart draws one pair of lines and it must be the pair in force now
-    — drawing February's limits over July's readings would report in-spec
+    - drawing February's limits over July's readings would report in-spec
     measurements as failures."""
     result = await service(
         measurements=[

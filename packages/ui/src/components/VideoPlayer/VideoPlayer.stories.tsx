@@ -8,7 +8,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * Native `controls` rather than a custom player: keyboard operation, the
  * scrubber, volume, playback rate and every assistive-technology announcement
  * arrive free and correct. This is the clearest case in the library of the
- * project's "native HTML before ARIA" rule — the native element is not merely
+ * project's "native HTML before ARIA" rule - the native element is not merely
  * sufficient here, it is better than anything we would build.
  *
  * ## Two things it will not do
@@ -23,7 +23,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  *
  * ## `label` is required, with no default
  *
- * A `<video>` has no intrinsic accessible name — unlabelled it is announced as
+ * A `<video>` has no intrinsic accessible name - unlabelled it is announced as
  * "video" and nothing else. The label is therefore the element's entire
  * identity to a screen reader, and a default would be an English string
  * shipping onto the German page with nothing to catch it: axe is indifferent to
@@ -48,7 +48,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 /**
- * The same element with its accessible name in German — the case the required
+ * The same element with its accessible name in German - the case the required
  * prop exists to force. Inspect it in the a11y panel: the name is the only
  * thing a screen reader has to go on.
  */

@@ -20,7 +20,7 @@ type Outcome = 'checking' | 'success' | 'expired' | 'invalid' | 'missing' | 'err
  * Three things about the shape are deliberate.
  *
  * **It posts.** The token arrives in the query string because a link is a GET,
- * but redeeming it is a state change — and a GET here would be prefetched by
+ * but redeeming it is a state change - and a GET here would be prefetched by
  * mail clients and retried by proxies, spending the single-use token before the
  * reader ever clicked.
  *
@@ -41,7 +41,7 @@ export function VerifyEmailView({ locale }: { locale: Locale }) {
   // React 18+ mounts effects twice in development StrictMode. The token is
   // single-use, so without this the second run would consume the token the
   // first one just spent and the page would report an invalid link on a
-  // perfectly good one — in development only, which is the worst place to
+  // perfectly good one - in development only, which is the worst place to
   // debug it from.
   const attempted = useRef(false);
 
@@ -66,7 +66,7 @@ export function VerifyEmailView({ locale }: { locale: Locale }) {
           return;
         }
 
-        // The stable `code` is the contract, not the English `detail` — that is
+        // The stable `code` is the contract, not the English `detail` - that is
         // the whole reason the API carries one, and parsing prose would break
         // this page the moment somebody rewords a sentence.
         const problem: unknown = await response.json().catch(() => null);
@@ -125,7 +125,7 @@ export function VerifyEmailView({ locale }: { locale: Locale }) {
             title={copy[outcome].title}
             prefixes={t.a11y.alertPrefixes}
             // The alert *replaces* the live region above it. Without this, the
-            // announcement of the outcome — the one thing the reader came for —
+            // announcement of the outcome - the one thing the reader came for -
             // is silence following "confirming your address…".
             announce
           >

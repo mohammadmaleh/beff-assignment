@@ -6,7 +6,7 @@
  * wherever the same measurement appears, or the marketing page and the
  * dashboard label one number two ways.
  *
- * None of these is translated, and that is correct rather than an omission —
+ * None of these is translated, and that is correct rather than an omission -
  * `%`, `pp` and `kg CO₂e/kWh` are SI-and-convention symbols, written the same
  * in German as in English. The *spacing* around `%` differs by locale, which is
  * why `%` never appears in a template literal here: see `lib/format`.

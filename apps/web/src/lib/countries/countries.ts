@@ -10,8 +10,8 @@ import type { CountryOption } from '@beff/ui/country-select';
  *
  * `i18n-iso-countries` carries every language in the package; importing the two
  * JSON files by name is what keeps the other ninety out of the bundle. The list
- * is ISO 3166-1 itself — the same standard the `country_code ~ '^[A-Z]{2}$'`
- * CHECK constraint on `plants` enforces — so the picker cannot offer a value
+ * is ISO 3166-1 itself - the same standard the `country_code ~ '^[A-Z]{2}$'`
+ * CHECK constraint on `plants` enforces - so the picker cannot offer a value
  * the database will reject.
  */
 countries.registerLocale(en);
@@ -23,7 +23,7 @@ countries.registerLocale(de);
  * The collation is the point. `Intl.Collator('de')` files `Österreich` under O,
  * where a German reader looks for it; a plain `sort()` compares UTF-16 code
  * units and files it after `Zypern`, which is not a quirk but a list nobody can
- * scan. Swedish would want it after Z — which is exactly why this decision
+ * scan. Swedish would want it after Z - which is exactly why this decision
  * belongs to the app that knows the language and not to the picker.
  *
  * Memoised per locale: the list is 250 entries and the same for every render.

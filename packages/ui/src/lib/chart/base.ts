@@ -17,7 +17,7 @@ import type { ChartTokens } from './tokens';
  *   both axes make a chart look like a spreadsheet and compete with the marks.
  * - **Text wears text tokens, never the series colour.** A label in the
  *   series' own hue reads as data.
- * - **Tabular figures everywhere**, matching the rest of the app — a tooltip
+ * - **Tabular figures everywhere**, matching the rest of the app - a tooltip
  *   whose numbers reflow as they change is unreadable while hovering along a
  *   line.
  * - **Motion is off by default and opted into.** See `animation` below.
@@ -81,12 +81,12 @@ export function baseOption({ tokens, reducedMotion }: BaseOptionInput): EChartsO
 }
 
 /**
- * A category axis: batches, process steps — things with names, not positions.
+ * A category axis: batches, process steps - things with names, not positions.
  *
  * Generic in `extra` so the caller's own keys survive into the return type. A
  * plain `Record<string, unknown>` parameter erases them, which makes
  * `categoryAxis(tokens, { data }).data` a type error at every call site that
- * wants to read back what it passed — including the tests that check an
+ * wants to read back what it passed - including the tests that check an
  * override did not clobber a default.
  */
 export function categoryAxis<E extends Record<string, unknown>>(
@@ -119,7 +119,7 @@ export function valueAxis<E extends Record<string, unknown>>(
         color: tokens['color-surface-sunken'],
         width: 1,
         // Solid, in the sunken surface. A dashed gridline is a *meaningful*
-        // line style in this app — every reference line (spec limit, cohort
+        // line style in this app - every reference line (spec limit, cohort
         // percentile, target) is dashed, and a dashed grid would make the
         // background argue with the foreground.
         type: 'solid' as const,
@@ -135,7 +135,7 @@ export function valueAxis<E extends Record<string, unknown>>(
  * Always dashed and always in a neutral, never in a series colour. That pair of
  * rules is what lets a reader tell a *measurement* from a *rule it is judged
  * against* without being told, and it survives greyscale, colour blindness and
- * a printout — which the colour alone would not.
+ * a printout - which the colour alone would not.
  */
 export function referenceLine(
   tokens: ChartTokens,
@@ -149,7 +149,7 @@ export function referenceLine(
     label: string;
     strong?: boolean;
     /**
-     * Which axis the value is read against — `y` for a horizontal rule across a
+     * Which axis the value is read against - `y` for a horizontal rule across a
      * trend, `x` for a vertical one down a distribution.
      *
      * A histogram measures the same limits as the trend beside it and has to
@@ -167,7 +167,7 @@ export function referenceLine(
     },
     label: {
       formatter: label,
-      // A vertical rule has no "inside end" worth the name — the label would
+      // A vertical rule has no "inside end" worth the name - the label would
       // sit on the plot's own top edge. It goes above the line instead.
       position: axis === 'x' ? ('end' as const) : ('insideEndTop' as const),
       color: tokens['color-text-muted'],

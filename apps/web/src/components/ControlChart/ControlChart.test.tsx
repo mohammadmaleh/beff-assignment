@@ -11,7 +11,7 @@ import type { ParameterSeries } from '@beff/api-client/types';
 /**
  * The verdict is the thing under test.
  *
- * On the drawing, a breaching point is a larger marker in `danger` — a colour,
+ * On the drawing, a breaching point is a larger marker in `danger` - a colour,
  * which for roughly one man in twelve is not a signal at all. That is allowed
  * only because it is the *second* encoding: the position against a shaded band
  * is the first, and the word in this table is the third. These assertions are
@@ -97,7 +97,7 @@ describe('ControlChart', () => {
   });
 
   it('treats a value exactly on a limit as in spec', async () => {
-    // The limits are inclusive — a reading *at* 240.0 has not breached 240.0,
+    // The limits are inclusive - a reading *at* 240.0 has not breached 240.0,
     // and an off-by-one here reports a conforming batch as a failure.
     render(
       <ControlChart
@@ -151,7 +151,7 @@ describe('ControlChart', () => {
     await openTable();
 
     /*
-     * Below the lower limit of 240 — the reading that breached, and nothing
+     * Below the lower limit of 240 - the reading that breached, and nothing
      * else. The label is `Maximum`, not `To`: the group is captioned by the
      * column it filters, so "to" no longer has to carry the question of *what*
      * on a page where four tables each filter a different measure.
@@ -176,7 +176,7 @@ describe('ControlChart', () => {
   });
 
   it('exports the verdict as a word, even though the cell renders a badge', async () => {
-    // The verdict column's `render` returns null — the badge replaces it. If
+    // The verdict column's `render` returns null - the badge replaces it. If
     // the export read `render` instead of `text`, the most important column in
     // the file would be empty.
     const csv = captureCsvDownload();

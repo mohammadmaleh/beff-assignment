@@ -9,7 +9,7 @@ import { REDUCED_MOTION_QUERY } from '../media/index';
  *
  * CSS handles this for everything the app draws itself, via the
  * `@media (prefers-reduced-motion: reduce)` block in `globals.css`. A canvas or
- * SVG animated by JavaScript is outside the cascade's reach entirely — ECharts
+ * SVG animated by JavaScript is outside the cascade's reach entirely - ECharts
  * runs its own render loop and will happily tween a path for 400ms regardless
  * of what any stylesheet says. So the preference has to be read and passed in.
  *

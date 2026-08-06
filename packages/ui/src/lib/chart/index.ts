@@ -1,7 +1,7 @@
 /**
  * The chart layer of the design system.
  *
- * Everything here is about *how a chart is drawn* — the ECharts build, the
+ * Everything here is about *how a chart is drawn* - the ECharts build, the
  * palette it reads, the axis defaults, the nice-number scale, the tooltip
  * plumbing. Nothing here knows what a batch or a process step is. The charts
  * that do know live in the app that owns the domain, and compose these.

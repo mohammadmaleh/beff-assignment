@@ -1,6 +1,6 @@
 """Unit tests for the export queue.
 
-The interesting behaviour is not what the JSON looks like — it is what happens
+The interesting behaviour is not what the JSON looks like - it is what happens
 on the second attempt, on a replay, and when a worker dies mid-build.
 """
 
@@ -117,7 +117,7 @@ async def test_replaying_the_worker_produces_one_export(
 ) -> None:
     """**The at-least-once requirement.**
 
-    Retries happen — that is what at-least-once delivery means. The claim moves
+    Retries happen - that is what at-least-once delivery means. The claim moves
     the row out of `pending` in the same step that counts the attempt, so a
     second pass finds nothing to claim and the builder is never run twice.
     """
@@ -210,7 +210,7 @@ async def test_the_owner_can_download_a_ready_export(
 
 
 async def test_someone_else_cannot_download_it(jobs: InMemoryExportRepository) -> None:
-    """And the error is "not found", not "not yours" — the second would confirm
+    """And the error is "not found", not "not yours" - the second would confirm
     the export exists to anyone who guessed an id."""
     exports = service(jobs, RecordingBuilder())
     job = await exports.request(USER)

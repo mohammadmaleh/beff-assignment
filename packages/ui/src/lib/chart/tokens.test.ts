@@ -7,7 +7,7 @@ import { readChartTokens, useChartTokens } from './tokens';
  * `readChartTokens` is the seam between the cascade and the canvas, and it has
  * exactly one interesting failure: a colour string ECharts cannot parse. SVG
  * and canvas both *silently ignore* an unparseable fill, so the chart renders
- * with invisible marks and nothing errors anywhere — no console warning, no
+ * with invisible marks and nothing errors anywhere - no console warning, no
  * exception, just an empty plot area that looks like a data problem.
  */
 
@@ -48,7 +48,7 @@ describe('readChartTokens', () => {
   it('resolves every token a chart is allowed to draw with', () => {
     const tokens = readChartTokens(withCustomProperties(''));
 
-    // No empty values anywhere — a single unresolved token is one invisible
+    // No empty values anywhere - a single unresolved token is one invisible
     // series, one missing axis or one unreadable tooltip.
     expect(Object.values(tokens).every((value) => value.length > 0)).toBe(true);
   });
@@ -76,7 +76,7 @@ describe('readChartTokens', () => {
  *
  * A chart is painted, not styled: the cascade cannot reach it, so it holds a
  * copy of the palette and that copy goes stale the moment the theme moves. Two
- * things move it, and they are genuinely different events — the toggle writes
+ * things move it, and they are genuinely different events - the toggle writes
  * `data-theme` on `<html>`, and an OS on a sunset schedule changes the computed
  * value while touching no attribute at all. A hook that watched only the first
  * leaves every chart in the old palette on a surface that has already flipped,
@@ -147,7 +147,7 @@ describe('useChartTokens', () => {
   });
 
   it('re-reads when the OS crosses its own light/dark schedule', async () => {
-    // No attribute changes here at all — this is the path a `MutationObserver`
+    // No attribute changes here at all - this is the path a `MutationObserver`
     // alone cannot see, and the one a reader who never touched the toggle is on.
     const media = stubSchemeQuery();
     document.documentElement.style.setProperty('--color-chart-series-1', '#0071b1');

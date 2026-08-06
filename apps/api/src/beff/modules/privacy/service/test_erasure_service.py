@@ -45,8 +45,8 @@ async def test_erasure_deletes_the_exports(
 async def test_consent_records_are_pseudonymised_not_deleted(
     service: ErasureService, repository: InMemoryErasureRepository
 ) -> None:
-    """They are held on a different basis — Art. 6(1)(c), the accountability
-    obligation in Art. 7(1) — so deleting them would destroy the proof that the
+    """They are held on a different basis - Art. 6(1)(c), the accountability
+    obligation in Art. 7(1) - so deleting them would destroy the proof that the
     processing which just ended was lawful."""
     await service.erase(USER)
 
@@ -90,7 +90,7 @@ async def test_erasure_deletes_the_verification_tokens(
     """Not only data minimisation.
 
     An unconsumed token is a live credential for an address that soft delete is
-    about to free for re-registration — so leaving one behind would let an old
+    about to free for re-registration - so leaving one behind would let an old
     link, sitting in an old inbox, act on somebody else's new account.
     """
     await service.erase(USER)
@@ -117,8 +117,8 @@ async def test_verification_tokens_die_before_the_email_is_freed_for_reuse(
 ) -> None:
     """The ordering that makes the previous test more than bookkeeping.
 
-    Soft delete is what releases the address — the partial unique index is
-    `WHERE deleted_at IS NULL` — so a token still live at that moment is live
+    Soft delete is what releases the address - the partial unique index is
+    `WHERE deleted_at IS NULL` - so a token still live at that moment is live
     against an address anyone can now register.
     """
     await ErasureService(repository).erase(USER)

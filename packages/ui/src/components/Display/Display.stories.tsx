@@ -7,7 +7,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * constant: **`Archivo Expanded` is not a family**. It is `wdth: 125` on the
  * Archivo variable font, so the typeface only appears when the family and the
  * width axis are both set. Either one alone renders a heading that looks nearly
- * right and is not the brand's face — legible, plausible, wrong, and nothing
+ * right and is not the brand's face - legible, plausible, wrong, and nothing
  * fails.
  *
  * It replaced 34 hand-written class strings in nine near-identical spellings.
@@ -35,7 +35,7 @@ export const PageTitle: Story = { args: { as: 'h1', children: 'Production overvi
 /**
  * Tight leading and `text-balance`, for a heading that runs to two or three
  * lines and where an orphaned last word is the whole visual problem. A
- * one-line title wants neither — `text-wrap: balance` on a line that does not
+ * one-line title wants neither - `text-wrap: balance` on a line that does not
  * wrap is work done for nothing.
  */
 export const BandHeading: Story = {

@@ -137,7 +137,7 @@ describe('AuthProvider', () => {
       //
       // Note what this does *not* gate: the `catch` beside it. Delete that and
       // this assertion still passes, because `finally` runs either way. The
-      // escaping rejection is what fails then — vitest reports it as a
+      // escaping rejection is what fails then - vitest reports it as a
       // run-level unhandled error and exits 1 while every test still shows
       // green. Verified by breaking it deliberately.
       mockFetch({
@@ -219,7 +219,7 @@ describe('AuthProvider', () => {
     });
 
     it('propagates a rejected login rather than swallowing it', async () => {
-      // AuthForm's entire error handling depends on this rejecting — if the
+      // AuthForm's entire error handling depends on this rejecting - if the
       // provider absorbed the failure, a wrong password would look like a
       // successful login that simply produced no user.
       mockFetch({
@@ -269,7 +269,7 @@ describe('AuthProvider', () => {
     it('resolves even when the server-side revoke fails', async () => {
       // A `finally` without a `catch` still rejects the promise the caller
       // holds, so `logout().then(() => router.replace(...))` silently skips its
-      // redirect and the browser logs an unhandled rejection — for a call that
+      // redirect and the browser logs an unhandled rejection - for a call that
       // did exactly what the caller asked. This is the regression guard.
       mockFetch({
         '/auth/refresh': { status: 401 },

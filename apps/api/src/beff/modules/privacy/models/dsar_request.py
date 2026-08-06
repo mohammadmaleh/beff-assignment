@@ -1,4 +1,4 @@
-"""The `dsar_requests` table — the register of data subject requests.
+"""The `dsar_requests` table - the register of data subject requests.
 
 Art. 12(3) gives the controller **one month** to answer a data subject request.
 Meeting that deadline is not the interesting part; being able to *show* that it
@@ -7,7 +7,7 @@ answer. So every access request and every erasure is written here with the date
 it arrived, the date it falls due, and the date it was answered.
 
 This is deliberately separate from `export_jobs`. That table is queue mechanics
-— attempts, payloads, dead letters — and it gets deleted when the data subject
+- attempts, payloads, dead letters - and it gets deleted when the data subject
 is erased, because it contains their data. This one is the legal record and
 survives erasure, holding nothing but a pseudonymous user id and three dates.
 """
@@ -34,7 +34,7 @@ from beff.db.base import Base, sql_value_list, utcnow
 
 __all__ = ["DSAR_KINDS", "DSAR_RESPONSE_DEADLINE", "DsarRequest"]
 
-# `access` covers Art. 15 and Art. 20 together — one export answers both, and
+# `access` covers Art. 15 and Art. 20 together - one export answers both, and
 # splitting them would mean two rows for one thing the subject asked for once.
 DSAR_KINDS: Final = ("access", "erasure")
 
@@ -48,7 +48,7 @@ class DsarRequest(Base):
 
     Never exposed in a URL today, but it is the kind of record a support tool
     will address directly and a case reference that leaks an ordering is a leak
-    of request volume — so UUIDv7, per ADR-0010 and the README's table listing.
+    of request volume - so UUIDv7, per ADR-0010 and the README's table listing.
     """
 
     __tablename__ = "dsar_requests"

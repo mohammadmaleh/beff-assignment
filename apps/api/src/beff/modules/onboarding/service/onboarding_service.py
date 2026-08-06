@@ -145,7 +145,7 @@ class OnboardingService:
         """Reject values the schema's CHECK constraints would reject anyway.
 
         Enum-ish answers are validated here rather than trusted, because they
-        become `cell_format` and `is_pilot_line` — columns with constraints — and
+        become `cell_format` and `is_pilot_line` - columns with constraints - and
         an invalid value should fail as a readable validation error, not as an
         `IntegrityError` three layers down.
         """

@@ -67,7 +67,7 @@ describe('ChartFigure', () => {
   it('names the table with a caption rather than leaving it anonymous', async () => {
     // A table is announced by its caption. Without one, a reader arriving at it
     // from the rotor gets "table, 4 columns" and no idea which chart it belongs
-    // to — and this page has five.
+    // to - and this page has five.
     const user = userEvent.setup();
     renderFigure();
 
@@ -79,7 +79,7 @@ describe('ChartFigure', () => {
   it('offers the chart and the table as two named views, not one and a footnote', () => {
     /*
      * `<details>` was defensible while the table was an alternative. It is not
-     * once the table is the authoritative rendering — the component's own
+     * once the table is the authoritative rendering - the component's own
      * docstring says it is, and a grey line of text below a hairline rule says
      * otherwise to everyone who can see it.
      *
@@ -97,7 +97,7 @@ describe('ChartFigure', () => {
   it('marks the selected tab with something other than colour', async () => {
     // `aria-selected` covers assistive technology, but colour reaching only
     // fill and text tone is invisible to a low-vision sighted user reading the
-    // tab strip directly. `aria-selected` is not itself a rendered cue — it is
+    // tab strip directly. `aria-selected` is not itself a rendered cue - it is
     // a font-weight difference here, asserted on the class that carries it
     // rather than on colour classes, which this test must never mention.
     const user = userEvent.setup();

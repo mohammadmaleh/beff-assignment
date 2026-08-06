@@ -10,7 +10,7 @@ import { cvdDistance } from './index.js';
  * colours and starts reading them as two shades of one.
  *
  * An earlier revision carried a second, relaxed floor of 7 for the extended
- * chart series. Its worst case was 7.07 — a 1% margin, which is not a threshold
+ * chart series. Its worst case was 7.07 - a 1% margin, which is not a threshold
  * but a number reverse-engineered from the data it was meant to judge. It is
  * gone. Pairs that cannot clear 12 are now *enumerated* instead, below.
  */
@@ -34,7 +34,7 @@ type SeriesName = (typeof ALL)[number];
 
 /**
  * Every unordered pair, once. Typed as `SeriesName` rather than `string` so the
- * token lookups below stay checked — a widened `string` key silently produces
+ * token lookups below stay checked - a widened `string` key silently produces
  * an error type and defeats the assertion.
  */
 const pairsOf = (xs: readonly SeriesName[]): (readonly [SeriesName, SeriesName])[] =>
@@ -45,20 +45,20 @@ const shortName = (t: SeriesName): string => t.replace('color-chart-series-', ''
 /**
  * The pairs that cannot separate by hue alone, and the distance each actually
  * achieves. Extending the palette past four series compresses the available
- * lightness range — every series must also clear 3:1 against the chart surface
- * — until orange and vermillion, then sky and purple, converge under
+ * lightness range - every series must also clear 3:1 against the chart surface
+ * - until orange and vermillion, then sky and purple, converge under
  * simulation.
  *
  * These are pinned as an exact set rather than waved through by a lowered
  * threshold. A palette change that pushes a *new* pair below 12 fails here and
  * has to be argued for; one that quietly worsens an accepted pair fails the
  * distance pin. The consequence is a product rule, not a licence: **a chart
- * using more than four series must add a non-colour encoding** — dash pattern,
+ * using more than four series must add a non-colour encoding** - dash pattern,
  * marker shape or direct labelling. That belongs to ENG-37.
  */
 const BELOW_MIN: Record<'light' | 'dark', readonly (readonly [string, number])[]> = {
   // Orange/vermillion, sky/purple, and blue/purple sitting on the line at
-  // 11.9982 — listed rather than rounded up to a pass, because a threshold that
+  // 11.9982 - listed rather than rounded up to a pass, because a threshold that
   // bends for the value in front of it is not a threshold. The dark ramp has
   // more room above its near-black ground and clears all fifteen; its worst
   // pair is 13.05.
@@ -70,7 +70,7 @@ const BELOW_MIN: Record<'light' | 'dark', readonly (readonly [string, number])[]
   dark: [],
 };
 
-describe.each(['light', 'dark'] as const)('chart series under CVD — %s', (theme) => {
+describe.each(['light', 'dark'] as const)('chart series under CVD - %s', (theme) => {
   // Simulated for deuteranopia and protanopia, taking the worse of the two.
   // Roughly 1 in 12 men has one of these, and no automated a11y tool catches
   // it because a chart series is an SVG path rather than text.
@@ -96,14 +96,14 @@ describe.each(['light', 'dark'] as const)('chart series under CVD — %s', (them
  * *In spec* versus *out of spec* is the most consequential distinction the
  * product makes, and green against red is precisely the pair deuteranopia and
  * protanopia collapse. The first palette measured 6.74 between them in both
- * themes — the three status colours had all been solved to just clear 4.5:1
+ * themes - the three status colours had all been solved to just clear 4.5:1
  * against the same ground, which left them at ~1.00 contrast with *each other*,
  * so nothing but hue separated them and hue is the channel that is missing.
  *
  * The trio is now solved for CVD distance as well as contrast, spreading
  * lightness while staying inside the muted band the design brief settled on.
  */
-describe.each(['light', 'dark'] as const)('status trio under CVD — %s', (theme) => {
+describe.each(['light', 'dark'] as const)('status trio under CVD - %s', (theme) => {
   const STATUSES = [
     'color-status-success-fg',
     'color-status-warning-fg',
@@ -122,7 +122,7 @@ describe.each(['light', 'dark'] as const)('status trio under CVD — %s', (theme
  *
  * `CLAUDE.md` says the brand accent must never appear in a chart. Measured, the
  * light brand sits 3.96° from chart series 1 at CVD 6.43, and the dark brand
- * sits at CVD 2.31 from series 6 — under simulation those are one colour.
+ * sits at CVD 2.31 from series 6 - under simulation those are one colour.
  *
  * This is not fixed, and the reason is that both candidate fixes cost more than
  * the problem. Series 1 is Okabe-Ito blue, the anchor the whole six-colour set
@@ -133,14 +133,14 @@ describe.each(['light', 'dark'] as const)('status trio under CVD — %s', (theme
  * What the rule actually protects is a reader mistaking chrome for data. Brand
  * tokens paint buttons, links and focus rings; series tokens paint marks inside
  * a plot. They never share a coordinate space, and the one case where they
- * could — a legend swatch beside a brand-coloured control — is separated by
+ * could - a legend swatch beside a brand-coloured control - is separated by
  * position and label, not hue.
  *
  * What is enforced instead is the literal rule: no series token may ever *be* a
  * brand token. The measured distances are pinned so that "we accepted this"
  * cannot quietly become "this got worse".
  */
-describe.each(['light', 'dark'] as const)('brand and chart series — %s', (theme) => {
+describe.each(['light', 'dark'] as const)('brand and chart series - %s', (theme) => {
   const BRANDS = ['color-brand-default', 'color-brand-hover'] as const;
 
   it.each(ALL)('%s is not a brand colour', (series) => {
@@ -149,7 +149,7 @@ describe.each(['light', 'dark'] as const)('brand and chart series — %s', (them
   });
 });
 
-describe('brand and chart series — accepted distances', () => {
+describe('brand and chart series - accepted distances', () => {
   it.each([
     ['light', 'color-chart-series-1', 6.43],
     ['dark', 'color-chart-series-6', 2.31],

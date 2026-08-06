@@ -29,7 +29,7 @@ describe('ProductPanel', () => {
 
   it('keeps the chart’s table alternative', async () => {
     // The table is a named view behind a tab now rather than an always-open
-    // block, but it is still every process step — the marketing surface must
+    // block, but it is still every process step - the marketing surface must
     // not ship a chart whose numbers a screen reader cannot reach.
     render(<ProductPanel locale="en" />);
 
@@ -53,7 +53,7 @@ describe('ProductPanel', () => {
 
   it('labels a falling scrap rate as good news off a downward arrow', () => {
     // Yield up and scrap down are both positive. Colour follows the meaning, not
-    // the direction of the glyph — the dashboard makes the same distinction.
+    // the direction of the glyph - the dashboard makes the same distinction.
     render(<ProductPanel locale="en" />);
 
     expect(screen.getByText('-5.3 pp')).toBeInTheDocument();
@@ -80,7 +80,7 @@ describe('the demo line’s figures', () => {
      * The product's whole thesis, checkable in one assertion: coating loses more
      * cells than formation, and formation still loses more money, because a cell
      * at formation carries most of its cost already. If the euro column were
-     * proportional to the percentage this would fail — and the panel would be
+     * proportional to the percentage this would fail - and the panel would be
      * quietly arguing against the page it sits on.
      */
     const by = (step: string) => DEMO_LINE.scrap_by_step.find((r) => r.process_step === step)!;

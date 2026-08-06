@@ -1,7 +1,7 @@
 """Password hashing, token minting and pseudonymisation.
 
 One place for every cryptographic primitive in the application, so the choice of
-algorithm and its parameters can be reviewed — and changed — in a single file.
+algorithm and its parameters can be reviewed - and changed - in a single file.
 """
 
 from beff.core.security.ip_hash import hash_ip

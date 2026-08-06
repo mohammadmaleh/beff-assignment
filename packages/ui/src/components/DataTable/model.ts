@@ -4,7 +4,7 @@ import type { DataColumn, FilterState, SortState } from './types';
  * Rows in the order a sort asks for.
  *
  * `Array.prototype.sort` is stable in every engine this ships to, so rows that
- * compare equal keep payload order — which for the batch tables is
+ * compare equal keep payload order - which for the batch tables is
  * chronological, and is the tie-break a reader expects without being told.
  */
 export function sortRows<Row>(
@@ -49,7 +49,7 @@ function bound(raw: string): number | null {
   if (raw === '') return null;
   const value = Number(raw);
   // A partial entry ('-', '1e') is `NaN`, and every comparison against NaN is
-  // false — which would empty the table mid-keystroke and read as a bug.
+  // false - which would empty the table mid-keystroke and read as a bug.
   return Number.isNaN(value) ? null : value;
 }
 

@@ -9,7 +9,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * caption, a column header, the ordinal on a chain marker.
  *
  * `0.14em` is the one genuinely load-bearing value. Uppercase text at `xs`
- * without added tracking is measurably harder to read — the shapes that
+ * without added tracking is measurably harder to read - the shapes that
  * distinguish lowercase letters are gone and the remaining rectangles run
  * together. A copy that lost the tracking would not look broken; it would just
  * be worse to read, which is the kind of regression no test catches.
@@ -45,7 +45,7 @@ export const AboveAHeading: Story = {
 
 export const AsSpan: Story = { args: { as: 'span', children: '01' } };
 
-/** With layout classes of the caller's own — the axis ends under a figure. */
+/** With layout classes of the caller's own - the axis ends under a figure. */
 export const AsAxisLabel: Story = {
   args: {
     as: 'div',
@@ -61,7 +61,7 @@ export const AsAxisLabel: Story = {
 
 /**
  * German again. `Elektrolytbefüllung` is one word, and uppercase plus tracking
- * makes it noticeably wider — the case that decides whether a label wraps.
+ * makes it noticeably wider - the case that decides whether a label wraps.
  */
 export const GermanLength: Story = {
   render: () => (

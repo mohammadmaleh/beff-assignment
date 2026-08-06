@@ -11,12 +11,12 @@ export default defineConfig({
     // Co-located with the code they cover, matching the backend convention.
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
 
-    // See the matching note in packages/ui — turbo runs both suites at once and
+    // See the matching note in packages/ui - turbo runs both suites at once and
     // unbounded jsdom forks starve each other on a two-core runner.
     maxWorkers: 2,
 
     // Raised from the 5s default. With `maxWorkers: 2` on a constrained box,
-    // constructing a jsdom environment dominates the run — a test that takes
+    // constructing a jsdom environment dominates the run - a test that takes
     // 187ms in isolation was measured at 6.3s inside a full file, and failed on
     // the timeout while behaving perfectly. A timeout that fires on
     // environment contention rather than on a hung component teaches everyone
@@ -31,7 +31,7 @@ export default defineConfig({
       // Naming `include` is what makes this a gate rather than a readout.
       // Vitest 4 counts only the files a test actually imported unless you say
       // otherwise, so an untested component scores *nothing* instead of
-      // scoring 0% — and the percentage goes up when you add one. That is the
+      // scoring 0% - and the percentage goes up when you add one. That is the
       // opposite of what a floor is for.
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
@@ -41,7 +41,7 @@ export default defineConfig({
         // Route files: server components, layouts and metadata that Next
         // renders and vitest does not. They are covered by the 54 Playwright
         // tests running against the standalone server the Docker image
-        // executes — counting them here would either drag the floor to a
+        // executes - counting them here would either drag the floor to a
         // number that gates nothing, or invite fake unit tests that render a
         // server component in jsdom and prove only that it did not throw.
         'src/app/**',
@@ -57,7 +57,7 @@ export default defineConfig({
       // floor: it fails on a *regression*, not on the ordinary drift of a
       // refactor that removes a covered line. Raise them when real coverage
       // rises; never lower one to make a red run green.
-      // Lowered when the chart *primitives* moved to `@beff/ui` — `lib/chart`,
+      // Lowered when the chart *primitives* moved to `@beff/ui` - `lib/chart`,
       // `ChartFigure`, `DataTable` and `EChart`, which between them were ~750
       // near-fully-covered statements. They are still tested, and tested
       // harder: `packages/ui` went from 93.85% to 98.63% absorbing them, and
@@ -73,7 +73,7 @@ export default defineConfig({
       // builders are only partly reachable in jsdom.
       //
       // Moved again when `CookieBanner`, `ThemeToggle` and `ThemeScript`
-      // followed the chart layer into `@beff/ui` — three more well-covered
+      // followed the chart layer into `@beff/ui` - three more well-covered
       // units out of this denominator, 356 tests here becoming 324 here and
       // 307 there. Same arithmetic, same conclusion: 94.66 -> 94.06 statements
       // with no test deleted and several added, while `packages/ui` went
@@ -84,7 +84,7 @@ export default defineConfig({
       //
       // Raised when `OnboardingWizard` got the middle of its own flow tested.
       // Its suite entered at `role` and at `review`, which left every control on
-      // `plant`, `lines` and `units` — and the back button — never rendered:
+      // `plant`, `lines` and `units` - and the back button - never rendered:
       // 64% of the file's functions, in the three steps where the wizard
       // actually collects anything. A control whose `onChange` has never run is
       // one nobody has checked is wired to the right key, and that failure is

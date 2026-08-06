@@ -10,7 +10,7 @@ import type { Locale } from '@/lib/i18n';
  * One numbered clause of a legal document, as data.
  *
  * Documents are data rather than JSX because they change on a legal review
- * cycle, not a product one — the same reason `PRIVACY_CONTENT` is a table. It
+ * cycle, not a product one - the same reason `PRIVACY_CONTENT` is a table. It
  * also means a translation can be diffed against its source clause by clause,
  * which is the only way anyone catches a German paragraph that quietly says
  * something the English one does not.
@@ -27,8 +27,8 @@ export type LegalDocument = readonly LegalClause[];
 /**
  * The chrome every legal document shares.
  *
- * Four documents — Impressum, Datenschutzerklärung, AGB, Barrierefreiheits-
- * erklärung — had four copies of the same header/measure/heading/footer. That is
+ * Four documents - Impressum, Datenschutzerklärung, AGB, Barrierefreiheits-
+ * erklärung - had four copies of the same header/measure/heading/footer. That is
  * how they drift: one gets a `scroll-mt` for deep links and the others do not,
  * and nobody notices until a link lands under the header.
  *
@@ -38,7 +38,7 @@ export type LegalDocument = readonly LegalClause[];
  *
  * - **A measure.** `max-w-3xl` lands around 65–70 characters at the prose size.
  *   The dashboard is full-bleed; prose at that width is unreadable.
- * - **The prose scale** — larger size and looser leading than any app UI text.
+ * - **The prose scale** - larger size and looser leading than any app UI text.
  * - **`hyphens: auto` with a correct `lang`.** German compounds
  *   (*Datenschutz-Grundverordnung*, *Verantwortlicher für die Datenverarbeitung*)
  *   overflow a narrow measure, and CSS hyphenation only engages when the
@@ -48,7 +48,7 @@ export type LegalDocument = readonly LegalClause[];
  * `lang` is a required prop rather than being read from the page's locale,
  * because the two genuinely differ: the Impressum's body is German on the
  * English page. §5 DDG content is German or it is not the disclosure, and
- * announcing it with an English voice is WCAG 3.1.2 — the same defect class as
+ * announcing it with an English voice is WCAG 3.1.2 - the same defect class as
  * the `SpecBand` readout, in the opposite direction.
  */
 export function LegalShell({

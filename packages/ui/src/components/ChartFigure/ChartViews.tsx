@@ -12,7 +12,7 @@ type View = 'chart' | 'table';
  * caller's level; the landing page's `CostOfPosition` wants its uppercase
  * data-font label, which is a deliberate marketing treatment rather than an
  * inconsistency to be normalised away. Sharing the switch and not the caption
- * is what lets both be true — and it means the APG keyboard behaviour is
+ * is what lets both be true - and it means the APG keyboard behaviour is
  * implemented once rather than copied and allowed to drift.
  *
  * Returns a fragment, not a wrapper. The caller supplies the layout, because
@@ -29,7 +29,7 @@ export function ChartViews({
 }: {
   /** Prefix for the tab and panel ids. Must be unique on the page. */
   id: string;
-  /** Id of the element naming this figure — the tablist's accessible name. */
+  /** Id of the element naming this figure - the tablist's accessible name. */
   labelledBy: string;
   viewChartLabel: string;
   viewTableLabel: string;
@@ -102,7 +102,7 @@ export function ChartViews({
                      * therefore unmistakably "on".
                      *
                      * `surface-sunken` was the first answer and failed the only
-                     * test that matters — in the dark theme it is a few per cent
+                     * test that matters - in the dark theme it is a few per cent
                      * off the base surface, so the selected tab read as
                      * "slightly different black" and the control did not look
                      * like a control.
@@ -111,7 +111,7 @@ export function ChartViews({
                      * `brand-default` is a blue, `chart-series-1` is a blue, and
                      * a brand-filled tab sits directly above the bars it would
                      * be confused with. The accent belongs on actions in the
-                     * toolbar, away from the plot — never beside a data mark.
+                     * toolbar, away from the plot - never beside a data mark.
                      *
                      * Weight stays on top of the fill, so the selection survives
                      * greyscale and colour blindness. Fill is the second signal,
@@ -139,7 +139,7 @@ export function ChartViews({
            * `tabIndex={0}`, so a keyboard user can scroll the panel they just
            * opened. Both panels qualify: the drawing is `aria-hidden` and the
            * table is static. The directive has to sit on the line immediately
-           * before the attribute — a trailing `--` explanation makes the *next
+           * before the attribute - a trailing `--` explanation makes the *next
            * line* the rest of the comment, and the rule then fires unsuppressed
            * one line further down while the directive reports itself unused.
            */

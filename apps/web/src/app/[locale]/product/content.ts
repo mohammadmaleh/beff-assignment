@@ -37,7 +37,7 @@ export const PRODUCT_CONTENT: Record<Locale, ProductContent> = {
   en: {
     eyebrow: 'Product',
     title: 'A value alone is meaningless. A value against its band is the answer.',
-    lede: 'Beff reads the measurements a cell line already produces and shows each one against the window it is specified to. Not a number with an arrow beside it — a reading against a limit, the way a control chart shows it.',
+    lede: 'Beff reads the measurements a cell line already produces and shows each one against the window it is specified to. Not a number with an arrow beside it - a reading against a limit, the way a control chart shows it.',
 
     measuresTitle: 'What it measures',
     measuresBody:
@@ -77,7 +77,7 @@ export const PRODUCT_CONTENT: Record<Locale, ProductContent> = {
         upperLimit: 265,
         target: 252,
         unit: 'Wh/kg',
-        note: 'Out of spec, below the lower limit — the case the band exists for. The number is 0.8 per cent short, which a percentage-change readout would round away.',
+        note: 'Out of spec, below the lower limit - the case the band exists for. The number is 0.8 per cent short, which a percentage-change readout would round away.',
       },
       {
         label: 'Capacity retention at 1000 cycles',
@@ -92,10 +92,10 @@ export const PRODUCT_CONTENT: Record<Locale, ProductContent> = {
 
     readingTitle: 'How a reading is drawn',
     readingBody:
-      'The spec band is the one element the product is remembered by, and it appears wherever a real measurement meets a real limit — nowhere else. It encodes its meaning by position, which is also the honest answer to charts that fail for colour-blind readers.',
+      'The spec band is the one element the product is remembered by, and it appears wherever a real measurement meets a real limit - nowhere else. It encodes its meaning by position, which is also the honest answer to charts that fail for colour-blind readers.',
     readingPoints: [
       'The tolerance window is drawn as a filled segment; the measured value is a tick against it. Position carries the meaning, so the reading survives greyscale, a projector and a printout.',
-      'Colour is a second signal, never the only one. The status words — in spec, near limit, out of spec — are spoken, not implied by a hue.',
+      'Colour is a second signal, never the only one. The status words - in spec, near limit, out of spec - are spoken, not implied by a hue.',
       'Every chart has a data table behind it, disclosed rather than hidden, so a screen reader gets the figures and not a description of a picture.',
       'Figures are set in tabular numerals so a value does not jitter sideways between reads.',
     ],
@@ -108,7 +108,7 @@ export const PRODUCT_CONTENT: Record<Locale, ProductContent> = {
   de: {
     eyebrow: 'Produkt',
     title: 'Ein Wert allein sagt nichts. Ein Wert vor seinem Band ist die Antwort.',
-    lede: 'Beff liest die Messwerte, die eine Zellfertigung ohnehin erzeugt, und stellt jeden vor sein Spezifikationsfenster. Keine Zahl mit einem Pfeil daneben — ein Messwert vor seiner Grenze, so wie ihn eine Regelkarte zeigt.',
+    lede: 'Beff liest die Messwerte, die eine Zellfertigung ohnehin erzeugt, und stellt jeden vor sein Spezifikationsfenster. Keine Zahl mit einem Pfeil daneben - ein Messwert vor seiner Grenze, so wie ihn eine Regelkarte zeigt.',
 
     measuresTitle: 'Was gemessen wird',
     measuresBody:
@@ -130,7 +130,7 @@ export const PRODUCT_CONTENT: Record<Locale, ProductContent> = {
         upperLimit: 35,
         target: 32.5,
         unit: '%',
-        note: 'Wird vom Kalander eingestellt — und der Grund, warum eine Abweichung hier vier Schritte später als Kapazitätsproblem auftaucht und nicht jetzt als Beschichtungsproblem.',
+        note: 'Wird vom Kalander eingestellt - und der Grund, warum eine Abweichung hier vier Schritte später als Kapazitätsproblem auftaucht und nicht jetzt als Beschichtungsproblem.',
       },
       {
         label: 'Flächenbeladung',
@@ -139,7 +139,7 @@ export const PRODUCT_CONTENT: Record<Locale, ProductContent> = {
         upperLimit: 24,
         target: 21,
         unit: 'mg/cm²',
-        note: 'Aktivmaterial je Elektrodenfläche. Bestimmt die Kapazität — und den Ausschuss, sobald die Beschichtungsanlage wandert.',
+        note: 'Aktivmaterial je Elektrodenfläche. Bestimmt die Kapazität - und den Ausschuss, sobald die Beschichtungsanlage wandert.',
       },
       {
         label: 'Energiedichte',
@@ -148,7 +148,7 @@ export const PRODUCT_CONTENT: Record<Locale, ProductContent> = {
         upperLimit: 265,
         target: 252,
         unit: 'Wh/kg',
-        note: 'Außerhalb der Spezifikation, unterhalb der Untergrenze — genau der Fall, für den das Band da ist. Der Wert liegt 0,8 Prozent darunter, was eine Prozentanzeige wegrunden würde.',
+        note: 'Außerhalb der Spezifikation, unterhalb der Untergrenze - genau der Fall, für den das Band da ist. Der Wert liegt 0,8 Prozent darunter, was eine Prozentanzeige wegrunden würde.',
       },
       {
         label: 'Kapazitätserhalt nach 1000 Zyklen',
@@ -157,16 +157,16 @@ export const PRODUCT_CONTENT: Record<Locale, ProductContent> = {
         upperLimit: 100,
         target: 90,
         unit: '%',
-        note: 'Achtzig Prozent nach tausend Zyklen ist eine übliche Lebensdauergrenze für Automobilzellen. Darüber ist bestanden — und wie weit darüber, ist die Reserve.',
+        note: 'Achtzig Prozent nach tausend Zyklen ist eine übliche Lebensdauergrenze für Automobilzellen. Darüber ist bestanden - und wie weit darüber, ist die Reserve.',
       },
     ],
 
     readingTitle: 'Wie ein Messwert dargestellt wird',
     readingBody:
-      'Das Toleranzband ist das Element, an das man sich bei diesem Produkt erinnert, und es erscheint überall dort, wo ein echter Messwert auf eine echte Grenze trifft — sonst nirgends. Seine Bedeutung liegt in der Position, was zugleich die ehrliche Antwort auf Diagramme ist, die für farbfehlsichtige Leser versagen.',
+      'Das Toleranzband ist das Element, an das man sich bei diesem Produkt erinnert, und es erscheint überall dort, wo ein echter Messwert auf eine echte Grenze trifft - sonst nirgends. Seine Bedeutung liegt in der Position, was zugleich die ehrliche Antwort auf Diagramme ist, die für farbfehlsichtige Leser versagen.',
     readingPoints: [
-      'Das Toleranzfenster ist als gefüllter Abschnitt gezeichnet, der Messwert als Marke davor. Die Bedeutung liegt in der Position — der Wert bleibt in Graustufen, am Beamer und auf dem Ausdruck lesbar.',
-      'Farbe ist ein zweites Signal, nie das einzige. Die Statusangaben — in der Spezifikation, nahe der Grenze, außerhalb — werden ausgesprochen und nicht über einen Farbton angedeutet.',
+      'Das Toleranzfenster ist als gefüllter Abschnitt gezeichnet, der Messwert als Marke davor. Die Bedeutung liegt in der Position - der Wert bleibt in Graustufen, am Beamer und auf dem Ausdruck lesbar.',
+      'Farbe ist ein zweites Signal, nie das einzige. Die Statusangaben - in der Spezifikation, nahe der Grenze, außerhalb - werden ausgesprochen und nicht über einen Farbton angedeutet.',
       'Hinter jedem Diagramm liegt eine Datentabelle, ausklappbar statt versteckt, damit ein Screenreader die Zahlen bekommt und nicht die Beschreibung eines Bildes.',
       'Zahlen sind in Tabellenziffern gesetzt, damit ein Wert zwischen zwei Messungen nicht seitlich springt.',
     ],

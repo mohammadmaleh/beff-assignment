@@ -13,7 +13,7 @@ import { surfacePath } from '@/lib/navigation';
  * 404 inside a locale segment.
  *
  * Next does not pass `params` to `not-found.tsx`, so the locale is genuinely
- * unavailable here — this file cannot know whether the reader is on `/en` or
+ * unavailable here - this file cannot know whether the reader is on `/en` or
  * `/de`. Rather than pretend, it renders in the default locale and offers the
  * way back; guessing from a header would be a coin flip presented as certainty.
  *
@@ -42,8 +42,8 @@ export default function NotFound() {
             href={surfacePath('landing', locale)}
             /*
              * This was the drifted copy: `rounded-chamfer` rather than
-             * `rounded-control` — the band radius on a control, which the
-             * Button's own comment calls a browser default nobody styled — and
+             * `rounded-control` - the band radius on a control, which the
+             * Button's own comment calls a browser default nobody styled - and
              * no transition, no press, no minimum height. It had been a
              * visibly different primary button from the header's for as long
              * as the page existed, which is what a copied class string does.

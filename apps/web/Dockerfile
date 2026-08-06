@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# Build context is the MONOREPO ROOT, not apps/web — the app depends on
+# Build context is the MONOREPO ROOT, not apps/web - the app depends on
 # workspace packages that live outside its own directory.
 
 # ── base ────────────────────────────────────────────────────────────────────

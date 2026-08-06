@@ -49,7 +49,7 @@ for (const surface of SURFACES) {
 
     const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
 
-    // The full violation list, not just a count — a failure should name the
+    // The full violation list, not just a count - a failure should name the
     // rule and the element rather than making someone re-run locally to find
     // out what broke.
     expect(
@@ -77,7 +77,7 @@ test('the cookie banner is reachable and has no violations @a11y', async ({ page
 
 test('dark mode has no contrast violations @a11y', async ({ page }) => {
   // Contrast is the one rule axe checks that depends on rendered colour, so the
-  // dark theme genuinely needs its own pass — the token gate proves the pairs
+  // dark theme genuinely needs its own pass - the token gate proves the pairs
   // in isolation, this proves what the page actually composed.
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/en');
@@ -91,7 +91,7 @@ test('the inverted product panel has no contrast violations @a11y', async ({ pag
   // The panel renders the *dark* palette inside a light page, so its pairs are
   // never composed on this surface in either of the two theme passes above. That
   // is the point of scoping `data-theme` to a subtree rather than adding an
-  // emphasis colour family — but "already gated in isolation" is a claim about
+  // emphasis colour family - but "already gated in isolation" is a claim about
   // tokens, and this is the claim about the page.
   await page.goto('/en');
 
@@ -118,7 +118,7 @@ async function bandGeometry(page: Page): Promise<string | null> {
 test('the landing page still draws the tolerance band @a11y', async ({ page }) => {
   /*
    * The band used to be the hero, at full scale, and this pair of tests measured
-   * it there. The film replaced it in the hero on request — the band did not
+   * it there. The film replaced it in the hero on request - the band did not
    * leave the page, it moved down into the signature section, which shows the
    * same instrument twice: one reading in spec and one past its upper limit.
    *
@@ -127,7 +127,7 @@ test('the landing page still draws the tolerance band @a11y', async ({ page }) =
    * assertable once the drawing became an ECharts instance: the animation
    * belongs to a render loop the library schedules, so any sample time is a race
    * this suite would lose intermittently on a loaded CI box. The animation
-   * opt-in is gated where it is exact and cannot flake — `SpecBand`'s test
+   * opt-in is gated where it is exact and cannot flake - `SpecBand`'s test
    * asserts it reaches the option's `animation`.
    */
   await page.goto('/en');
@@ -144,14 +144,14 @@ test('reduced motion shows the band at its final state immediately @a11y', async
    * because the defect is about the reader and not about where the band sits.
    * The global reduced-motion block zeroed `animation-duration` but not
    * `animation-delay`, so each part waited out its stagger before appearing
-   * instantly — the measurement was invisible for 480ms for exactly the people
+   * instantly - the measurement was invisible for 480ms for exactly the people
    * who asked for less motion.
    *
    * ECharts is outside the cascade, so that block cannot help it at all now;
    * `useReducedMotion` reads the preference and `bandOption` switches the
    * animation off entirely. Which makes the assertion sharper than it was: with
-   * no animation there is nothing to interpolate, so the geometry at 120ms —
-   * inside every delay the old sequence had — must already equal the geometry
+   * no animation there is nothing to interpolate, so the geometry at 120ms -
+   * inside every delay the old sequence had - must already equal the geometry
    * once everything has settled.
    *
    * Breaking this deliberately is what caught the band rendering entirely
@@ -163,7 +163,7 @@ test('reduced motion shows the band at its final state immediately @a11y', async
 
   /*
    * `attached`, not the default `visible`. The band's series is a host for the
-   * marks and nothing else — one point, `lineStyle: { width: 0 }` — so the first
+   * marks and nothing else - one point, `lineStyle: { width: 0 }` - so the first
    * path ECharts emits is a zero-width stroke, which Playwright correctly
    * reports as not visible and then waits 30s for. What is being waited on here
    * is that the chart has rendered at all, and attachment is exactly that.

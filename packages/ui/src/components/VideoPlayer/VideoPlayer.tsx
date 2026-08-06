@@ -18,8 +18,8 @@ export interface VideoPlayerProps {
    * The accessible name, in the page's own language.
    *
    * Required with no default, like every perceivable string in this library. A
-   * `<video>` has no intrinsic name — an unlabelled one is announced as "video"
-   * and nothing else — and an English default would ship silently onto the
+   * `<video>` has no intrinsic name - an unlabelled one is announced as "video"
+   * and nothing else - and an English default would ship silently onto the
    * German page, where nothing would catch it: axe is indifferent to which
    * language a well-formed string is in, and so is every screenshot.
    */
@@ -37,7 +37,7 @@ export interface VideoPlayerProps {
  *
  * Keyboard operation, the scrubber, volume, playback rate, picture-in-picture
  * and every assistive-technology announcement arrive free and correct. A custom
- * player re-implements all of that, and re-implements it worse — this is the
+ * player re-implements all of that, and re-implements it worse - this is the
  * clearest case in the whole library of the project's "native HTML before ARIA"
  * rule, because here the native element is not merely sufficient, it is better.
  *
@@ -52,7 +52,7 @@ export interface VideoPlayerProps {
  *
  * This component takes no `<track>`, because nothing in this repo has a `.vtt`
  * yet. A video with an audio track and no captions is WCAG 1.2.2 (A) and 1.2.5
- * (AA) unmet — see the README's "Not done, and not claimed". The lint rule is
+ * (AA) unmet - see the README's "Not done, and not claimed". The lint rule is
  * suppressed here, at one call site rather than in `eslint.config.mjs`, so the
  * exception stays visible in review instead of silently covering the next
  * uncaptioned video somebody adds.

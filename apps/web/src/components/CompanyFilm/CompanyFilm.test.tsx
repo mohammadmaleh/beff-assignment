@@ -68,8 +68,8 @@ describe('CompanyFilm', () => {
 
   it('says what the film contains, for everyone who will not watch it', () => {
     render(<CompanyFilm locale="en" />);
-    // The film has no captions. A text summary beside it is not a substitute —
-    // see the README — but it does mean the section still carries its meaning
+    // The film has no captions. A text summary beside it is not a substitute -
+    // see the README - but it does mean the section still carries its meaning
     // for a reader who cannot or will not play 71 seconds of video.
     expect(screen.getByRole('heading', { name: /Beff, in about a minute/i })).toBeInTheDocument();
     expect(screen.getByText(/Navigator/)).toBeInTheDocument();

@@ -1,4 +1,4 @@
-"""`POST /refresh` — rotate the refresh token, mint a new access token."""
+"""`POST /refresh` - rotate the refresh token, mint a new access token."""
 
 from __future__ import annotations
 
@@ -25,8 +25,8 @@ router = APIRouter()
     responses={
         401: {
             "description": (
-                "No cookie, an expired token, or — with code "
-                "`auth.refresh_token_reused` — a replayed token, in which case "
+                "No cookie, an expired token, or - with code "
+                "`auth.refresh_token_reused` - a replayed token, in which case "
                 "the whole family has been revoked and the user must sign in "
                 "again."
             )
@@ -45,7 +45,7 @@ async def refresh(
     mean JavaScript could read it, which is the exact property the httpOnly
     cookie exists to deny (ADR-0003).
 
-    Replaying a spent token revokes the entire family — see
+    Replaying a spent token revokes the entire family - see
     `RefreshTokenService.rotate`. That is the detection, and it is the reason
     rotation is worth doing at all.
     """

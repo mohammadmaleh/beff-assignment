@@ -15,7 +15,7 @@ export interface DataTableProps<Row> {
   rows: readonly Row[];
   rowKey: (row: Row) => string;
   /**
-   * A BCP 47 tag, used only for the CSV delimiter — cell values arrive already
+   * A BCP 47 tag, used only for the CSV delimiter - cell values arrive already
    * formatted. Deliberately a plain string rather than the app's `Locale` union:
    * a table that only accepts the two locales this product ships is a table the
    * design system cannot lend to anything else.
@@ -43,7 +43,7 @@ function nextSort(current: SortState | null, key: string): SortState | null {
  * The authoritative rendering of a chart's numbers, as something an engineer
  * can actually work: sortable, filterable, exportable.
  *
- * It takes column *descriptors* rather than markup. That is the whole point —
+ * It takes column *descriptors* rather than markup. That is the whole point -
  * six charts previously handed `ChartFigure` six hand-rolled `<tbody>` blobs,
  * and markup cannot be sorted, so nothing shared could exist even in principle.
  */
@@ -65,7 +65,7 @@ export function DataTable<Row>({
    *
    * This is what the toolbar captions each group with. `From` and `To` alone
    * meant per cent here, cells on the throughput table, euros on scrap cost and
-   * Wh/kg on a control chart — four different measures wearing the same two
+   * Wh/kg on a control chart - four different measures wearing the same two
    * words, with nothing on screen to tell them apart.
    */
   const rangeColumn = columns.find((column) => column.filterRange !== undefined)?.header ?? null;
@@ -79,7 +79,7 @@ export function DataTable<Row>({
    * and no hint that it holds two fields, and "what range is even available?"
    * is the question a reader has *before* they can pick a bound. Rendered
    * through the column's own `text`, so the hint is formatted exactly like the
-   * values in the column it filters — per cent here, euros on scrap cost.
+   * values in the column it filters - per cent here, euros on scrap cost.
    */
   const rangeHint = useMemo(() => {
     const column = columns.find((entry) => entry.filterRange !== undefined);
@@ -203,7 +203,7 @@ export function DataTable<Row>({
                            * The direction when sorted; a hint only on hover or
                            * keyboard focus otherwise. A permanent glyph on every
                            * sortable column is four arrows of noise on a
-                           * four-column table, and it says nothing — every
+                           * four-column table, and it says nothing - every
                            * column is sortable, so marking them all marks none.
                            */}
                           <span
@@ -235,7 +235,7 @@ export function DataTable<Row>({
                     const badge = column.badge?.(row);
                     /*
                      * A badge replaces the cell rather than decorating it, and
-                     * carries its label as a word inside the pill — the same
+                     * carries its label as a word inside the pill - the same
                      * rule the drawing's red marker follows, where colour is the
                      * second encoding and never the only one.
                      *

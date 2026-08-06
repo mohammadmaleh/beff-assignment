@@ -6,15 +6,15 @@ import { pairs } from './pairs.js';
 
 const THEMES = ['light', 'dark'] as const;
 
-describe.each(THEMES)('contrast — %s theme', (theme) => {
+describe.each(THEMES)('contrast - %s theme', (theme) => {
   it.each(pairs)('$name clears $threshold:1', ({ fg, bg, threshold }) => {
     expect(contrastRatio(tokens[theme][fg], tokens[theme][bg])).toBeGreaterThanOrEqual(threshold);
   });
 });
 
-describe.each(THEMES)('brand separation — %s theme', (theme) => {
-  // Roadmap decision #8 — "the brand accent never collides with status
-  // colours" — is prose, and prose does not fail a build. Green means *in
+describe.each(THEMES)('brand separation - %s theme', (theme) => {
+  // Roadmap decision #8 - "the brand accent never collides with status
+  // colours" - is prose, and prose does not fail a build. Green means *in
   // spec* in a yield chart; a brand drifting toward green makes every chart
   // ambiguous.
   const statuses = [

@@ -80,7 +80,7 @@ async def test_concurrent_requests_cannot_both_win_the_last_slot(
     """**Why the increment is one statement.**
 
     Read-then-write would let two connections both see `count = 2` against a
-    limit of 3 and both allow the request — the classic lost update. Here the
+    limit of 3 and both allow the request - the classic lost update. Here the
     database serialises on the primary key and each caller gets a distinct
     post-increment value, so exactly one of these ten is the fourth.
     """
@@ -99,7 +99,7 @@ async def test_concurrent_requests_cannot_both_win_the_last_slot(
 
     results = await asyncio.gather(*(attempt() for _ in range(10)))
 
-    # Exactly `limit` succeed. Not "about three" — the whole point is that the
+    # Exactly `limit` succeed. Not "about three" - the whole point is that the
     # count is never stale.
     assert sum(results) == LIMIT.limit
 
@@ -111,7 +111,7 @@ async def test_the_waitlist_route_actually_enforces_the_limit(
 
     This is the wiring test: the real app, the real dependency, a real database.
     `WAITLIST_LIMIT` is five per hour, so the sixth signup from one origin is
-    refused — and the response is a 429 problem document, not a 422, because the
+    refused - and the response is a 429 problem document, not a 422, because the
     request was well-formed.
     """
     from httpx import ASGITransport, AsyncClient
@@ -129,7 +129,7 @@ async def test_the_waitlist_route_actually_enforces_the_limit(
             await session.commit()
 
     async def limiter_session_override():  # type: ignore[no-untyped-def]
-        # A *separate* session that always commits — the whole point of the fix
+        # A *separate* session that always commits - the whole point of the fix
         # being tested. Reusing `session_override` here would reintroduce the
         # shared transaction and the test would pass for the wrong reason.
         async with factory() as session:
@@ -196,7 +196,7 @@ async def test_login_is_rate_limited_per_origin(db_engine: AsyncEngine) -> None:
             await session.commit()
 
     async def limiter_session_override():  # type: ignore[no-untyped-def]
-        # A *separate* session that always commits — the whole point of the fix
+        # A *separate* session that always commits - the whole point of the fix
         # being tested. Reusing `session_override` here would reintroduce the
         # shared transaction and the test would pass for the wrong reason.
         async with factory() as session:
@@ -245,7 +245,7 @@ async def test_a_second_origin_has_its_own_login_budget(db_engine: AsyncEngine) 
             await session.commit()
 
     async def limiter_session_override():  # type: ignore[no-untyped-def]
-        # A *separate* session that always commits — the whole point of the fix
+        # A *separate* session that always commits - the whole point of the fix
         # being tested. Reusing `session_override` here would reintroduce the
         # shared transaction and the test would pass for the wrong reason.
         async with factory() as session:
@@ -280,7 +280,7 @@ async def test_a_failing_request_still_counts_against_the_limit(
     """**The bug this whole design exists to avoid.**
 
     The limiter originally shared the request's session. `get_session` rolls that
-    transaction back when the handler raises — correct for business data, and
+    transaction back when the handler raises - correct for business data, and
     exactly wrong here, because the attempts a limiter most needs to count are
     the ones that raise.
 

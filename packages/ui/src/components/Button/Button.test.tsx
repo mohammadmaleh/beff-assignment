@@ -51,7 +51,7 @@ describe('Button', () => {
 
     it('stays focusable while loading', async () => {
       // `disabled` would drop it out of the tab order mid-interaction and throw
-      // focus back to the document — the user loses their place because the app
+      // focus back to the document - the user loses their place because the app
       // got slow. `aria-disabled` keeps it announced and reachable.
       render(<Button loading>Save</Button>);
       await userEvent.tab();
@@ -153,7 +153,7 @@ describe('Button', () => {
     it('animates only compositor-friendly properties', () => {
       render(<Button>Go</Button>);
       const className = screen.getByRole('button', { name: 'Go' }).className;
-      // `translate`, not the `transform` shorthand — the shorthand cancels any
+      // `translate`, not the `transform` shorthand - the shorthand cancels any
       // positioning utility it lands beside.
       expect(className).toContain('transition-[background-color,color,translate,opacity]');
       expect(className).not.toContain('box-shadow');
@@ -161,7 +161,7 @@ describe('Button', () => {
   });
 
   /*
-   * A call-to-action that navigates is a link, and a link is not a button — it
+   * A call-to-action that navigates is a link, and a link is not a button - it
    * has no `type`, no `disabled`, and it belongs in the link rotor rather than
    * the button one. So `Button` cannot render it, and before this existed the
    * app hand-rolled the primary variant as an anchor in three places. They had

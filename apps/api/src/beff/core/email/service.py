@@ -42,7 +42,7 @@ class EmailDeliveryService:
         Idempotent by construction: the claim moves the row out of `pending` in
         the same transaction that increments `attempts`, so a replay finds
         nothing to claim and a message that reached `sent` is never re-claimed.
-        At-least-once delivery is the guarantee — a worker killed after the SMTP
+        At-least-once delivery is the guarantee - a worker killed after the SMTP
         call but before the commit will send that message twice, which for a
         verification link is a duplicate email and not a duplicate effect.
         """

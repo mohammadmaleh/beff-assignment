@@ -10,7 +10,7 @@ import { DEFAULT_LOCALE, getDictionary, isLocale, LOCALES, type Locale } from '@
 import '../globals.css';
 
 /**
- * This is the root layout. There is deliberately no `app/layout.tsx` above it —
+ * This is the root layout. There is deliberately no `app/layout.tsx` above it -
  * the locale has to be in the `<html lang>` attribute, and a static root layout
  * cannot know it. A screen reader picks its pronunciation from `lang`, so
  * getting it wrong makes German content read aloud in an English voice.
@@ -38,13 +38,13 @@ export async function generateMetadata({
     // to: both are defined as absolute URLs, and a crawler that has reached the
     // page from a different host has no way to resolve `/de`. The declarations
     // below looked correct and did nothing, which is the failure mode worth
-    // remembering — an SEO tag is not self-verifying.
+    // remembering - an SEO tag is not self-verifying.
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
     /*
      * A plain file in `public/`, not an `app/icon.svg` metadata route.
      *
      * The convention route needs a layout to render into, and this app
-     * deliberately has no `app/layout.tsx` — the locale has to reach
+     * deliberately has no `app/layout.tsx` - the locale has to reach
      * `<html lang>`, which a static root layout cannot know. So `app/icon.svg`
      * built cleanly, emitted a `<link rel="icon">`, and then answered every
      * request for it with a `NoFallbackError` 500. Same root cause as the
@@ -94,7 +94,7 @@ export default async function LocaleLayout({
         </a>
         {/*
          * The providers are a client boundary, but the pages inside them are
-         * still server components — the landing page and both legal pages
+         * still server components - the landing page and both legal pages
          * prerender to static HTML with this wrapper in place. Verified by
          * grepping the built HTML, not assumed.
          */}

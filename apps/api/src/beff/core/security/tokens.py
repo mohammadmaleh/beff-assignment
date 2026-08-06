@@ -3,7 +3,7 @@
 Two different kinds of token, deliberately:
 
 * The **access token** is a signed JWT. It is short-lived, held in browser
-  memory, and never checked against the database — that is the whole point, and
+  memory, and never checked against the database - that is the whole point, and
   the reason it must expire quickly, since it cannot be revoked.
 * The **refresh token** is opaque: 384 bits from `secrets`, meaningless to
   anyone but the database. Only its SHA-256 is stored, so a database leak does
@@ -11,7 +11,7 @@ Two different kinds of token, deliberately:
 
 Refresh tokens are hashed with SHA-256 rather than Argon2. Argon2 exists to make
 *guessing* expensive, and there is nothing to guess in 384 bits of CSPRNG
-output — while paying 64 MiB and ~50 ms on every refresh would turn the endpoint
+output - while paying 64 MiB and ~50 ms on every refresh would turn the endpoint
 into a denial-of-service amplifier.
 """
 
@@ -72,7 +72,7 @@ def generate_verification_token() -> str:
 
 
 def hash_opaque_token(token: str) -> str:
-    """The 64-character hex SHA-256 of an opaque token — what the database stores.
+    """The 64-character hex SHA-256 of an opaque token - what the database stores.
 
     SHA-256 and not Argon2, for the same reason `hash_refresh_token` uses it:
     these tokens are 256+ bits of `secrets` output, so there is no dictionary to
@@ -83,7 +83,7 @@ def hash_opaque_token(token: str) -> str:
 
 
 def hash_refresh_token(token: str) -> str:
-    """The 64-character hex SHA-256 of a refresh token — what the database stores."""
+    """The 64-character hex SHA-256 of a refresh token - what the database stores."""
     return hash_opaque_token(token)
 
 
@@ -116,7 +116,7 @@ def encode_access_token(
 def decode_access_token(token: str, *, secret: str, algorithm: str) -> AccessTokenClaims:
     """Verify and decode an access token.
 
-    Raises `jwt.PyJWTError` on anything wrong — bad signature, expired, wrong
+    Raises `jwt.PyJWTError` on anything wrong - bad signature, expired, wrong
     algorithm, missing claim. The algorithm is passed as an allow-list of
     exactly one, which is what stops the `alg: none` and
     RS256-verified-as-HS256 confusion attacks.

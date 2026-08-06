@@ -1,4 +1,4 @@
-"""Alembic environment — async engine, URL from settings.
+"""Alembic environment - async engine, URL from settings.
 
 Lives outside `src/` because it is tooling, not application code: it is excluded
 from coverage and is never imported by the running app.
@@ -82,7 +82,7 @@ def run_migrations_online() -> None:
     `alembic upgrade head` is a blocking CLI call, so it normally just needs
     `asyncio.run`. But the integration suite invokes `command.upgrade()` from
     inside an already-running event loop, where `asyncio.run` raises. Handing
-    the work to a worker thread — which has no loop of its own — makes the same
+    the work to a worker thread - which has no loop of its own - makes the same
     `env.py` serve both callers, rather than the test suite exercising a second
     code path that never ships.
     """

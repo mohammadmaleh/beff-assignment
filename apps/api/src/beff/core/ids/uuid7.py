@@ -30,7 +30,7 @@ _VARIANT_RFC_4122 = 0b10
 def uuid7() -> UUID:
     """Return a time-ordered UUIDv7.
 
-    Ordering is guaranteed across milliseconds, not within one — two calls in
+    Ordering is guaranteed across milliseconds, not within one - two calls in
     the same millisecond differ only in their random bits. That is sufficient
     for index locality, which is the reason the version was chosen; it is not a
     monotonic counter and must not be relied on as one.

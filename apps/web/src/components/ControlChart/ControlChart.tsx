@@ -41,7 +41,7 @@ export function breaches(value: number, series: ParameterSeries): boolean {
  * The reading, its unit, and the verdict as a word.
  *
  * The verdict is spelled out rather than left to the marker's colour. On the
- * drawing a breaching point is larger *and* red; here it is a sentence — which
+ * drawing a breaching point is larger *and* red; here it is a sentence - which
  * is what makes the colour a redundant third encoding rather than the only one.
  */
 export function controlTooltip(
@@ -63,22 +63,22 @@ export function controlTooltip(
  * ## What it adds over the spec band
  *
  * `SpecBand` renders the newest reading against its window and answers *is this
- * in spec*. This answers *how did it get here, and is the process stable* —
+ * in spec*. This answers *how did it get here, and is the process stable* -
  * which is the question a control chart was invented for, and the one that
  * decides whether an out-of-spec reading is an outlier to re-measure or a drift
  * to go and find the cause of.
  *
  * On the demo line those two readings tell genuinely different stories. Energy
  * density is out of spec today, which the band shows. It has also been falling
- * steadily for two months, which only this shows — and "falling since week
+ * steadily for two months, which only this shows - and "falling since week
  * three" is a diagnosis where "out of spec" is only a symptom.
  *
  * ## Small multiples, not one chart with three lines
  *
  * Porosity is a percentage around 32, areal loading is mg/cm² around 21, energy
  * density is Wh/kg around 250. Three measures with three scales on one plot
- * means either a second y-axis — where the crossing point of two lines is an
- * artefact of the axis ranges that readers reliably mistake for meaning — or
+ * means either a second y-axis - where the crossing point of two lines is an
+ * artefact of the axis ranges that readers reliably mistake for meaning - or
  * normalising them all to a common index, which throws away the units and the
  * limits at the same time.
  *
@@ -90,7 +90,7 @@ export function controlTooltip(
  *
  * The in-spec region is a shaded band and the limits are dashed reference
  * lines, so "inside" and "outside" are positional facts. Points that breach a
- * limit are additionally drawn as a filled marker in `danger` — that colour
+ * limit are additionally drawn as a filled marker in `danger` - that colour
  * *is* reserved for out-of-spec, which is exactly what this is, and it is a
  * second encoding on top of the position rather than the only one.
  */
@@ -137,7 +137,7 @@ export function ControlChart({
         // so the word has to live there too.
         render: () => null,
         text: (point) => (breaches(point.value, series) ? copy.outOfSpec : copy.inSpec),
-        // Breaches first on a descending sort — "show me the ones that failed"
+        // Breaches first on a descending sort - "show me the ones that failed"
         // is the question this column exists for.
         sortValue: (point) => (breaches(point.value, series) ? 1 : 0),
         /*
@@ -155,7 +155,7 @@ export function ControlChart({
     [copy, format, series],
   );
 
-  // One definition of "out of spec" for the whole component — the drawing, the
+  // One definition of "out of spec" for the whole component - the drawing, the
   // description and the table all read it. Three inline comparisons is three
   // chances for one of them to use `<=` and disagree with the other two about a
   // reading sitting exactly on a limit.
@@ -175,7 +175,7 @@ export function ControlChart({
     //
     // Rounded outward rather than padded by a raw fraction. `(high - low) *
     // 0.18` produced bounds like 231 and 269.05, and ECharts prints axis labels
-    // from those numbers verbatim — a control chart whose gridlines land on 231
+    // from those numbers verbatim - a control chart whose gridlines land on 231
     // asks the reader to do arithmetic to place a reading.
     const bounds = niceBounds([...values, series.lower_limit, series.upper_limit], {
       padRatio: 0.15,

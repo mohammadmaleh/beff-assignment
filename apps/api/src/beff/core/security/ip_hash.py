@@ -3,7 +3,7 @@
 An IP address is personal data under GDPR (CONTEXT.md, "Privacy terms"), so a
 raw one is never written anywhere in this application. What consent records need
 is only the ability to show a data subject *that* an origin was recorded, and to
-distinguish two origins from each other — both of which a salted digest gives.
+distinguish two origins from each other - both of which a salted digest gives.
 
 The salt comes from `IP_HASH_SALT` and is not in the database. Without it the
 digest would be trivially reversible: the entire IPv4 space is 2^32 values, and

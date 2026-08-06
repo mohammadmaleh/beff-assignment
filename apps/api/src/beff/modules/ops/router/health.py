@@ -15,7 +15,7 @@ router = APIRouter(tags=["ops"])
 async def healthz() -> dict[str, Literal["ok"]]:
     """Liveness: the process is up.
 
-    Deliberately touches no dependencies — an orchestrator restarting the
+    Deliberately touches no dependencies - an orchestrator restarting the
     container because Postgres blipped would make an outage worse, not better.
     """
     return {"status": "ok"}

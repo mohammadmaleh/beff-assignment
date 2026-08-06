@@ -18,7 +18,7 @@ type Mode = 'login' | 'register';
  * The code to render a message from, filling in the one gap the API leaves.
  *
  * A 401 from either auth route is a credential mismatch and nothing else, but
- * the response deliberately carries no problem document on some paths — so the
+ * the response deliberately carries no problem document on some paths - so the
  * status is the only evidence there is. The substitution is safe *here*, on a
  * form whose only 401 is a failed sign-in, and it stays here rather than in the
  * shared translator, where it would be wrong for every authenticated surface.
@@ -73,7 +73,7 @@ export function AuthForm({ mode, locale }: { mode: Mode; locale: Locale }) {
           setFormError(translateApiError(locale, formErrorCode(error)));
         }
       } else {
-        // No response at all — DNS, offline, a CORS rejection. There is nothing
+        // No response at all - DNS, offline, a CORS rejection. There is nothing
         // to identify, so it gets the fallback rather than a guess.
         setFormError(translateApiError(locale, null));
       }
@@ -90,13 +90,13 @@ export function AuthForm({ mode, locale }: { mode: Mode; locale: Locale }) {
     <form
       onSubmit={(event) => void onSubmit(event)}
       // `onSubmit` calls `preventDefault`, but only once the bundle has
-      // hydrated — and a form with no `method` submits by **GET** to its own
+      // hydrated - and a form with no `method` submits by **GET** to its own
       // URL. A submit in the window before hydration therefore navigates to
       // `/en/login?email=…&password=…`, putting the password in the address
       // bar, in browser history, in the `Referer` of the next request, and in
       // every access log on the way. `post` is the fix: the same submit puts
       // the credentials in a request body that no route reads, so the visitor
-      // lands back on the form — a dead end rather than a leak. There is no
+      // lands back on the form - a dead end rather than a leak. There is no
       // server route to point an `action` at; auth is owned end to end by
       // FastAPI and this surface is client-rendered by design.
       method="post"

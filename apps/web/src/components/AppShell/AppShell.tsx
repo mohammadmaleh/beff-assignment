@@ -19,7 +19,7 @@ import { primaryNav, surfacePath, type SurfaceKey } from '@/lib/navigation';
  * The authenticated frame: navigation, sign-out, and the gate in front of both.
  *
  * The gate is client-side because auth is owned end to end by FastAPI and the
- * refresh token rotates on every use — redeeming it during SSR would burn a
+ * refresh token rotates on every use - redeeming it during SSR would burn a
  * token on a response the browser may never receive (decision #3). That is a
  * deliberate trade: the *security boundary* is the API, which rejects every
  * unauthenticated request regardless of what the browser renders. This redirect
@@ -29,7 +29,7 @@ import { primaryNav, surfacePath, type SurfaceKey } from '@/lib/navigation';
 export function AppShell({
   locale,
   children,
-  /** Chrome-free surfaces — the onboarding wizard has no navigation by design. */
+  /** Chrome-free surfaces - the onboarding wizard has no navigation by design. */
   bare = false,
 }: {
   locale: Locale;
@@ -85,7 +85,7 @@ export function AppShell({
          */
         <header className="border-border-default border-b">
           {/*
-           * The same measure the dashboard's bands use — `max-w-[100rem]`, not
+           * The same measure the dashboard's bands use - `max-w-[100rem]`, not
            * the marketing `6xl`. A header on a narrower measure than the
            * content under it puts the wordmark and the nav in from the edge
            * while the first chart starts at it, and the page reads as two
@@ -150,7 +150,7 @@ export function AppShell({
        * Between the header and the content, on every authenticated surface, and
        * renders nothing once the address is confirmed. Above `main` rather than
        * inside it so it does not sit in the middle of a page's own heading
-       * outline — and outside `bare`, because the onboarding wizard is the one
+       * outline - and outside `bare`, because the onboarding wizard is the one
        * flow where a second thing to do would compete with the first.
        */}
       {bare ? null : <UnverifiedBanner locale={locale} />}

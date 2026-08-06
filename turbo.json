@@ -13,7 +13,7 @@
     "dev": {
       // `^build` so `@beff/tokens/dist` exists before anything imports it.
       // `globals.css` does `@import '@beff/tokens/css'`, which resolves to a
-      // *generated* file — without this, a fresh clone's first `pnpm dev` fails
+      // *generated* file - without this, a fresh clone's first `pnpm dev` fails
       // on a missing stylesheet, and the error names the CSS rather than the
       // build that never ran. Cheap: turbo caches `build`, so it is a cache hit
       // on every run where the tokens have not changed.
@@ -35,7 +35,7 @@
     },
     "test:storybook": {
       // `^build`, never `build`. `packages/ui` deliberately has no build script
-      // — it ships source — and turbo resolves a `dependsOn` across the whole
+      // - it ships source - and turbo resolves a `dependsOn` across the whole
       // workspace graph, so a task depending on a build that cannot run breaks
       // the root commands repo-wide. This one needs `@beff/tokens` built, which
       // is exactly what the caret says.

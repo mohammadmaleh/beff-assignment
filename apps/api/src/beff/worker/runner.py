@@ -1,8 +1,8 @@
 """The polling loop that drains the background queues.
 
 Two of them now: GDPR exports and outbound email. Deliberately boring. The
-interesting concurrency is in the SQL — `FOR UPDATE SKIP LOCKED` is what lets
-two of these run side by side without either blocking on the other's row — so
+interesting concurrency is in the SQL - `FOR UPDATE SKIP LOCKED` is what lets
+two of these run side by side without either blocking on the other's row - so
 this file only has to decide *when* to ask and *when to stop asking*.
 """
 
@@ -54,7 +54,7 @@ class WorkerSettings:
 async def run_once(factory: async_sessionmaker[Session], *, sender: EmailSender) -> bool:
     """Drain at most one item from each queue. Returns whether there was work.
 
-    Both queues, not one — and each in its own session and its own transaction.
+    Both queues, not one - and each in its own session and its own transaction.
     A shared one would mean an export that fails rolls back the email that
     succeeded beside it, which is how at-least-once turns into
     at-most-sometimes.
@@ -106,7 +106,7 @@ async def _run_one_email(factory: async_sessionmaker[Session], *, sender: EmailS
             status=delivery.status,
             attempts=delivery.attempts,
             # The recipient is deliberately absent. An email address is personal
-            # data and this line goes to stdout, into whatever aggregates logs —
+            # data and this line goes to stdout, into whatever aggregates logs -
             # the delivery id is enough to find the row when someone needs to.
         )
     return delivery is not None
@@ -117,7 +117,7 @@ async def run_forever(settings: WorkerSettings | None = None) -> None:
 
     Handles SIGTERM and SIGINT so `docker compose down` is a clean shutdown
     rather than a killed process mid-build. A job interrupted here is left
-    `running` with its attempt counted — it does not silently vanish, and the
+    `running` with its attempt counted - it does not silently vanish, and the
     ceiling still applies.
     """
     config = settings or WorkerSettings()
@@ -134,7 +134,7 @@ async def run_forever(settings: WorkerSettings | None = None) -> None:
 
     for sig in (signal.SIGTERM, signal.SIGINT):
         with contextlib.suppress(ValueError):
-            # `ValueError` when not on the main thread — the loop still works,
+            # `ValueError` when not on the main thread - the loop still works,
             # it just cannot install handlers.
             signal.signal(sig, request_stop)
 
@@ -147,7 +147,7 @@ async def run_forever(settings: WorkerSettings | None = None) -> None:
             except Exception:
                 # Never let one bad job kill the worker. The job itself is
                 # already marked failed or requeued by the service; this is the
-                # unexpected case — a dropped connection, a bug — and the right
+                # unexpected case - a dropped connection, a bug - and the right
                 # response is to back off and carry on.
                 log.exception("worker.iteration_failed")
                 await _sleep_or_stop(stopping, config.error_seconds)

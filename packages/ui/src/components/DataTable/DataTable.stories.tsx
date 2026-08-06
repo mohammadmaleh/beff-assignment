@@ -11,7 +11,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * ## It takes column *descriptors*, not markup
  *
  * That is the whole point. Six charts previously handed the figure six
- * hand-rolled `<tbody>` blobs, and markup cannot be sorted — so nothing shared
+ * hand-rolled `<tbody>` blobs, and markup cannot be sorted - so nothing shared
  * could exist even in principle. A `DataColumn` splits `render` (what the
  * reader sees) from `text` (what search matches and what the CSV carries) from
  * `sortValue` (what actually compares), and each of those three is a different
@@ -42,7 +42,7 @@ const ROWS: Batch[] = [
 /*
  * Formatters built per locale, and the columns with them.
  *
- * Cells arrive at the table *already formatted* — the component never sees a
+ * Cells arrive at the table *already formatted* - the component never sees a
  * raw number except through `sortValue` and `filterRange`. So a German story
  * that reused English-formatted columns would show `71.8%` beside a semicolon
  * delimiter and quietly misrepresent what the component does.
@@ -86,7 +86,7 @@ function columnsFor(locale: string): DataColumn<Batch>[] {
       align: 'end',
       render: yieldText,
       text: yieldText,
-      // The number, never the formatted string — '9.0%' sorts after '100.0%'.
+      // The number, never the formatted string - '9.0%' sorts after '100.0%'.
       sortValue: (row) => row.yieldPct,
       filterRange: (row) => row.yieldPct,
     },
@@ -154,8 +154,8 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Click a header to sort: ascending → descending → unsorted. `aria-sort` is set
- * only on sortable columns — on an unsortable one it would claim an affordance
- * that is not there — and the change is mirrored into a live region, because
+ * only on sortable columns - on an unsortable one it would claim an affordance
+ * that is not there - and the change is mirrored into a live region, because
  * reordering rows is otherwise completely silent.
  */
 export const Default: Story = {};
@@ -167,7 +167,7 @@ export const Default: Story = {};
  * *before* they can pick a bound.
  *
  * Each filter group is a `<fieldset>` captioned by the **column's** header. The
- * first version said `From`/`To` and nothing else — the same two words meaning
+ * first version said `From`/`To` and nothing else - the same two words meaning
  * per cent here, cells on throughput, euros on scrap cost and Wh/kg on a
  * control chart.
  */
@@ -180,7 +180,7 @@ export const Empty: Story = { args: { rows: [] } };
 
 /**
  * A badge **replaces** the cell rather than decorating it, and carries its label
- * as a word inside the pill — the same rule the drawing's red marker follows.
+ * as a word inside the pill - the same rule the drawing's red marker follows.
  * Bordered rather than filled: there is no `status-danger-bg` token, and a
  * filled pill would mean inventing a colour pair the contrast gate has never
  * solved.

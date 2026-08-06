@@ -1,4 +1,4 @@
-"""`python -m beff.openapi` — prints the schema to stdout."""
+"""`python -m beff.openapi` - prints the schema to stdout."""
 
 import sys
 

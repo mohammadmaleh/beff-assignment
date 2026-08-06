@@ -12,7 +12,7 @@ import type { DataTableCopy, FilterState } from './types';
  * ## Why the groups are captioned by their column
  *
  * The first version labelled the two range inputs `From` and `To` and stopped
- * there. On a page with five tables that is not a small imprecision — the same
+ * there. On a page with five tables that is not a small imprecision - the same
  * two words meant per cent on the yield table, cells on throughput, euros on
  * scrap cost and Wh/kg on a control chart, and nothing on screen said which.
  * A filter that does not name what it filters is a defect, not a rough edge.
@@ -24,7 +24,7 @@ import type { DataTableCopy, FilterState } from './types';
  * ## Why the range reads as one control
  *
  * Two bounds on one measure is a *window*, which is the single idea this whole
- * product is built on — a reading means nothing until you know the window it
+ * product is built on - a reading means nothing until you know the window it
  * sits in. Drawing the reader's filter the same way the product draws a
  * specification window is the one deliberate flourish here: a single hairline
  * enclosure, the two numerals set in the data face, joined by an en dash. The
@@ -56,7 +56,7 @@ function FilterGroup({
  * Two bounds in one enclosure.
  *
  * `focus-within` moves the border rather than adding a ring, so the enclosure
- * stays a single object when either half has focus — a ring on one input would
+ * stays a single object when either half has focus - a ring on one input would
  * split the window back into two fields, which is the reading this is designed
  * to prevent.
  */
@@ -209,7 +209,7 @@ export function Toolbar({
        *
        * The count sits with the actions rather than above the table because it
        * is the *result* of the controls above it, and because Download CSV
-       * exports exactly the rows it names — putting them side by side is what
+       * exports exactly the rows it names - putting them side by side is what
        * makes that relationship legible without a sentence explaining it.
        */}
       <div className="border-border-default flex flex-wrap items-center justify-between gap-3 border-t pt-3">

@@ -4,7 +4,7 @@
  * ## Why not `import * as echarts from 'echarts'`
  *
  * That entry point registers every chart type, every component and both
- * renderers — roughly a megabyte of JavaScript for four charts that use two
+ * renderers - roughly a megabyte of JavaScript for four charts that use two
  * series types between them. `echarts/core` plus an explicit `use()` is the
  * library's own supported way to pay for what you render, and it keeps the
  * cost of adding a fifth chart visible: a new chart type is a new import here,
@@ -16,7 +16,7 @@
  * produces sixty batches a window, so the trade goes the other way, and SVG
  * buys three things that matter more here than throughput: text stays real
  * text (so browser zoom and forced-colors mode behave), output is crisp at any
- * device pixel ratio without redrawing, and the whole thing renders in jsdom —
+ * device pixel ratio without redrawing, and the whole thing renders in jsdom -
  * which means the chart components are unit-testable at all. `canvas` in
  * vitest needs a native module this repo does not carry.
  */
@@ -48,7 +48,7 @@ echarts.use([
   MarkLineComponent,
   MarkAreaComponent,
   // `SpecBand`'s out-of-spec reading. The band is drawn entirely from marks
-  // rather than from a series — see `band.ts` — and the diamond is the one part
+  // rather than from a series - see `band.ts` - and the diamond is the one part
   // of it that is a point rather than a line.
   MarkPointComponent,
   DatasetComponent,

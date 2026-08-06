@@ -2,7 +2,7 @@
 
 Every boundary here is derived from "now", so the clock is injected and pinned.
 A test that let the service read the wall clock would have fixtures drifting
-between two calls inside one method — which reads as a service bug and is not
+between two calls inside one method - which reads as a service bug and is not
 one.
 """
 
@@ -110,7 +110,7 @@ async def test_only_the_hash_of_the_token_is_stored() -> None:
     """A database leak must not hand over live verification links.
 
     Following one proves control of an address, which is a step in most
-    account-takeover chains — so this is the same rule as refresh tokens, for
+    account-takeover chains - so this is the same rule as refresh tokens, for
     the same reason.
     """
     service, user, outbox, _ = await _fixture()
@@ -219,7 +219,7 @@ async def test_an_empty_token_is_refused_without_a_lookup() -> None:
 
 
 async def test_a_token_whose_owner_was_erased_is_refused() -> None:
-    """Not "expired" — there is no new link to ask for.
+    """Not "expired" - there is no new link to ask for.
 
     The GDPR erasure path deletes these rows, so this is the belt to that
     braces: a token that somehow outlives its account must not resurrect it.
@@ -254,7 +254,7 @@ async def test_resending_while_a_message_is_still_queued_returns_that_message() 
     """The idempotency boundary, and the reason it is not simply "always issue".
 
     A new token would kill the link inside the message currently on its way out,
-    so a double-click would post a dead link to the user's inbox — which is
+    so a double-click would post a dead link to the user's inbox - which is
     worse than doing nothing.
     """
     service, user, outbox, _ = await _fixture()
@@ -288,7 +288,7 @@ async def test_resending_to_a_verified_account_is_refused() -> None:
 
 
 async def test_verification_does_not_produce_a_session() -> None:
-    """A link that arrives by email and yields a session is a login bypass —
+    """A link that arrives by email and yields a session is a login bypass -
     anyone with read access to the inbox, including a forwarding rule nobody
     remembers, would get one. `verify` returns a `User`, and that is all."""
     service, user, outbox, _ = await _fixture()

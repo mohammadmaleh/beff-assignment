@@ -6,7 +6,7 @@
  * contract with a FastAPI router, and a typo in one produces a 404 at runtime
  * on a screen that may not be the one under test. Named here, the compiler is
  * what notices a rename, and one file answers "what does the frontend actually
- * call" — which is also the list a reviewer checks against the OpenAPI
+ * call" - which is also the list a reviewer checks against the OpenAPI
  * document.
  */
 

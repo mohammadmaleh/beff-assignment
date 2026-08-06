@@ -14,7 +14,7 @@ const INTRINSIC = { width: 640, height: 360 } as const;
  * ## Where this sits, and why
  *
  * Between the tolerance band and the waitlist. By that point the argument is
- * finished — problem, cost, product, signature — and the only question left
+ * finished - problem, cost, product, signature - and the only question left
  * before someone hands over a work email is *who are you*. That is the one slot
  * a company film answers. It is deliberately not the hero: the hero already has
  * the spec band, and a 360p master behind it would be visibly soft at the exact
@@ -24,7 +24,7 @@ const INTRINSIC = { width: 640, height: 360 } as const;
  *
  * The master is **640×360**. Stretched across a full-bleed band it is a 2.25×
  * upscale, so the width cap lives in this component rather than in whatever page
- * holds it — a caller cannot accidentally blow it up.
+ * holds it - a caller cannot accidentally blow it up.
  *
  * **No autoplay.** 71 seconds with an audio track, 3.9 MB, unasked. It would be
  * the page's largest contentful paint and would fail `prefers-reduced-motion` in
@@ -40,7 +40,7 @@ const INTRINSIC = { width: 640, height: 360 } as const;
  * 1.2.2 (A) and 1.2.5 (AA) unmet, on a surface that otherwise targets 2.2 AA. It
  * was a deliberate call, and the README records exactly where the claim no
  * longer holds rather than leaving a false one standing. The text beside the
- * video is not a substitute for captions — it is there so the section still
+ * video is not a substitute for captions - it is there so the section still
  * carries its meaning for anyone who cannot or will not play 71 seconds of
  * video, which is most readers.
  */

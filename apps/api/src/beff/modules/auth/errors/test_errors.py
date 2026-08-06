@@ -19,7 +19,7 @@ from beff.modules.auth.errors import (
 # `type[AppError]` would be a lie in one direction and `Callable[[], AppError]`
 # in the other: the tests read `.code` off the class *and* construct it with no
 # arguments, and the base class requires a `detail` it does not have a default
-# for. The protocol says both, which is exactly what every subclass provides —
+# for. The protocol says both, which is exactly what every subclass provides -
 # and that every subclass provides it is the property under test.
 class DefaultedError(Protocol):
     """An `AppError` subclass with a code and a usable default message."""

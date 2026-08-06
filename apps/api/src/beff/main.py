@@ -49,7 +49,7 @@ def create_app() -> FastAPI:
     install_problem_handlers(app, settings)
 
     # Outermost, so the id is bound before CORS or any handler runs and every
-    # line produced by the request — including a rejected preflight — carries
+    # line produced by the request - including a rejected preflight - carries
     # it. Starlette applies middleware in reverse registration order, so this
     # being first is what puts it outside.
     app.add_middleware(RequestIdMiddleware)
@@ -60,7 +60,7 @@ def create_app() -> FastAPI:
         # The refresh token is an httpOnly cookie, and the web app is on a
         # different origin to the API in every environment this runs in, so
         # credentialed requests are required. That in turn forbids a wildcard
-        # origin — browsers reject the combination — which is why
+        # origin - browsers reject the combination - which is why
         # `cors_origins` is an explicit list rather than `*`.
         allow_credentials=True,
         allow_methods=["*"],

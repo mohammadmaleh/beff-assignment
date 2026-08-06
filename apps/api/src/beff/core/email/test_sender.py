@@ -91,7 +91,7 @@ async def test_the_recorder_can_be_told_to_fail() -> None:
 
 
 async def test_the_console_sender_accepts_anything() -> None:
-    """What `docker compose up` runs on. It must never raise — a local stack
+    """What `docker compose up` runs on. It must never raise - a local stack
     that fails registration because mail is unconfigured is a broken stack."""
     await ConsoleEmailSender().send(MESSAGE)
 
@@ -139,7 +139,7 @@ async def test_smtp_lets_a_4xx_response_through_as_retryable(
     """A 421 is "come back later" and must stay retryable.
 
     Classifying it as permanent would dead-letter every message sent during a
-    provider's rate-limit window — the exact moment a queue is supposed to help.
+    provider's rate-limit window - the exact moment a queue is supposed to help.
     """
     import aiosmtplib
 
@@ -188,7 +188,7 @@ async def test_smtp_sends_no_credentials_when_none_are_configured(
     """Empty strings are not credentials.
 
     Passing `username=""` makes aiosmtplib attempt an AUTH with a blank user,
-    which some servers reject outright — so a local relay that needs no auth
+    which some servers reject outright - so a local relay that needs no auth
     would fail for a reason that reads as a configuration typo.
     """
     import aiosmtplib

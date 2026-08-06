@@ -7,13 +7,13 @@ import type { EChartsOption } from '../../lib/chart/index';
 
 /**
  * Two things about this component are worth a test, and neither is what it
- * draws — the drawing is `aria-hidden` and its correctness is the option
+ * draws - the drawing is `aria-hidden` and its correctness is the option
  * builders' problem, tested separately.
  *
  * What matters here is lifecycle. ECharts owns a DOM subtree and a render loop
  * outside React's knowledge, so a missed `dispose()` leaks an instance and a
  * `ResizeObserver` per mount, and the symptom is a page that gets slower the
- * longer someone leaves the dashboard open — the hardest kind of bug to
+ * longer someone leaves the dashboard open - the hardest kind of bug to
  * attribute to a chart.
  */
 

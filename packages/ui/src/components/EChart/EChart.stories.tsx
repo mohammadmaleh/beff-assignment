@@ -14,12 +14,12 @@ import { EChart } from './EChart';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 /**
- * One ECharts instance in a div, kept alive correctly — and nothing else.
+ * One ECharts instance in a div, kept alive correctly - and nothing else.
  *
  * ## It is `aria-hidden`, and that is the design
  *
  * There is no `role="img"` and no generated `aria-label`. An ECharts SVG holds
- * dozens of `<text>` nodes — axis ticks, labels, the legend — and left exposed a
+ * dozens of `<text>` nodes - axis ticks, labels, the legend - and left exposed a
  * screen reader walks all of them, in visual order, with no structure: "71.8 68
  * B-2026-004 65.2". Hiding the drawing and exposing a table is not a compromise
  * for accessibility's sake; it is the only version that is readable.
@@ -27,7 +27,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  *
  * ## The two things it gets right that are easy to get wrong
  *
- * The instance is a **ref**, not state — React's reconciliation and ECharts'
+ * The instance is a **ref**, not state - React's reconciliation and ECharts'
  * own disposal otherwise race on unmount. And it watches its box with a
  * `ResizeObserver` rather than a window `resize` listener: the window does not
  * resize when a sidebar collapses or when a German string wraps to a second
@@ -35,7 +35,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  *
  * ## What the option builders are for
  *
- * ECharts' defaults are a different design system — 12px sans-serif, a solid
+ * ECharts' defaults are a different design system - 12px sans-serif, a solid
  * grey axis, a full grid, a dark tooltip, a palette that is not colourblind
  * safe. `baseOption`, `categoryAxis`, `valueAxis` and `referenceLine` are that
  * overridden once instead of per chart, which is how a dashboard avoids ending
@@ -105,7 +105,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Flip the theme in the toolbar. The chart follows — `useChartTokens` reads the
+ * Flip the theme in the toolbar. The chart follows - `useChartTokens` reads the
  * resolved custom properties off `<html>` and re-reads on both paths that can
  * change them: the `data-theme` attribute a toggle writes, and the OS crossing
  * its own light/dark schedule, which touches no attribute at all.
@@ -117,7 +117,7 @@ export const Line: Story = { args: { withReference: false } };
 /**
  * A rule you are judged against is **dashed and neutral**, never solid and
  * never in a series colour. That pair of rules is what lets a reader tell a
- * measurement from the thing measuring it without a legend — and it survives
+ * measurement from the thing measuring it without a legend - and it survives
  * greyscale, colour blindness and a printout, which a legend does not, because
  * a legend only tells you which colour is which.
  *

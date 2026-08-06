@@ -9,7 +9,7 @@ export type AlertTone = 'info' | 'success' | 'warning' | 'danger';
  *
  * Required, and with no English default on purpose. This string is spoken and
  * never seen, so a wrong one is invisible to every visual check, every
- * screenshot and every reviewer who is not listening — which is exactly how
+ * screenshot and every reviewer who is not listening - which is exactly how
  * `packages/ui` came to announce "Error:" on the German pages. A default here
  * would put the bug back one call site at a time.
  */
@@ -22,7 +22,7 @@ export interface AlertProps {
   prefixes: AlertPrefixes;
   /**
    * Announce even when the tone would not normally warrant it. Needed when this
-   * alert *replaces* a live region — an empty state arriving where a "loading…"
+   * alert *replaces* a live region - an empty state arriving where a "loading…"
    * announcement just was leaves a screen reader user with silence otherwise.
    */
   announce?: boolean;

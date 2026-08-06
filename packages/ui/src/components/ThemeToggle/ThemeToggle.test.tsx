@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 /*
- * The key is the caller's — that is the whole point of the prop. Using a test
+ * The key is the caller's - that is the whole point of the prop. Using a test
  * key rather than importing the app's is also what proves the component reads
  * the one it was given rather than a constant it happens to close over.
  */
@@ -20,7 +20,7 @@ import { ThemeToggle } from './ThemeToggle';
 /**
  * `window.localStorage`, never the bare global. Node 25 defines `localStorage`
  * on `globalThis`, and in vitest's jsdom environment `window === globalThis`, so
- * Node's inert version shadows jsdom's — the bare form fails with
+ * Node's inert version shadows jsdom's - the bare form fails with
  * "localStorage.clear is not a function" in a test that works in a browser.
  *
  * `matchMedia` is the same story one level worse: jsdom does not implement it at

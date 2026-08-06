@@ -120,7 +120,7 @@ describe('UnverifiedBanner', () => {
 
     const confirmation = await screen.findByText(/on its way/i);
     // Queried by text and then checked for the live region around it. Asking
-    // for `role="status"` directly would be ambiguous — the warning Alert this
+    // for `role="status"` directly would be ambiguous - the warning Alert this
     // sits inside is itself a live region, so the role matches twice.
     expect(confirmation.closest('[aria-live="polite"]')).not.toBeNull();
   });
@@ -135,7 +135,7 @@ describe('UnverifiedBanner', () => {
     });
     const [, init] = vi.mocked(fetch).mock.calls[0] as [unknown, RequestInit];
     // Narrowed, not `String(...)`-ed. `BodyInit` includes `Blob`, `FormData`
-    // and a stream, every one of which stringifies to `[object Something]` —
+    // and a stream, every one of which stringifies to `[object Something]` -
     // a value that parses as nothing and asserts as everything.
     expect(typeof init.body).toBe('string');
     expect(JSON.parse(init.body as string)).toEqual({ locale: 'de' });
@@ -143,8 +143,8 @@ describe('UnverifiedBanner', () => {
 
   it('stops offering the button once a message is on its way', async () => {
     /*
-     * A second click would be suppressed by the outbox anyway — the queued
-     * message still carries a live token — so leaving the button active would
+     * A second click would be suppressed by the outbox anyway - the queued
+     * message still carries a live token - so leaving the button active would
      * promise something that does not happen.
      */
     render(<UnverifiedBanner locale="en" />);

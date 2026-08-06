@@ -2,12 +2,12 @@ import type { LegalDocument } from '@/components/LegalShell';
 import type { Locale } from '@/lib/i18n';
 
 /**
- * Barrierefreiheitserklärung — accessibility statement.
+ * Barrierefreiheitserklärung - accessibility statement.
  *
  * ## Why it is here
  *
  * The BFSG (in force since 28 June 2025) obliges providers of covered services
- * to publish one. Whether it strictly binds a pre-launch B2B tool is arguable —
+ * to publish one. Whether it strictly binds a pre-launch B2B tool is arguable -
  * the Act is aimed at consumer-facing services, and §3(3) exempts micro
  * enterprises for services. It is published anyway, because the argument for
  * omitting it is "we probably do not have to", which is not a good look on the
@@ -16,7 +16,7 @@ import type { Locale } from '@/lib/i18n';
  * ## The part that matters
  *
  * Section 3. A conformance statement that lists nothing non-conforming is not a
- * statement, it is a marketing claim in a legal document's clothing — and it is
+ * statement, it is a marketing claim in a legal document's clothing - and it is
  * the single most common failure of the genre. Every entry below is a real,
  * currently-true limitation, and each one is also recorded in the README's "Not
  * done, and not claimed" section. **If those two lists ever disagree, one of
@@ -55,7 +55,7 @@ export const ACCESSIBILITY_CONTENT: Record<Locale, LegalDocument> = {
       id: 'measures',
       heading: '4. What is in place',
       paragraphs: [
-        'Accessibility is gated in the build rather than reviewed at the end: axe-core runs against WCAG 2.2 AA on every marketing surface in both languages and in both colour themes, keyboard paths are asserted, colour-contrast pairs are proven against the design tokens before any component uses them, and no chart conveys meaning by colour alone — each has a data-table alternative.',
+        'Accessibility is gated in the build rather than reviewed at the end: axe-core runs against WCAG 2.2 AA on every marketing surface in both languages and in both colour themes, keyboard paths are asserted, colour-contrast pairs are proven against the design tokens before any component uses them, and no chart conveys meaning by colour alone - each has a data-table alternative.',
         'Motion respects prefers-reduced-motion, including animation delays, which is a common omission.',
       ],
     },
@@ -112,7 +112,7 @@ export const ACCESSIBILITY_CONTENT: Record<Locale, LegalDocument> = {
       id: 'measures',
       heading: '4. Was umgesetzt ist',
       paragraphs: [
-        'Barrierefreiheit ist Teil des Build-Prozesses und keine nachgelagerte Prüfung: axe-core testet jede Marketingseite in beiden Sprachen und in beiden Farbschemata gegen WCAG 2.2 AA, Tastaturpfade werden geprüft, Farbkontraste werden auf Token-Ebene nachgewiesen, bevor eine Komponente sie verwendet, und keine Grafik vermittelt Bedeutung allein über Farbe — zu jeder gibt es eine Datentabelle.',
+        'Barrierefreiheit ist Teil des Build-Prozesses und keine nachgelagerte Prüfung: axe-core testet jede Marketingseite in beiden Sprachen und in beiden Farbschemata gegen WCAG 2.2 AA, Tastaturpfade werden geprüft, Farbkontraste werden auf Token-Ebene nachgewiesen, bevor eine Komponente sie verwendet, und keine Grafik vermittelt Bedeutung allein über Farbe - zu jeder gibt es eine Datentabelle.',
         'Bewegung berücksichtigt prefers-reduced-motion einschließlich der Verzögerungen, was häufig übersehen wird.',
       ],
     },
@@ -127,7 +127,7 @@ export const ACCESSIBILITY_CONTENT: Record<Locale, LegalDocument> = {
       id: 'feedback',
       heading: '6. Rückmeldung',
       paragraphs: [
-        'Wenn Sie auf dieser Website auf eine Barriere stoßen, schreiben Sie uns an barrierefreiheit@example.invalid. Beschreiben Sie die Seite und was passiert ist — wir antworten innerhalb von zwei Wochen.',
+        'Wenn Sie auf dieser Website auf eine Barriere stoßen, schreiben Sie uns an barrierefreiheit@example.invalid. Beschreiben Sie die Seite und was passiert ist - wir antworten innerhalb von zwei Wochen.',
       ],
     },
     {

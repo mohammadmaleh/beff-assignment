@@ -1,7 +1,7 @@
 """Repository contracts.
 
 `typing.Protocol`, not an abstract base class. A service declares the shape it
-needs and any object with matching methods satisfies it structurally — so a test
+needs and any object with matching methods satisfies it structurally - so a test
 double is a plain class with no import of, and no inheritance from, the real
 repository. Change the protocol and mypy flags every implementation, including
 the fakes, which is exactly the drift a hand-rolled mock hides.
@@ -29,7 +29,7 @@ class UserRepository(Protocol):
     """Access to the `users` table.
 
     Every read is scoped to *live* users. A soft-deleted account must behave as
-    if it does not exist — otherwise an erased user could still sign in, which
+    if it does not exist - otherwise an erased user could still sign in, which
     would make erasure a lie.
     """
 
@@ -90,7 +90,7 @@ class EmailVerificationTokenRepository(Protocol):
         """Consume every live token for this user. Returns how many were hit.
 
         Called before issuing a new one, so a resend does not leave two working
-        links in two different inboxes — the older message is the one more
+        links in two different inboxes - the older message is the one more
         likely to have been forwarded or exposed, and it is now dead.
         """
         ...

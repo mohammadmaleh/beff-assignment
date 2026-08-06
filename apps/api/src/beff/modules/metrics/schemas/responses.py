@@ -120,7 +120,7 @@ class CohortReferenceResponse(BaseModel):
 class MetricsTrendResponse(BaseModel):
     """The series behind the charts, in one request.
 
-    Separate from the overview by design — see `MetricsTrend`. The overview is
+    Separate from the overview by design - see `MetricsTrend`. The overview is
     what the page needs for its first useful pixel; this is sixty batches, and
     putting it in the same payload would make the headline wait on data it does
     not use.

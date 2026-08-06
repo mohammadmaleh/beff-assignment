@@ -6,7 +6,7 @@ than trusting this comment". This is that file.
 The point is not that the seeder runs. It is that the numbers it produces are
 ones a battery engineer would recognise. A 99.8% first-pass yield on a pilot line
 is not impressive, it is obviously wrong to anyone who works in the industry, and
-it discredits every other number on the screen — including the ones that are
+it discredits every other number on the screen - including the ones that are
 right. Every range asserted below comes from `CONTEXT.md`.
 
 The second thing under test is idempotency. `docker compose up` runs the seeder
@@ -101,7 +101,7 @@ async def test_the_seed_is_deterministic(db_session: AsyncSession) -> None:
     await seed(db_session, seed_value=99)
 
     # Rename the account so the idempotency short-circuit does not answer for
-    # the generator being asked about — this test is about the numbers, and
+    # the generator being asked about - this test is about the numbers, and
     # `test_seeding_twice_leaves_one_of_everything` is about the short-circuit.
     await db_session.execute(
         update(User).where(User.email == DEMO_EMAIL).values(email="previous@beff.example")
@@ -174,7 +174,7 @@ async def test_the_scrap_breakdown_adds_up_to_the_headline_number(
     """Otherwise the two halves of the dashboard disagree.
 
     The breakdown is distributed by weight from the same total the yield implies,
-    so it can never exceed it — three unrelated random numbers would, and the
+    so it can never exceed it - three unrelated random numbers would, and the
     chart would claim more cells were scrapped at each step than were ever
     started.
     """

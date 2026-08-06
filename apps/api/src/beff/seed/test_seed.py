@@ -5,7 +5,7 @@ first-pass yield on a pilot line is not impressive, it is obviously wrong, and
 it discredits everything around it." These tests are what stop that happening
 by accident when someone tweaks a constant.
 
-They exercise the seed's *constants and derivations*, not the database — the
+They exercise the seed's *constants and derivations*, not the database - the
 plausibility of the numbers is arithmetic, and binding it to a container would
 make the check depend on Docker being available.
 """
@@ -107,7 +107,7 @@ def test_areal_loading_sits_inside_the_range_context_gives() -> None:
 
 def test_one_parameter_is_deliberately_out_of_spec() -> None:
     """A dashboard where everything is green never demonstrates that it can show
-    a problem — and the out-of-spec rendering is the signature element's whole
+    a problem - and the out-of-spec rendering is the signature element's whole
     point."""
     out_of_spec = [
         reading

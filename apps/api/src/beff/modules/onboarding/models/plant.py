@@ -1,4 +1,4 @@
-"""The `plants` table — a physical manufacturing site (CONTEXT.md)."""
+"""The `plants` table - a physical manufacturing site (CONTEXT.md)."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ class Plant(Base, TimestampMixin):
     __table_args__ = (
         CheckConstraint(f"length(name) <= {PLANT_NAME_MAX_LENGTH}", name="name_length"),
         CheckConstraint("length(name) > 0", name="name_not_blank"),
-        # ISO 3166-1 alpha-2. Country granularity only — see `consent_records`
+        # ISO 3166-1 alpha-2. Country granularity only - see `consent_records`
         # for why city-level location is never stored anywhere in this schema.
         CheckConstraint("country_code ~ '^[A-Z]{2}$'", name="country_code_iso_alpha2"),
         Index("ix_plants_user_id", "user_id"),

@@ -4,7 +4,7 @@
 
 Everything else that exercises the metrics repository does so through
 `InMemoryMetricsRepository`. That is the right call for the service's
-arithmetic — the interesting mistakes there are windowing and division, and
+arithmetic - the interesting mistakes there are windowing and division, and
 binding them to a container makes the check depend on Docker.
 
 It is the wrong call for the *queries*, and this repo has already paid for that
@@ -16,7 +16,7 @@ subquery onto `batches`, and there are two ways to get it wrong that no unit
 test can see:
 
 - an **inner** join instead of an outer one silently drops every batch that
-  scrapped nothing — which is to say, the best runs on the line
+  scrapped nothing - which is to say, the best runs on the line
 - joining `scrap_events` **directly** rather than through a `GROUP BY` subquery
   multiplies each batch by its number of process steps, so every `cells_started`
   in the payload comes back twelve times too large
@@ -180,7 +180,7 @@ async def test_measurement_series_carries_the_batch_time_not_the_row_time(
     db_session: AsyncSession,
 ) -> None:
     """The reading's own `created_at` is when the row was written, which on a
-    seeded dataset is the same instant for every row — the whole control chart
+    seeded dataset is the same instant for every row - the whole control chart
     would collapse onto one tick."""
     line = await make_line(db_session)
     older = await make_batch(db_session, line, code="B-001", days_ago=20)
@@ -252,7 +252,7 @@ async def test_an_empty_window_is_an_empty_series_not_an_error(db_session: Async
 #
 # `batch_series` above is the query with the most ways to be silently wrong, so
 # it got the attention first. The four below were left to the service's unit
-# tests, which use a fake — and a fake answers for none of this: the half-open
+# tests, which use a fake - and a fake answers for none of this: the half-open
 # window, `AVG` over an empty set, the `DISTINCT ON`, or the join that scopes a
 # line to the account that owns it.
 # ─────────────────────────────────────────────────────────────────────────────
@@ -278,7 +278,7 @@ async def test_the_default_line_is_the_first_one_the_account_set_up(
 async def test_the_default_line_is_never_another_accounts(db_session: AsyncSession) -> None:
     """`lines` reaches the account through `plants`, so that join *is* the
     filter. Dropping it opens somebody else's production line as the dashboard's
-    default view — a data leak that looks like a working dashboard."""
+    default view - a data leak that looks like a working dashboard."""
     await make_line(db_session)
 
     assert await PostgresMetricsRepository(db_session).default_line(uuid4()) is None
@@ -290,7 +290,7 @@ async def test_batch_totals_sum_the_counts_and_average_the_rates(
     """Counts add; rates do not.
 
     Summing `capacity_retention_pct` across two batches produces 176%, which is
-    not a number anything has ever measured — and it renders as a plausible-
+    not a number anything has ever measured - and it renders as a plausible-
     looking headline rather than as an error.
     """
     line = await make_line(db_session)
@@ -310,7 +310,7 @@ async def test_the_totals_window_is_half_open(db_session: AsyncSession) -> None:
     period and the one it is compared against.
 
     A closed interval double-counts on the boundary, which makes a delta of
-    exactly zero look like drift — and a "period over period" figure that moves
+    exactly zero look like drift - and a "period over period" figure that moves
     when nothing happened is worse than no figure at all.
     """
     line = await make_line(db_session)
@@ -328,7 +328,7 @@ async def test_totals_over_an_empty_window_are_zero_not_null(
 ) -> None:
     """`COALESCE` on the sums, and `None` on the averages.
 
-    Zero cells started is a fact — the line did not run — so the count is 0. An
+    Zero cells started is a fact - the line did not run - so the count is 0. An
     *average* over no rows is not zero, it is unknown, and reporting 0% capacity
     retention for a quiet week would be alarming and false.
     """
@@ -412,7 +412,7 @@ async def test_latest_measurements_is_the_newest_reading_per_parameter(
 
     The spec bands show one number per parameter, and it has to be the most
     recent one. Order the `DISTINCT ON` the other way and every band shows the
-    oldest reading on the line — which is stable, plausible, and two months out
+    oldest reading on the line - which is stable, plausible, and two months out
     of date.
     """
     line = await make_line(db_session)
@@ -468,7 +468,7 @@ async def test_latest_measurements_covers_every_parameter_once(
 
 
 async def test_a_line_with_no_readings_has_no_measurements(db_session: AsyncSession) -> None:
-    """An empty series, not an error — a line that was just created is a normal
+    """An empty series, not an error - a line that was just created is a normal
     state, and the dashboard has an empty state for it."""
     line = await make_line(db_session)
 

@@ -1,7 +1,7 @@
 """The schema dump is a build artefact the frontend compiles against.
 
 `packages/api-client` is generated from this document, so it is not
-documentation — it is a source file with an unusual producer. What matters is
+documentation - it is a source file with an unusual producer. What matters is
 that two runs on two machines produce byte-identical output, because the drift
 check is a `git diff`: any instability turns "the API changed" into a signal
 nobody can trust, and the usual response to a check that cries wolf is to delete

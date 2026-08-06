@@ -29,15 +29,15 @@ export async function generateMetadata({
  * ## Why it does not use `LegalShell`
  *
  * This is a pitch surface, not a document. It takes the landing page's band
- * composition — full-width sections, a wide display heading against a narrower
- * measure — rather than the single 65-character column the legal pages use.
+ * composition - full-width sections, a wide display heading against a narrower
+ * measure - rather than the single 65-character column the legal pages use.
  * Setting it like an Impressum would say "this is boilerplate you may skip",
  * which is the opposite of what an About page is for.
  *
  * ## Why the content is what it is
  *
- * Everything factual here — Stuttgart and Tokyo, founders out of the lithium-ion
- * industry, the ~40 years of production experience — is Beff's own material.
+ * Everything factual here - Stuttgart and Tokyo, founders out of the lithium-ion
+ * industry, the ~40 years of production experience - is Beff's own material.
  * The alternative was inventing a company history, which on a page whose entire
  * pitch is *we have stood on a line* would be the one lie the reader is best
  * equipped to catch.

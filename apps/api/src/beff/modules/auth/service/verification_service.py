@@ -2,7 +2,7 @@
 
 Nothing here signs anyone in and nothing here blocks anyone out. Following the
 link stamps `users.email_verified_at`; the product decides what that is worth.
-That separation is deliberate — a verification flow that also authenticates is
+That separation is deliberate - a verification flow that also authenticates is
 a login bypass one refactor away.
 """
 
@@ -49,8 +49,8 @@ class EmailVerificationService:
         self._outbox = outbox
         self._base_url = base_url
         self._ttl_seconds = ttl_seconds
-        # Injected, never read from `utcnow` inline. Every boundary here —
-        # expiry, issue time, consumption — is derived from "now", and a test
+        # Injected, never read from `utcnow` inline. Every boundary here -
+        # expiry, issue time, consumption - is derived from "now", and a test
         # that cannot pin it gets fixtures that drift between two calls in the
         # same method. That reads as a service bug and is not one.
         self._clock = clock
@@ -59,7 +59,7 @@ class EmailVerificationService:
         """Mint a link and queue the message that carries it.
 
         Any token already outstanding is consumed first, so a resend does not
-        leave two working links in two inboxes — the older message is the one
+        leave two working links in two inboxes - the older message is the one
         more likely to have been forwarded, and it is now dead.
         """
         now = self._clock()
@@ -71,7 +71,7 @@ class EmailVerificationService:
                 user_id=user.id,
                 # Only the hash is stored. Following one of these proves control
                 # of an address, so a database leak must not hand over live
-                # links — the same reasoning as `refresh_tokens`.
+                # links - the same reasoning as `refresh_tokens`.
                 token_hash=hash_opaque_token(token),
                 issued_at=now,
                 expires_at=now + timedelta(seconds=self._ttl_seconds),
@@ -89,7 +89,7 @@ class EmailVerificationService:
 
         # Queued in the caller's transaction, not sent. A registration that
         # rolls back must not leave a verification mail on its way to an account
-        # that does not exist — which is the entire reason this is an outbox and
+        # that does not exist - which is the entire reason this is an outbox and
         # not an SMTP call in the request handler.
         return await self._outbox.enqueue(
             EmailDelivery(
@@ -107,7 +107,7 @@ class EmailVerificationService:
 
         **This is the idempotency boundary.** A message already queued and not
         yet sent carries a token that is still live, so the right answer to a
-        second click is that one — not a new token, which would kill the link in
+        second click is that one - not a new token, which would kill the link in
         the message currently on its way out.
         """
         if user.email_verified_at is not None:
@@ -123,7 +123,7 @@ class EmailVerificationService:
         """Redeem a link. Returns the user it belonged to.
 
         The token is looked up by hash, so a value that was never issued and one
-        that was issued to somebody else are the same lookup — there is no
+        that was issued to somebody else are the same lookup - there is no
         branch here that a guesser could time.
         """
         if not presented_token:
@@ -144,7 +144,7 @@ class EmailVerificationService:
         user = await self._users.get_active_by_id(record.user_id)
         if user is None:
             # The token was genuine and its owner has since been erased. Not
-            # "expired" — there is no new link to ask for.
+            # "expired" - there is no new link to ask for.
             await self._tokens.consume(record, at=now)
             raise VerificationTokenInvalidError
 

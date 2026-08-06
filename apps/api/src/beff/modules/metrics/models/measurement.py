@@ -1,4 +1,4 @@
-"""The `process_measurements` table — a reading against its specification window."""
+"""The `process_measurements` table - a reading against its specification window."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ class ProcessMeasurement(Base, TimestampMixin):
 
     The limits are stored alongside the reading rather than looked up. A spec
     window that is changed later must not silently reclassify a historical
-    measurement as in-spec — the certificate said what it said on the day.
+    measurement as in-spec - the certificate said what it said on the day.
     """
 
     __tablename__ = "process_measurements"

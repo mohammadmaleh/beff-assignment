@@ -1,4 +1,4 @@
-"""Waitlist — pre-launch signups from the landing page.
+"""Waitlist - pre-launch signups from the landing page.
 
 A waitlist entry is **not a user** (CONTEXT.md): no credentials, no access, its
 own table. The legal basis is consent, so the policy version is stored with the

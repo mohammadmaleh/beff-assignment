@@ -12,7 +12,7 @@ export interface TextFieldProps
 
 /**
  * A labelled text input. The borders carry the structure here because the
- * design brief settled on no cards anywhere — which makes `border-default`
+ * design brief settled on no cards anywhere - which makes `border-default`
  * load-bearing UI under WCAG 1.4.11, and it is gated at 3:1 for that reason.
  */
 export function TextField({

@@ -6,7 +6,7 @@ import { Eyebrow } from './Eyebrow';
 describe('Eyebrow', () => {
   it('keeps the letter-spacing that makes uppercase at xs readable', () => {
     // The one genuinely load-bearing value here. Uppercase at this size without
-    // added tracking is measurably harder to read — and a copy that lost it
+    // added tracking is measurably harder to read - and a copy that lost it
     // would look intentional rather than broken.
     const { container } = render(<Eyebrow>Production line</Eyebrow>);
 

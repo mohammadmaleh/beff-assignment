@@ -1,4 +1,4 @@
-"""`python -m beff.seed` — the entry point compose runs after migrating.
+"""`python -m beff.seed` - the entry point compose runs after migrating.
 
 Without this file, `python -m beff.seed` fails with "'beff.seed' is a package
 and cannot be directly executed": the `if __name__ == "__main__"` guard inside

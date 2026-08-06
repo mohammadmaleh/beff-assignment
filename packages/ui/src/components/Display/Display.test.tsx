@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { Display } from './Display';
 
 /**
- * The assertions here are on *classes*, which is normally a bad test — it
+ * The assertions here are on *classes*, which is normally a bad test - it
  * couples to an implementation detail and breaks on a harmless rename.
  *
  * It is the right test for exactly this component, and only this one. The

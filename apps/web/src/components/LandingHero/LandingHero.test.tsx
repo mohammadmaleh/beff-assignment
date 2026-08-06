@@ -9,8 +9,8 @@ describe('LandingHero', () => {
      * The hero used to lead with the tolerance band at full scale. The film
      * replaced it on request.
      *
-     * A `<video>` has no intrinsic accessible name — unlabelled it is announced
-     * as "video" and nothing else — so the label is the element's entire
+     * A `<video>` has no intrinsic accessible name - unlabelled it is announced
+     * as "video" and nothing else - so the label is the element's entire
      * identity to a screen reader, and `VideoPlayer` requires it with no
      * default for exactly that reason.
      */
@@ -26,7 +26,7 @@ describe('LandingHero', () => {
      * in the same move. `preload="metadata"` fetches the header and stops.
      *
      * `width`/`height` are the master's intrinsic size, so the column does not
-     * collapse and reflow when metadata arrives — a layout shift in the hero is
+     * collapse and reflow when metadata arrives - a layout shift in the hero is
      * the most expensive one on the page.
      */
     render(<LandingHero locale="en" />);
@@ -41,7 +41,7 @@ describe('LandingHero', () => {
   it('caps the film at its master width rather than upscaling it', () => {
     // The master is 640x360 and the hero column is wider than that on any
     // desktop viewport. Uncapped, the first thing a visitor sees is a ~2x
-    // upscale — soft at exactly the moment the page makes its first claim.
+    // upscale - soft at exactly the moment the page makes its first claim.
     render(<LandingHero locale="en" />);
 
     expect(screen.getByLabelText('Beff company introduction film')).toHaveClass('max-w-[640px]');
@@ -77,7 +77,7 @@ describe('LandingHero', () => {
   it('names the film in German on the German page', () => {
     /*
      * The label is the video's whole accessible content, so an English default
-     * here would be a WCAG 3.1.2 failure inside a `lang="de"` document — the
+     * here would be a WCAG 3.1.2 failure inside a `lang="de"` document - the
      * exact shape of the bug the screen-reader pass found on the spec band's
      * readout, which is why `VideoPlayer` takes the string as a required prop.
      * Nothing else would catch it: axe is indifferent to which language a

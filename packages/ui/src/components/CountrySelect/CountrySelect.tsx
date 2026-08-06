@@ -4,7 +4,7 @@ import { useCombobox } from 'downshift';
 import { useMemo, useState } from 'react';
 
 /*
- * The flags, as CSS classes over SVG files — imported here rather than by the
+ * The flags, as CSS classes over SVG files - imported here rather than by the
  * app, so a consumer cannot mount this component and get 250 empty boxes.
  *
  * Next collects a client component's CSS into the chunks for the routes that
@@ -30,7 +30,7 @@ export type { CountryOption };
  * language and a default **is** a guess that ships. That is not hypothetical
  * here: two of these five strings are announced only to screen readers, where a
  * wrong-language default is invisible to axe, to screenshots and to the
- * contrast gate — all three are indifferent to which language a well-formed
+ * contrast gate - all three are indifferent to which language a well-formed
  * string is in.
  */
 export interface CountrySelectCopy {
@@ -55,7 +55,7 @@ export interface CountrySelectProps extends Omit<FieldProps, 'children'> {
   countries: readonly CountryOption[];
   /** ISO 3166-1 alpha-2. Case-insensitive, because the API folds case too. */
   value?: string | undefined;
-  /** Receives the alpha-2 code — never the name. */
+  /** Receives the alpha-2 code - never the name. */
   onChange: (code: string) => void;
   copy: CountrySelectCopy;
 }
@@ -69,7 +69,7 @@ const nameOf = (country: CountryOption | null): string => country?.name ?? '';
  *
  * Native HTML before ARIA is the standing rule here, and it loses this one
  * argument. A `<select>` of 250 options does have type-ahead, but it matches
- * from the *start* of the option text only — so `land` never finds
+ * from the *start* of the option text only - so `land` never finds
  * `Deutschland`, `oe` never finds `Österreich`, and prefixing each option with
  * a flag (which a `<select>` cannot render as an image anyway) would break even
  * that. The ARIA 1.2 combobox is the pattern that fits, so the compromise is to
@@ -108,7 +108,7 @@ export function CountrySelect({
    * The query is *not* the input value.
    *
    * After a choice the box holds `Deutschland` verbatim; filtering by that
-   * would offer exactly one country — the one already chosen — so changing
+   * would offer exactly one country - the one already chosen - so changing
    * your mind would mean clearing the field first. Only typing narrows the
    * list, so every other producer of an input-value change (selection, blur
    * restoration, Escape) resets it to nothing.
@@ -169,7 +169,7 @@ export function CountrySelect({
                 /*
                  * downshift points this at a label element it expects you to
                  * render from `getLabelProps`. `Field` renders the label, so
-                 * that id belongs to nothing — and a dangling `aria-labelledby`
+                 * that id belongs to nothing - and a dangling `aria-labelledby`
                  * is not a weaker name, it is silently no name at all, with the
                  * `<label for>` underneath it happening to save the day.
                  */
@@ -180,7 +180,7 @@ export function CountrySelect({
                 placeholder: copy.placeholder,
                 /*
                  * Not `country`. The browser's own autofill list paints over
-                 * the listbox and takes the arrow keys with it — the one native
+                 * the listbox and takes the arrow keys with it - the one native
                  * behaviour a combobox cannot share a field with.
                  */
                 autoComplete: 'off',
@@ -189,13 +189,13 @@ export function CountrySelect({
                  *
                  * `base.css` gives everything one focus ring from an
                  * **unlayered** `:focus-visible` rule, which outranks every
-                 * Tailwind utility regardless of specificity — so the plain
+                 * Tailwind utility regardless of specificity - so the plain
                  * utility loses and the input draws a second ring *inside* the
                  * one on the box. The gap between the two edges then reads as a
                  * border between the field and its chevron: two controls where
                  * there is one. The ring is not removed, it is moved outwards
                  * to the wrapper, which is the thing a user would call "the
-                 * field" — and `:focus-within` catches exactly the same moments
+                 * field" - and `:focus-within` catches exactly the same moments
                  * for a text input as `:focus-visible` does.
                  */
                 className:
@@ -216,8 +216,8 @@ export function CountrySelect({
           </div>
 
           {/*
-           * Always rendered — downshift needs the ref whether or not it is open
-           * — and always named by the field's own label, so the listbox does
+           * Always rendered - downshift needs the ref whether or not it is open
+           * - and always named by the field's own label, so the listbox does
            * not arrive in the rotor as a second, anonymous thing.
            */}
           <ul
@@ -248,7 +248,7 @@ export function CountrySelect({
 }
 
 /*
- * The rows. Split out for length only — it is the inside of the listbox above,
+ * The rows. Split out for length only - it is the inside of the listbox above,
  * not a component anything else may mount.
  */
 function Options({
@@ -282,7 +282,7 @@ function Options({
           ),
         })}
         /*
-         * `aria-selected` is downshift's, and it tracks the *highlight* — the
+         * `aria-selected` is downshift's, and it tracks the *highlight* - the
          * option Enter would take. Which country the form currently holds is a
          * different fact and gets `aria-current`, plus a glyph, because colour
          * is never the only signal.
@@ -293,7 +293,7 @@ function Options({
         <span className="min-w-0 flex-1">{country.name}</span>
         {/*
          * A real space, not a gap. Flex discards a whitespace-only text node
-         * between items, so this changes nothing visually — but accessible
+         * between items, so this changes nothing visually - but accessible
          * names are built by concatenating text, and without it the row is
          * announced as "SchwedenSE".
          */}{' '}
@@ -311,14 +311,14 @@ function Options({
 /**
  * A 4:3 flag, sized by the text it sits beside.
  *
- * The bordered blank is not a missing state — it is the shape the row keeps
+ * The bordered blank is not a missing state - it is the shape the row keeps
  * before anything is chosen, so selecting a country does not shift the label
  * and the caret sideways.
  *
  * No width or height utilities: `flag-icons` ships **unlayered** CSS, which
  * outranks every Tailwind utility regardless of specificity, so `w-4` here
- * would silently lose to `.fi { width: 1.333em }`. The border is safe — that is
- * a property `.fi` does not set — and it is what keeps Japan's flag from
+ * would silently lose to `.fi { width: 1.333em }`. The border is safe - that is
+ * a property `.fi` does not set - and it is what keeps Japan's flag from
  * disappearing into a light surface.
  */
 function Flag({ code }: { code?: string | undefined }) {

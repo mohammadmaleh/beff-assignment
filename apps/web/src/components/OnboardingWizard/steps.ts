@@ -3,7 +3,7 @@ import type { OnboardingProgress as GeneratedProgress } from '@beff/api-client/t
 /**
  * The wizard's steps, in order.
  *
- * Named, not indexed, and this list mirrors `ONBOARDING_STEPS` in the API — the
+ * Named, not indexed, and this list mirrors `ONBOARDING_STEPS` in the API - the
  * server persists the *name*, and the schema has a CHECK constraint on it. An
  * index would silently mean a different step the moment either side inserted
  * one.
@@ -53,7 +53,7 @@ export type OnboardingProgress = Omit<GeneratedProgress, 'answers'> & {
 /**
  * Which answers a step will not continue without.
  *
- * Mirrors `REQUIRED_ANSWERS` in the API. The server's copy is authoritative —
+ * Mirrors `REQUIRED_ANSWERS` in the API. The server's copy is authoritative -
  * this one only exists to disable the button before a round trip, and a client
  * check can always be bypassed.
  */

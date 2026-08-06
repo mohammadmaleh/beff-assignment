@@ -63,7 +63,7 @@ const DE: CountrySelectCopy = {
  *
  * *Native HTML before ARIA* is the house rule, and this is the one control that
  * wins the argument against it. A `<select>` of 250 options has type-ahead, but
- * it matches from the **start** of the option text only — so `land` never finds
+ * it matches from the **start** of the option text only - so `land` never finds
  * `Deutschland`, and a German user typing `oe` never finds `Österreich`. It
  * also cannot draw a flag. So the pattern is the ARIA 1.2 combobox, and the
  * concession to the rule is that none of it is hand-rolled: `downshift` owns
@@ -78,7 +78,7 @@ const DE: CountrySelectCopy = {
  * ## Every string is a required prop
  *
  * Including the two that only a screen-reader user ever meets. A default here
- * would be a guess at the page's language that ships — and one that axe,
+ * would be a guess at the page's language that ships - and one that axe,
  * screenshots and the contrast gate are all indifferent to, because they cannot
  * tell which language a well-formed string is in.
  */
@@ -123,7 +123,7 @@ export const WithSelection: Story = {
   args: { ...German.args, value: 'DE' },
 };
 
-/** Server-side validation, translated from a stable code — never parsed prose. */
+/** Server-side validation, translated from a stable code - never parsed prose. */
 export const WithError: Story = {
   args: { ...German.args, error: 'Bitte wählen Sie ein Land aus.' },
 };

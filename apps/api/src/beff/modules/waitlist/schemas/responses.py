@@ -14,7 +14,7 @@ class WaitlistEntryResponse(BaseModel):
 
     The email is echoed back so the client can show *which* address it was sent
     to, which is the one thing someone who mistyped needs to see. Nothing else
-    about the row is exposed — the id is internal and there is no endpoint that
+    about the row is exposed - the id is internal and there is no endpoint that
     takes it.
     """
 

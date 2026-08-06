@@ -11,7 +11,7 @@
  * file: **anything this does not understand throws.** A generator that guesses
  * is worse than no generator, because it produces types that compile and lie.
  * A generator that refuses produces a build failure naming the construct it hit,
- * and someone extends it — or reaches for the dependency — deliberately.
+ * and someone extends it - or reaches for the dependency - deliberately.
  *
  * Handled: `$ref`, objects with `properties`/`required`, arrays, `anyOf`
  * (including the `| null` FastAPI emits for optionals), `enum`, `const`, and the

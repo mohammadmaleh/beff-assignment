@@ -1,4 +1,4 @@
-"""`POST /verify-email/resend` — ask for another confirmation link."""
+"""`POST /verify-email/resend` - ask for another confirmation link."""
 
 from __future__ import annotations
 

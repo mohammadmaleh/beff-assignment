@@ -78,7 +78,7 @@ export const deApp: typeof enApp = {
       },
       lines: {
         title: 'Welche Linie?',
-        body: 'Bei einer Pilotlinie ist eine niedrigere Ausbeute normal — die Übersicht bewertet sie entsprechend.',
+        body: 'Bei einer Pilotlinie ist eine niedrigere Ausbeute normal - die Übersicht bewertet sie entsprechend.',
         nameLabel: 'Name der Linie',
         kindLabel: 'Linientyp',
         kindPilot: 'Pilotlinie',
@@ -97,7 +97,7 @@ export const deApp: typeof enApp = {
       },
       review: {
         title: 'Bitte prüfen',
-        body: 'Nichts davon ist endgültig — Sie können alles später im Profil ändern.',
+        body: 'Nichts davon ist endgültig - Sie können alles später im Profil ändern.',
         label: 'Ihre Einrichtung',
       },
     },
@@ -124,7 +124,7 @@ export const deApp: typeof enApp = {
     sectionHint: 'Erläuterung: {section}',
     scrapTitle: 'Wo der Ausschuss entstanden ist',
     scrapBody:
-      'Nach Prozessschritt geordnet. Eine in der Formierung verlorene Zelle hat alle vorgelagerten Kosten aufgenommen — späte Verluste sind die teuren.',
+      'Nach Prozessschritt geordnet. Eine in der Formierung verlorene Zelle hat alle vorgelagerten Kosten aufgenommen - späte Verluste sind die teuren.',
     scrapTableCaption: 'Ausschussquote je Prozessschritt',
     /*
      * Die eigene Überschrift der Abbildung, getrennt von `scrapTitle` darüber.
@@ -143,7 +143,7 @@ export const deApp: typeof enApp = {
      * Texte der Datentabelle. `viewChart` / `viewTable` benennen die beiden
      * Ansichten jedes Diagramms; der Rest gehört zur Werkzeugleiste der Tabelle.
      *
-     * Jede Zeichenkette ist Pflicht für die Komponente, die sie anzeigt — keine
+     * Jede Zeichenkette ist Pflicht für die Komponente, die sie anzeigt - keine
      * hat einen Standardwert, denn eine Komponente kann die Seitensprache nicht
      * kennen, und ein Standard wäre darum eine Vermutung, die ausgeliefert wird.
      * `SpecBand` hat das gelernt: Die deutsche Zielseite kündigte das Markenzeichen
@@ -168,19 +168,19 @@ export const deApp: typeof enApp = {
     },
     bandsTitle: 'Prozessparameter gegen Spezifikation',
     bandsBody:
-      'Jeder Parameter gegen das Fenster, an dem der Prozess gemessen wird, und darunter derselbe Parameter im Zeitverlauf. Das Band sagt „außerhalb der Spezifikation“; das Diagramm darunter sagt „und driftet seit sechs Wochen“ — der Unterschied zwischen einem Symptom und einer Diagnose.',
+      'Jeder Parameter gegen das Fenster, an dem der Prozess gemessen wird, und darunter derselbe Parameter im Zeitverlauf. Das Band sagt „außerhalb der Spezifikation“; das Diagramm darunter sagt „und driftet seit sechs Wochen“ - der Unterschied zwischen einem Symptom und einer Diagnose.',
 
     /*
      * Der Abschnitt mit den Ausnahmen am Kopf der Seite.
      *
      * Die `label`-Zeichenketten sind das Signal jenseits der Farbe. Jede Zeile
-     * ist nach Schweregrad eingefärbt *und* trägt das Wort — wer die beiden
+     * ist nach Schweregrad eingefärbt *und* trägt das Wort - wer die beiden
      * Farbtöne nicht unterscheiden kann oder auf einen Ausdruck schaut, braucht
      * das Urteil trotzdem.
      */
     attention: {
       title: 'Erfordert Aufmerksamkeit',
-      hint: 'Alles auf dieser Seite, was derzeit außerhalb seines Fensters liegt, an einer Stelle gesammelt. Werte innerhalb der Spezifikation erscheinen hier nicht; der teuerste Prozessschritt immer — denn das Geld bleibt auch an einem guten Tag das Geld.',
+      hint: 'Alles auf dieser Seite, was derzeit außerhalb seines Fensters liegt, an einer Stelle gesammelt. Werte innerhalb der Spezifikation erscheinen hier nicht; der teuerste Prozessschritt immer - denn das Geld bleibt auch an einem guten Tag das Geld.',
       outOfSpec: 'Außerhalb der Spezifikation',
       belowPeers: 'Unter der Vergleichsgruppe',
       largestLoss: 'Größter Verlust',
@@ -206,7 +206,7 @@ export const deApp: typeof enApp = {
     },
 
     /*
-     * Diagrammtexte. Jede Zeichenkette ist Pflicht — keine hat einen englischen
+     * Diagrammtexte. Jede Zeichenkette ist Pflicht - keine hat einen englischen
      * Standardwert. Die Zeichnung selbst ist `aria-hidden`, also ist die
      * Beschriftung die gesamte angekündigte Identität des Diagramms, und axe
      * ist es gleichgültig, in welcher Sprache eine wohlgeformte Zeichenkette
@@ -215,12 +215,12 @@ export const deApp: typeof enApp = {
     charts: {
       trendTitle: 'Wie es dazu kam',
       trendBody:
-        'Die Kennzahl oben sagt, wo die Linie heute steht. Diese Diagramme zeigen die Bewegung dorthin — der Unterschied zwischen einem Messwert und einem Prozess, den man sich ansehen muss.',
+        'Die Kennzahl oben sagt, wo die Linie heute steht. Diese Diagramme zeigen die Bewegung dorthin - der Unterschied zwischen einem Messwert und einem Prozess, den man sich ansehen muss.',
 
       yieldTrend: {
         title: 'Erstdurchlaufquote je Charge',
         description:
-          'Jeder Punkt ist ein Produktionslauf. Die gestrichelten Linien zeigen, was {n} vergleichbare Linien erreichen — und die Spezifikationsgrenzen dieser Linie, soweit sie in den Maßstab fallen.',
+          'Jeder Punkt ist ein Produktionslauf. Die gestrichelten Linien zeigen, was {n} vergleichbare Linien erreichen - und die Spezifikationsgrenzen dieser Linie, soweit sie in den Maßstab fallen.',
         lowerLimit: 'Untergrenze',
         upperLimit: 'Obergrenze',
         seriesMeasured: 'Diese Linie',
@@ -236,14 +236,14 @@ export const deApp: typeof enApp = {
 
       /*
        * Die Verteilung. Ihre Achsenbeschriftungen sind blanke Klassengrenzen,
-       * die Einheit tragen also Beschriftung, Tooltip und Tabelle — eine der
+       * die Einheit tragen also Beschriftung, Tooltip und Tabelle - eine der
        * wenigen Stellen in dieser Anwendung, an der eine Zahl ihre Einheit
        * nicht direkt daneben stehen hat.
        */
       yieldDistribution: {
         title: 'Wie oft die Linie welches Niveau erreicht',
         description:
-          'Dieselben Chargen, ohne die Zeitachse. Eine enge Häufung unter dem Zielwert ist eine falsche Einstellung; dieselbe Lage über zwanzig Punkte verteilt ist ein Prozess außer Kontrolle — und beides verlangt einen anderen Eingriff.',
+          'Dieselben Chargen, ohne die Zeitachse. Eine enge Häufung unter dem Zielwert ist eine falsche Einstellung; dieselbe Lage über zwanzig Punkte verteilt ist ein Prozess außer Kontrolle - und beides verlangt einen anderen Eingriff.',
         seriesName: 'Chargen',
         range: '{from} bis {to}',
         batches: '{count} Chargen',
@@ -259,7 +259,7 @@ export const deApp: typeof enApp = {
       costTrend: {
         title: 'Was der Zeitraum gekostet hat, im Verlauf',
         description:
-          'Die laufende Summe der verlorenen gebundenen Wertschöpfung. Eine kumulierte Linie kann nur steigen — ihre Steigung ist die Nachricht, und eine steiler werdende Kurve zeigt eine Verschlechterung, die eine Monatssumme nicht sichtbar macht.',
+          'Die laufende Summe der verlorenen gebundenen Wertschöpfung. Eine kumulierte Linie kann nur steigen - ihre Steigung ist die Nachricht, und eine steiler werdende Kurve zeigt eine Verschlechterung, die eine Monatssumme nicht sichtbar macht.',
         seriesName: 'Kumulierter Verlust',
         batchLoss: 'Diese Charge',
         tableCaption: 'Verlorene gebundene Wertschöpfung je Charge und kumuliert',
@@ -332,7 +332,7 @@ export const deApp: typeof enApp = {
     checking: 'Ihre Adresse wird bestätigt …',
 
     successTitle: 'Adresse bestätigt',
-    successBody: 'Das war es — vielen Dank. Hier ist nichts weiter zu tun.',
+    successBody: 'Das war es - vielen Dank. Hier ist nichts weiter zu tun.',
     toDashboard: 'Zum Dashboard',
 
     expiredTitle: 'Dieser Link ist abgelaufen',
@@ -355,10 +355,10 @@ export const deApp: typeof enApp = {
 
   unverified: {
     title: 'E-Mail-Adresse bestätigen',
-    body: 'Wir haben einen Link an {email} gesendet. Mit der Bestätigung können wir Sie zu Ihrem Konto erreichen — und Sie kommen wieder hinein, falls Sie Ihr Passwort verlieren.',
+    body: 'Wir haben einen Link an {email} gesendet. Mit der Bestätigung können wir Sie zu Ihrem Konto erreichen - und Sie kommen wieder hinein, falls Sie Ihr Passwort verlieren.',
     resend: 'Link erneut senden',
     resending: 'Wird gesendet …',
-    sent: 'Unterwegs. Die Zustellung kann eine Minute dauern — sehen Sie auch im Spam-Ordner nach.',
+    sent: 'Unterwegs. Die Zustellung kann eine Minute dauern - sehen Sie auch im Spam-Ordner nach.',
     alreadyVerified: 'Diese Adresse ist bereits bestätigt.',
     rateLimited: 'Das waren etwas zu viele Versuche. Bitte in einer Stunde erneut versuchen.',
     failed: 'Der Versand hat gerade nicht geklappt. Bitte versuchen Sie es gleich noch einmal.',
@@ -369,7 +369,7 @@ export const deApp: typeof enApp = {
     detailsTitle: 'Angaben',
     consentTitle: 'Einwilligungen',
     consentBody:
-      'Der Widerruf ist so einfach wie die Erteilung. Einwilligungsnachweise werden nur ergänzt, nie überschrieben — die Historie ist der Nachweis, wozu Sie wann eingewilligt haben, und dieser Nachweis ist selbst eine Rechtspflicht.',
+      'Der Widerruf ist so einfach wie die Erteilung. Einwilligungsnachweise werden nur ergänzt, nie überschrieben - die Historie ist der Nachweis, wozu Sie wann eingewilligt haben, und dieser Nachweis ist selbst eine Rechtspflicht.',
     consentAnalytics: 'Analyse-Cookies',
     consentMarketing: 'Produkt-E-Mails',
     consentSaving: 'Ihre Auswahl wird gespeichert …',

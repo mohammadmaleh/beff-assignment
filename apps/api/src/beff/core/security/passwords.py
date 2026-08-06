@@ -3,7 +3,7 @@
 Argon2id rather than bcrypt (ADR-0009): it is memory-hard, so a GPU or ASIC
 attacker cannot buy the same speedup that makes bcrypt's pure-CPU cost cheap to
 parallelise. Parameters follow the OWASP Password Storage Cheat Sheet minimum
-for Argon2id — 19 MiB memory, 2 iterations, 1 degree of parallelism — raised to
+for Argon2id - 19 MiB memory, 2 iterations, 1 degree of parallelism - raised to
 64 MiB here because the API is not memory-constrained and memory is the axis
 that actually costs an attacker.
 """
@@ -50,7 +50,7 @@ def password_needs_rehash(encoded_hash: str) -> bool:
     """Whether the hash predates the current cost parameters.
 
     The parameters are embedded in the encoded hash, so raising the cost later
-    needs no migration — only a rehash on the next successful login, when the
+    needs no migration - only a rehash on the next successful login, when the
     plaintext is briefly available.
     """
     try:

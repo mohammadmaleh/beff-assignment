@@ -6,7 +6,7 @@ import { API_PROXY_SOURCE, apiProxyRewrites } from './apiProxy';
  * These assertions exist because every failure mode here is SILENT.
  *
  * Next evaluates `rewrites()` once, at build time, and freezes the result into
- * `routes-manifest.json`. A missing `API_ORIGIN` does not throw — it
+ * `routes-manifest.json`. A missing `API_ORIGIN` does not throw - it
  * interpolates to the literal string "undefined", producing a destination of
  * `undefined/api/v1/...` that Next accepts and every API call then 404s
  * against. The app looks deployed. Nothing logs an error. Same shape as the
@@ -66,7 +66,7 @@ describe('apiProxyRewrites', () => {
 
   it('adds no rewrite when neither variable is set', () => {
     // The default clone with no .env. client.ts falls back to
-    // http://localhost:8000 through `??`, which only fires on undefined — so an
+    // http://localhost:8000 through `??`, which only fires on undefined - so an
     // UNSET variable means "call localhost directly" and an EMPTY one means
     // "use the proxy". Collapsing the two makes `pnpm build` throw on a fresh
     // checkout, which is how this was caught.
@@ -85,7 +85,7 @@ describe('apiProxyRewrites', () => {
 
   it('rejects an origin that is not an absolute URL', () => {
     // A bare hostname pasted from the Northflank dashboard is the likely
-    // mistake, and it produces `api.example.com/api/v1/...` — read by Next as a
+    // mistake, and it produces `api.example.com/api/v1/...` - read by Next as a
     // relative path, so the rewrite silently points the app at itself.
     expect(() =>
       apiProxyRewrites({ API_ORIGIN: 'api.example.com', NEXT_PUBLIC_API_URL: '' }),
@@ -100,7 +100,7 @@ describe('apiProxyRewrites', () => {
 
   it('exports a source built from the client versioned prefix', () => {
     // The rewrite and the fetch layer must agree. If client.ts moves to
-    // /api/v2 and this does not, every call 404s — so the prefix has one
+    // /api/v2 and this does not, every call 404s - so the prefix has one
     // definition and this asserts the rewrite is built from it.
     expect(API_PROXY_SOURCE).toBe('/api/v1/:path*');
   });

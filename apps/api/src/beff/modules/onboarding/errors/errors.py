@@ -15,7 +15,7 @@ class UnknownStepError(DomainValidationError):
     """A step name the wizard does not have.
 
     The steps are a closed set in the schema (`current_step_allowed`), so this
-    is caught before the database has to reject it — the CHECK constraint would
+    is caught before the database has to reject it - the CHECK constraint would
     otherwise surface as an opaque 500.
     """
 

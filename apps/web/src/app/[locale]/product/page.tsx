@@ -20,7 +20,7 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const c = PRODUCT_CONTENT[locale];
-  return { title: `${c.eyebrow} — Beff`, description: c.lede };
+  return { title: `${c.eyebrow} - Beff`, description: c.lede };
 }
 
 /**
@@ -33,7 +33,7 @@ export async function generateMetadata({
  * demonstrating none of it.
  *
  * Every reading is inside the ranges in `CONTEXT.md`, including the one that is
- * deliberately out of spec — a page of five passing measurements would never
+ * deliberately out of spec - a page of five passing measurements would never
  * show what the band is for.
  */
 export default async function ProductPage({ params }: { params: Promise<{ locale: string }> }) {

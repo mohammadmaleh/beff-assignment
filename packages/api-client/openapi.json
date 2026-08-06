@@ -62,7 +62,7 @@
         "type": "object"
       },
       "ConsentStateResponse": {
-        "description": "Current consent per manageable purpose.\n\nThe *state*, derived from the append-only log. The log itself is not exposed\n— it is evidence held for accountability, not something the profile screen\nneeds to render, and the full history is available through an export.",
+        "description": "Current consent per manageable purpose.\n\nThe *state*, derived from the append-only log. The log itself is not exposed\n- it is evidence held for accountability, not something the profile screen\nneeds to render, and the full history is available through an export.",
         "properties": {
           "analytics": {
             "title": "Analytics",
@@ -81,7 +81,7 @@
         "type": "object"
       },
       "EmailVerificationResponse": {
-        "description": "The outcome of redeeming a link.\n\nCarries the user, so the profile screen can update without a second round\ntrip — and so a caller who was already signed in when they followed the link\nsees the new state immediately rather than after the next refresh.",
+        "description": "The outcome of redeeming a link.\n\nCarries the user, so the profile screen can update without a second round\ntrip - and so a caller who was already signed in when they followed the link\nsees the new state immediately rather than after the next refresh.",
         "properties": {
           "user": {
             "$ref": "#/components/schemas/UserResponse"
@@ -279,7 +279,7 @@
         "type": "object"
       },
       "MetricsTrendResponse": {
-        "description": "The series behind the charts, in one request.\n\nSeparate from the overview by design — see `MetricsTrend`. The overview is\nwhat the page needs for its first useful pixel; this is sixty batches, and\nputting it in the same payload would make the headline wait on data it does\nnot use.",
+        "description": "The series behind the charts, in one request.\n\nSeparate from the overview by design - see `MetricsTrend`. The overview is\nwhat the page needs for its first useful pixel; this is sixty batches, and\nputting it in the same payload would make the headline wait on data it does\nnot use.",
         "properties": {
           "benchmark": {
             "$ref": "#/components/schemas/CohortReferenceResponse"
@@ -557,7 +557,7 @@
         "type": "object"
       },
       "ResendVerificationResponse": {
-        "description": "Acknowledgement that a message is queued.\n\nNot \"sent\". The outbox is drained by a worker, so the API cannot honestly\nclaim delivery at the moment it answers — and a client that shows \"sent\"\nagainst a queue that later dead-letters has told the user something false.",
+        "description": "Acknowledgement that a message is queued.\n\nNot \"sent\". The outbox is drained by a worker, so the API cannot honestly\nclaim delivery at the moment it answers - and a client that shows \"sent\"\nagainst a queue that later dead-letters has told the user something false.",
         "properties": {
           "queued": {
             "description": "Always `true`; the message is on the queue, not yet sent.",
@@ -565,7 +565,7 @@
             "type": "boolean"
           },
           "recipient": {
-            "description": "The address it will go to — the caller's own.",
+            "description": "The address it will go to - the caller's own.",
             "title": "Recipient",
             "type": "string"
           }
@@ -757,7 +757,7 @@
         "type": "object"
       },
       "UserResponse": {
-        "description": "A user as the owner of that account sees themselves.\n\nNo `password_hash`, and no `deleted_at` — the first is a credential and the\nsecond is internal bookkeeping.",
+        "description": "A user as the owner of that account sees themselves.\n\nNo `password_hash`, and no `deleted_at` - the first is a credential and the\nsecond is internal bookkeeping.",
         "properties": {
           "created_at": {
             "format": "date-time",
@@ -862,7 +862,7 @@
         "type": "object"
       },
       "WaitlistEntryResponse": {
-        "description": "Confirmation that the signup landed.\n\nThe email is echoed back so the client can show *which* address it was sent\nto, which is the one thing someone who mistyped needs to see. Nothing else\nabout the row is exposed — the id is internal and there is no endpoint that\ntakes it.",
+        "description": "Confirmation that the signup landed.\n\nThe email is echoed back so the client can show *which* address it was sent\nto, which is the one thing someone who mistyped needs to see. Nothing else\nabout the row is exposed - the id is internal and there is no endpoint that\ntakes it.",
         "properties": {
           "company": {
             "title": "Company",
@@ -1013,7 +1013,7 @@
     },
     "/api/v1/auth/refresh": {
       "post": {
-        "description": "Spend the presented token and issue its successor.\n\nThe token arrives as a cookie and never as a body field: a body field would\nmean JavaScript could read it, which is the exact property the httpOnly\ncookie exists to deny (ADR-0003).\n\nReplaying a spent token revokes the entire family — see\n`RefreshTokenService.rotate`. That is the detection, and it is the reason\nrotation is worth doing at all.",
+        "description": "Spend the presented token and issue its successor.\n\nThe token arrives as a cookie and never as a body field: a body field would\nmean JavaScript could read it, which is the exact property the httpOnly\ncookie exists to deny (ADR-0003).\n\nReplaying a spent token revokes the entire family - see\n`RefreshTokenService.rotate`. That is the detection, and it is the reason\nrotation is worth doing at all.",
         "operationId": "refresh_api_v1_auth_refresh_post",
         "parameters": [
           {
@@ -1045,7 +1045,7 @@
             "description": "Successful Response"
           },
           "401": {
-            "description": "No cookie, an expired token, or — with code `auth.refresh_token_reused` — a replayed token, in which case the whole family has been revoked and the user must sign in again."
+            "description": "No cookie, an expired token, or - with code `auth.refresh_token_reused` - a replayed token, in which case the whole family has been revoked and the user must sign in again."
           },
           "422": {
             "content": {
@@ -1066,7 +1066,7 @@
     },
     "/api/v1/auth/register": {
       "post": {
-        "description": "Create the account and return a session in one round trip.\n\nRegistering then making the user log in is a second chance to lose them for\nno security gain — the credentials were just verified by being chosen.\n\nThe confirmation email is *queued*, not sent, in this same transaction. Two\nconsequences worth being explicit about: a registration that rolls back\ncannot leave a verification mail on its way to an account that does not\nexist, and a mail provider being down cannot fail a signup. The account is\nusable immediately; confirming the address is a separate, later act.",
+        "description": "Create the account and return a session in one round trip.\n\nRegistering then making the user log in is a second chance to lose them for\nno security gain - the credentials were just verified by being chosen.\n\nThe confirmation email is *queued*, not sent, in this same transaction. Two\nconsequences worth being explicit about: a registration that rolls back\ncannot leave a verification mail on its way to an account that does not\nexist, and a mail provider being down cannot fail a signup. The account is\nusable immediately; confirming the address is a separate, later act.",
         "operationId": "register_api_v1_auth_register_post",
         "requestBody": {
           "content": {
@@ -1114,7 +1114,7 @@
     },
     "/api/v1/auth/verify-email": {
       "post": {
-        "description": "Stamp the address as confirmed.\n\nUnauthenticated on purpose. The link is followed from a mail client, which\nmay not be on the device that registered and will not carry the session\ncookie — requiring auth here would mean the most common path (read mail on a\nphone, registered on a laptop) is the one that fails. The token *is* the\ncredential, and it is single-use and short-lived precisely so it can be.\n\nNote what this does not do: it does not sign the caller in. A link that\narrives by email and produces a session is a login bypass — anyone with read\naccess to the inbox, including a forwarding rule nobody remembers, would get\none.",
+        "description": "Stamp the address as confirmed.\n\nUnauthenticated on purpose. The link is followed from a mail client, which\nmay not be on the device that registered and will not carry the session\ncookie - requiring auth here would mean the most common path (read mail on a\nphone, registered on a laptop) is the one that fails. The token *is* the\ncredential, and it is single-use and short-lived precisely so it can be.\n\nNote what this does not do: it does not sign the caller in. A link that\narrives by email and produces a session is a login bypass - anyone with read\naccess to the inbox, including a forwarding rule nobody remembers, would get\none.",
         "operationId": "verify_email_api_v1_auth_verify_email_post",
         "requestBody": {
           "content": {
@@ -1231,7 +1231,7 @@
             "description": "Missing or invalid access token."
           },
           "422": {
-            "description": "The account has no production line yet — code `metrics.no_line_configured`. Send the user back to onboarding."
+            "description": "The account has no production line yet - code `metrics.no_line_configured`. Send the user back to onboarding."
           }
         },
         "summary": "Production overview for the signed-in user's line",
@@ -1242,7 +1242,7 @@
     },
     "/api/v1/metrics/trend": {
       "get": {
-        "description": "The series behind the charts: one point per batch, plus the control\ncharts and the cohort benchmark.\n\nScoped to the signed-in user by `user.id`, never by a client-supplied line\nid — the same rule as `/overview`, and the reason both take the line from\nthe session rather than the query string.",
+        "description": "The series behind the charts: one point per batch, plus the control\ncharts and the cohort benchmark.\n\nScoped to the signed-in user by `user.id`, never by a client-supplied line\nid - the same rule as `/overview`, and the reason both take the line from\nthe session rather than the query string.",
         "operationId": "trend_api_v1_metrics_trend_get",
         "parameters": [
           {
@@ -1273,7 +1273,7 @@
             "description": "Missing or invalid access token."
           },
           "422": {
-            "description": "The account has no production line yet — code `metrics.no_line_configured`. Send the user back to onboarding."
+            "description": "The account has no production line yet - code `metrics.no_line_configured`. Send the user back to onboarding."
           }
         },
         "summary": "Batch-by-batch series for the signed-in user's line",
@@ -1304,7 +1304,7 @@
         ]
       },
       "put": {
-        "description": "Persist the position and the answers after every step.\n\nThis is what makes the wizard resumable across devices and across a browser\ncrash — the server, not the client, owns where the user is.",
+        "description": "Persist the position and the answers after every step.\n\nThis is what makes the wizard resumable across devices and across a browser\ncrash - the server, not the client, owns where the user is.",
         "operationId": "save_progress_api_v1_onboarding_put",
         "requestBody": {
           "content": {
@@ -1397,7 +1397,7 @@
         ]
       },
       "post": {
-        "description": "POST, never PUT or PATCH.\n\nThe verb is part of the design: this **appends an event**, it does not edit\na value. Withdrawal is the same endpoint with `granted: false`, because\nArt. 7(3) requires withdrawing to be as easy as giving — and a separate\nendpoint is where \"as easy\" quietly stops being true.",
+        "description": "POST, never PUT or PATCH.\n\nThe verb is part of the design: this **appends an event**, it does not edit\na value. Withdrawal is the same endpoint with `granted: false`, because\nArt. 7(3) requires withdrawing to be as easy as giving - and a separate\nendpoint is where \"as easy\" quietly stops being true.",
         "operationId": "set_consent_api_v1_privacy_consent_post",
         "requestBody": {
           "content": {
@@ -1447,7 +1447,7 @@
     },
     "/api/v1/privacy/export": {
       "get": {
-        "description": "`null` when none has ever been requested — not a 404.\n\n\"You have never asked for an export\" is a normal state of the profile\nscreen, not an error, and modelling it as one would make the client handle a\nfailure path for the common case.",
+        "description": "`null` when none has ever been requested - not a 404.\n\n\"You have never asked for an export\" is a normal state of the profile\nscreen, not an error, and modelling it as one would make the client handle a\nfailure path for the common case.",
         "operationId": "get_export_api_v1_privacy_export_get",
         "responses": {
           "200": {
@@ -1525,7 +1525,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "No such export — also the answer when it is someone else's."
+            "description": "No such export - also the answer when it is someone else's."
           },
           "422": {
             "description": "The export exists but is not ready yet."
@@ -1539,7 +1539,7 @@
     },
     "/api/v1/waitlist": {
       "post": {
-        "description": "Deliberately unauthenticated — this is the landing page's only endpoint.\n\nThat also makes it the app's one anonymous write, which is why it is the\nonly route carrying a rate limit. The limiter counts against a salted hash\nof the caller's IP; the address itself is never stored.",
+        "description": "Deliberately unauthenticated - this is the landing page's only endpoint.\n\nThat also makes it the app's one anonymous write, which is why it is the\nonly route carrying a rate limit. The limiter counts against a salted hash\nof the caller's IP; the address itself is never stored.",
         "operationId": "join_api_v1_waitlist_post",
         "requestBody": {
           "content": {
@@ -1580,7 +1580,7 @@
     },
     "/healthz": {
       "get": {
-        "description": "Liveness: the process is up.\n\nDeliberately touches no dependencies — an orchestrator restarting the\ncontainer because Postgres blipped would make an outage worse, not better.",
+        "description": "Liveness: the process is up.\n\nDeliberately touches no dependencies - an orchestrator restarting the\ncontainer because Postgres blipped would make an outage worse, not better.",
         "operationId": "healthz_healthz_get",
         "responses": {
           "200": {

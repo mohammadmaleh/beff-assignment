@@ -63,7 +63,7 @@ describe('KpiRow', () => {
   });
 
   it('says how many lines the benchmark is drawn from', () => {
-    // A benchmark with no stated n reads as a measurement. It is a reference —
+    // A benchmark with no stated n reads as a measurement. It is a reference -
     // see `benchmark/cohort.py` for why, at pre-launch, it has to be.
     render(<KpiRow trend={trend()} locale="en" />);
 
@@ -83,7 +83,7 @@ describe('KpiRow', () => {
     // that reads as a rendering failure rather than as "nothing to show".
     render(<KpiRow trend={trend({ worst_batch_code: null, points: [] })} locale="en" />);
 
-    expect(screen.getByText('—')).toBeInTheDocument();
+    expect(screen.getByText('-')).toBeInTheDocument();
   });
 
   it('reports cells passed against cells started', () => {

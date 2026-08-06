@@ -4,7 +4,7 @@
  * ## Why `pointAt` exists
  *
  * ECharts hands a formatter either one params object or an array of them,
- * depending on whether the tooltip is triggered by `item` or by `axis` — and
+ * depending on whether the tooltip is triggered by `item` or by `axis` - and
  * for a stacked bar, an array whose length is the number of series. Every chart
  * here needs the same thing out of it: *which point of mine is being hovered*.
  *
@@ -16,7 +16,7 @@
  * ## Why the tooltip content is built by pure functions
  *
  * A formatter passed straight to ECharts is only ever executed on hover, which
- * means it is never executed under test — the charts' tooltips were the one
+ * means it is never executed under test - the charts' tooltips were the one
  * part of this layer with no coverage and the most string-assembly per line.
  * Splitting the *content* from the *callback* makes the content a unit, and the
  * callback a two-line adapter with nothing left in it to get wrong.
@@ -60,14 +60,14 @@ export function strong(text: string): string {
 /**
  * The adapter between ECharts' formatter contract and a chart's own content.
  *
- * Each chart was repeating the same three lines — resolve the point, bail on
- * `undefined`, render — which is three lines of nothing per chart and one more
+ * Each chart was repeating the same three lines - resolve the point, bail on
+ * `undefined`, render - which is three lines of nothing per chart and one more
  * place for the bail to be forgotten. Forgetting it is not a visible bug until
  * a hover lands on an index the series does not have, at which point the chart
  * throws inside ECharts' render loop and goes blank.
  *
  * With the guard here, `render` is handed a point that exists and can be a pure
- * function of it — which is what makes every tooltip in this app testable
+ * function of it - which is what makes every tooltip in this app testable
  * without mounting a chart.
  */
 export function seriesTooltip<T>(

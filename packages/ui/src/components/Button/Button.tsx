@@ -30,7 +30,7 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
  *
  * The previous revision drew every variant with a 1px border and a 2px bevel.
  * Both are gone. An outline around a filled button is a second edge describing
- * a boundary the fill already states, and a hard bevel is skeuomorphic — it
+ * a boundary the fill already states, and a hard bevel is skeuomorphic - it
  * asks the control to imitate a physical key, which reads as dated rather than
  * as machined. What separates the variants now is how much ink each one
  * spends: solid brand, a tinted plate, or nothing at all.
@@ -40,7 +40,7 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
  * borderless button drawn on it would be invisible on the very page it lives
  * on. Sunken is the separation that was previously being done by the border.
  *
- * The press is `translate` alone — the independent property, not the
+ * The press is `translate` alone - the independent property, not the
  * `transform` shorthand, which would cancel any positioning utility beside it.
  * One pixel, because there is no longer a plinth to travel through and a
  * larger movement without depth reads as a jitter.
@@ -52,13 +52,13 @@ const VARIANTS: Record<ButtonVariant, string> = {
   // resting fill would make it a third weight competing with secondary.
   ghost: 'bg-transparent text-text-default hover:bg-surface-sunken active:translate-y-px',
   /*
-   * Destructive actions are never the primary weight — the shape has to read as
+   * Destructive actions are never the primary weight - the shape has to read as
    * a consequence, not as the happy path. So there is no resting plate at all:
    * the danger colour as text, with the solid fill held back until hover, when
    * the intent is already deliberate.
    *
    * That is also the only thing the palette allows. `status-danger-fg` in dark
-   * clears 4.5:1 against `surface-base` and **nothing else** — the gate rejected
+   * clears 4.5:1 against `surface-base` and **nothing else** - the gate rejected
    * it on `sunken` and on `raised`. This variant may therefore only be used on
    * the base surface, which is where the Profile danger zone puts it (a left
    * rule, no background). Moving it onto a panel needs the token re-solved
@@ -86,7 +86,7 @@ const SIZES: Record<ButtonSize, string> = {
  *
  * A call to action that *navigates* is a link. It has no `type`, no `disabled`
  * and no `onClick` contract, and it belongs in a screen reader's link rotor
- * rather than its button one — so `Button` must not render it, and `<Button
+ * rather than its button one - so `Button` must not render it, and `<Button
  * as="a">` would be the same mistake with a nicer spelling.
  *
  * That left the app hand-rolling this class string as an anchor in three
@@ -99,7 +99,7 @@ const SIZES: Record<ButtonSize, string> = {
  *
  * `CookieBanner` takes its link as a `ReactNode` because it renders *around*
  * one. Here the caller renders the link and only needs it dressed, so handing
- * back the classes is the whole job — and it keeps this package router-free.
+ * back the classes is the whole job - and it keeps this package router-free.
  * Importing `next/link` for one href would make the entire design system
  * Next-only.
  */
@@ -107,7 +107,7 @@ export interface ButtonClassNameOptions {
   /*
    * `| undefined` on every property, spelled out. `tsconfig.base` sets
    * `exactOptionalPropertyTypes`, under which `variant?: ButtonVariant` means
-   * "may be absent" and **not** "may be `undefined`" — so `Button` forwarding
+   * "may be absent" and **not** "may be `undefined`" - so `Button` forwarding
    * its own destructured props here would not typecheck. That distinction is
    * the whole point of the flag and it is right; an options bag being handed
    * values that are genuinely `undefined` is the case it is not for.
@@ -152,7 +152,7 @@ export function Button({
 }: ButtonProps) {
   // A loading button must not be activatable, but `disabled` alone would drop
   // it out of the tab order mid-interaction and throw focus back to the
-  // document — the user loses their place because the app got slow.
+  // document - the user loses their place because the app got slow.
   // `aria-disabled` keeps it focusable and announced; withholding the handler
   // makes it inert.
   const inert = disabled || loading;

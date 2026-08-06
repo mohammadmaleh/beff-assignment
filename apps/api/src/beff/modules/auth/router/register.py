@@ -1,4 +1,4 @@
-"""`POST /register` — create an account, sign it in, and queue the confirmation."""
+"""`POST /register` - create an account, sign it in, and queue the confirmation."""
 
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ async def register(
     """Create the account and return a session in one round trip.
 
     Registering then making the user log in is a second chance to lose them for
-    no security gain — the credentials were just verified by being chosen.
+    no security gain - the credentials were just verified by being chosen.
 
     The confirmation email is *queued*, not sent, in this same transaction. Two
     consequences worth being explicit about: a registration that rolls back

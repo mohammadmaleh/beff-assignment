@@ -11,7 +11,7 @@ def test_no_smtp_host_falls_back_to_the_console() -> None:
     """An unconfigured deployment still boots and still queues confirmations.
 
     Refusing to start would take down everything else the API does because one
-    feature is not wired yet — and locally it is the *normal* state.
+    feature is not wired yet - and locally it is the *normal* state.
     """
     sender = build_email_sender(Settings(smtp_host=""))
 

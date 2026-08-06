@@ -11,7 +11,7 @@ import { cx } from '../../lib/cx/index';
  * in nine near-identical spellings. That is not a tidiness complaint: three of
  * those spellings differed only in `leading`, and nobody could say which
  * difference was a decision and which was a paste that drifted. A type scale
- * that lives in thirty-four string literals is not a scale — it is thirty-four
+ * that lives in thirty-four string literals is not a scale - it is thirty-four
  * chances to be slightly off it, and every one of them still renders something
  * plausible, so nothing ever fails.
  *
@@ -23,7 +23,7 @@ import { cx } from '../../lib/cx/index';
  *
  * ## `balance`
  *
- * Tight leading and `text-balance`, which is what a *band* heading wants — a
+ * Tight leading and `text-balance`, which is what a *band* heading wants - a
  * two- or three-line statement opening a section, where an orphaned last word
  * is the whole visual problem. A page title of one line wants neither, and
  * asking for both would have `text-wrap: balance` do work on a line that has no
@@ -56,7 +56,7 @@ export function Display({
 }: {
   /**
    * The heading level, and it is **required thinking** rather than a styling
-   * choice — the default is `h2` because that is what a section heading is, and
+   * choice - the default is `h2` because that is what a section heading is, and
    * a page's one `h1` should be spelled out at its call site.
    */
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span';
@@ -72,7 +72,7 @@ export function Display({
    * The onboarding wizard swaps its content without navigating, so a screen
    * reader has nothing to announce and a keyboard user's focus is left on a
    * button that no longer relates to what is on screen. Focusing the new
-   * heading fixes both — and it needs `tabIndex={-1}`, since a heading is not
+   * heading fixes both - and it needs `tabIndex={-1}`, since a heading is not
    * focusable by default. Both props exist here for that one pattern.
    */
   ref?: Ref<HTMLElement>;

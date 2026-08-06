@@ -8,8 +8,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * The one thing to know about it is what it is **not**: `display: none` and
  * `visibility: hidden` remove content from the accessibility tree as well as
  * from the page, and `aria-hidden` removes it from the tree while leaving it
- * on screen. This is the third case — present to assistive technology, absent
- * visually — and there is no shorthand for it that a browser ships.
+ * on screen. This is the third case - present to assistive technology, absent
+ * visually - and there is no shorthand for it that a browser ships.
  *
  * Every story below is deliberately blank-looking. Open the a11y panel, or
  * inspect the DOM, to see what is there.
@@ -50,7 +50,7 @@ export const SupplementingColour: Story = {
     <p className="text-status-danger-fg flex items-center gap-2">
       <span aria-hidden="true">▲</span>
       <VisuallyHidden>Out of spec:</VisuallyHidden>
-      <span className="tabular-nums">37.8 % — above upper limit</span>
+      <span className="tabular-nums">37.8 % - above upper limit</span>
     </p>
   ),
 };

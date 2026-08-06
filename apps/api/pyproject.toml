@@ -1,7 +1,7 @@
 [project]
 name = "beff-api"
 version = "0.1.0"
-description = "Beff API — auth, onboarding, GDPR data subject rights, and production metrics."
+description = "Beff API - auth, onboarding, GDPR data subject rights, and production metrics."
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.140.0",
@@ -62,7 +62,7 @@ select = [
     "B",         # flake8-bugbear
     "A",         # flake8-builtins
     "C4",        # flake8-comprehensions
-    "DTZ",       # flake8-datetimez — bans naive datetimes, see note below
+    "DTZ",       # flake8-datetimez - bans naive datetimes, see note below
     "T20",       # flake8-print
     "SIM",       # flake8-simplify
     "TID",       # flake8-tidy-imports
@@ -85,7 +85,7 @@ ignore = [
 # Migrations carry raw DDL, transcribed verbatim from
 # `CreateTable(...).compile()` so it cannot drift from the models. A CHECK
 # constraint is one expression and does not wrap without becoming harder to
-# diff against the model it mirrors — which is the only reason to read it.
+# diff against the model it mirrors - which is the only reason to read it.
 "migrations/versions/*.py" = ["E501"]
 
 [tool.ruff.lint.flake8-tidy-imports]
@@ -93,7 +93,7 @@ ignore = [
 ban-relative-imports = "all"
 
 # ─────────────────────────────────────────────────────────────
-# mypy — strict
+# mypy - strict
 # ─────────────────────────────────────────────────────────────
 [tool.mypy]
 python_version = "3.12"
@@ -140,7 +140,7 @@ omit = ["*/migrations/*", "*/test_*.py"]
 # removes a covered line.
 #
 # Was 85 while the measured number was 89, which is a readout rather than a
-# gate — and the four points of slack were hiding something. Every Postgres
+# gate - and the four points of slack were hiding something. Every Postgres
 # repository sat at 39-45% because it was only ever covered through an
 # in-memory fake, and inside that gap were two bugs that made `DELETE
 # /privacy/me` impossible to execute against a real database: an `UPDATE` the

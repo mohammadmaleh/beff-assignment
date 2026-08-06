@@ -8,7 +8,7 @@
  * Fontsource ships the woff2 files inside the package, so these resolve to
  * local assets at build time and no request leaves the machine.
  *
- * The IBM Plex imports are subset-pinned to Latin and Latin-Extended — German
+ * The IBM Plex imports are subset-pinned to Latin and Latin-Extended - German
  * needs the latter for its umlauts and ß, and nothing here needs Cyrillic.
  *
  * Archivo is the exception and it is worth being accurate about: there is no
@@ -19,7 +19,7 @@
 
 /*
  * Display face. `wdth.css` is the only Archivo entry point carrying the width
- * axis (font-stretch: 62%–125%) — "Archivo Expanded" is not a separate family,
+ * axis (font-stretch: 62%–125%) - "Archivo Expanded" is not a separate family,
  * it is this axis at 125%. One variable file covers every weight and width.
  */
 @import '@fontsource-variable/archivo/wdth.css';

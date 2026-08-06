@@ -3,8 +3,8 @@
 ## Why this exists
 
 `get_session` gives the request one transaction and rolls it back if the handler
-raises. That is right for business data — a failed registration should not leave
-half a user behind — and **wrong for a rate limiter**, because the attempts a
+raises. That is right for business data - a failed registration should not leave
+half a user behind - and **wrong for a rate limiter**, because the attempts a
 limiter most needs to count are exactly the ones that raise.
 
 Sharing the request's session meant every failed login rolled back its own

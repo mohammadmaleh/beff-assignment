@@ -8,7 +8,7 @@ import { expect, test, type Page } from '@playwright/test';
  * WCAG issues and no more. This file covers a different question: **what does a
  * screen reader actually say, in what order, and is it the truth?**
  *
- * It is driven by Chromium's own accessibility tree — the same computed roles
+ * It is driven by Chromium's own accessibility tree - the same computed roles
  * and accessible names that Chromium hands to UIA, IA2 and ATK, and therefore
  * the same text NVDA, JAWS and Orca read out. That is not a substitute for
  * listening to a real screen reader, and the README does not claim it is. What
@@ -59,7 +59,7 @@ interface Announced {
  *
  * `aria-hidden` subtrees are excluded because AT never reaches them, and
  * visually-hidden text is *included* because AT reaches it exactly like any
- * other text — that asymmetry is the whole point of collecting it this way
+ * other text - that asymmetry is the whole point of collecting it this way
  * rather than reading `innerText`.
  */
 async function announcedText(page: Page): Promise<Announced[]> {
@@ -90,27 +90,27 @@ async function announcedText(page: Page): Promise<Announced[]> {
  *
  * These are not guesses. Each was found in the accessibility tree of `/de`
  * during the manual pass, or is a sibling string in the same component that
- * would have leaked the same way the moment that state rendered — a failed
+ * would have leaked the same way the moment that state rendered - a failed
  * request, an empty panel, a metric with a delta. The list is the regression
  * test for a class of bug, not for one instance of it.
  */
 const ENGLISH_ONLY = [
-  // SpecBand — the signature element, on the landing page in both locales.
+  // SpecBand - the signature element, on the landing page in both locales.
   'in spec',
   'out of spec',
   'above the upper limit',
   'below the lower limit',
   'Specification ',
   ', target ',
-  // Alert — the visually-hidden prefix that tells a screen reader the tone.
+  // Alert - the visually-hidden prefix that tells a screen reader the tone.
   'Error:',
   'Warning:',
   'Success:',
   'Note:',
-  // DataState — the fallbacks for empty and failed panels.
+  // DataState - the fallbacks for empty and failed panels.
   'Nothing to show yet',
   'That did not load',
-  // Metric — the visually-hidden word carrying the trend direction.
+  // Metric - the visually-hidden word carrying the trend direction.
   'unchanged',
 ];
 
@@ -119,7 +119,7 @@ for (const path of DE_SURFACES) {
     await page.goto(path);
 
     const offences = (await announcedText(page))
-      // Text explicitly marked as another language is correct, not a defect —
+      // Text explicitly marked as another language is correct, not a defect -
       // the locale switch link is `lang="en"` on the German page precisely so a
       // German voice does not read "View in English" phonetically. WCAG 3.1.2
       // asks for the marking, and this honours it.
@@ -133,7 +133,7 @@ for (const path of DE_SURFACES) {
 
     // WCAG 3.1.2 Language of Parts (AA). Beyond the letter of it: a German
     // synthesiser reads "in spec" with German phonetics, and the result is not
-    // "in spec" with an accent — it is unintelligible.
+    // "in spec" with an accent - it is unintelligible.
     expect(offences).toEqual([]);
   });
 }
@@ -141,12 +141,12 @@ for (const path of DE_SURFACES) {
 test(`the spec band states its verdict in the page's own language ${TAG}`, async ({ page }) => {
   // The positive half of the rule above. A component that rendered *nothing*
   // would also pass a "no English" check, so assert the German is present, and
-  // assert both verdicts — the landing page shows one reading inside the
+  // assert both verdicts - the landing page shows one reading inside the
   // window and one outside it.
   //
   // Matched by content rather than by position. The landing page grew a second
   // kind of figure and a panel of readings, so `first()` and `nth(1)` asserted
-  // against whichever band happened to be highest in the document — a test that
+  // against whichever band happened to be highest in the document - a test that
   // fails when the page is rearranged says nothing about the language it is in.
   await page.goto('/de');
 
@@ -179,7 +179,7 @@ for (const path of [...EN_SURFACES, ...DE_SURFACES]) {
     // none means there is no entry point at all.
     expect(headings.filter((h) => h.level === 1)).toHaveLength(1);
 
-    // An empty heading is a rotor entry that announces nothing — worse than no
+    // An empty heading is a rotor entry that announces nothing - worse than no
     // heading, because it occupies a position in the list.
     expect(headings.filter((h) => h.text === '')).toEqual([]);
 
@@ -241,13 +241,13 @@ for (const path of [...EN_SURFACES, ...DE_SURFACES]) {
 
     /*
      * The accessible name, computed by Playwright's implementation of the
-     * accname spec — the string AT actually receives.
+     * accname spec - the string AT actually receives.
      *
      * This used to be hand-rolled as `aria-label ?? textContent`, which is not
      * accname and quietly disagreed with it. A link whose only content is an
      * `<img alt>` has a perfectly good name and no text content at all, so the
      * approximation reported the site's home link as unnamed the moment the
-     * wordmark became an image — a false failure on a page that was correct.
+     * wordmark became an image - a false failure on a page that was correct.
      * The inverse is the dangerous direction: `textContent` also happily returns
      * text from an `aria-hidden` child that no screen reader will ever read, and
      * would have blessed a genuinely unnamed control.

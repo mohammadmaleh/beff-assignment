@@ -7,7 +7,7 @@ import type { Locale } from '@/lib/i18n';
  * The ordinals are earned the same way the landing page's are: this is a real
  * ordered sequence where you cannot do step three before step two. Numbering a
  * three-column feature grid `01 / 02 / 03` because it looks considered is
- * exactly the decoration the design brief rules out — the markers mean
+ * exactly the decoration the design brief rules out - the markers mean
  * "position N in a real sequence", or they mean nothing.
  *
  * `anchorStep` ties each stage to a step in the production chain, so the page
@@ -57,7 +57,7 @@ export const TECHNOLOGY_CONTENT: Record<Locale, TechnologyContent> = {
         title: 'Type it against the chain',
         body: 'Every reading is attached to one of twelve process steps, in order, and to the specification window that step is held to. That ordering is what lets the same two-per-cent loss be cheap at coating and ruinous at formation.',
         detail: [
-          'Process steps are a closed set matching the schema and the domain vocabulary exactly — prose variants are a bug, not a synonym.',
+          'Process steps are a closed set matching the schema and the domain vocabulary exactly - prose variants are a bug, not a synonym.',
           'Committed value per step is derived from the seeded cost model, so the marketing figures and the product’s figures cannot drift apart.',
           'A measurement with no specification window is stored but never charted. A band with invented limits is worse than no band.',
         ],
@@ -79,7 +79,7 @@ export const TECHNOLOGY_CONTENT: Record<Locale, TechnologyContent> = {
       'This is a working system, not a prototype behind a form. Everything below is in the repository and exercised by tests on every commit.',
     builtPoints: [
       'FastAPI backend on PostgreSQL, with authentication owned end to end and refresh tokens stored hashed.',
-      'Background work on a Postgres-backed queue using SELECT … FOR UPDATE SKIP LOCKED — retries, idempotency and a dead-letter path without a second datastore to run and monitor.',
+      'Background work on a Postgres-backed queue using SELECT … FOR UPDATE SKIP LOCKED - retries, idempotency and a dead-letter path without a second datastore to run and monitor.',
       'GDPR built in rather than bolted on: append-only consent records, machine-readable export, erasure that frees the email for re-registration.',
       'Accessibility gated in CI at WCAG 2.2 AA, with contrast proven at the design-token level before any component can use a pair.',
     ],
@@ -95,7 +95,7 @@ export const TECHNOLOGY_CONTENT: Record<Locale, TechnologyContent> = {
   de: {
     eyebrow: 'Technologie',
     title: 'Vom Linienexport zur Antwort, in drei Schritten.',
-    lede: 'Keine SPS-Anbindung, keine Gateway-Hardware, kein halbjähriges IT-Projekt, bevor die erste Zahl erscheint. Beff setzt auf den Exporten auf, die Ihre Linie ohnehin erzeugt — denn ein Produkt vor dem Marktstart, das eine Leitsystemintegration voraussetzt, wird nie evaluiert.',
+    lede: 'Keine SPS-Anbindung, keine Gateway-Hardware, kein halbjähriges IT-Projekt, bevor die erste Zahl erscheint. Beff setzt auf den Exporten auf, die Ihre Linie ohnehin erzeugt - denn ein Produkt vor dem Marktstart, das eine Leitsystemintegration voraussetzt, wird nie evaluiert.',
 
     stages: [
       {
@@ -114,7 +114,7 @@ export const TECHNOLOGY_CONTENT: Record<Locale, TechnologyContent> = {
         title: 'Der Prozesskette zuordnen',
         body: 'Jeder Messwert hängt an einem von zwölf Prozessschritten, in ihrer Reihenfolge, und an dem Spezifikationsfenster, das für diesen Schritt gilt. Diese Reihenfolge ist der Grund, warum derselbe Zwei-Prozent-Verlust beim Coating günstig und in der Formierung ruinös ist.',
         detail: [
-          'Die Prozessschritte sind eine geschlossene Menge, die exakt dem Schema und der Fachsprache entspricht — Schreibvarianten sind ein Fehler, kein Synonym.',
+          'Die Prozessschritte sind eine geschlossene Menge, die exakt dem Schema und der Fachsprache entspricht - Schreibvarianten sind ein Fehler, kein Synonym.',
           'Die gebundene Wertschöpfung je Schritt stammt aus dem hinterlegten Kostenmodell, damit die Zahlen im Marketing und die Zahlen im Produkt nicht auseinanderlaufen können.',
           'Ein Messwert ohne Spezifikationsfenster wird gespeichert, aber nie als Band gezeichnet. Ein Band mit erfundenen Grenzen ist schlechter als gar keines.',
         ],
@@ -123,7 +123,7 @@ export const TECHNOLOGY_CONTENT: Record<Locale, TechnologyContent> = {
         ordinal: '03',
         anchorStep: 'eol_test',
         title: 'Vor den Grenzen lesen',
-        body: 'Die Ausbeute vor ihrem Fenster, der Ausschuss gewichtet nach dem, was jeder Schritt bereits gebunden hatte, und jeder Messwert vor seinem eigenen Toleranzband. Die Frage lautet, wo der Verlust entsteht — und die Antwort ist eine Position in der Kette.',
+        body: 'Die Ausbeute vor ihrem Fenster, der Ausschuss gewichtet nach dem, was jeder Schritt bereits gebunden hatte, und jeder Messwert vor seinem eigenen Toleranzband. Die Frage lautet, wo der Verlust entsteht - und die Antwort ist eine Position in der Kette.',
         detail: [
           'Hinter jedem Diagramm liegt eine Datentabelle und eine Kodierung ohne Farbe, damit die Antwort Screenreader, Graustufen und Ausdruck übersteht.',
           'Exporte sind maschinenlesbares JSON und enthalten weder Passwort-Hashes noch Daten Dritter.',
@@ -136,7 +136,7 @@ export const TECHNOLOGY_CONTENT: Record<Locale, TechnologyContent> = {
       'Das ist ein laufendes System, kein Prototyp hinter einem Formular. Alles Folgende liegt im Repository und wird bei jedem Commit durch Tests abgedeckt.',
     builtPoints: [
       'FastAPI-Backend auf PostgreSQL, Authentifizierung durchgängig selbst verantwortet, Refresh-Token nur gehasht gespeichert.',
-      'Hintergrundverarbeitung über eine Postgres-Warteschlange mit SELECT … FOR UPDATE SKIP LOCKED — Wiederholungen, Idempotenz und ein Dead-Letter-Pfad ohne zweiten Datenspeicher im Betrieb.',
+      'Hintergrundverarbeitung über eine Postgres-Warteschlange mit SELECT … FOR UPDATE SKIP LOCKED - Wiederholungen, Idempotenz und ein Dead-Letter-Pfad ohne zweiten Datenspeicher im Betrieb.',
       'DSGVO von Anfang an mitgebaut: unveränderliche Einwilligungsnachweise, maschinenlesbarer Export, Löschung, die die E-Mail-Adresse für eine Neuregistrierung wieder freigibt.',
       'Barrierefreiheit als CI-Gate nach WCAG 2.2 AA, mit Kontrasten, die auf Token-Ebene nachgewiesen sind, bevor eine Komponente ein Farbpaar verwenden darf.',
     ],

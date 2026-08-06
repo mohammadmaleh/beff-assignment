@@ -1,4 +1,4 @@
-"""The `export_jobs` table — Art. 15 access and Art. 20 portability, queued.
+"""The `export_jobs` table - Art. 15 access and Art. 20 portability, queued.
 
 Building an export means reading every table that holds the data subject's
 personal data, so it is not something to do inside a request. The job is a row;
@@ -7,7 +7,7 @@ is no Redis, and adding one would buy nothing at pre-launch volume that a table
 does not already give: persistence, retries, idempotency and a dead-letter path.
 
 The finished document lives in `payload` rather than on a disk or in object
-storage. That is deliberate at this size — it keeps the export inside the same
+storage. That is deliberate at this size - it keeps the export inside the same
 transaction boundary and the same erasure path as everything else it describes,
 so `DELETE FROM export_jobs` is a complete deletion with no orphaned file to
 find later.
@@ -45,7 +45,7 @@ __all__ = [
 ]
 
 # `pending` and `running` are the queue's; `ready` and `failed` are terminal.
-# TEXT + CHECK, never a PostgreSQL ENUM — a new state must not require an
+# TEXT + CHECK, never a PostgreSQL ENUM - a new state must not require an
 # `ALTER TYPE` that cannot be rolled back.
 EXPORT_JOB_STATUSES: Final = ("pending", "running", "ready", "failed")
 
@@ -64,7 +64,7 @@ class ExportJob(Base):
     """One data subject's request for a copy of their data.
 
     The id is handed to the client and appears in the download URL, so it is
-    UUIDv7 — opaque, non-enumerable, and still index-ordered by creation time
+    UUIDv7 - opaque, non-enumerable, and still index-ordered by creation time
     (ADR-0010).
 
     No `TimestampMixin`: `requested_at`, `started_at` and `completed_at` are the
@@ -95,7 +95,7 @@ class ExportJob(Base):
         # "The user's latest job" is the only read the profile screen makes.
         Index("ix_export_jobs_user_id_requested_at", "user_id", "requested_at"),
         # The queue's own index. Partial, because the table is mostly finished
-        # jobs and the claim query only ever looks at pending ones — a full
+        # jobs and the claim query only ever looks at pending ones - a full
         # index would grow without bound while the useful part stayed tiny.
         Index(
             "ix_export_jobs_pending_requested_at",

@@ -31,7 +31,7 @@ export type Finding =
   | { kind: 'cost'; step: string; eur: number }
   | { kind: 'clear' };
 
-/** Danger, warning, or a plain statement. Never the only signal — see below. */
+/** Danger, warning, or a plain statement. Never the only signal - see below. */
 export type FindingTone = 'danger' | 'warning' | 'neutral';
 
 export const findingTone = (finding: Finding): FindingTone => {
@@ -52,7 +52,7 @@ export const findingTone = (finding: Finding): FindingTone => {
  * ## Why this exists
  *
  * The readings, the process parameters and the scrap breakdown each answer a
- * question, and each answers it in its own section — so "is anything wrong
+ * question, and each answers it in its own section - so "is anything wrong
  * right now" costs the reader a scan of the whole page every morning. That is
  * exactly the work software should be doing.
  *
@@ -127,7 +127,7 @@ export function findings(overview: MetricsOverview, trend: MetricsTrend | undefi
  *
  * German puts a **non-breaking** space before `%` and `Intl` already knows
  * that; a template literal does not, and `' %'` lets the sign wrap alone onto
- * the next line. Units the formatter has no notion of — `Wh/kg`, `mg/cm²` —
+ * the next line. Units the formatter has no notion of - `Wh/kg`, `mg/cm²` -
  * take an ordinary space, which is correct for them in both locales.
  */
 export function reading(value: number, unit: string, format: Formatters): string {
@@ -143,8 +143,8 @@ const TONE_CLASS: Record<FindingTone, string> = {
 /**
  * The exceptions, at the top of the page.
  *
- * Colour is never the only signal: every row carries a **word** — out of spec,
- * below peers, largest loss — and the word is what a screen reader announces
+ * Colour is never the only signal: every row carries a **word** - out of spec,
+ * below peers, largest loss - and the word is what a screen reader announces
  * and what survives greyscale. The hue is a second encoding of something
  * already said.
  */
@@ -158,7 +158,7 @@ export function AttentionPanel({
    * Required, and explicitly nullable rather than optional.
    *
    * `exactOptionalPropertyTypes` is on, so `trend?: MetricsTrend` would reject
-   * the only call site there is — React Query's `data`, which is `undefined`
+   * the only call site there is - React Query's `data`, which is `undefined`
    * until the second request lands. Optional would also let a caller forget it
    * silently, and the cohort finding would then never appear.
    */
@@ -193,7 +193,7 @@ export function AttentionPanel({
       case 'cohort':
         return {
           label: copy.belowPeers,
-          // `Math.abs` — the sentence already says "below", and "-3.7 pp below"
+          // `Math.abs` - the sentence already says "below", and "-3.7 pp below"
           // says it twice with opposite signs.
           body: copy.cohortBody.replace('{gap}', format.percentagePoints(Math.abs(finding.gapPp))),
         };
@@ -223,7 +223,7 @@ export function AttentionPanel({
           const { label, body } = describe(finding);
           return (
             <li
-              // The kind alone is not unique — a line can have three parameters
+              // The kind alone is not unique - a line can have three parameters
               // out of spec at once, and React would then reuse one row's DOM
               // for another's content.
               key={`${finding.kind}-${String(index)}`}

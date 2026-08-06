@@ -19,7 +19,7 @@ import { authFetch, useAuth } from '@/lib/auth';
 import { getDictionary, type Locale } from '@/lib/i18n';
 import { surfacePath } from '@/lib/navigation';
 
-// Both shapes come from the API's own OpenAPI document — see ENG-33. Declaring
+// Both shapes come from the API's own OpenAPI document - see ENG-33. Declaring
 // them here again is how a frontend keeps compiling against a contract the
 // backend has already changed.
 
@@ -27,7 +27,7 @@ import { surfacePath } from '@/lib/navigation';
  * Consent, export and erasure on one surface.
  *
  * The GDPR framing is deliberate and visible: each control names the article it
- * satisfies. That is not decoration — a data subject who can see that a control
+ * satisfies. That is not decoration - a data subject who can see that a control
  * *is* their Art. 17 right is a data subject who uses it here rather than by
  * writing to a supervisory authority.
  */
@@ -85,8 +85,8 @@ export function ProfileView({ locale }: { locale: Locale }) {
   const job = exportJob.data ?? null;
 
   return (
-    // `AppShell` no longer wraps its children in a measure — the dashboard
-    // composes itself in full-bleed bands — so each surface sets its own.
+    // `AppShell` no longer wraps its children in a measure - the dashboard
+    // composes itself in full-bleed bands - so each surface sets its own.
     <div className="mx-auto flex max-w-5xl flex-col gap-16 px-6 py-12">
       <div>
         <Display as="h1">{t.profile.title}</Display>

@@ -28,7 +28,7 @@ __all__ = [
 
 # Ten attempts per fifteen minutes from one origin. A person who has genuinely
 # forgotten which password they used gets several goes; a script gets nowhere.
-# Deliberately not so tight that a shared office NAT locks out a whole floor —
+# Deliberately not so tight that a shared office NAT locks out a whole floor -
 # the key is an IP hash, and behind CGNAT that is a lot of people.
 LOGIN_LIMIT = RateLimit(limit=10, window_seconds=900)
 
@@ -38,7 +38,7 @@ REGISTER_LIMIT = RateLimit(limit=5, window_seconds=3600)
 
 # Resending is the one endpoint here that makes *us* send traffic to a third
 # party, which makes it the one an attacker would use to mail-bomb an address
-# they do not own — or to burn a sending reputation that takes weeks to rebuild.
+# they do not own - or to burn a sending reputation that takes weeks to rebuild.
 # Three an hour is generous for a person who did not receive the first, and
 # useless as an amplifier.
 RESEND_VERIFICATION_LIMIT = RateLimit(limit=3, window_seconds=3600)
@@ -100,7 +100,7 @@ async def resend_verification_rate_limit(
     """Counted per origin, like the others.
 
     Per *account* would be the tempting key here, since the endpoint is
-    authenticated — but it is the wrong scarce resource. One attacker with one
+    authenticated - but it is the wrong scarce resource. One attacker with one
     account cannot mail-bomb anybody; one attacker with a thousand accounts can,
     and per-account counting would wave every one of them through.
     """

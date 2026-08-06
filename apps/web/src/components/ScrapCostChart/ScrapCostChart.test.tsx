@@ -61,7 +61,7 @@ describe('ScrapCostChart', () => {
   it('reports the money as money, without cents', async () => {
     // Scoped to the table on purpose. The SVG renderer emits the bar's direct
     // label as real `<text>`, so an unscoped `getByText` finds the same figure
-    // twice — which is itself worth knowing: the drawing is aria-hidden, so
+    // twice - which is itself worth knowing: the drawing is aria-hidden, so
     // role queries skip it while text queries do not.
     render(<ScrapCostChart rows={rows} locale="en" />);
     await openTable();
@@ -83,7 +83,7 @@ describe('ScrapCostChart', () => {
   });
 
   it('names the process steps in German on the German locale', async () => {
-    // The API returns a stable key (`die_cutting`), never a display string —
+    // The API returns a stable key (`die_cutting`), never a display string -
     // which is the only reason the German locale can name it in German.
     render(<ScrapCostChart rows={rows} locale="de" />);
     await userEvent.click(screen.getByRole('tab', { name: 'Tabelle' }));
@@ -103,7 +103,7 @@ describe('ScrapCostChart', () => {
      * Process order is the argument this chart makes: a cell lost at formation
      * has absorbed every upstream cost, so a bar's position carries economic
      * meaning that re-sorting destroys. Sorting is therefore the reader's
-     * choice and never the default — the first assertion is the important one.
+     * choice and never the default - the first assertion is the important one.
      */
     render(<ScrapCostChart rows={rows} locale="en" />);
     await openTable();
@@ -132,7 +132,7 @@ describe('ScrapCostChart', () => {
     /*
      * German Excel splits on semicolons. A comma-delimited file opens there as
      * one column per row, which reads to the user as a broken export rather
-     * than as a locale mismatch — and German formats the euro amount with a
+     * than as a locale mismatch - and German formats the euro amount with a
      * comma inside it, so the two collide in exactly the wrong way.
      */
     const csv = captureCsvDownload();

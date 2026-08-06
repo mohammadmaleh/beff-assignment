@@ -7,7 +7,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * a glyph and a **spoken prefix** in `sr-only` text.
  *
  * `prefixes` is a required prop with no default, which is the rule this library
- * arrived at the hard way — `SpecBand` composed its readout from English
+ * arrived at the hard way - `SpecBand` composed its readout from English
  * literals and the German landing page announced the product's signature
  * element entirely in English. A component library cannot know the page's
  * language, so a default *is* a guess, and it ships.
@@ -45,7 +45,7 @@ export const Warning: Story = {
 };
 
 /**
- * The only tone that takes `role="alert"` — an assertive live region that
+ * The only tone that takes `role="alert"` - an assertive live region that
  * interrupts. The others are `status`, which waits for a pause. Using
  * `alert` for a success message is how a screen reader user gets cut off
  * mid-sentence to be told something worked.

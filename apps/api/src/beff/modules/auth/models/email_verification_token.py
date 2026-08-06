@@ -2,7 +2,7 @@
 
 The client is handed a random string; only its SHA-256 is stored, exactly as
 with refresh tokens. A database leak therefore hands over no live verification
-links — which matters more here than it looks, because following one of these
+links - which matters more here than it looks, because following one of these
 proves control of an address and is a step in most account-takeover chains.
 
 Written once per registration and never exposed, so the key is
@@ -37,7 +37,7 @@ TOKEN_HASH_LENGTH: Final = 64  # SHA-256, hex-encoded.
 
 
 class EmailVerificationToken(Base):
-    """One outstanding — or spent — verification link.
+    """One outstanding - or spent - verification link.
 
     Single use. `consumed_at` is stamped inside the same transaction that
     stamps `users.email_verified_at`, so a link that is followed twice (a mail

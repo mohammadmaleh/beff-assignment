@@ -19,7 +19,7 @@ __all__ = [
 
 
 class PostgresUserRepository:
-    """Satisfies `UserRepository` structurally — note the absence of a base class."""
+    """Satisfies `UserRepository` structurally - note the absence of a base class."""
 
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
@@ -47,8 +47,8 @@ class PostgresUserRepository:
     async def mark_email_verified(self, user: User, *, at: datetime) -> User:
         """Stamp `email_verified_at` unless it is already set.
 
-        The guard is not defensive coding: following the link twice is normal —
-        mail clients prefetch, and people double-click — and without it the
+        The guard is not defensive coding: following the link twice is normal -
+        mail clients prefetch, and people double-click - and without it the
         second visit would rewrite the moment the address was confirmed.
         """
         if user.email_verified_at is None:
@@ -92,7 +92,7 @@ class PostgresRefreshTokenRepository:
         )
         await self._session.flush()
         # `execute()` is typed as returning `Result`, but an UPDATE always
-        # yields a `CursorResult` — `rowcount` is only defined on the
+        # yields a `CursorResult` - `rowcount` is only defined on the
         # latter. The narrowing is the shape of the statement, not a guess.
         return cast("CursorResult[Any]", result).rowcount
 

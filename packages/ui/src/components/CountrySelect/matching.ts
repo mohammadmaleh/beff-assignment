@@ -12,7 +12,7 @@ const DIACRITICS = /\p{Diacritic}/gu;
  * German keyboards are not the only way German is typed.
  *
  * `ö` and `oe` are the same letter to a German reader, and a picker that only
- * accepts one of them fails whoever is on the other keyboard — which on a
+ * accepts one of them fails whoever is on the other keyboard - which on a
  * factory floor is a real share of the shift. Neither folding subsumes the
  * other: stripping the diaeresis turns `Österreich` into `Osterreich`, which
  * `oe` does not match; expanding it gives `Oesterreich`, which `ös` does not.
@@ -37,7 +37,7 @@ const rank = (country: CountryOption, query: string): number | undefined => {
   const [nameStripped, nameExpanded] = [stripped(country.name), expanded(country.name)];
 
   // The code is an exact, two-character handle. Someone who typed `DE` meant
-  // Germany, not "every country whose name contains de" — of which, in German,
+  // Germany, not "every country whose name contains de" - of which, in German,
   // there are more than thirty.
   if (code === needleStripped) return 0;
   if (nameStripped.startsWith(needleStripped) || nameExpanded.startsWith(needleExpanded)) return 1;
@@ -49,7 +49,7 @@ const rank = (country: CountryOption, query: string): number | undefined => {
  * The countries matching `query`, best first.
  *
  * Ranked rather than merely filtered, because the alternative is that typing
- * `de` in German offers `Schweden` above `Deutschland` — both contain the
+ * `de` in German offers `Schweden` above `Deutschland` - both contain the
  * letters, and only one of them is what anybody meant.
  *
  * The sort is stable, so within a rank the caller's order survives. That order

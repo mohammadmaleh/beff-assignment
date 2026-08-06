@@ -3,7 +3,7 @@
 `OnboardingService` is unit-tested against a fake, which covers the step machine.
 What it cannot cover is the pair of guarantees underneath it:
 
-- `uq_onboarding_progress_user_id` — one row per user, enforced by the database
+- `uq_onboarding_progress_user_id` - one row per user, enforced by the database
   rather than by `upsert` remembering to look first.
 - `first_line_for_user`, which reaches the user through `plants` and is therefore
   the query where a missing filter is easiest to write and hardest to see. It is
@@ -87,7 +87,7 @@ async def test_upserting_a_row_already_in_the_session_updates_it(
 
 
 async def test_a_user_cannot_have_two_progress_rows(db_session: AsyncSession) -> None:
-    """`uq_onboarding_progress_user_id` is what actually guarantees it — the
+    """`uq_onboarding_progress_user_id` is what actually guarantees it - the
     check inside `upsert` is the courtesy that keeps the common path off the
     error handler."""
     user = await make_user(db_session)
@@ -145,7 +145,7 @@ async def test_the_first_line_is_the_first_one_set_up(db_session: AsyncSession) 
 
 
 async def test_the_first_line_is_never_another_accounts(db_session: AsyncSession) -> None:
-    """`lines` has no `user_id` — it reaches the account through `plants`.
+    """`lines` has no `user_id` - it reaches the account through `plants`.
 
     That join is the filter, and dropping it hands the dashboard somebody else's
     production line as its default view.

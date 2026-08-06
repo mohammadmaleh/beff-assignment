@@ -20,21 +20,21 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const c = TECHNOLOGY_CONTENT[locale];
-  return { title: `${c.eyebrow} — Beff`, description: c.lede };
+  return { title: `${c.eyebrow} - Beff`, description: c.lede };
 }
 
 /**
  * Technology.
  *
  * Three stages, numbered, each anchored to a real process step via
- * `ChainMarker` — the same component and the same `PROCESS_STEPS` source the
+ * `ChainMarker` - the same component and the same `PROCESS_STEPS` source the
  * landing page and the dashboard use. The page therefore inherits its structure
  * from the production chain rather than inventing a parallel one, which is the
  * whole reason the ordinals are allowed to exist.
  *
  * It closes on what is *not* built. A technology page that only lists
  * capabilities is the easiest page on any site to disbelieve, and this product
- * is pre-launch — the reader already knows there are gaps, so naming them is
+ * is pre-launch - the reader already knows there are gaps, so naming them is
  * cheaper than being caught omitting them.
  */
 export default async function TechnologyPage({ params }: { params: Promise<{ locale: string }> }) {

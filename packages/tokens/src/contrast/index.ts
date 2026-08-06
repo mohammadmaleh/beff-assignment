@@ -52,7 +52,7 @@ export function hueSeparation(a: Hex, b: Hex): number {
  * only safe if it survives both.
  *
  * culori's deficiency filters are typed as `<C extends Color>(color: C) => C`
- * — `Color` is a union of parsed colour objects and does not include `string`,
+ * - `Color` is a union of parsed colour objects and does not include `string`,
  * even though the runtime implementation parses strings just fine. The hex
  * inputs are converted to `Rgb` objects first so this satisfies `tsc`.
  */

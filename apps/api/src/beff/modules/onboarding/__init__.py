@@ -1,4 +1,4 @@
-"""Onboarding module — the resumable post-registration wizard.
+"""Onboarding module - the resumable post-registration wizard.
 
 Captures role, plant and line setup, and units (CONTEXT.md, "Product terms").
 Completing it turns scratch answers into real `plants` and `lines` rows, which

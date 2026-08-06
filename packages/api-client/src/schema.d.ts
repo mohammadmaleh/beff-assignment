@@ -1,5 +1,5 @@
 /**
- * GENERATED FILE — do not edit.
+ * GENERATED FILE - do not edit.
  *
  * Produced from the API's own OpenAPI document by
  * `pnpm --filter @beff/api-client generate`. CI runs `check:drift`, so both
@@ -38,7 +38,7 @@ export type ConsentRequest = {
  * Current consent per manageable purpose.
  *
  * The *state*, derived from the append-only log. The log itself is not exposed
- * — it is evidence held for accountability, not something the profile screen
+ * - it is evidence held for accountability, not something the profile screen
  * needs to render, and the full history is available through an export.
  */
 export type ConsentStateResponse = {
@@ -50,7 +50,7 @@ export type ConsentStateResponse = {
  * The outcome of redeeming a link.
  *
  * Carries the user, so the profile screen can update without a second round
- * trip — and so a caller who was already signed in when they followed the link
+ * trip - and so a caller who was already signed in when they followed the link
  * sees the new state immediately rather than after the next refresh.
  */
 export type EmailVerificationResponse = {
@@ -115,7 +115,7 @@ export type MetricsOverviewResponse = {
 /**
  * The series behind the charts, in one request.
  *
- * Separate from the overview by design — see `MetricsTrend`. The overview is
+ * Separate from the overview by design - see `MetricsTrend`. The overview is
  * what the page needs for its first useful pixel; this is sixty batches, and
  * putting it in the same payload would make the headline wait on data it does
  * not use.
@@ -192,13 +192,13 @@ export type ResendVerificationRequest = {
  * Acknowledgement that a message is queued.
  *
  * Not "sent". The outbox is drained by a worker, so the API cannot honestly
- * claim delivery at the moment it answers — and a client that shows "sent"
+ * claim delivery at the moment it answers - and a client that shows "sent"
  * against a queue that later dead-letters has told the user something false.
  */
 export type ResendVerificationResponse = {
   /** Always `true`; the message is on the queue, not yet sent. */
   queued: boolean;
-  /** The address it will go to — the caller's own. */
+  /** The address it will go to - the caller's own. */
   recipient: string;
 };
 
@@ -253,7 +253,7 @@ export type TrendPointResponse = {
 /**
  * A user as the owner of that account sees themselves.
  *
- * No `password_hash`, and no `deleted_at` — the first is a credential and the
+ * No `password_hash`, and no `deleted_at` - the first is a credential and the
  * second is internal bookkeeping.
  */
 export type UserResponse = {
@@ -291,7 +291,7 @@ export type VerifyEmailRequest = {
  *
  * The email is echoed back so the client can show *which* address it was sent
  * to, which is the one thing someone who mistyped needs to see. Nothing else
- * about the row is exposed — the id is internal and there is no endpoint that
+ * about the row is exposed - the id is internal and there is no endpoint that
  * takes it.
  */
 export type WaitlistEntryResponse = {

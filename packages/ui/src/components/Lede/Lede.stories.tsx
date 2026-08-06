@@ -11,7 +11,7 @@ const BODY =
  * Body copy at a readable measure.
  *
  * `max-w-[var(--type-prose-measure)]` is the class a paste drops silently. A
- * paragraph that loses it does not look broken — it looks *wider*, which reads
+ * paragraph that loses it does not look broken - it looks *wider*, which reads
  * as fine on the laptop it was written on and becomes a 140-character line on a
  * 1440px screen, where the eye loses its place returning to the start of the
  * next line. The measure is a legibility constraint, not a layout preference,
@@ -33,7 +33,7 @@ export const Reading: Story = {};
 export const Opening: Story = { args: { size: 'lg' } };
 
 /**
- * The supporting note — a figure description, a caption, a hint under a
+ * The supporting note - a figure description, a caption, a hint under a
  * control. Deliberately on the *UI* leading rather than the prose leading: at
  * this length two lines on prose leading read as two paragraphs.
  */

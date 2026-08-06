@@ -9,7 +9,7 @@ import { cx } from '../../lib/cx/index';
  *
  * `max-w-[var(--type-prose-measure)]` was repeated thirty-one times, and it is
  * the one class in the string that a paste can silently drop. A paragraph that
- * loses it does not look broken — it looks *wider*, which reads as fine on the
+ * loses it does not look broken - it looks *wider*, which reads as fine on the
  * laptop it was written on and becomes a 140-character line on a 1440px screen,
  * where the eye loses its place returning to the start of the next line. The
  * measure is a legibility constraint, not a layout preference, so it belongs to
@@ -18,8 +18,8 @@ import { cx } from '../../lib/cx/index';
  * ## Two sizes, and why the small one has no leading override
  *
  * `md` is the reading size and carries `--type-prose-leading` with it, because
- * a longer line needs more leading to track. `sm` is the supporting note — a
- * figure description, a caption, a hint under a control — where the text is
+ * a longer line needs more leading to track. `sm` is the supporting note - a
+ * figure description, a caption, a hint under a control - where the text is
  * short enough that the UI leading is correct and the prose leading would make
  * two lines look like two paragraphs.
  *

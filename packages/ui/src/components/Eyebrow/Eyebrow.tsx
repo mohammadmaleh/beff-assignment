@@ -12,14 +12,14 @@ import { cx } from '../../lib/cx/index';
  * here that is genuinely load-bearing: uppercase text set at `xs` without added
  * letter-spacing is measurably harder to read, because the shapes that
  * distinguish lowercase letters are gone and the remaining rectangles run
- * together. A copy of this style that lost the tracking would not look broken —
+ * together. A copy of this style that lost the tracking would not look broken -
  * it would just be worse to read, which is exactly the kind of regression no
  * test catches.
  *
  * ## Not a heading
  *
  * Defaults to `<p>`, and every existing use is a `<p>` or a `<span>`. An
- * eyebrow above a heading is *not* a heading — marking it `<h2>` puts a
+ * eyebrow above a heading is *not* a heading - marking it `<h2>` puts a
  * two-word fragment into the document outline above the heading it introduces,
  * and a screen-reader user navigating by heading lands on "PRODUCTION LINE"
  * instead of on the section's actual title.

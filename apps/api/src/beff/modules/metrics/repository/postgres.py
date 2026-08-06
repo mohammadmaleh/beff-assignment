@@ -40,7 +40,7 @@ class PostgresMetricsRepository:
     async def batch_totals(self, line_id: int, start: datetime, end: datetime) -> BatchTotals:
         """Sums and averages over the window, in one round trip.
 
-        The window is half-open — `start <= started_at < end` — so a batch never
+        The window is half-open - `start <= started_at < end` - so a batch never
         lands in both the current period and the one it is compared against.
         A closed interval double-counts on the boundary and makes a delta of
         exactly zero look like drift.
@@ -97,7 +97,7 @@ class PostgresMetricsRepository:
         `DISTINCT ON` rather than a correlated subquery or a window function
         filtered in Python: it is the one construct that expresses "newest row
         per group" in a single index-ordered scan, and this is PostgreSQL-only
-        by decision (ADR-0001 — the app is not portable across engines and does
+        by decision (ADR-0001 - the app is not portable across engines and does
         not pretend to be).
         """
         newest: Select[tuple[ProcessMeasurement]] = (
@@ -119,7 +119,7 @@ class PostgresMetricsRepository:
         line then silently omits its own best days.
 
         The scrap is aggregated in a subquery rather than joined row-wise
-        because `ScrapEvent` is one row per process step — joining directly
+        because `ScrapEvent` is one row per process step - joining directly
         would multiply each batch by twelve and every `cells_started` sum in
         this query would be twelve times too large.
         """
@@ -183,7 +183,7 @@ class PostgresMetricsRepository:
         """Every reading in the window, oldest batch first.
 
         The batch's `started_at` is selected alongside the reading because that
-        is the reading's real x-coordinate — `process_measurements.created_at`
+        is the reading's real x-coordinate - `process_measurements.created_at`
         records when the row was written, which on a seeded or back-filled
         dataset is the same instant for every row and would collapse the whole
         chart onto one tick.

@@ -2,7 +2,7 @@
 
 An HTTP concern, so it lives with the other dependencies rather than beside the
 copy. The rule is: what the client explicitly asked for, else what its
-`Accept-Language` says, else English — and the last step is the only guess,
+`Accept-Language` says, else English - and the last step is the only guess,
 taken once, in one place, where it can be seen.
 """
 
@@ -20,7 +20,7 @@ def negotiate_email_locale(accept_language: str | None) -> EmailLocale | None:
 
     Deliberately simple: the header is parsed for quality values and the highest
     weighted *supported* tag wins. A full RFC 4647 lookup would add wildcards
-    and ranges for a two-locale product — `de-AT` matching `de` is the only
+    and ranges for a two-locale product - `de-AT` matching `de` is the only
     subtlety that actually occurs, and the prefix split below is exactly that.
 
     Returns `None` rather than a fallback, so the caller can tell "the header

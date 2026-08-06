@@ -2,7 +2,7 @@
 
 `AuthService` and `TokenService` are unit-tested against `InMemory*` fakes, which
 is right: the interesting mistakes there are rotation, reuse detection and the
-grace window, and those are logic. The mistakes below are not logic — they are
+grace window, and those are logic. The mistakes below are not logic - they are
 things the database does that a dict does not:
 
 - soft delete. Every "active" lookup carries `deleted_at IS NULL`, and a fake
@@ -57,7 +57,7 @@ def token_hash(seed: str) -> str:
 
 
 async def test_add_returns_the_row_the_database_filled_in(db_session: AsyncSession) -> None:
-    """`add` flushes rather than commits — the transaction belongs to the request.
+    """`add` flushes rather than commits - the transaction belongs to the request.
 
     The id and `created_at` have to be populated before the caller can build a
     response out of them, and both come from the database.
@@ -78,7 +78,7 @@ async def test_an_erased_account_is_not_found_by_email_or_by_id(
     """`deleted_at IS NULL` is in the query, not in the caller.
 
     This is the assertion a fake cannot make. An in-memory dict that deletes the
-    key on erasure passes whether or not the predicate exists — and without the
+    key on erasure passes whether or not the predicate exists - and without the
     predicate, an erased account can still log in.
     """
     repository = PostgresUserRepository(db_session)
@@ -104,8 +104,8 @@ async def test_an_unknown_email_or_id_is_simply_absent(db_session: AsyncSession)
 async def test_marking_the_email_verified_twice_keeps_the_first_moment(
     db_session: AsyncSession,
 ) -> None:
-    """Following the link twice is normal — mail clients prefetch, people
-    double-click — and the second visit must not rewrite when the address was
+    """Following the link twice is normal - mail clients prefetch, people
+    double-click - and the second visit must not rewrite when the address was
     confirmed."""
     repository = PostgresUserRepository(db_session)
     user = await repository.add(make_user())
@@ -155,8 +155,8 @@ async def test_a_token_is_found_by_its_hash(db_session: AsyncSession) -> None:
 async def test_the_same_token_hash_cannot_be_stored_twice(db_session: AsyncSession) -> None:
     """The unique index is what makes `get_by_hash` a lookup.
 
-    Without it a hash collision — or, far more likely, a rotation bug that
-    re-inserts the same row — turns `scalar_one_or_none` into a
+    Without it a hash collision - or, far more likely, a rotation bug that
+    re-inserts the same row - turns `scalar_one_or_none` into a
     `MultipleResultsFound` on a login path.
     """
     user = await PostgresUserRepository(db_session).add(make_user())
@@ -185,7 +185,7 @@ async def test_revoking_a_family_is_idempotent_and_reports_what_it_changed(
 
     A second replay arriving concurrently must revoke nothing and report zero,
     rather than overwriting the timestamp of the revocation that already
-    happened — which is the record of *when* the theft was detected.
+    happened - which is the record of *when* the theft was detected.
     """
     user = await PostgresUserRepository(db_session).add(make_user())
     repository = PostgresRefreshTokenRepository(db_session)
@@ -223,7 +223,7 @@ async def test_a_family_is_listed_oldest_first(db_session: AsyncSession) -> None
     """Ordered by `issued_at, id` so the chain reads as the rotation happened.
 
     An unordered result is a bug that only appears once the table is large
-    enough to be scanned in a different order — by which time the thing being
+    enough to be scanned in a different order - by which time the thing being
     read is an incident timeline.
     """
     user = await PostgresUserRepository(db_session).add(make_user())

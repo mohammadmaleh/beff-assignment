@@ -17,7 +17,7 @@ type Status = 'idle' | 'sending' | 'sent' | 'already' | 'limited' | 'failed';
  * **Not a blocker, deliberately.** Nothing in this product is gated on a
  * confirmed address: registration signs you in, the dashboard renders, and the
  * account works. Gating would trade a real user's first session against a
- * system that is allowed to be slow and is sometimes filtered — and every
+ * system that is allowed to be slow and is sometimes filtered - and every
  * threat the copy could make about it would be untrue.
  *
  * It renders nothing at all once the address is confirmed, rather than a
@@ -42,7 +42,7 @@ export function UnverifiedBanner({ locale }: { locale: Locale }) {
       setStatus('sent');
     } catch (error) {
       if (error instanceof ApiError) {
-        // 409 is "already confirmed" — which can genuinely happen, if the link
+        // 409 is "already confirmed" - which can genuinely happen, if the link
         // was followed in another tab between this page loading and the click.
         // 429 is the resend limiter. Both deserve their own sentence: "try
         // again" is wrong advice for the first and useless for the second.

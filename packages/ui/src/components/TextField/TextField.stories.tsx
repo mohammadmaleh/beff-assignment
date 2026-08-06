@@ -21,7 +21,7 @@ export const WithDescription: Story = {
 
 /**
  * The marker is `<span aria-hidden>*</span>` **inside** the `<label>`, so the
- * visible text is `Work email *` while the accessible name stays `Work email` —
+ * visible text is `Work email *` while the accessible name stays `Work email` -
  * aria-hidden nodes are skipped in name computation. The two disagree by
  * design, and that is worth knowing before writing a test: an anchored
  * `getByLabelText('Work email')` matches, an exact-string query on the visible

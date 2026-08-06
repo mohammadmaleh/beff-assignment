@@ -49,7 +49,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
       </LegalSection>
 
       <LegalSection id="processing" heading={c.processingTitle}>
-        {/* Scrolls inside its own container — the page body must never
+        {/* Scrolls inside its own container - the page body must never
                 scroll sideways, and German column headings are long. */}
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-[length:var(--type-ui-size-sm)]">

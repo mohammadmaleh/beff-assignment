@@ -32,7 +32,7 @@ const ANNOTATED = ['coating', 'formation'] as const;
  *
  * ### Why a stepped area and not a bar chart
  *
- * Committed value is not twelve independent quantities to compare — it is one
+ * Committed value is not twelve independent quantities to compare - it is one
  * quantity accumulating, and it only ever goes up. A stepped area says
  * "accumulating" in a way twelve separate bars do not, and it leaves the
  * comparison of *rates* to the dashboard's scrap chart, which is a different
@@ -41,7 +41,7 @@ const ANNOTATED = ['coating', 'formation'] as const;
  * ### Why it is ECharts and not the hand-drawn SVG it used to be
  *
  * It was a `viewBox` and a `d` string built by hand, which was genuinely cheaper
- * — a server component, no JavaScript on a statically generated page. What it
+ * - a server component, no JavaScript on a statically generated page. What it
  * could not do was agree with the rest of the product: the step boundaries, the
  * ceiling and the baseline were three stroke colours chosen here, beside four
  * charts whose equivalents are chosen in `@beff/ui/chart`. This page now pays a
@@ -52,13 +52,13 @@ const ANNOTATED = ['coating', 'formation'] as const;
  * positioned over the drawing, because SVG `<text>` inside a `viewBox` scales
  * with the drawing and would have set the labels at roughly six pixels on a
  * phone. ECharts renders at the element's real pixel size and resizes rather
- * than scaling, so `markPoint` labels are 11px everywhere and the overlay — with
- * its own flip-past-halfway rule — is gone.
+ * than scaling, so `markPoint` labels are 11px everywhere and the overlay - with
+ * its own flip-past-halfway rule - is gone.
  *
  * ### Accessibility
  *
  * The drawing is `aria-hidden`. What a screen reader gets is the caption's
- * description — the shape stated in words — and the table, which carries every
+ * description - the shape stated in words - and the table, which carries every
  * number. Same inversion as `ScrapChart`: the table is the authoritative
  * rendering and the drawing is a fast index into it, so the two cannot drift
  * apart because there is only one source of figures.
@@ -84,10 +84,10 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
         data: PROCESS_STEPS.map((_, index) => String(index + 1).padStart(2, '0')),
         boundaryGap: false,
         // The baseline. A cell at zero has had nothing put into it yet, so this
-        // is a real edge of the figure rather than axis furniture — heavier than
+        // is a real edge of the figure rather than axis furniture - heavier than
         // the hairline `categoryAxis` gives every other chart.
         axisLine: { lineStyle: { color: tokens['color-band-tick'], width: 2 } },
-        // Step boundaries — the calibration marks the whole page is built from.
+        // Step boundaries - the calibration marks the whole page is built from.
         // The same token as the page's calibration ground: one step off the
         // surface in both themes, where `border-default` is deliberately light
         // in dark and would shout.
@@ -96,8 +96,8 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
       yAxis: valueAxis(tokens, {
         min: 0,
         max: 100,
-        // No value axis. The figure's claim is the *shape* — it accumulates, and
-        // it accumulates late — and the two annotated points carry the only two
+        // No value axis. The figure's claim is the *shape* - it accumulates, and
+        // it accumulates late - and the two annotated points carry the only two
         // numbers the copy argues from. A per-cent axis beside them would invite
         // reading a precision this curve does not have.
         show: false,
@@ -118,7 +118,7 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
             symbol: ['none', 'none'],
             label: { show: false },
             // The finished cell: the ceiling everything accrues towards. Dashed,
-            // like every other reference line in the product — it is a rule the
+            // like every other reference line in the product - it is a rule the
             // data is judged against, not a measurement.
             data: [
               {
@@ -141,8 +141,8 @@ export function CostOfPosition({ locale }: { locale: Locale }) {
               const pct = committedValueCurve[index]?.pct ?? 0;
 
               return {
-                // Required by `MarkPointDataItemOption`. Never rendered — the
-                // label below carries the text — but it is the step's own key,
+                // Required by `MarkPointDataItemOption`. Never rendered - the
+                // label below carries the text - but it is the step's own key,
                 // not a display string, so it cannot become an untranslated
                 // label if ECharts ever decides to show it.
                 name: step,

@@ -38,7 +38,7 @@ export interface YieldTooltipCopy {
  *
  * The counts are here as well as the rate, deliberately. "812 of 1 140 cells"
  * is the form a process engineer reasons in, and it cannot be recovered from a
- * rounded percentage — 68.0% of 1 140 is 775.2, and the batch passed 812.
+ * rounded percentage - 68.0% of 1 140 is 775.2, and the batch passed 812.
  */
 export function yieldTooltip(
   point: TrendPoint,
@@ -62,7 +62,7 @@ export function yieldTooltip(
  * ## The question it answers
  *
  * The headline `SpecBand` says where today's reading sits. This says how it got
- * there — and those are different decisions. A pilot line at 71.8% inside a
+ * there - and those are different decisions. A pilot line at 71.8% inside a
  * 40–80% window is fine; a pilot line at 71.8% that was at 78% three weeks ago
  * is a process that is drifting, and only one of those two facts is visible in
  * a single number.
@@ -75,7 +75,7 @@ export function yieldTooltip(
  * That is the app's reference-line rule: a rule you are judged against never
  * wears a series colour and is never solid. It means the distinction between
  * "what the line did" and "what it is measured against" survives greyscale,
- * colour blindness and a printout — none of which a legend alone survives,
+ * colour blindness and a printout - none of which a legend alone survives,
  * because a legend tells you which colour is which and says nothing once the
  * colours are gone.
  *
@@ -83,7 +83,7 @@ export function yieldTooltip(
  *
  * There was a real temptation to overlay cells started, so the reader could see
  * whether a bad yield was also a small batch. Two scales on one plot is the
- * single most reliable way to make a chart lie — the crossing point of the two
+ * single most reliable way to make a chart lie - the crossing point of the two
  * lines is an artefact of the axis ranges, and readers read it as meaning
  * something. Throughput gets its own chart instead.
  */
@@ -115,7 +115,7 @@ export function YieldTrendChart({
      * interpolation is two chances for the export to disagree with the screen.
      *
      * Declared inside the memo rather than beside it so it is not a dependency
-     * — a hoisted arrow would be a new identity every render, and suppressing
+     * - a hoisted arrow would be a new identity every render, and suppressing
      * the lint rule that notices is worse than not tripping it.
      */
     const cellsLabel = (point: TrendPoint): string =>
@@ -149,7 +149,7 @@ export function YieldTrendChart({
         align: 'end',
         render: (point) => format.percent(point.first_pass_yield_pct),
         text: (point) => format.percent(point.first_pass_yield_pct),
-        // The number, never the formatted string — '9.0%' sorts after '100.0%'.
+        // The number, never the formatted string - '9.0%' sorts after '100.0%'.
         sortValue: (point) => point.first_pass_yield_pct,
         filterRange: (point) => point.first_pass_yield_pct,
       },
@@ -178,7 +178,7 @@ export function YieldTrendChart({
      *
      * The band used to be a shaded `markArea` across the whole window. Once the
      * axis is scaled to the data, that area covers the entire plot and says
-     * nothing — a solid grey rectangle behind everything. Drawn as limits
+     * nothing - a solid grey rectangle behind everything. Drawn as limits
      * instead, they appear when the line approaches one and stay out of the way
      * when it does not, which is when they carry information.
      *
@@ -197,7 +197,7 @@ export function YieldTrendChart({
         data: labels,
         // A sixty-batch window would otherwise print sixty dates on top of one
         // another. `auto` thins them to whatever fits, which is also what makes
-        // the German month abbreviations safe — they are longer.
+        // the German month abbreviations safe - they are longer.
         axisLabel: {
           color: tokens['color-text-muted'],
           fontSize: 11,
@@ -207,14 +207,14 @@ export function YieldTrendChart({
       }),
       yAxis: valueAxis(tokens, {
         /*
-         * Scaled to everything actually drawn — the batches and the two cohort
-         * lines — and then rounded outward.
+         * Scaled to everything actually drawn - the batches and the two cohort
+         * lines - and then rounded outward.
          *
          * This was pinned to the specification window, on the reasoning that an
          * auto-scaled axis makes a two-point wobble fill the plot and look like
          * a collapse. That reasoning is sound and the implementation was not: a
          * pilot line's window is 40-80%, so the band covered 73% of the plot and
-         * two months of real movement — 65% to 77% — was squeezed into a fifth
+         * two months of real movement - 65% to 77% - was squeezed into a fifth
          * of the height. The chart shouted "in spec" and whispered the trend.
          *
          * `minPad` is what preserves the original intent. A flat series still

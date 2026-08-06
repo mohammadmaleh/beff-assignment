@@ -4,7 +4,7 @@
  * A cache key is a *join*, not a label: `useQuery` writes under it and
  * `setQueryData` reads back through it, and the two are in different files. Two
  * literals that must match and cannot be checked against each other is the
- * shape of a bug that shows up as "the screen did not update after saving" —
+ * shape of a bug that shows up as "the screen did not update after saving" -
  * no error, no failed request, just a mutation writing into a key nothing is
  * subscribed to. That has to be one constant or it is not one key.
  *

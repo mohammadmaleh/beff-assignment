@@ -177,7 +177,7 @@ async def test_login_with_the_wrong_password_is_rejected(service: AuthService) -
 async def test_login_for_an_unknown_account_reports_the_same_error(
     service: AuthService,
 ) -> None:
-    """Identical error for "no such user" and "wrong password" — anything else
+    """Identical error for "no such user" and "wrong password" - anything else
     is an account-enumeration oracle."""
     await register(service)
 
@@ -337,7 +337,7 @@ async def test_logout_without_a_cookie_is_a_no_op(
     await service.logout(None)
     await service.logout("")
 
-    # The other session survives — nothing was revoked by a logout with no token.
+    # The other session survives - nothing was revoked by a logout with no token.
     refreshed = await service.refresh(other.refresh_token)
     assert refreshed.user.id == other.user.id
     assert all(record.revoked_at is None for record in tokens.tokens)

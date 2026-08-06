@@ -8,7 +8,7 @@ import { useReducedMotion } from './motion';
  *
  * CSS handles `prefers-reduced-motion` for everything the app draws itself.
  * ECharts runs its own render loop outside the cascade's reach, so this is the
- * only channel the preference has — and a hook that read the query once would
+ * only channel the preference has - and a hook that read the query once would
  * leave a reader who turns the setting on mid-session watching the animation
  * they just asked to stop.
  */

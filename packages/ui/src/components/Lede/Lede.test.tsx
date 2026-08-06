@@ -6,7 +6,7 @@ import { Lede } from './Lede';
 describe('Lede', () => {
   it('always constrains the measure', () => {
     // The class a paste drops silently. Without it the paragraph is not broken,
-    // it is *wider* — which looks fine on a laptop and becomes a line the eye
+    // it is *wider* - which looks fine on a laptop and becomes a line the eye
     // cannot track back from on a 1440px screen.
     const { container } = render(<Lede>Cell manufacturing runs on readings.</Lede>);
 

@@ -1,5 +1,5 @@
 {
   "extends": ["//"],
-  "//": "No `build` task. The package ships source and is transpiled by its consumer, so declaring a build that does not exist would break the root graph — turbo resolves `dependsOn: [\"^build\"]` across the whole workspace.",
+  "//": "No `build` task. The package ships source and is transpiled by its consumer, so declaring a build that does not exist would break the root graph - turbo resolves `dependsOn: [\"^build\"]` across the whole workspace.",
   "tasks": {}
 }

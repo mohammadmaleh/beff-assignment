@@ -1,4 +1,4 @@
-"""The `batches` table — a production run, and the unit of traceability."""
+"""The `batches` table - a production run, and the unit of traceability."""
 
 from __future__ import annotations
 

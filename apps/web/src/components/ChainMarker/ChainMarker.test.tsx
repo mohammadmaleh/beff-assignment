@@ -37,7 +37,7 @@ describe('ChainMarker', () => {
   it('is hidden from assistive technology', () => {
     /*
      * Deliberate, and the one judgement call in this component. The marker
-     * carries real information — where in the chain this section sits — but the
+     * carries real information - where in the chain this section sits - but the
      * heading immediately after states the section's subject in words, so
      * announcing "10 Formation" first would put a bare ordinal in the rotor
      * ahead of every heading. The chain is stated in words by the cost figure's

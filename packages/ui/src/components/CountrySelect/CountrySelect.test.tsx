@@ -36,7 +36,7 @@ const COPY: CountrySelectCopy = {
  * Controlled, like the wizard that uses it.
  *
  * A spy alone would leave `value` frozen, and downshift takes `selectedItem` as
- * a controlled prop — so every assertion after a selection would be measuring a
+ * a controlled prop - so every assertion after a selection would be measuring a
  * component whose parent refused the answer, which is not the case under test.
  */
 function setup(props: Partial<CountrySelectProps> = {}) {
@@ -141,7 +141,7 @@ describe('CountrySelect', () => {
 
   it('is named by the field’s label and by nothing that does not exist', () => {
     // downshift points `aria-labelledby` at a label it expects you to render
-    // from its own `getLabelProps`. A dangling reference is not a weaker name —
+    // from its own `getLabelProps`. A dangling reference is not a weaker name -
     // it is no name, and the `<label for>` underneath only masks it.
     setup();
     const labelId = input().getAttribute('aria-labelledby');
@@ -167,7 +167,7 @@ describe('CountrySelect', () => {
 
   it('reopens on the whole list rather than on the selection it already made', async () => {
     // The box holds `Deutschland` after a choice. Filtering by it would offer
-    // exactly one country — the chosen one — so changing your mind would mean
+    // exactly one country - the chosen one - so changing your mind would mean
     // clearing the field first.
     const { user } = setup({ value: 'DE' });
     await open(user);
@@ -178,7 +178,7 @@ describe('CountrySelect', () => {
     const { user } = setup({ value: 'DE' });
     await open(user);
     const germany = screen.getByRole('option', { name: /Deutschland/ });
-    // `aria-selected` is downshift's and tracks the highlight — the option
+    // `aria-selected` is downshift's and tracks the highlight - the option
     // Enter would take. Which one is *held* is a different fact.
     expect(germany).toHaveAttribute('aria-current', 'true');
     expect(within(germany).getByText('✓')).toBeInTheDocument();
@@ -231,7 +231,7 @@ describe('CountrySelect', () => {
     expect(await screen.findByText('China ausgewählt')).toBeInTheDocument();
   });
 
-  it('carries the field wiring — required, description and server error', () => {
+  it('carries the field wiring - required, description and server error', () => {
     setup({
       value: 'DE',
       required: true,
@@ -262,7 +262,7 @@ describe('CountrySelect', () => {
 
   it('turns off browser autofill, which would otherwise cover the list it is filtering', () => {
     // A native autofill dropdown paints over the listbox and steals the arrow
-    // keys — the one browser behaviour a combobox cannot coexist with.
+    // keys - the one browser behaviour a combobox cannot coexist with.
     setup();
     expect(input()).toHaveAttribute('autocomplete', 'off');
   });

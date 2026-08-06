@@ -10,15 +10,15 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  *
  * The drawing is `aria-hidden`, so the composed readout is the component's
  * **entire** accessible content. It once assembled that readout from English
- * literals, and the German landing page announced this element — the signature
- * one — wholly in English inside a `lang="de"` document. Nothing caught it: axe
+ * literals, and the German landing page announced this element - the signature
+ * one - wholly in English inside a `lang="de"` document. Nothing caught it: axe
  * is indifferent to which language a well-formed string is in, and so is every
  * screenshot and the contrast gate. Hence the rule the whole library now
  * follows: every perceivable string is a required prop with no default.
  *
  * ## Animation is off unless asked for
  *
- * A component that animates on mount animates *everywhere* it is placed —
+ * A component that animates on mount animates *everywhere* it is placed -
  * including four at a time in one dashboard panel. So `animate` defaults to
  * false and the page opts in; only the landing hero does. It used to be
  * keyframes in the consuming app keyed off `data-part` attributes, which stopped
@@ -53,8 +53,8 @@ type Story = StoryObj<typeof meta>;
 export const InSpec: Story = {};
 
 /**
- * Out of spec is a **position** first — the tick sits outside the shaded range
- * — with the colour as a second encoding and the words "above upper limit" as
+ * Out of spec is a **position** first - the tick sits outside the shaded range
+ * - with the colour as a second encoding and the words "above upper limit" as
  * a third. It survives greyscale, colour blindness and a printout.
  */
 export const AboveUpperLimit: Story = { args: { value: 37.8 } };
@@ -69,7 +69,7 @@ export const NoTarget: Story = {
 /**
  * The reading sits far outside the window. The plotted domain defaults to the
  * spec window padded by half its width, so an out-of-spec value stays visible
- * rather than being clipped to the edge — a tick pinned to the frame reads as
+ * rather than being clipped to the edge - a tick pinned to the frame reads as
  * "at the limit", which would be a lie.
  */
 export const WellOutOfSpec: Story = {
@@ -79,7 +79,7 @@ export const WellOutOfSpec: Story = {
 /**
  * The same instrument at presentation size: the label becomes an eyebrow, the
  * reading is set at readout scale, and the domain is labelled at its ends so
- * the axis is readable rather than implied. One component, two sizes — the
+ * the axis is readable rather than implied. One component, two sizes - the
  * signature element must not exist twice, or the two copies drift.
  */
 export const Hero: Story = {

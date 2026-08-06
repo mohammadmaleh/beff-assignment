@@ -17,7 +17,7 @@ type Status = 'idle' | 'submitting' | 'sent' | 'failed';
  * The one interactive element on an otherwise static page.
  *
  * Validation messages come from the server's RFC 9457 Problem Details, keyed by
- * a stable code rather than parsed out of English prose — so the German locale
+ * a stable code rather than parsed out of English prose - so the German locale
  * shows German errors without the backend knowing which language is on screen.
  */
 export function WaitlistForm({ locale }: { locale: Locale }) {

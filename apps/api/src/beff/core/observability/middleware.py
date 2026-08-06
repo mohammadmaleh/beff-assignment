@@ -45,7 +45,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
 
         # One line per request, at the end, with the outcome. Logging on the way
         # in as well would double the volume to say something the completion
-        # line already says — except for requests that never complete, and those
+        # line already says - except for requests that never complete, and those
         # are visible as a missing line against an id the client still has.
         log.info(
             "http.request",

@@ -1,4 +1,4 @@
-"""Auth module — registration, login, refresh-token rotation and `GET /me`.
+"""Auth module - registration, login, refresh-token rotation and `GET /me`.
 
 FastAPI owns authentication end to end (ADR-0003): a short-lived JWT access
 token held in browser memory, plus an httpOnly refresh cookie that is rotated on

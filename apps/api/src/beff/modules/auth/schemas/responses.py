@@ -1,7 +1,7 @@
 """Outbound payloads.
 
 The refresh token is conspicuously absent from every one of these: it travels
-only as an httpOnly cookie, so that no JavaScript — injected or otherwise — can
+only as an httpOnly cookie, so that no JavaScript - injected or otherwise - can
 read it (ADR-0003).
 """
 
@@ -23,7 +23,7 @@ __all__ = [
 class UserResponse(BaseModel):
     """A user as the owner of that account sees themselves.
 
-    No `password_hash`, and no `deleted_at` — the first is a credential and the
+    No `password_hash`, and no `deleted_at` - the first is a credential and the
     second is internal bookkeeping.
     """
 
@@ -56,7 +56,7 @@ class EmailVerificationResponse(BaseModel):
     """The outcome of redeeming a link.
 
     Carries the user, so the profile screen can update without a second round
-    trip — and so a caller who was already signed in when they followed the link
+    trip - and so a caller who was already signed in when they followed the link
     sees the new state immediately rather than after the next refresh.
     """
 
@@ -70,11 +70,11 @@ class ResendVerificationResponse(BaseModel):
     """Acknowledgement that a message is queued.
 
     Not "sent". The outbox is drained by a worker, so the API cannot honestly
-    claim delivery at the moment it answers — and a client that shows "sent"
+    claim delivery at the moment it answers - and a client that shows "sent"
     against a queue that later dead-letters has told the user something false.
     """
 
     model_config = ConfigDict(from_attributes=True)
 
     queued: bool = Field(description="Always `true`; the message is on the queue, not yet sent.")
-    recipient: str = Field(description="The address it will go to — the caller's own.")
+    recipient: str = Field(description="The address it will go to - the caller's own.")

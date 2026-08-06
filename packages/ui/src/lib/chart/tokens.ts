@@ -13,7 +13,7 @@ import { DARK_SCHEME_QUERY } from '../media/index';
  * It would also be a second source of truth: the page is painted from
  * `tokens.css`, and a chart painted from `tokens.hex.json` agrees with it only
  * as long as nobody edits one without rebuilding the other. Worse, the JSON is
- * keyed by theme, so the chart would have to *decide* which theme it is in —
+ * keyed by theme, so the chart would have to *decide* which theme it is in -
  * duplicating logic that CSS already performs correctly, including the
  * `prefers-color-scheme` path where no `data-theme` attribute exists at all.
  *
@@ -99,7 +99,7 @@ export function readChartTokens(element: Element): ChartTokens {
     // `.trim()` is not cosmetic: `getPropertyValue` returns the declaration's
     // text, and a token written as `--x: #fff;` comes back with a leading
     // space. ECharts passes the string to the canvas verbatim, and canvas
-    // silently ignores a colour it cannot parse — producing a chart with
+    // silently ignores a colour it cannot parse - producing a chart with
     // invisible marks and no error anywhere.
     resolved[name] = computed.getPropertyValue(`--${name}`).trim() || FALLBACK[name];
   }

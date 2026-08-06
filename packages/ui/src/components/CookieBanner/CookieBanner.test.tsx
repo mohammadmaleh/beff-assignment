@@ -6,7 +6,7 @@ import { CookieBanner, type CookieConsent } from './CookieBanner';
 
 /**
  * The key and the policy version are the *caller's*, and the tests supply their
- * own rather than importing the app's — which is the point of the component
+ * own rather than importing the app's - which is the point of the component
  * taking them. A consent record is evidence, and evidence that says "the
  * version the code happened to hold" proves nothing.
  */
@@ -17,7 +17,7 @@ const POLICY_VERSION = '2026-07-31';
  * Copy fixtures, in both shipped locales.
  *
  * Written out here rather than imported from an app dictionary. This package
- * has no dictionary and must not grow one — the whole reason every string is a
+ * has no dictionary and must not grow one - the whole reason every string is a
  * required prop is that a component library cannot know the page's language,
  * and a test that reached for the app's would quietly re-couple them.
  */
@@ -100,7 +100,7 @@ describe('CookieBanner', () => {
     });
 
     it('asks again when the policy text has changed', async () => {
-      // Consent to an old text is not consent to a new one — the user agreed to
+      // Consent to an old text is not consent to a new one - the user agreed to
       // something that no longer describes what happens.
       store({ analytics: true, policyVersion: '2026-01-01' });
       renderBanner();
@@ -128,7 +128,7 @@ describe('CookieBanner', () => {
   });
 
   describe('the choice itself', () => {
-    it('pre-checks nothing — consent has to be a positive act', async () => {
+    it('pre-checks nothing - consent has to be a positive act', async () => {
       // Art. 4(11) GDPR, and Planet49 (C-673/17). A pre-ticked box is the single
       // most common consent failure on German sites.
       renderBanner();
@@ -243,7 +243,7 @@ describe('CookieBanner', () => {
     });
 
     it('tells the caller, once, so analytics can actually be loaded', async () => {
-      // The decision is useless to the app if it only lands in localStorage —
+      // The decision is useless to the app if it only lands in localStorage -
       // something has to switch the tag on. Fired on a fresh decision only.
       const onDecide = vi.fn();
       renderBanner({ onDecide });

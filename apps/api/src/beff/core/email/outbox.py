@@ -75,7 +75,7 @@ class PostgresEmailOutbox:
         delivery.started_at = now
         # Counted on the way in, as with exports. A worker SIGKILLed between
         # claiming and failing never writes "that attempt failed", so this is
-        # the only count that survives a crash — and it is what stops a message
+        # the only count that survives a crash - and it is what stops a message
         # being retried forever.
         delivery.attempts += 1
         await self._session.flush()
@@ -110,7 +110,7 @@ class PostgresEmailOutbox:
 class InMemoryEmailOutbox:
     """An `EmailOutbox` backed by a list.
 
-    Honest about what the INSERT would have filled in — `id`, `queued_at`,
+    Honest about what the INSERT would have filled in - `id`, `queued_at`,
     `attempts`, `max_attempts`, `status`. A fake that skips a `server_default`
     produces a `TypeError` no unit test can see, only the HTTP tests. That has
     cost this project time twice.
@@ -124,7 +124,7 @@ class InMemoryEmailOutbox:
         delivery.id = self._next_id
         self._next_id += 1
         # `getattr` rather than `is None`: the mapped types say these are never
-        # `None`, so mypy calls the direct comparison unreachable — and it is
+        # `None`, so mypy calls the direct comparison unreachable - and it is
         # right about the type and wrong about an unflushed instance, which
         # carries `None` until the database fills the default in.
         if getattr(delivery, "status", None) is None:

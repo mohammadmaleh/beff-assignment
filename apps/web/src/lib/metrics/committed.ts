@@ -3,7 +3,7 @@ import { PROCESS_STEPS, type ProcessStep } from './steps';
 /**
  * Value committed to a cell by the time it is lost, in euros.
  *
- * **These mirror `COMMITTED_VALUE` in `apps/api/src/beff/seed/seed.py`** — the
+ * **These mirror `COMMITTED_VALUE` in `apps/api/src/beff/seed/seed.py`** - the
  * same figures the dashboard costs its scrap against. The landing page argues
  * from this curve, so if the two ever disagree the marketing surface is making a
  * case the product contradicts on the next screen. `committed.test.ts` reads the
@@ -35,7 +35,7 @@ const FINISHED = COMMITTED_VALUE_EUR.eol_test;
  *
  * The landing figure plots shares rather than euros deliberately: a share needs
  * no cell size, chemistry or year to be meaningful, and it states the comparison
- * the page is making more directly — 90 per cent against 21 per cent is the
+ * the page is making more directly - 90 per cent against 21 per cent is the
  * sentence, not a conversion of it.
  */
 export const COMMITTED_VALUE_PCT: Readonly<Record<ProcessStep, number>> = Object.fromEntries(

@@ -2,7 +2,7 @@
 
 The aggregates are computed in SQL rather than by loading batches into Python.
 A pilot line produces a few hundred batches a month, so either would work today
-— but the shape that stops working first is the one that pulls rows across the
+- but the shape that stops working first is the one that pulls rows across the
 wire to sum them, and moving it later means moving it under load.
 """
 
@@ -54,7 +54,7 @@ class BatchPoint:
     variation the chart exists to show.
 
     `cells_scrapped` and `committed_value_eur` come from the same round trip
-    rather than a second query per batch — sixty batches would otherwise be
+    rather than a second query per batch - sixty batches would otherwise be
     sixty-one queries.
     """
 
@@ -72,7 +72,7 @@ class BatchPoint:
 class MeasurementPoint:
     """One reading, carrying the time it was taken and its window.
 
-    The reading's own row has no timestamp that means anything to a chart — a
+    The reading's own row has no timestamp that means anything to a chart - a
     `created_at` records when the row was written, not when the electrode was
     measured. The batch's `started_at` is the real x-coordinate, so it is joined
     on here rather than left for the service to look up per row.

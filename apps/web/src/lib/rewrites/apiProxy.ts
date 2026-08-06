@@ -1,8 +1,8 @@
 /**
  * The production API proxy.
  *
- * In production the web app and the API are on different hosts — Vercel and
- * Northflank — and both sit under public suffixes, so they share no registrable
+ * In production the web app and the API are on different hosts - Vercel and
+ * Northflank - and both sit under public suffixes, so they share no registrable
  * domain and are **cross-site** to a browser. The refresh cookie is
  * `SameSite=Lax` on purpose (see `auth/router/cookies.py`), which means on a
  * cross-site split the browser would neither store nor send it: login would
@@ -25,7 +25,7 @@ export interface Rewrite {
 
 /** Environment this depends on, passed in so it can be tested without mutating `process.env`. */
 export interface RewriteEnv {
-  /** Absolute origin of the deployed API. Server-side only — never `NEXT_PUBLIC_`. */
+  /** Absolute origin of the deployed API. Server-side only - never `NEXT_PUBLIC_`. */
   API_ORIGIN?: string | undefined;
   /** Empty string means "use the proxy"; an absolute URL means "call the API directly". */
   NEXT_PUBLIC_API_URL?: string | undefined;
@@ -38,7 +38,7 @@ export const API_PROXY_SOURCE = `${API_PREFIX}/:path*`;
  *
  * Throws rather than returning something plausible. Next calls this once at
  * build time and freezes the result into `routes-manifest.json`, so a bad value
- * is not a runtime error anyone will see — it is a deployed app where every API
+ * is not a runtime error anyone will see - it is a deployed app where every API
  * call 404s against a URL that looks almost right. The build is the only cheap
  * place to notice.
  */
@@ -48,7 +48,7 @@ export function apiProxyRewrites(env: RewriteEnv): Rewrite[] {
   if (!origin) {
     // Unset and empty are DIFFERENT here, and the difference is load-bearing.
     // `client.ts` reads `NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'`, and
-    // `??` only fires on null/undefined — so an unset variable yields an
+    // `??` only fires on null/undefined - so an unset variable yields an
     // absolute localhost URL (call the API directly, no proxy), while an
     // explicitly empty one yields relative URLs (proxy required). Treating both
     // as falsy makes `pnpm build` throw on a fresh clone with no .env.

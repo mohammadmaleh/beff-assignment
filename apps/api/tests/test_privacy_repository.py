@@ -18,7 +18,7 @@ does not:
   mechanism by which erasure frees an email address for re-registration. A fake
   dict keyed by email has the opposite behaviour and never complains.
 - `claim_next` is `FOR UPDATE SKIP LOCKED`. A fake pops from a list, which is
-  what the query is *supposed* to do — the failure mode being guarded against is
+  what the query is *supposed* to do - the failure mode being guarded against is
   a second worker blocking on the first one's row, and only two real sessions
   against one real table can show that.
 """
@@ -74,7 +74,7 @@ async def test_latest_per_purpose_returns_the_newest_record_for_each_purpose(
 
     Withdrawal is a new row, so "the current state of consent" is *only* ever
     the newest row per purpose. `DISTINCT ON` keeps the first row of each group
-    as ordered — get the direction wrong and every answer is the original grant,
+    as ordered - get the direction wrong and every answer is the original grant,
     which is to say every withdrawal is silently ignored.
     """
     user = await make_user(db_session)
@@ -125,7 +125,7 @@ async def test_falsifying_a_record_is_still_refused_while_it_is_pseudonymised(
 ) -> None:
     """Migration 0005 narrowed the trigger; this is where the narrowing is checked.
 
-    Erasure needs one shape of `UPDATE` — `ip_hash` and `country_code` to NULL —
+    Erasure needs one shape of `UPDATE` - `ip_hash` and `country_code` to NULL -
     and the loophole to avoid is a statement that smuggles a changed `granted`
     through alongside them. `test_migrations.py` covers the plain case of
     flipping the boolean on its own; this covers the case the exemption
@@ -157,7 +157,7 @@ async def test_falsifying_a_record_is_still_refused_while_it_is_pseudonymised(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Export jobs — the queue
+# Export jobs - the queue
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -173,7 +173,7 @@ async def test_server_defaults_reach_a_freshly_added_job(db_session: AsyncSessio
 
     `status`, `attempts` and `max_attempts` are all `server_default`. A caller
     that reads them straight back is reading the database's answer, not
-    Python's — and a fake that forgets one of them has cost this repo time
+    Python's - and a fake that forgets one of them has cost this repo time
     twice.
     """
     user = await make_user(db_session)
@@ -240,7 +240,7 @@ async def test_claim_next_takes_the_oldest_pending_job_and_counts_the_attempt(
 
     A worker SIGKILLed between claiming and failing never gets to write "that
     attempt failed", so counting on claim is the only count that survives a
-    crash — and it is what makes the dead-letter ceiling mean anything.
+    crash - and it is what makes the dead-letter ceiling mean anything.
     """
     user = await make_user(db_session)
     repository = PostgresExportRepository(db_session)
@@ -344,7 +344,7 @@ async def test_soft_delete_frees_the_email_for_re_registration(db_session: Async
 
 
 async def test_a_live_email_address_is_still_unique(db_session: AsyncSession) -> None:
-    """The other half of the partial index — freeing it on erasure is only
+    """The other half of the partial index - freeing it on erasure is only
     correct if it is held while the account lives."""
     await make_user(db_session, email="taken@beff.example")
 
@@ -413,7 +413,7 @@ async def test_export_jobs_and_deliveries_and_tokens_are_hard_deleted(
     assert (await repository.delete_email_deliveries(user.id)) == 1
     assert (await repository.delete_verification_tokens(user.id)) == 1
 
-    # Idempotent — an at-least-once erasure job may run this twice.
+    # Idempotent - an at-least-once erasure job may run this twice.
     assert (await repository.delete_export_jobs(user.id)) == 0
     assert (await repository.delete_email_deliveries(user.id)) == 0
     assert (await repository.delete_verification_tokens(user.id)) == 0
@@ -425,7 +425,7 @@ async def test_pseudonymising_consent_keeps_the_proof_and_drops_the_person(
     """Consent records survive erasure; the link to a natural person must not.
 
     They are retained on a different legal basis from everything else erasure
-    touches — Art. 6(1)(c) and the accountability obligation in Art. 7(1) — so
+    touches - Art. 6(1)(c) and the accountability obligation in Art. 7(1) - so
     deleting them would destroy the proof that the processing which just ended
     was lawful. What has to go is `ip_hash` and `country_code`.
     """
@@ -464,7 +464,7 @@ async def test_erasure_end_to_end_against_the_real_schema(db_session: AsyncSessi
     """The whole Art. 17 flow through the Postgres repository.
 
     The unit test for `ErasureService` proves the *order* is right. This proves
-    the order can actually be executed — which is a different claim, and the one
+    the order can actually be executed - which is a different claim, and the one
     that was false.
     """
     user = await make_user(db_session, email="erasure@beff.example")

@@ -18,8 +18,8 @@ import { DEMO_LINE } from './demoLine';
  * The design brief ruled out a product screenshot, and was right to: it was
  * written before the product existed, and a mocked-up dashboard is both
  * dishonest and obvious to a reviewer who works on a line. There is a product
- * now, so this panel renders **the dashboard's own components** — `Metric`,
- * `ScrapChart`, `SpecBand` — on the seeded demo line's own figures. Not a
+ * now, so this panel renders **the dashboard's own components** - `Metric`,
+ * `ScrapChart`, `SpecBand` - on the seeded demo line's own figures. Not a
  * picture of the product and not a rebuild of it: the same code, server-rendered.
  *
  * It cannot go stale, it is translated because the components are, its chart
@@ -28,7 +28,7 @@ import { DEMO_LINE } from './demoLine';
  * ### The inversion
  *
  * `data-theme="dark"` scopes the dark palette to this section, so the panel
- * renders in the opposite pole from the page around it — the dry room at night,
+ * renders in the opposite pole from the page around it - the dry room at night,
  * and the one place the page raises its voice. It is not new colour: every pair
  * inside is a pair the contrast gate already asserts for the dark theme, which is
  * why the token build unscopes that selector from `:root` rather than growing a
@@ -52,8 +52,8 @@ export function ProductPanel({ locale }: { locale: Locale }) {
       <div className="mx-auto flex max-w-6xl flex-col gap-12 px-6 py-20 lg:py-28">
         {/*
          * A `div`, not a `header`. Inside a `section` the element carries no
-         * semantics — `header` only maps to the `banner` landmark at the top
-         * level — so it bought nothing, and the screen-reader gate caught it as a
+         * semantics - `header` only maps to the `banner` landmark at the top
+         * level - so it bought nothing, and the screen-reader gate caught it as a
          * second unnamed banner in the landmark rotor next to the site header.
          */}
         <div className="flex flex-col gap-4">

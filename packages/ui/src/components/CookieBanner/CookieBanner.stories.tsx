@@ -5,7 +5,7 @@ import type { Decorator, Meta, StoryObj } from '@storybook/react-vite';
 
 const EN: CookieBannerCopy = {
   title: 'Cookies',
-  body: 'We use cookies that are strictly necessary to run this site. We would also like to set analytics cookies to understand which pages are useful — only with your consent, and you can withdraw it at any time.',
+  body: 'We use cookies that are strictly necessary to run this site. We would also like to set analytics cookies to understand which pages are useful - only with your consent, and you can withdraw it at any time.',
   necessaryLabel: 'Strictly necessary',
   necessaryNote: 'Required to log in and keep you logged in. These cannot be switched off.',
   analyticsLabel: 'Analytics',
@@ -44,7 +44,7 @@ const askFresh: Decorator = (Story) => {
  * - **Nothing is pre-checked.** Consent must be a positive act (Art. 4(11)
  *   GDPR; Planet49, C-673/17). A pre-ticked box is not consent, and it is the
  *   single most common failure on German sites.
- * - **Reject is as prominent as Accept** — same variant, same size, same
+ * - **Reject is as prominent as Accept** - same variant, same size, same
  *   classes. A greyed-out "reject" makes the choice unfree, which makes the
  *   consent invalid.
  * - **Strictly necessary cookies are disclosed, not offered**, because they are
@@ -58,7 +58,7 @@ const askFresh: Decorator = (Story) => {
  *
  * None of the above is about battery cells. It is EU consent plumbing, and the
  * three things that *were* project-specific are now props: the copy, the policy
- * version, and the link to the full policy — handed over as a `ReactNode` so
+ * version, and the link to the full policy - handed over as a `ReactNode` so
  * this package needs no router and stays framework-agnostic.
  *
  * ## Storybook note
@@ -100,14 +100,14 @@ export const Default: Story = {};
 
 /**
  * German is a shipped locale for this product, and the strings run roughly 30%
- * longer — which is what decides whether the four controls stay on one line.
+ * longer - which is what decides whether the four controls stay on one line.
  * Every string is a required prop with no default, so there is no path by which
  * an English word reaches this panel.
  */
 export const German: Story = { args: { copy: DE } };
 
 /**
- * The decision handed back to the caller, which is what makes it actionable —
+ * The decision handed back to the caller, which is what makes it actionable -
  * a consent that only reaches `localStorage` never switches an analytics tag
  * on. Open the Actions panel and press any of the three buttons.
  */

@@ -9,7 +9,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
  * inline ternaries are where "empty" quietly stops existing.
  *
  * Note that `empty` is separate from `status`. A successful request that
- * returned nothing is not an error and must not be dressed as one — the fix is
+ * returned nothing is not an error and must not be dressed as one - the fix is
  * usually seeding data, and a red panel sends the reader looking for an outage.
  */
 const PREFIXES = { info: 'Note', success: 'Success', warning: 'Warning', danger: 'Error' };
@@ -40,7 +40,7 @@ export const Ready: Story = {};
 /**
  * Three bars rather than a spinner: the shape hints at what is arriving, which
  * a spinner cannot. The bars are `aria-hidden` and the announcement is a
- * `role="status"` live region carrying `loadingLabel` — a pulsing rectangle
+ * `role="status"` live region carrying `loadingLabel` - a pulsing rectangle
  * says nothing to a screen reader.
  *
  * The pulse is `motion-safe:`, so a reader who asked for less motion gets a

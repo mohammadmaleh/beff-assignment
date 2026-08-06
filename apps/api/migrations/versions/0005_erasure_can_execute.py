@@ -14,14 +14,14 @@ is the *first* statement erasure issues, so the request died before it touched
 anything else and rolled back whole.
 
 The value is right and the constraint was wrong: an erasure is not a variant of
-`logout` — nobody signed out — and keeping them distinct is what makes the
+`logout` - nobody signed out - and keeping them distinct is what makes the
 revocation trail answer "why" for a data subject request.
 
 ## 2. `consent_records`, the append-only trigger
 
 The table has carried a `BEFORE UPDATE` trigger since 0001 that raises on every
-update. That is the right default — Art. 7(1) puts the burden of proving consent
-on the controller, and an `UPDATE` that flips `granted` destroys the evidence —
+update. That is the right default - Art. 7(1) puts the burden of proving consent
+on the controller, and an `UPDATE` that flips `granted` destroys the evidence -
 but it was one rule too blunt for the table to satisfy both of its obligations at
 once.
 
@@ -31,7 +31,7 @@ just ended was lawful) and removes the ability to link them to a natural person:
 the IP hash and the country code. That is an `UPDATE`, so the trigger refused it.
 
 The fix is to say what is actually meant rather than to weaken the rule: exactly
-one shape of update is permitted — `ip_hash` and `country_code` going to NULL
+one shape of update is permitted - `ip_hash` and `country_code` going to NULL
 with every other column unchanged. Changing `granted`, `purpose`,
 `policy_version`, `recorded_at` or `user_id` still raises, including in the same
 statement that nulls the two identifiers.
@@ -51,8 +51,8 @@ depends_on: None = None
 
 
 # `IS NOT DISTINCT FROM` rather than `=` throughout: `recorded_at` and
-# `policy_version` are NOT NULL, but comparing with `=` would evaluate to NULL —
-# not false — for any nullable column, and a NULL condition takes the else
+# `policy_version` are NOT NULL, but comparing with `=` would evaluate to NULL -
+# not false - for any nullable column, and a NULL condition takes the else
 # branch. Writing the comparison the way that survives a future nullable column
 # costs nothing today.
 _ALLOW_PSEUDONYMISATION = """
@@ -104,7 +104,7 @@ def upgrade() -> None:
         "OR revoked_reason IN ('logout', 'reuse_detected', 'account_erased'))"
     )
 
-    # `CREATE OR REPLACE` keeps the trigger itself in place — it references the
+    # `CREATE OR REPLACE` keeps the trigger itself in place - it references the
     # function by name, so replacing the body is enough and there is no window
     # in which the table is unguarded.
     op.execute(_ALLOW_PSEUDONYMISATION)

@@ -5,7 +5,7 @@ import { formatters } from './format';
 /**
  * The whole reason this module exists is the German number rules. These tests
  * are written against the *rules*, not against the exact glyphs Intl happens to
- * emit, except where the glyph is the point — the non-breaking space before a
+ * emit, except where the glyph is the point - the non-breaking space before a
  * German percent sign is the point.
  */
 
@@ -41,7 +41,7 @@ describe('percent', () => {
 describe('euro', () => {
   it('drops the cents', () => {
     // A scrap cost of "4 213,67 €" implies the line knows what it lost to the
-    // cent. It does not — the figure is a unit cost times a count.
+    // cent. It does not - the figure is a unit cost times a count.
     expect(formatters('en').euro(4213.67)).not.toContain('.67');
   });
 

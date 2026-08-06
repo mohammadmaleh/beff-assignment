@@ -22,7 +22,7 @@ def build_email_sender(settings: Settings) -> EmailSender:
 
     Falling back rather than failing is the deliberate half. An unconfigured
     deployment still boots, still registers users, and still queues their
-    confirmations — and the warning below is what stops that being silent. The
+    confirmations - and the warning below is what stops that being silent. The
     alternative, refusing to start, takes down everything else the API does
     because one feature is not wired yet.
     """

@@ -40,7 +40,7 @@ export interface ScrapTooltipCopy {
  *
  * The rate is what this chart plots; the committed value is what the chart
  * below it plots. Carrying both in each tooltip is what lets a reader see the
- * disagreement between them — coating leads on rate, formation on cost —
+ * disagreement between them - coating leads on rate, formation on cost -
  * without switching figures.
  */
 export function scrapTooltip(
@@ -62,22 +62,22 @@ export function scrapTooltip(
  * ### Why the table is the real thing
  *
  * The bars are `aria-hidden`. The `<table>` beside them is not an "alternative"
- * bolted on for compliance — it is the authoritative rendering, and the chart
+ * bolted on for compliance - it is the authoritative rendering, and the chart
  * is a fast visual index into it. That inversion is deliberate: a chart built
  * accessible-first cannot drift out of sync with its own description, because
  * there is only one source of numbers.
  *
  * This component set that rule and was then the last one still drawing itself.
  * It carried its own `<details>` disclosure, its own table markup, its own
- * `Intl.NumberFormat` instances — which is exactly how it came to render `7,8%`
- * in German, where the space before the sign is mandatory and non-breaking —
+ * `Intl.NumberFormat` instances - which is exactly how it came to render `7,8%`
+ * in German, where the space before the sign is mandatory and non-breaking -
  * and, longest of all, its own bars: a `<ul>` of nested spans sized by a
  * percentage width against the largest value.
  *
  * Those bars were not wrong, and they cost nothing to render. They were simply
  * the only figure in the product not drawn by the chart layer, which meant the
  * axis style, the label placement and the tooltip beside them were decided here
- * instead of in `@beff/ui/chart` — five charts, four of them agreeing. It is an
+ * instead of in `@beff/ui/chart` - five charts, four of them agreeing. It is an
  * ECharts bar series now, and the only thing that reads differently is that the
  * value axis has gridlines it previously implied.
  *
@@ -85,7 +85,7 @@ export function scrapTooltip(
  *
  * Every bar is one neutral. Colouring by severity would mean encoding a
  * quantity in hue, which fails for roughly one man in twelve, and `success` /
- * `warning` / `danger` are reserved for *in spec* versus *out of spec* — using
+ * `warning` / `danger` are reserved for *in spec* versus *out of spec* - using
  * them for "more scrap" would make the palette mean two different things in one
  * screen. Magnitude is carried by bar length and by the number printed at the
  * end of every bar, which is legible in greyscale and to a screen reader.
@@ -94,7 +94,7 @@ export function scrapTooltip(
  *
  * Process order, never sorted by size, because a cell lost at formation has
  * absorbed every upstream cost and the position of a bar carries economic
- * meaning that re-sorting would destroy. The table *offers* sorting — that is
+ * meaning that re-sorting would destroy. The table *offers* sorting - that is
  * the reader choosing to ask a different question, which is not the same thing
  * as the component answering the first one wrongly.
  */
@@ -154,8 +154,8 @@ export function ScrapChart({
     const base = baseOption({ tokens, reducedMotion });
     // The bars are handed over reversed, because a category axis counts up from
     // the bottom and process order has to read top-to-bottom: mixing first,
-    // end-of-line test last. Everything indexed against the drawing — the
-    // tooltip included — has to use the same reversed array.
+    // end-of-line test last. Everything indexed against the drawing - the
+    // tooltip included - has to use the same reversed array.
     const drawn = [...ordered].reverse();
 
     return {
@@ -185,7 +185,7 @@ export function ScrapChart({
             // One neutral for every bar. Colouring by severity would encode a
             // quantity in hue, which fails for roughly one man in twelve, and
             // `warning`/`danger` are reserved here for in-spec versus
-            // out-of-spec — using them for "more scrap" would make the palette
+            // out-of-spec - using them for "more scrap" would make the palette
             // mean two different things on one screen.
             color: tokens['color-chart-series-2'],
             // Square against the baseline: a bar rounded at the axis end reads

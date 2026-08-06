@@ -5,7 +5,7 @@ import type { Decorator, Meta, StoryObj } from '@storybook/react-vite';
 /*
  * Named rather than inline. An inline decorator makes the inferred type of
  * `meta` reference storybook's internal `csf` module, which TypeScript cannot
- * name in the declaration it emits — TS2742, reported against the meta rather
+ * name in the declaration it emits - TS2742, reported against the meta rather
  * than against the decorator that caused it.
  */
 const inList: Decorator = (Story) => (
@@ -16,7 +16,7 @@ const inList: Decorator = (Story) => (
 
 /**
  * A figure that is a **fact about a window** rather than a measurement of the
- * process — the third of this library's three numeric primitives, and the one
+ * process - the third of this library's three numeric primitives, and the one
  * to reach for when neither of the other two is honest.
  *
  * | Component  | The reading it is for                | Example                        |
@@ -29,7 +29,7 @@ const inList: Decorator = (Story) => (
  * much the line ran has no specification window, and banding it would look
  * consistent with everything around it and be a lie about what the number is.
  *
- * Each `Reading` must sit inside a `ReadingList` — it renders a `<dt>`/`<dd>`
+ * Each `Reading` must sit inside a `ReadingList` - it renders a `<dt>`/`<dd>`
  * pair, and that pairing is the only thing telling a screen reader which figure
  * a label belongs to.
  */
@@ -38,7 +38,7 @@ const meta = {
   component: Reading,
   /*
    * `note` is deliberately not a meta arg. Storybook merges meta args into
-   * every story, and there is no way to *unset* one — `note: undefined` is the
+   * every story, and there is no way to *unset* one - `note: undefined` is the
    * only spelling available, which `exactOptionalPropertyTypes` correctly
    * rejects. So the story that documents the no-note case would be untypeable.
    * Each story that wants a note supplies its own.
@@ -56,7 +56,7 @@ export const Default: Story = { args: { note: 'Across the selected window' } };
 /**
  * The note carries the sample size, and it is not optional detail. A benchmark
  * rendered without its *n* reads as a measurement of something; with it, it
- * reads as what it is — a reference against comparable lines.
+ * reads as what it is - a reference against comparable lines.
  */
 export const Benchmark: Story = {
   args: {
@@ -67,7 +67,7 @@ export const Benchmark: Story = {
 };
 
 /**
- * No note. Nothing renders in its place — an empty line under a figure reads as
+ * No note. Nothing renders in its place - an empty line under a figure reads as
  * a value that failed to load.
  */
 export const WithoutNote: Story = {
@@ -80,7 +80,7 @@ export const WithoutNote: Story = {
  * whole job is to be trusted.
  */
 export const NothingToShow: Story = {
-  args: { label: 'Worst batch', value: '—', note: 'No batches in this window' },
+  args: { label: 'Worst batch', value: '-', note: 'No batches in this window' },
 };
 
 /**
@@ -96,7 +96,7 @@ export const German: Story = {
 };
 
 /**
- * How four of them sit together. `ReadingList` supplies no columns of its own —
+ * How four of them sit together. `ReadingList` supplies no columns of its own -
  * the grid below belongs to the page, because how many fit depends on how many
  * there are.
  */

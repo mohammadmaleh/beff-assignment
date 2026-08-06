@@ -6,7 +6,7 @@
  * from the API's own OpenAPI document, and `@beff/api-client`'s drift check
  * fails the build if the two disagree (ENG-33).
  *
- * Percentages are 0–100, never 0–1, and the field names say so — the schema uses
+ * Percentages are 0–100, never 0–1, and the field names say so - the schema uses
  * the same convention, so the unit is unambiguous at every call site.
  */
 export type {

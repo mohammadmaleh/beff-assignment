@@ -5,7 +5,7 @@ import { useId, type ReactNode } from 'react';
  *
  * Every key here is a real DOM attribute, because every consumer spreads this
  * object straight onto an `<input>` or a `<select>`. Anything else belongs in
- * {@link FieldMeta} — React passes an unknown prop through to the element and
+ * {@link FieldMeta} - React passes an unknown prop through to the element and
  * warns, on a page no unit test is watching at the time.
  */
 export interface FieldControlProps {
@@ -22,7 +22,7 @@ export interface FieldMeta {
    *
    * A plain input needs nothing but `htmlFor`. A composite control does: an
    * ARIA listbox or grid inside the field is a second named thing, and without
-   * this it either goes unnamed or invents a name of its own — which is how a
+   * this it either goes unnamed or invents a name of its own - which is how a
    * rotor ends up listing "Land" and, next to it, something anonymous.
    */
   labelId: string;
@@ -30,7 +30,7 @@ export interface FieldMeta {
 
 export interface FieldProps {
   label: string;
-  /** Persistent help text. Not a placeholder — placeholders disappear on input. */
+  /** Persistent help text. Not a placeholder - placeholders disappear on input. */
   description?: string;
   /**
    * Server-sourced message. The backend renders RFC 9457 Problem Details with a
@@ -55,7 +55,7 @@ export function Field({ label, description, error, required, children }: FieldPr
   const descriptionId = `${id}-description`;
   const errorId = `${id}-error`;
 
-  // Order matters — a screen reader reads `aria-describedby` in the order given,
+  // Order matters - a screen reader reads `aria-describedby` in the order given,
   // and the error is the more urgent of the two.
   const describedBy = [error ? errorId : null, description ? descriptionId : null]
     .filter(Boolean)
@@ -89,7 +89,7 @@ export function Field({ label, description, error, required, children }: FieldPr
       )}
 
       {/*
-       * Colour is never the only signal — the message carries a glyph and, being
+       * Colour is never the only signal - the message carries a glyph and, being
        * text, is readable to anyone. `role="alert"` announces it when validation
        * comes back from the server without the user having to hunt for it.
        */}

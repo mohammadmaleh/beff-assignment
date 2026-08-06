@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   // Dockerfile's runner stage.
   output: 'standalone',
 
-  // The monorepo root, not apps/web — otherwise standalone tracing misses
+  // The monorepo root, not apps/web - otherwise standalone tracing misses
   // workspace packages.
   outputFileTracingRoot: new URL('../../', import.meta.url).pathname,
 
@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
   // In production the browser talks only to this origin and Next forwards
   // /api/v1/* to the API host, so the SameSite=Lax refresh cookie keeps working
   // across what would otherwise be a cross-site split. Logic and its failure
-  // modes live in `src/lib/rewrites`, which is tested — this is only the wire.
+  // modes live in `src/lib/rewrites`, which is tested - this is only the wire.
   //
   // Evaluated ONCE, at build time, and frozen into routes-manifest.json. It is
   // not re-read per request, so API_ORIGIN must be present in the build
@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
   },
 
   // Security headers. CSP is deliberately absent until the app's real script
-  // and style sources are known (ENG-41) — a wrong CSP silently breaks pages.
+  // and style sources are known (ENG-41) - a wrong CSP silently breaks pages.
   async headers() {
     return [
       {

@@ -1,4 +1,4 @@
-"""`GET /me` — the signed-in user."""
+"""`GET /me` - the signed-in user."""
 
 from __future__ import annotations
 

@@ -3,7 +3,7 @@
  *
  * ## Why this is not left to ECharts
  *
- * ECharts picks its own nice bounds, and picks them well — but only when it is
+ * ECharts picks its own nice bounds, and picks them well - but only when it is
  * allowed to choose both ends. Every chart here needs to *include* something
  * that is not in the data: a specification limit, a cohort percentile, zero.
  * The moment a chart sets `min` or `max` by hand it opts out of the nice-number
@@ -14,7 +14,7 @@
  * That was the first attempt, and it is wrong for a reason worth recording. A
  * pilot line's first-pass yield window is 40–80%, so pinning the axis to it put
  * the shaded band across 73% of the plot and squeezed two months of real
- * variation — 65% to 77% — into a fifth of the height. The chart shouted "in
+ * variation - 65% to 77% - into a fifth of the height. The chart shouted "in
  * spec" and whispered the trend, which is backwards for a chart whose entire
  * job is the trend.
  *
@@ -54,7 +54,7 @@ export interface BoundsOptions {
    * Most gridlines the axis may show.
    *
    * The lever that decides how much dead space is tolerated above a bar chart.
-   * A low ceiling forces a coarse step, and a coarse step rounds further out —
+   * A low ceiling forces a coarse step, and a coarse step rounds further out -
    * which is exactly how a 1 300-cell maximum ends up on a 1 500 axis.
    */
   maxIntervals?: number;
@@ -71,7 +71,7 @@ export interface Bounds {
    *
    * Returning it is not a convenience. Setting `min`/`max` by hand without
    * `interval` leaves ECharts free to keep the step *it* would have chosen and
-   * to append the forced bound as an extra label — which put `1,500` and
+   * to append the forced bound as an extra label - which put `1,500` and
    * `1,600` on top of each other at the top of the throughput axis. The two
    * numbers have to be decided together or they disagree.
    */
@@ -81,7 +81,7 @@ export interface Bounds {
 /**
  * Round bounds that contain every value passed in.
  *
- * Pass the reference lines as well as the data — a limit or a percentile drawn
+ * Pass the reference lines as well as the data - a limit or a percentile drawn
  * outside the axis is not merely clipped, it is invisible, and the chart then
  * silently stops showing what it is measured against.
  */

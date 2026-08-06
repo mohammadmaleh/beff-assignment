@@ -13,7 +13,7 @@ __all__ = ["PostgresOnboardingRepository", "PostgresSetupRepository"]
 
 
 class PostgresOnboardingRepository:
-    """Satisfies `OnboardingRepository` structurally — note the absent base class."""
+    """Satisfies `OnboardingRepository` structurally - note the absent base class."""
 
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
@@ -56,7 +56,7 @@ class PostgresSetupRepository:
     async def first_line_for_user(self, user_id: UUID) -> Line | None:
         """The line the dashboard defaults to.
 
-        Ordered by id so the answer is stable — "the first line they set up",
+        Ordered by id so the answer is stable - "the first line they set up",
         not "whichever row the planner returned first". An unordered LIMIT 1 is
         a bug that only shows up once the table is big enough to be scanned in a
         different order.

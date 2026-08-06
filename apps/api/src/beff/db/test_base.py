@@ -1,6 +1,6 @@
 """Unit tests for the declarative base, mixins and CHECK-constraint helper.
 
-These assert on metadata only — no database is involved, which is the point: a
+These assert on metadata only - no database is involved, which is the point: a
 wrong column type should fail in milliseconds, not after a container starts.
 """
 

@@ -11,7 +11,7 @@ describe('pointAt', () => {
   });
 
   it('reads the index out of an array of params', () => {
-    // `trigger: 'axis'` hands it one per series — for a stacked bar, two.
+    // `trigger: 'axis'` hands it one per series - for a stacked bar, two.
     expect(pointAt([{ dataIndex: 2 }, { dataIndex: 2 }], points)).toBe('c');
   });
 
@@ -63,7 +63,7 @@ describe('seriesTooltip', () => {
   it('returns an empty string instead of calling render on a missing point', () => {
     // The branch this helper exists for. Inlined in each chart it was four
     // copies of the same guard, and forgetting one is invisible until a hover
-    // lands on an index the series does not have — at which point the chart
+    // lands on an index the series does not have - at which point the chart
     // throws inside ECharts' render loop and goes blank.
     let called = false;
     const formatter = seriesTooltip(points, () => {

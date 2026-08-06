@@ -6,7 +6,7 @@ import { cx } from '../../lib/cx/index';
 
 export interface InfoHintProps {
   /**
-   * The trigger's accessible name — required, and with no default.
+   * The trigger's accessible name - required, and with no default.
    *
    * The glyph is `aria-hidden`, so this string is the button's *entire*
    * announced identity. A default here would be an English one, and this
@@ -26,7 +26,7 @@ export interface InfoHintProps {
  *
  * The obvious implementation mounts the panel on open and points
  * `aria-describedby` at it. That reference then **dangles** whenever the hint
- * is closed — which is almost always — and a dangling `aria-describedby` is not
+ * is closed - which is almost always - and a dangling `aria-describedby` is not
  * a weaker description, it is no description at all. The same shape cost this
  * repo a combobox name once already.
  *
@@ -72,7 +72,7 @@ export function InfoHint({ label, children, className }: InfoHintProps) {
    *
    * 1.4.13 requires the hint be dismissible **without moving the pointer or
    * the focus**, and the common case is a mouse user hovering the icon with
-   * focus somewhere else entirely — a `keyDown` on this subtree would never
+   * focus somewhere else entirely - a `keyDown` on this subtree would never
    * fire for them. Bound only while open, so nothing on the page is listening
    * for a key it has no use for.
    */
@@ -94,7 +94,7 @@ export function InfoHint({ label, children, className }: InfoHintProps) {
    * and the reason is a lint rule that is right about the general case.
    *
    * `jsx-a11y/no-static-element-interactions` exists to catch a `div` doing a
-   * button's job. Here the button *is* a button — the wrapper carries hover
+   * button's job. Here the button *is* a button - the wrapper carries hover
    * only so that the panel, which lives inside it, stays reachable with the
    * pointer, which 1.4.13 requires. Suppressing the rule would train the next
    * reader to suppress it somewhere it matters; attaching the listeners to the
@@ -131,7 +131,7 @@ export function InfoHint({ label, children, className }: InfoHintProps) {
         onBlur={dismiss}
         onClick={() => {
           // Unpinning clears the hover state too, so a reader who clicks to
-          // put the hint away actually gets it put away — otherwise the
+          // put the hint away actually gets it put away - otherwise the
           // pointer they clicked with would hold it open.
           if (pinned) dismiss();
           else setPinned(true);

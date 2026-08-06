@@ -34,7 +34,7 @@ describe('TextField', () => {
       expect(first).toMatch(/-error$/);
     });
 
-    it('does not rely on colour alone — the message is text with a glyph', () => {
+    it('does not rely on colour alone - the message is text with a glyph', () => {
       render(<TextField label="Work email" error="Required." />);
       expect(screen.getByRole('alert')).toHaveTextContent('Required.');
     });

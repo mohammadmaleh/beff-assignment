@@ -1,11 +1,11 @@
-"""Privacy — consent, data export and erasure.
+"""Privacy - consent, data export and erasure.
 
 Three GDPR features rather than the two the brief asks for, because erasure
 doubles as the mandated offboarding flow.
 
 The rules that shape this module, each of which has a test:
 
-- **Consent records are append-only.** Never `UPDATE` a boolean — you must be
+- **Consent records are append-only.** Never `UPDATE` a boolean - you must be
   able to prove what was consented to, when, and against which policy version.
 - **Never store a raw IP.** Salted hash plus a country code, never city-level.
 - **Exports exclude password hashes and any third party's data.**

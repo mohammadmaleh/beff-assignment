@@ -35,7 +35,7 @@ export interface DistributionCopy {
   batches: string;
 }
 
-/** `64.0 % to 66.0 %` — both edges formatted, never a bare number with a sign. */
+/** `64.0 % to 66.0 %` - both edges formatted, never a bare number with a sign. */
 export function binRange(bin: Bin, format: Formatters, copy: DistributionCopy): string {
   return copy.range
     .replace('{from}', format.percent(bin.start))
@@ -62,7 +62,7 @@ export function distributionTooltip(
  *
  * `YieldTrendChart` beside it plots the same sixty batches in time order and
  * answers "which way is this going". This one throws time away deliberately and
- * answers "how repeatable is this line" — and the two are different problems
+ * answers "how repeatable is this line" - and the two are different problems
  * with different fixes. A line whose batches cluster tightly two points below
  * target has a *setting* wrong; a line with the same average spread across
  * twenty points has a *control* problem, and no amount of re-centring will fix
@@ -76,7 +76,7 @@ export function distributionTooltip(
  * Both from `histogram`/`binPosition` in the chart layer, and both for the same
  * reason: a distribution is only meaningful against the window it is supposed
  * to sit inside. The specification limits are dashed neutrals drawn *vertically*
- * here — same rule as every other reference in the app, rotated — and the
+ * here - same rule as every other reference in the app, rotated - and the
  * cohort median comes with them, because "am I in spec" and "am I good" are the
  * two questions and this chart can answer both at once.
  */
@@ -105,7 +105,7 @@ export function YieldDistributionChart({
         points.map((point) => point.first_pass_yield_pct),
         // The limits and the cohort median are pulled into the range rather
         // than clipped out of it. A limit outside the axis is not drawn faintly
-        // — it is not drawn at all, and the chart silently stops being a
+        // - it is not drawn at all, and the chart silently stops being a
         // comparison.
         {
           include: [spec.lowerLimit, spec.upperLimit, benchmark.first_pass_yield_p50_pct],
@@ -156,7 +156,7 @@ export function YieldDistributionChart({
      * A reference is drawn only where it lands on the axis.
      *
      * `binPosition` returns null off the ends, and null means the line is
-     * omitted rather than pinned to the edge — the same decision the yield
+     * omitted rather than pinned to the edge - the same decision the yield
      * trend makes about an off-axis limit, for the same reason: a rule drawn at
      * the boundary of a plot reads as "you are at it".
      */

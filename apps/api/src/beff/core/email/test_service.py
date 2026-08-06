@@ -60,7 +60,7 @@ async def test_the_message_sent_is_the_one_that_was_stored() -> None:
     """The row is the record of what a person was sent.
 
     Re-rendering at send time would let a template edited between queueing and
-    sending change what a queued message says — and would make the stored row a
+    sending change what a queued message says - and would make the stored row a
     description of something that never happened.
     """
     outbox = InMemoryEmailOutbox()
@@ -137,7 +137,7 @@ async def test_a_sent_message_is_never_claimed_again() -> None:
     """The idempotency guarantee, stated as a test.
 
     The claim moves the row out of `pending` in the same transaction that counts
-    the attempt, so a replay finds nothing — which is what stops a restarted
+    the attempt, so a replay finds nothing - which is what stops a restarted
     worker re-sending everything it had already delivered.
     """
     outbox = InMemoryEmailOutbox()

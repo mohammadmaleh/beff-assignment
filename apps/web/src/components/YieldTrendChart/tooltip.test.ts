@@ -23,7 +23,7 @@ const copy = { seriesMeasured: 'This line', tooltipCells: '{passed} of {started}
 
 describe('yieldTooltip', () => {
   it('names the batch first, in bold', () => {
-    // The batch code is the thing an engineer takes away from the hover — it is
+    // The batch code is the thing an engineer takes away from the hover - it is
     // what they type into the MES to go and look at the run.
     expect(yieldTooltip(point, formatters('en'), copy)).toMatch(/^<strong>B-2026-041<\/strong>/);
   });

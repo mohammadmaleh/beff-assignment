@@ -1,8 +1,8 @@
 """In-memory onboarding repositories.
 
 These ship in `src/` beside the PostgreSQL implementations because they are part
-of the module's contract — the thing that makes the service testable without a
-database — and because mypy then checks both against the same `Protocol`.
+of the module's contract - the thing that makes the service testable without a
+database - and because mypy then checks both against the same `Protocol`.
 
 They imitate what the INSERT would fill in. A fake that is more permissive than
 production turns green unit tests into false confidence, and that has already

@@ -1,4 +1,4 @@
-"""`POST /logout` — revoke the session family and clear the cookie."""
+"""`POST /logout` - revoke the session family and clear the cookie."""
 
 from __future__ import annotations
 

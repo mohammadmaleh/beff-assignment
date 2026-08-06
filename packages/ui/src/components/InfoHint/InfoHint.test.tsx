@@ -16,7 +16,7 @@ describe('InfoHint', () => {
 
   it('describes the trigger whether or not the hint is on screen', () => {
     // The whole point of moving prose behind an icon is that sighted readers
-    // stop paying for it. A screen reader must not pay either — the text stays
+    // stop paying for it. A screen reader must not pay either - the text stays
     // in the accessibility tree and stays *reachable* from the button, so the
     // reference can never dangle the way a mount-on-open tooltip's does.
     setup();
@@ -58,7 +58,7 @@ describe('InfoHint', () => {
 
   it('dismisses on Escape without moving focus', async () => {
     // Also 1.4.13: content shown on hover or focus must be dismissible while
-    // the pointer or focus stays where it is — an overlay a reader cannot get
+    // the pointer or focus stays where it is - an overlay a reader cannot get
     // out from under is worse than one that never opened.
     setup();
     const trigger = screen.getByRole('button', { name: 'About this section' });

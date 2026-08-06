@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * `pnpm dev` — get the workspace into a runnable state, then run it.
+ * `pnpm dev` - get the workspace into a runnable state, then run it.
  *
  * ## Why this is a script and not just `turbo run dev`
  *
@@ -10,11 +10,11 @@
  * 1. **Dependencies match the manifests.** Adding a package edits
  *    `package.json` and `pnpm-lock.yaml`; a dev server started before the
  *    install has a resolver cache that predates it, and reports the new package
- *    as `Module not found` — which reads as a broken install rather than a
+ *    as `Module not found` - which reads as a broken install rather than a
  *    stale process. That failure cost a session once.
  *
  * 2. **`@beff/tokens` is built.** `globals.css` does `@import '@beff/tokens/css'`,
- *    which resolves to `dist/tokens.css` — a generated file. The `dev` task now
+ *    which resolves to `dist/tokens.css` - a generated file. The `dev` task now
  *    declares `dependsOn: ["^build"]` so turbo produces it, but that is only
  *    true because this script exists to make the point; before it, a fresh
  *    clone's first `pnpm dev` failed on a missing stylesheet.
@@ -25,7 +25,7 @@
  * ## What it deliberately does not do
  *
  * It never kills anything. The port check reports and stops, because the
- * process holding a port is not reliably identifiable from here — `ss` gives no
+ * process holding a port is not reliably identifiable from here - `ss` gives no
  * PID without privileges, and Next retitles its process to `next-server`, so
  * anything that looked confident about killing "the dev server" would sometimes
  * be killing something else. Naming the problem is the useful part; the reader
@@ -120,7 +120,7 @@ function ensureInstalled() {
     return;
   }
 
-  step(previous === null ? 'Installing dependencies…' : 'Manifests changed — installing…');
+  step(previous === null ? 'Installing dependencies…' : 'Manifests changed - installing…');
 
   // Not `--frozen-lockfile`. That is right in CI, where a lockfile that
   // disagrees with a manifest is a mistake to fail on; here it is usually a
@@ -128,7 +128,7 @@ function ensureInstalled() {
   // reconcile it rather than refuse.
   execFileSync('pnpm', ['install'], { cwd: ROOT, stdio: 'inherit' });
 
-  // Written only after a successful install — `execFileSync` throws on a
+  // Written only after a successful install - `execFileSync` throws on a
   // non-zero exit, so a failed install leaves the old stamp and the next run
   // tries again rather than assuming it worked.
   writeFileSync(STAMP, `${fingerprint()}\n`);
@@ -166,7 +166,7 @@ function portIsFree(port) {
  * The compose `web` service runs as root and used to bind-mount `apps/web`
  * straight through, so it wrote `.next` back to the host owned by root. The
  * host's own dev server then failed to create a directory inside its build
- * output — which Turbopack reports as a FATAL panic with a bug-report URL, so
+ * output - which Turbopack reports as a FATAL panic with a bug-report URL, so
  * the obvious next move is to go looking for a Next.js bug.
  *
  * The compose file no longer does that (`.next` is an anonymous volume now),
@@ -233,7 +233,7 @@ async function main() {
         '',
         ...listed,
         '',
-        '  Remove them — they are regenerable build output, nothing else:',
+        '  Remove them - they are regenerable build output, nothing else:',
         '',
         '    sudo rm -rf apps/web/.next',
         '',
@@ -250,7 +250,7 @@ async function main() {
     console.log(
       [
         '',
-        '  A dev server is already running. Starting a second one will not replace it —',
+        '  A dev server is already running. Starting a second one will not replace it -',
         '  and if you have just added a dependency, the running one cannot see it: its',
         '  module resolution was cached when it booted. That is what "Module not found"',
         '  means when the package is demonstrably installed.',

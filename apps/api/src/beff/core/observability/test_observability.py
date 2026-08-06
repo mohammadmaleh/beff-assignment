@@ -26,7 +26,7 @@ async def test_concurrent_tasks_do_not_see_each_others_id() -> None:
     """**Why this is a `ContextVar` and not a module global.**
 
     A global would interleave two in-flight requests silently, and the log would
-    then be confidently wrong — worse than having no id at all, because someone
+    then be confidently wrong - worse than having no id at all, because someone
     would trust it during an incident.
     """
     seen: dict[str, str | None] = {}
@@ -77,11 +77,11 @@ async def test_two_requests_get_different_ids() -> None:
 
 
 async def test_generated_ids_sort_chronologically() -> None:
-    """UUIDv7, not uuid4 — so a log sorted by request id is also sorted by time.
+    """UUIDv7, not uuid4 - so a log sorted by request id is also sorted by time.
 
     Asserted on the **timestamp prefix**, not on the whole id. `uuid7` documents
-    that ordering holds across milliseconds and not within one — inside a single
-    millisecond two ids differ only in their random bits — and five in-process
+    that ordering holds across milliseconds and not within one - inside a single
+    millisecond two ids differ only in their random bits - and five in-process
     requests to `/healthz` land in the same millisecond most of the time. The
     stricter assertion was therefore testing `secrets.randbits`, and failed
     roughly one run in six for a generator that was behaving exactly as

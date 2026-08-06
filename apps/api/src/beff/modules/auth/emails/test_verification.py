@@ -3,7 +3,7 @@
 The rule this file enforces is the one the project learned the expensive way: a
 perceivable string must never have a language chosen for it by default. German
 is a shipped locale, and a German-speaking user receiving an English email is
-invisible to every automated check — a well-formed string in the wrong language
+invisible to every automated check - a well-formed string in the wrong language
 passes linting, passes schema validation, and renders perfectly.
 """
 
@@ -70,8 +70,8 @@ def test_the_german_subject_is_german() -> None:
 def test_the_german_body_contains_no_english_sentences() -> None:
     """The specific regression: an English default leaking into a German mail.
 
-    These words are unambiguous — none is a German word, and none appears in a
-    URL or an address — so a hit means English prose reached a German reader.
+    These words are unambiguous - none is a German word, and none appears in a
+    URL or an address - so a hit means English prose reached a German reader.
     """
     text = _render("de").text.lower()
 
@@ -103,7 +103,7 @@ def test_the_token_is_url_encoded() -> None:
     """A token is opaque bytes as far as this function is concerned.
 
     Interpolating one raw would break the link for any value containing a
-    character with meaning in a query string — silently, and only for some
+    character with meaning in a query string - silently, and only for some
     users, since the alphabet is random per token.
     """
     url = verification_url(base_url=BASE, token="a b&c=d", locale="en")

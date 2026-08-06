@@ -5,7 +5,7 @@
 `test_app_flows.py` drives these routes with `InMemory*` repositories overridden
 in, which is the right way to test routing, status codes and the RFC 9457
 envelope. `test_privacy_repository.py` drives the SQL directly. Between them
-they cover both halves — and they left the *seam* uncovered, which is where the
+they cover both halves - and they left the *seam* uncovered, which is where the
 two bugs migration `0005` fixes were sitting:
 
 - `pseudonymise_consent` issues an `UPDATE consent_records`, which the
@@ -17,7 +17,7 @@ two bugs migration `0005` fixes were sitting:
 because a fake has neither a trigger nor a constraint. A user pressing "delete my
 account" got a 500.
 
-So this file overrides exactly one dependency — `get_session` — and lets every
+So this file overrides exactly one dependency - `get_session` - and lets every
 other layer be the shipped one. Nothing here re-asserts what the two suites above
 already prove; what it asserts is that the sequence can *run*.
 """
@@ -103,7 +103,7 @@ async def test_recording_consent_appends_rather_than_updating(
     api: AsyncClient, db_session: AsyncSession
 ) -> None:
     """Withdrawal is a new row. The database enforces it, and the endpoint has
-    to be written to agree — an `UPDATE` here would 500 on the trigger."""
+    to be written to agree - an `UPDATE` here would 500 on the trigger."""
     token = await register(api)
 
     granted = await api.post(
@@ -138,7 +138,7 @@ async def test_erasure_completes_against_a_real_database(
 ) -> None:
     """**The test that would have caught both bugs in `0005`.**
 
-    It asserts nothing about ordering — the service's unit test owns that — only
+    It asserts nothing about ordering - the service's unit test owns that - only
     that the request a data subject actually makes returns 204 rather than 500.
     Before the migration this failed twice over: on the append-only trigger, and
     before that on the `revoked_reason` CHECK.
@@ -162,7 +162,7 @@ async def test_after_erasure_the_account_is_gone_and_the_proof_is_not(
 
     The account is unreachable and carries nothing identifying; the consent
     record survives, because it is the evidence that the processing which just
-    ended was lawful — with the IP hash and country code stripped, which is what
+    ended was lawful - with the IP hash and country code stripped, which is what
     stops it identifying anyone.
     """
     token = await register(api)
@@ -193,7 +193,7 @@ async def test_the_erased_address_can_register_again(
 ) -> None:
     """The partial unique index doing its job, through the real endpoint.
 
-    Erasure is soft — the row's foreign keys have to stay intact — so the only
+    Erasure is soft - the row's foreign keys have to stay intact - so the only
     thing that frees the address is `WHERE deleted_at IS NULL` on the index. A
     hard-coded uniqueness check anywhere above it would make erasure a
     permanent ban.
@@ -215,7 +215,7 @@ async def test_an_export_is_queued_and_readable_through_the_api(
     """Art. 15/20, up to the point the worker takes over.
 
     The job is `pending` on the way out, because building it is the worker's
-    work — asserting `ready` here would be asserting that the API does the
+    work - asserting `ready` here would be asserting that the API does the
     thing it deliberately does not do.
     """
     token = await register(api)
@@ -229,7 +229,7 @@ async def test_an_export_is_queued_and_readable_through_the_api(
     again = await api.post("/api/v1/privacy/export", headers=auth(token))
     assert again.json()["id"] == job_id
 
-    # `GET /export` answers with the latest job for the caller — there is no
+    # `GET /export` answers with the latest job for the caller - there is no
     # by-id status route, because a data subject has at most one export in
     # flight and asking for "mine" cannot be pointed at somebody else's.
     latest = await api.get("/api/v1/privacy/export", headers=auth(token))

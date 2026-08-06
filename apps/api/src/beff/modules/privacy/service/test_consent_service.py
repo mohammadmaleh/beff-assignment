@@ -39,7 +39,7 @@ def service(records: InMemoryConsentRepository) -> ConsentService:
 
 
 async def test_nothing_is_consented_to_by_default(service: ConsentService) -> None:
-    """Consent is never assumed from silence — Art. 4(11) requires an
+    """Consent is never assumed from silence - Art. 4(11) requires an
     unambiguous indication."""
     assert await service.state(USER) == {"analytics": False, "marketing": False}
 
@@ -82,7 +82,7 @@ async def test_the_history_survives_being_granted_again(
 async def test_every_record_carries_the_policy_version(
     service: ConsentService, records: InMemoryConsentRepository
 ) -> None:
-    """Without it the record proves nothing — the text it refers to has since
+    """Without it the record proves nothing - the text it refers to has since
     changed."""
     await service.record(USER, purpose="marketing", granted=True)
 

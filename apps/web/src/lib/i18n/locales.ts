@@ -1,7 +1,7 @@
 /**
  * German is a shipped locale, not an afterthought. The customer is a German
  * cell manufacturer and the Impressum and Datenschutzerklärung are legal
- * requirements under §5 DDG — they exist in German first.
+ * requirements under §5 DDG - they exist in German first.
  *
  * That has a layout consequence the whole design has to absorb: German runs
  * roughly 30% longer than English. It is why CSS logical properties are a

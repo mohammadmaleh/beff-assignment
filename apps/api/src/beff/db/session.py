@@ -29,7 +29,7 @@ def get_engine() -> AsyncEngine:
     """The process-wide engine, created on first use.
 
     Lazy rather than module-level so importing `beff.db` does not require a
-    reachable database — unit tests import models constantly and never connect.
+    reachable database - unit tests import models constantly and never connect.
     """
     global _engine
     if _engine is None:
@@ -65,7 +65,7 @@ async def get_session() -> AsyncIterator[AsyncSession]:
     """FastAPI dependency yielding a session with request-scoped transaction.
 
     Commits when the handler returns, rolls back if it raises. Handlers and
-    services therefore never call `commit()` themselves — the unit of work is
+    services therefore never call `commit()` themselves - the unit of work is
     the request.
     """
     factory = get_session_factory()
