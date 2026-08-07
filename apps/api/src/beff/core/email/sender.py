@@ -128,10 +128,16 @@ class SmtpEmailSender:
 class ConsoleEmailSender:
     """Logs the message instead of sending it. Satisfies `EmailSender`.
 
-    What `docker compose up` runs on, and what an unconfigured deployment falls
-    back to. The verification link is printed in full and on purpose - without
-    it, a local stack cannot complete the flow it is running, and the developer
-    goes looking for a bug in the token instead of in their SMTP settings.
+    The last resort, not the local default - `docker compose up` points SMTP at
+    Mailpit and exercises the real transport. This is what an unconfigured
+    deployment falls back to, and its danger is that it *succeeds*: the outbox
+    row reaches `sent` with no failure reason, so nothing downstream can tell
+    a delivered message from a discarded one. `build_email_sender`'s startup
+    warning is the only signal, which is why it is a warning and not a debug.
+
+    The verification link is printed in full and on purpose - without it a
+    stack that lands here cannot complete the flow it is running, and the
+    developer goes looking for a bug in the token instead of in their settings.
     """
 
     async def send(self, message: EmailMessage) -> None:

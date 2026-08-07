@@ -70,14 +70,22 @@ services:
       # Where the confirmation link points. Not NEXT_PUBLIC_SITE_URL: Next
       # inlines that at build time, so it does not exist in this process.
       APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
-      # Deliberately empty by default. No SMTP host means the worker logs each
-      # message instead of sending it, so `docker compose up` completes the
-      # registration flow with no mail account - the link is printed in full in
-      # the worker log, which is the only place a local developer can get it.
-      SMTP_HOST: ${SMTP_HOST:-}
-      SMTP_PORT: ${SMTP_PORT:-587}
+      # Defaults point at the `mailpit` service below, so `docker compose up`
+      # delivers into a real inbox at http://localhost:8025 with no mail account
+      # anywhere. Override SMTP_HOST in `.env` to reach a real provider.
+      #
+      # Nothing on `api` actually sends - `build_email_sender` is called only by
+      # the worker - but both processes load the same Settings, and omitting
+      # these here would leave the two disagreeing about their own config.
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      # Mailpit speaks plaintext on 1025. `start_tls=True` against a server that
+      # does not advertise STARTTLS makes aiosmtplib raise, so this is not
+      # optional for the local default - and it is the first thing to flip back
+      # when pointing at a provider.
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
       EMAIL_FROM: ${EMAIL_FROM:-Beff <no-reply@beff.example>}
     ports:
       - '${API_PORT:-8000}:8000'
@@ -110,13 +118,15 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev_only_do_not_use_in_production}
       IP_HASH_SALT: ${IP_HASH_SALT:-dev_only_salt}
       ENVIRONMENT: development
-      # The worker is the process that actually sends, so these matter here more
-      # than they do on `api`. Same defaults, same console fallback.
+      # The worker is the process that actually sends, so these are the ones
+      # that decide whether mail leaves the stack. `APP_BASE_URL` is *not* -
+      # the link is baked into the body at enqueue time, by `api`.
       APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
-      SMTP_HOST: ${SMTP_HOST:-}
-      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
       EMAIL_FROM: ${EMAIL_FROM:-Beff <no-reply@beff.example>}
     volumes:
       - ./apps/api/src:/app/src
@@ -128,6 +138,31 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+      mailpit:
+        condition: service_started
+    restart: unless-stopped
+
+  # A real SMTP server that accepts everything and delivers nowhere. Web UI on
+  # http://localhost:8025.
+  #
+  # This exists because the console fallback it replaces was indistinguishable
+  # from a working system: `ConsoleEmailSender.send` returns normally, so the
+  # outbox row goes to `sent` with no `failure_reason`, and the only evidence
+  # that nothing was delivered is a log line nobody reads. Mailpit exercises
+  # the actual `SmtpEmailSender` - MIME rendering, multipart ordering, the
+  # `From` header - so what passes locally is the code path that runs in
+  # production, not a stand-in for it.
+  mailpit:
+    image: axllent/mailpit:v1.30
+    environment:
+      # Accept any credentials, over plaintext. Both are wrong anywhere else
+      # and exactly right here: the point is that a local stack needs no
+      # account, and the worker's SMTP_USERNAME/PASSWORD are empty by default.
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      MP_MAX_MESSAGES: 500
+    ports:
+      - '${MAILPIT_UI_PORT:-8025}:8025'
     restart: unless-stopped
 
   web:
