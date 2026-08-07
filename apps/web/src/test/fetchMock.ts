@@ -135,6 +135,24 @@ export function problemResponse(
   };
 }
 
+/**
+ * A problem document carrying only a top-level `code` - no `errors[]`.
+ *
+ * The shape the API uses for every failure that belongs in a banner rather than
+ * beside an input: `waitlist.already_registered`, `rate_limit_exceeded`. It is
+ * deliberately a *separate* helper from `problemResponse`, because a caller
+ * that reads only `errors[]` sees this document as empty and cannot tell it
+ * from a proxy's HTML error page - which is the bug this helper exists to
+ * reproduce.
+ */
+export function codedProblemResponse(status: number, code: string): StubResponse {
+  return {
+    status,
+    contentType: 'application/problem+json',
+    body: { type: `https://beff.example/problems/${code}`, title: 'Request failed', status, code },
+  };
+}
+
 /** Every request the mock recorded, in a shape that is safe to assert on. */
 export function requestsOf(mock: FetchMock): RecordedRequest[] {
   return mock.mock.calls.map(([input, init]) => ({

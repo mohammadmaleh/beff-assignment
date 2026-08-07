@@ -2,7 +2,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { mockFetch, problemResponse, requestsOf, type Stub } from '@/test/fetchMock';
+import {
+  codedProblemResponse,
+  mockFetch,
+  problemResponse,
+  requestsOf,
+  type Stub,
+} from '@/test/fetchMock';
 
 import { WaitlistForm } from './WaitlistForm';
 
@@ -134,7 +140,47 @@ describe('WaitlistForm', () => {
       render(<WaitlistForm locale="en" />);
       await submit(EN);
 
-      expect(await screen.findByText('That did not send')).toBeInTheDocument();
+      expect(await screen.findByText('That did not work')).toBeInTheDocument();
+    });
+
+    it('says the address is already listed rather than blaming our side', async () => {
+      // A 409 carries a top-level `code` and no `errors[]`, so a caller reading
+      // only the field breakdown sees an empty document and falls through to
+      // the generic sentence - which is false twice over: it was not our side,
+      // and trying again can never succeed.
+      mockWaitlist(codedProblemResponse(409, 'waitlist.already_registered'));
+      render(<WaitlistForm locale="en" />);
+      await submit(EN);
+
+      expect(await screen.findByText(/already on the list/i)).toBeInTheDocument();
+      expect(screen.queryByText(/went wrong on our side/i)).not.toBeInTheDocument();
+    });
+
+    it('tells the reader to wait when the limiter refuses, not to retry now', async () => {
+      mockWaitlist(codedProblemResponse(429, 'rate_limit_exceeded'));
+      render(<WaitlistForm locale="en" />);
+      await submit(EN);
+
+      expect(await screen.findByText(/too many attempts/i)).toBeInTheDocument();
+    });
+
+    it('translates a banner code, so a German reader gets German', async () => {
+      mockWaitlist(codedProblemResponse(409, 'waitlist.already_registered'));
+      render(<WaitlistForm locale="de" />);
+      await submit(DE);
+
+      expect(await screen.findByText(/steht bereits auf der Liste/i)).toBeInTheDocument();
+    });
+
+    it('falls back to the generic sentence for a code it has no copy for', async () => {
+      // The fallback must stay reachable. A dictionary that grows a key for
+      // every code the API might ever add is a dictionary that goes stale
+      // silently; this is the one branch allowed to be vague.
+      mockWaitlist(codedProblemResponse(503, 'waitlist.some_future_failure'));
+      render(<WaitlistForm locale="en" />);
+      await submit(EN);
+
+      expect(await screen.findByText(/went wrong on our side/i)).toBeInTheDocument();
     });
 
     it('clears a stale field error when the form is submitted again', async () => {

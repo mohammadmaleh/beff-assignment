@@ -89,9 +89,7 @@ export const de: BaseDictionary = {
     waitlistSubmitting: 'Anfrage wird gesendet …',
     waitlistSuccessTitle: 'Anfrage eingegangen',
     waitlistSuccessBody: 'Wir melden uns unter der angegebenen Adresse.',
-    waitlistErrorTitle: 'Das konnte nicht gesendet werden',
-    waitlistErrorBody:
-      'Auf unserer Seite ist etwas schiefgegangen. Bitte versuchen Sie es gleich noch einmal.',
+    waitlistErrorTitle: 'Das hat nicht geklappt',
   },
 
   footer: {

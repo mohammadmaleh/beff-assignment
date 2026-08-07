@@ -118,8 +118,11 @@ export const en = {
     waitlistSubmitting: 'Sending your request…',
     waitlistSuccessTitle: 'Request received',
     waitlistSuccessBody: 'We will be in touch at the address you gave us.',
-    waitlistErrorTitle: 'That did not send',
-    waitlistErrorBody: 'Something went wrong on our side. Please try again in a moment.',
+    // The body is no longer a literal: it comes from `apiErrors.byCode`, keyed
+    // by the API's own code, so a rejected request says why it was rejected.
+    // The title has to stay true across every one of those - a 409 *did* send,
+    // it was refused - so it says "did not work", not "did not send".
+    waitlistErrorTitle: 'That did not work',
   },
 
   footer: {

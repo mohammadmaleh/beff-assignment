@@ -7,9 +7,9 @@ import { Button } from '@beff/ui/button';
 import { TextField } from '@beff/ui/text-field';
 
 import { WAITLIST_ROUTE } from '@/constants/api';
-import { apiUrl, problemFieldErrors, type FieldErrors } from '@/lib/api';
+import { apiUrl, parseProblem, type FieldErrors } from '@/lib/api';
 import { textField } from '@/lib/forms';
-import { getDictionary, translateFieldError, type Locale } from '@/lib/i18n';
+import { getDictionary, translateApiError, translateFieldError, type Locale } from '@/lib/i18n';
 
 type Status = 'idle' | 'submitting' | 'sent' | 'failed';
 
@@ -24,11 +24,16 @@ export function WaitlistForm({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
   const [status, setStatus] = useState<Status>('idle');
   const [errors, setErrors] = useState<FieldErrors>({});
+  // `null` covers both "no failure yet" and "a failure that never reached the
+  // API" - a dropped connection, a proxy's HTML error page. `translateApiError`
+  // resolves both to the one deliberately vague sentence.
+  const [failureCode, setFailureCode] = useState<string | null>(null);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     setStatus('submitting');
     setErrors({});
+    setFailureCode(null);
 
     const data = new FormData(event.currentTarget);
 
@@ -47,12 +52,18 @@ export function WaitlistForm({ locale }: { locale: Locale }) {
         return;
       }
 
-      const fieldErrors = await problemFieldErrors(response);
-      if (Object.keys(fieldErrors).length > 0) {
-        setErrors(fieldErrors);
+      // Both halves of the document, not just the field breakdown. A 409 or a
+      // 429 carries a top-level `code` and no `errors[]`; reading only the
+      // latter made those indistinguishable from a proxy failure, and the form
+      // answered "something went wrong on our side, try again in a moment" to
+      // someone whose address was simply already on the list.
+      const { code, fields } = await parseProblem(response);
+      if (Object.keys(fields).length > 0) {
+        setErrors(fields);
         setStatus('idle');
         return;
       }
+      setFailureCode(code);
       setStatus('failed');
     } catch {
       // A network failure, not a validation failure. Saying "check your email
@@ -100,7 +111,7 @@ export function WaitlistForm({ locale }: { locale: Locale }) {
 
       {status === 'failed' ? (
         <Alert tone="danger" title={t.landing.waitlistErrorTitle} prefixes={t.a11y.alertPrefixes}>
-          <p>{t.landing.waitlistErrorBody}</p>
+          <p>{translateApiError(locale, failureCode)}</p>
         </Alert>
       ) : null}
 

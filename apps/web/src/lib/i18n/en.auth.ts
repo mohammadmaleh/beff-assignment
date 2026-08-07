@@ -55,6 +55,8 @@ export const enApp = {
       'auth.verification_token_expired': 'That confirmation link has expired. Request a new one.',
       'auth.verification_token_invalid':
         'That confirmation link is not valid, or it has already been used.',
+      'waitlist.already_registered':
+        'That address is already on the list. We will be in touch - no need to send it again.',
       rate_limit_exceeded: 'Too many attempts. Please wait a moment before trying again.',
       validation_error: 'Please check the details you entered.',
     } as Record<string, string>,

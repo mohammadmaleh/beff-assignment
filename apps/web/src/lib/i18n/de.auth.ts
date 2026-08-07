@@ -37,6 +37,8 @@ export const deApp: typeof enApp = {
         'Dieser Bestätigungslink ist abgelaufen. Fordern Sie einen neuen an.',
       'auth.verification_token_invalid':
         'Dieser Bestätigungslink ist ungültig oder wurde bereits verwendet.',
+      'waitlist.already_registered':
+        'Diese Adresse steht bereits auf der Liste. Wir melden uns - Sie müssen nichts erneut senden.',
       rate_limit_exceeded:
         'Zu viele Versuche. Bitte warten Sie einen Moment, bevor Sie es erneut versuchen.',
       validation_error: 'Bitte prüfen Sie Ihre Eingaben.',
