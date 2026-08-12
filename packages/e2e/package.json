@@ -15,7 +15,7 @@
     "@axe-core/playwright": "^4.10.1",
     "@beff/config": "workspace:*",
     "@playwright/test": "^1.51.1",
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.2.0",
     "eslint": "^9.39.5",
     "typescript": "^5.9.3"
   }
