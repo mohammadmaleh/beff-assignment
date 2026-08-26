@@ -22,12 +22,12 @@
   "devDependencies": {
     "@beff/config": "workspace:*",
     "@types/culori": "4.0.1",
-    "@types/node": "^26.1.2",
-    "@vitest/coverage-v8": "4.1.10",
+    "@types/node": "^26.2.0",
+    "@vitest/coverage-v8": "4.1.11",
     "culori": "^4.0.2",
     "eslint": "^9.39.5",
-    "style-dictionary": "^5.5.0",
+    "style-dictionary": "^5.5.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }
