@@ -12,10 +12,10 @@
     "clean": "rm -rf node_modules .turbo playwright-report test-results"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.10.1",
+    "@axe-core/playwright": "^4.13.0",
     "@beff/config": "workspace:*",
-    "@playwright/test": "^1.51.1",
-    "@types/node": "^26.1.2",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.2",
     "eslint": "^9.39.5",
     "typescript": "^5.9.3"
   }
