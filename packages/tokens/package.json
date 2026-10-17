@@ -27,7 +27,7 @@
     "culori": "^4.0.2",
     "eslint": "^9.39.5",
     "style-dictionary": "^5.5.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   }
 }
