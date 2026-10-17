@@ -5,7 +5,7 @@ description = "Beff API - auth, onboarding, GDPR data subject rights, and produc
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.140.0",
-    "uvicorn[standard]>=0.51.0",
+    "uvicorn[standard]>=0.52.0",
     "pydantic>=2.13.0",
     "pydantic-settings>=2.14.0",
     "email-validator>=2.3.0",
