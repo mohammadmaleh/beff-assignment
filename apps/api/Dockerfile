@@ -3,7 +3,7 @@
 # ── base ────────────────────────────────────────────────────────────────────
 # uv ships as a static binary, so copying it from the official image avoids a
 # pip bootstrap and keeps the layer small.
-FROM python:3.12-slim-bookworm AS base
+FROM python:3.15-slim-bookworm AS base
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.0 /uv /uvx /bin/
 
